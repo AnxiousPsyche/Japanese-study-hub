@@ -1,0 +1,871 @@
+body{
+    background-color:#2C2C2C;
+    color:#FAFAFA;
+}
+
+/* NAVBAR */
+
+.custom-navbar{
+    background-color:#2C2C2C;
+    border-bottom:2px solid #C8A2C8;
+}
+
+/* LOGO */
+
+.navbar-brand:hover{
+    color:#C8A2C8 !important;
+}
+
+.logo span{
+    color:#FAFAFA;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:#FAFAFA;
+    font-size:1.8rem;
+    font-weight:700;
+}
+
+.logo span{
+    color:#D90429;
+}
+.nav-logo{
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+
+/* LINKS */
+
+.nav-link{
+    color:#FAFAFA !important;
+    transition:0.3s ease;
+}
+
+.nav-link:hover{
+    color:#C8A2C8 !important;
+}
+
+/* ACTIVE TAB */
+
+.nav-link.active{
+    color:#C8A2C8 !important;
+    font-weight:600;
+}
+
+/* SEARCH */
+
+.custom-search{
+    background-color:#353535;
+    border:1px solid #C8A2C8;
+    color:#FAFAFA;
+}
+
+.custom-search::placeholder{
+    color:#BBBBBB;
+}
+
+.custom-search:focus{
+    background-color:#353535;
+    color:#FAFAFA;
+    border-color:#D8BFD8;
+    box-shadow:0 0 10px rgba(200,162,200,0.4);
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+    background-color:#C8A2C8;
+    color:#2C2C2C;
+    border:none;
+    font-weight:600;
+}
+
+.login-btn:hover{
+    background-color:#D8BFD8;
+    color:#2C2C2C;
+}
+
+/* MOBILE TOGGLER */
+
+.navbar-toggler{
+    border-color:#C8A2C8;
+}
+
+.navbar-toggler:focus{
+    box-shadow:none;
+}
+
+.nav-link.active{
+    background-color:#C8A2C8;
+    color:#2C2C2C !important;
+    border-radius:6px;
+    padding:8px 16px;
+}
+
+/* Drop Down styling*/
+
+.dropdown-menu{
+    background-color:#2C2C2C;
+    border:1px solid #D90429;
+}
+
+.dropdown-item{
+    color:#FAFAFA;
+}
+
+.dropdown-item:hover{
+    background-color:#D90429;
+    color:#FAFAFA;
+}
+
+/* N5 Section*/
+.n5-hero{
+    text-align:center;
+    padding:80px 20px 40px;
+}
+
+.n5-hero h1{
+    color:#FAFAFA;
+    font-size:3rem;
+    margin-bottom:15px;
+}
+
+.n5-hero p{
+    color:#CCCCCC;
+    max-width:700px;
+    margin:auto;
+    font-size:1.1rem;
+}
+
+.n5-categories{
+    width:90%;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    padding-bottom:80px;
+}
+
+.category-card{
+    background:#353535;
+    border:1px solid #D90429;
+    border-radius:12px;
+    padding:25px;
+    transition:0.3s ease;
+    cursor:pointer;
+}
+
+.category-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 15px rgba(217,4,41,0.3);
+}
+
+.category-card h3{
+    color:#FAFAFA;
+    margin-bottom:10px;
+}
+
+.category-card p{
+    color:#CCCCCC;
+}
+.category-link{
+    text-decoration:none;
+}
+
+/* N5 Grammar Page */
+
+.grammar-header{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.grammar-header h1{
+    color:#FAFAFA;
+    font-size:3rem;
+    margin-bottom:10px;
+}
+
+.grammar-header p{
+    color:#CCCCCC;
+}
+
+.lesson-list{
+    width:90%;
+    max-width:900px;
+    margin:auto;
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+    padding-bottom:80px;
+}
+
+.lesson-link{
+    text-decoration:none;
+}
+
+.lesson-card{
+    background:#353535;
+    border-left:5px solid #D90429;
+
+    border-radius:10px;
+    padding:20px;
+
+    transition:.3s ease;
+    cursor:pointer;
+}
+
+.lesson-card:hover{
+    transform:translateX(10px);
+
+    box-shadow:
+    0 0 20px rgba(217,4,41,.25);
+}
+
+.lesson-card h3{
+    color:#FAFAFA;
+}
+
+.lesson-card p{
+    color:#CCCCCC;
+    margin:0;
+}
+
+
+/* Lesson1 */
+
+.lesson-header{
+    text-align:center;
+    padding:80px 20px 40px;
+}
+
+.lesson-header h1{
+    color:#FAFAFA;
+}
+
+.lesson-header p{
+    color:#CCCCCC;
+}
+
+.greetings-container{
+    width:90%;
+    max-width:900px;
+    margin:auto;
+
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+
+    padding-bottom:80px;
+}
+
+.greeting-card{
+    background:#353535;
+    border-left:5px solid #D90429;
+    padding:20px;
+    border-radius:10px;
+}
+
+.greeting-card h2{
+    color:#FAFAFA;
+}
+
+.greeting-card p{
+    color:#CCCCCC;
+    margin:5px 0;
+}
+
+/* VOCABULARY CARD */
+
+.vocab-card{
+
+    background:#353535;
+
+    border-left:6px solid #D90429;
+
+    border-radius:12px;
+
+    padding:30px;
+
+    margin-bottom:35px;
+
+    transition:.3s ease;
+
+}
+
+.vocab-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 12px 30px rgba(217,4,41,.25);
+
+}
+
+/*HEADER FOR VOCAB CARD*/
+
+.vocab-header h2{
+
+    color:#FAFAFA;
+
+    font-size:2rem;
+
+    margin-bottom:5px;
+
+}
+
+.vocab-header h5{
+
+    color:#BBBBBB;
+
+    font-weight:400;
+
+}
+
+/*TAGS FOR GREETINGS CARD*/
+
+.vocab-tags{
+
+    margin:20px 0;
+
+}
+
+.tag{
+
+    display:inline-block;
+
+    padding:6px 14px;
+
+    border-radius:25px;
+
+    margin-right:10px;
+
+    font-size:.85rem;
+
+    font-weight:bold;
+
+}
+
+.formal{
+
+    background:#2E7D32;
+
+    color:white;
+
+}
+
+.casual{
+
+    background:#1976D2;
+
+    color:white;
+
+}
+
+.meeting{
+
+    background:#D90429;
+
+    color:white;
+
+}
+
+.phone{
+
+    background:#6A4C93;
+
+    color:white;
+
+}
+
+.home{
+
+    background:#F4A261;
+
+    color:black;
+
+}
+
+.meaning{
+
+    color:white;
+
+    margin-top:15px;
+
+}
+
+/* Description / explanation text */
+
+.vocab-card p {
+    color: #e0e0e0;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* EXAMPLE BOX*/
+
+
+.example{
+
+    margin-top:25px;
+    padding:18px;
+    background:#2C2C2C;
+    border-radius:10px;
+    border:1px solid #555;
+
+}
+/* EXAMPLE TEXT */
+
+.example strong{
+
+    color:#D90429;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 12px;
+}
+
+
+
+
+/*GREETING TABLE*/
+
+.vocab-section{
+    width:90%;
+    max-width:900px;
+    margin:auto;
+    padding-bottom:80px;
+}
+
+.vocab-section h2{
+    color:#FAFAFA;
+    margin-bottom:20px;
+}
+
+.vocab-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.vocab-table th{
+    background:#D90429;
+    color:#FAFAFA;
+}
+
+.vocab-table th,
+.vocab-table td{
+    border:1px solid #555;
+    padding:12px;
+}
+
+.vocab-table td{
+    color:#FAFAFA;
+    background:#353535;
+}
+
+/*BACK TO N5 NAV*/
+
+.lesson-navigation{
+    width:90%;
+    max-width:900px;
+
+    margin:40px auto;
+
+    display:flex;
+    justify-content:space-between;
+}
+
+.nav-btn{
+    text-decoration:none;
+    background:#D90429;
+    color:white;
+
+    padding:12px 20px;
+
+    border-radius:8px;
+
+    transition:.3s ease;
+}
+
+.nav-btn:hover{
+    background:#b80322;
+}
+
+
+/* ===========================
+   Sentence Pattern
+=========================== */
+
+.grammar-pattern{
+
+    width:90%;
+    max-width:1200px;
+
+    margin:60px auto;
+
+    background:#2f2f2f;
+
+    border:1px solid #444;
+
+    border-radius:20px;
+
+    padding:50px;
+
+    position:relative;
+
+}
+
+/* Pattern Tag */
+
+.pattern-tag{
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    background:#D90429;
+
+    color:white;
+
+    padding:8px 18px;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+
+}
+
+/* Heading */
+
+.grammar-pattern h1{
+
+    text-align:center;
+
+    font-size:4rem;
+
+    color:white;
+
+    margin-bottom:5px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#BBBBBB;
+
+    font-size:1.6rem;
+
+    margin-bottom:50px;
+
+}
+
+/* White Outline Box */
+
+.pattern-grid{
+
+    border:1px solid #555;
+
+    border-radius:15px;
+
+    padding:50px;
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:40px;
+
+}
+
+/* STPOV */
+
+.pattern-grid.five{
+
+    grid-template-columns:repeat(5,1fr);
+
+}
+
+/* Each Item */
+
+.pattern-item{
+
+    text-align:center;
+
+}
+
+/* A は B です */
+
+.pattern-item h2{
+
+    font-size:4rem;
+
+    color:white;
+
+    margin-bottom:20px;
+
+}
+
+/* Make particles red */
+
+.pattern-item:nth-child(2) h2,
+.pattern-item:nth-child(4) h2{
+
+    color:#D90429;
+
+}
+
+/* Arrow */
+
+.down-arrow{
+
+    color:#D90429;
+
+    font-size:4rem;
+
+    margin-bottom:20px;
+
+}
+
+/* Labels */
+
+.pattern-item h4{
+
+    color:white;
+
+    font-size:1.8rem;
+
+    margin-bottom:10px;
+
+}
+
+.pattern-item p{
+
+    color:#BBBBBB;
+
+    font-size:1rem;
+
+}
+
+/* ===========================
+   Example Box
+=========================== */
+
+.example-box{
+
+    width:90%;
+    max-width:1200px;
+
+    margin:40px auto;
+
+    border:2px solid #D90429;
+
+    border-radius:18px;
+
+    padding:60px 40px 40px;
+
+    position:relative;
+
+}
+
+/* Example Label */
+
+.example-tag{
+
+    position:absolute;
+
+    top:-18px;
+
+    left:20px;
+
+    background:#D90429;
+
+    color:white;
+
+    padding:8px 20px;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+}
+
+/* Example Grid */
+
+.example-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:30px;
+
+}
+
+/* Cards */
+
+.example-card{
+
+    text-align:center;
+
+    padding:10px 20px;
+
+    border-right:1px solid #666;
+
+}
+
+.example-card:last-child{
+
+    border-right:none;
+
+}
+
+/* Japanese */
+
+.example-card h2{
+
+    color:white;
+
+    font-size:2rem;
+
+    margin-bottom:20px;
+
+}
+
+/* Highlight particles */
+
+.example-card span{
+
+    color:#D90429;
+
+}
+
+/* Romaji */
+
+.example-card h4{
+
+    color:#ff5c5c;
+
+    margin-bottom:15px;
+
+}
+
+/* English */
+
+.example-card p{
+
+    color:#DDDDDD;
+
+    font-size:1.2rem;
+
+}
+
+/* ===========================
+   Sentence Example
+=========================== */
+
+.sentence-grid{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    text-align:center;
+
+    gap:10px;
+
+}
+
+.sentence-grid > div{
+
+    flex:1;
+
+    padding:20px;
+
+    border-right:1px solid #666;
+
+}
+
+.sentence-grid > div:last-child{
+
+    border-right:none;
+
+}
+
+.sentence-grid h2{
+
+    color:white;
+
+    font-size:1.8rem;
+
+}
+
+.sentence-grid h3{
+
+    color:#ff5c5c;
+
+    margin-top:10px;
+    white-space: nowrap;
+    font-size: 1.5rem;
+
+}
+
+.sentence-grid p{
+
+    color:#DDDDDD;
+
+}
+
+/* ===========================
+   Note Box
+=========================== */
+
+.note-box{
+
+    width:90%;
+    max-width:1200px;
+
+    margin:50px auto;
+
+    background:#303030;
+
+    border:1px solid #555;
+
+    border-radius:15px;
+
+    padding:30px;
+
+}
+
+.note-box h3{
+
+    color:white;
+
+    margin-bottom:20px;
+
+}
+
+.note-box ul{
+
+    color:#DDDDDD;
+
+    line-height:2;
+
+}
+.pattern-divider{
+    border: none;
+    border-top: 1px solid #555;
+    margin: 50px 0 40px;
+}

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JP Library</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ========================= -->
+    <!--          NAVBAR          -->
+    <!-- ========================= -->
+
+    <nav class="navbar navbar-expand-lg custom-navbar">
+
+        <div class="container-fluid">
+
+            <!-- Logo -->
+            <a class="navbar-brand logo" href="index.html">
+
+                <img src="/images/JPLlogo.png"
+                     alt="JP Library"
+                     class="nav-logo">
+
+                <span>JP</span> Library
+
+            </a>
+
+            <!-- Mobile Menu -->
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNav"
+                    aria-controls="mainNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+
+                <!-- ========================= -->
+                <!--      LEFT NAVIGATION      -->
+                <!-- ========================= -->
+
+                <ul class="navbar-nav me-auto">
+
+                    <!-- N5 -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle active"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+
+                            N5
+
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            <li><a class="dropdown-item" href="pages/N5s/n5-grammar.html">Grammar</a></li>
+                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
+                            <li><a class="dropdown-item" href="#">Kanji</a></li>
+                            <li><a class="dropdown-item" href="#">Reading</a></li>
+                            <li><a class="dropdown-item" href="#">Listening</a></li>
+                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+
+                        </ul>
+
+                    </li>
+
+                    <!-- N4 -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+
+                            N4
+
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            <li><a class="dropdown-item" href="#">Grammar</a></li>
+                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
+                            <li><a class="dropdown-item" href="#">Kanji</a></li>
+                            <li><a class="dropdown-item" href="#">Reading</a></li>
+                            <li><a class="dropdown-item" href="#">Listening</a></li>
+                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+
+                        </ul>
+
+                    </li>
+
+                    <!-- N3 -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+
+                            N3
+
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            <li><a class="dropdown-item" href="#">Grammar</a></li>
+                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
+                            <li><a class="dropdown-item" href="#">Kanji</a></li>
+                            <li><a class="dropdown-item" href="#">Reading</a></li>
+                            <li><a class="dropdown-item" href="#">Listening</a></li>
+                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+
+                        </ul>
+
+                    </li>
+
+                    <!-- N2 -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+
+                            N2
+
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            <li><a class="dropdown-item" href="#">Grammar</a></li>
+                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
+                            <li><a class="dropdown-item" href="#">Kanji</a></li>
+                            <li><a class="dropdown-item" href="#">Reading</a></li>
+                            <li><a class="dropdown-item" href="#">Listening</a></li>
+                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+
+                        </ul>
+
+                    </li>
+
+                    <!-- N1 -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
+
+                            N1
+
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            <li><a class="dropdown-item" href="#">Grammar</a></li>
+                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
+                            <li><a class="dropdown-item" href="#">Kanji</a></li>
+                            <li><a class="dropdown-item" href="#">Reading</a></li>
+                            <li><a class="dropdown-item" href="#">Listening</a></li>
+                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+
+                        </ul>
+
+                    </li>
+
+                </ul>
+
+                <!-- ========================= -->
+                <!--         SEARCH            -->
+                <!-- ========================= -->
+
+                <form class="d-flex me-3">
+
+                    <input class="form-control custom-search"
+                           type="search"
+                           placeholder="Search EN or 日本語">
+
+                </form>
+
+                <!-- ========================= -->
+                <!--      RIGHT NAVIGATION     -->
+                <!-- ========================= -->
+
+                <ul class="navbar-nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Theme</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn login-btn ms-2" href="#">
+                            Login
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- ========================= -->
+    <!--      PAGE CONTENT         -->
+    <!-- ========================= -->
+
+    <main>
+
+        <section class="sentence-pattern">
+
+    <h2>Basic Sentence Pattern</h2>
+
+<!-- ==========================
+     PATTERN 1
+=========================== -->
+
+<section class="grammar-pattern">
+
+    <div class="pattern-tag">
+        PATTERN 1
+    </div>
+
+    <h1>A は B です</h1>
+
+    <p class="subtitle">
+        Basic Sentence Pattern
+    </p>
+
+    <!-- Pattern Explanation -->
+
+    <div class="pattern-grid">
+
+        <div class="pattern-item">
+
+            <h2>A</h2>
+
+            <div class="down-arrow">↓</div>
+
+            <h4>Subject</h4>
+
+            <p>
+                Person / Thing<br>
+                we are talking about
+            </p>
+
+        </div>
+
+        <div class="pattern-item">
+
+            <h2>は</h2>
+
+            <div class="down-arrow">↓</div>
+
+            <h4>Topic Marker</h4>
+
+            <p>
+                Indicates the topic.<br>
+                Similar to "is / am / are"
+                but not exactly.
+            </p>
+
+        </div>
+
+        <div class="pattern-item">
+
+            <h2>B</h2>
+
+            <div class="down-arrow">↓</div>
+
+            <h4>Predicate</h4>
+
+            <p>
+                Information<br>
+                about the subject.
+            </p>
+
+        </div>
+
+        <div class="pattern-item">
+
+            <h2>です</h2>
+
+            <div class="down-arrow">↓</div>
+
+            <h4>Polite Ending</h4>
+
+            <p>
+                Makes the sentence<br>
+                polite.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Divider -->
+
+    <hr class="pattern-divider">
+
+    <!-- Examples -->
+
+    <div class="example-box">
+
+        <div class="example-tag">
+            EXAMPLES
+        </div>
+
+        <div class="example-grid">
+
+            <!-- Example 1 -->
+
+            <div class="example-card">
+
+                <h2>
+                    私<span>は</span>リア<span>です</span>。
+                </h2>
+
+                <h4>
+                    Watashi wa Ria desu.
+                </h4>
+
+                <p>
+                    I am Ria.
+                </p>
+
+            </div>
+
+            <!-- Example 2 -->
+
+            <div class="example-card">
+
+                <h2>
+                    これ<span>は</span>本<span>です</span>。
+                </h2>
+
+                <h4>
+                    Kore wa hon desu.
+                </h4>
+
+                <p>
+                    This is a book.
+                </p>
+
+            </div>
+
+            <!-- Example 3 -->
+
+            <div class="example-card">
+
+                <h2>
+                    田中さん<span>は</span>先生<span>です</span>。
+                </h2>
+
+                <h4>
+                    Tanaka-san wa sensei desu.
+                </h4>
+
+                <p>
+                    Mr. Tanaka is a teacher.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==========================
+     PATTERN 2
+=========================== -->
+
+<section class="grammar-pattern">
+
+    <div class="pattern-tag">
+        PATTERN 2
+    </div>
+
+    <h1>S T P O V</h1>
+
+    <p class="subtitle">
+        Japanese Sentence Order
+    </p>
+
+    <!-- Pattern -->
+
+    <div class="pattern-grid five">
+
+        <div class="pattern-item">
+            <h2>S</h2>
+            <div class="down-arrow">↓</div>
+            <h4>Subject</h4>
+            <p>
+                Who?<br>
+                Person or thing.
+            </p>
+        </div>
+
+        <div class="pattern-item">
+            <h2>T</h2>
+            <div class="down-arrow">↓</div>
+            <h4>Time</h4>
+            <p>
+                When?<br>
+                Today, tomorrow, yesterday...
+            </p>
+        </div>
+
+        <div class="pattern-item">
+            <h2>P</h2>
+            <div class="down-arrow">↓</div>
+            <h4>Place</h4>
+            <p>
+                Where?<br>
+                School, home, Japan...
+            </p>
+        </div>
+
+        <div class="pattern-item">
+            <h2>O</h2>
+            <div class="down-arrow">↓</div>
+            <h4>Object</h4>
+            <p>
+                What?<br>
+                The thing receiving the action.
+            </p>
+        </div>
+
+        <div class="pattern-item">
+            <h2>V</h2>
+            <div class="down-arrow">↓</div>
+            <h4>Verb</h4>
+            <p>
+                Action<br>
+                Always comes last.
+            </p>
+        </div>
+
+    </div>
+
+    <hr class="pattern-divider">
+
+    <!-- Example -->
+
+    <div class="example-box">
+
+        <div class="example-tag">
+            EXAMPLE
+        </div>
+
+        <div class="sentence-grid">
+
+            <div>
+
+                <h2>私は</h2>
+
+                <h3>Watashi wa</h3>
+
+                <p>I</p>
+
+            </div>
+
+            <div>
+
+                <h2>今日</h2>
+
+                <h3>Kyou</h3>
+
+                <p>today</p>
+
+            </div>
+
+            <div>
+
+                <h2>学校で</h2>
+
+                <h3>Gakkou de</h3>
+
+                <p>at school</p>
+
+            </div>
+
+            <div>
+
+                <h2>日本語を</h2>
+
+                <h3>Nihongo o</h3>
+
+                <p>Japanese</p>
+
+            </div>
+
+            <div>
+
+                <h2>勉強します。</h2>
+
+                <h3>Benkyou shimasu.</h3>
+
+                <p>study.</p>
+
+            </div>
+
+        </div>
+
+        <div class="note-box">
+
+            <h3>💡 Remember</h3>
+
+            <ul>
+
+                <li>The verb almost always comes at the end of the sentence.</li>
+
+                <li>Time and place can move depending on what you want to emphasize.</li>
+
+                <li>Particles (は・を・で・に・へ・と) show the role of each word.</li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Your JS -->
+    <script src="JS/index.js"></script>
+
+</body>
+</html>
