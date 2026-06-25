@@ -869,3 +869,140 @@ body{
     border-top: 1px solid #555;
     margin: 50px 0 40px;
 }
+
+/* ============================
+Sentence Progression
+============================ */
+
+/* ==========================
+      Learning Journey
+========================== */
+
+.journey-section{
+
+    width:90%;
+    max-width:850px;
+
+    margin:70px auto;
+
+}
+
+.journey-title{
+
+    text-align:center;
+
+    color:#FAFAFA;
+
+    font-size:2.7rem;
+
+}
+
+.journey-subtitle{
+
+    text-align:center;
+
+    color:#BBBBBB;
+
+    margin-bottom:50px;
+
+}
+
+/* Card */
+
+.journey-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+    background:#353535;
+
+    border-left:6px solid #D90429;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    transition:.35s;
+
+}
+
+.journey-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 0 20px rgba(217,4,41,.25);
+
+}
+
+.journey-icon{
+
+    font-size:3rem;
+
+}
+
+.journey-content{
+
+    flex:1;
+
+}
+
+.level-title{
+
+    color:#D90429;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+
+}
+
+.journey-content h3{
+
+    color:white;
+
+    margin-top:10px;
+
+}
+
+.journey-content p{
+
+    color:#CCCCCC;
+
+    margin:0;
+
+}
+
+/* Locked */
+
+.locked{
+
+    opacity:.55;
+
+    border-left:6px solid #666;
+
+}
+
+/* Unlocked */
+
+.unlocked{
+
+    border-left:6px solid #D90429;
+
+}
+
+/* Arrow */
+
+.journey-arrow{
+
+    text-align:center;
+
+    font-size:3rem;
+
+    color:#D90429;
+
+    margin:10px 0;
+
+}
