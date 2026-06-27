@@ -35,7 +35,7 @@
     <!-- CSS -->
 
     <link rel="stylesheet"
-          href="css/style.css">
+          href="/assets/css/style.css">
 
 </head>
 
@@ -52,7 +52,7 @@
         <a href="index.html"
            class="logo">
 
-            <img src="images/JPLlogo.png"
+            <img src="/assets/images/logo/JPLlogo.png"
                  alt="JP Library">
 
             <span>
@@ -101,19 +101,19 @@
 
     <div class="nav-right">
 
-        <button class="retro-button">
+        <button class="retro-btn">
 
             <i class="bi bi-search"></i>
 
         </button>
 
-        <button class="retro-button">
+        <button class="retro-btn">
 
             <i class="bi bi-bookmark-heart"></i>
 
         </button>
 
-        <button class="retro-button">
+        <button class="retro-btn">
 
             <i class="bi bi-person-circle"></i>
 
@@ -124,10 +124,113 @@
 </nav>
 
 
+<!-- ========================================= -->
+<!-- BOOT SCREEN -->
+<!-- ========================================= -->
+
+<section id="boot-screen" class="boot-screen">
+
+    <div class="boot-window">
+
+        <div class="boot-title">
+
+            JP Library OS v1.0
+
+        </div>
+
+        <div class="boot-body">
+
+            <h1>Starting System...</h1>
+
+            <p class="boot-message">
+                Initializing learning environment...
+            </p>
+
+            <div class="loading-group">
+
+                <div class="loading-item">
+
+                    <span>Grammar Database</span>
+
+                    <div class="loading-bar">
+                        <div class="loading-fill grammar"></div>
+                    </div>
+
+                </div>
+
+                <div class="loading-item">
+
+                    <span>Vocabulary Database</span>
+
+                    <div class="loading-bar">
+                        <div class="loading-fill vocabulary"></div>
+                    </div>
+
+                </div>
+
+                <div class="loading-item">
+
+                    <span>Kanji Database</span>
+
+                    <div class="loading-bar">
+                        <div class="loading-fill kanji"></div>
+                    </div>
+
+                </div>
+
+                <div class="loading-item">
+
+                    <span>Quest Engine</span>
+
+                    <div class="loading-bar">
+                        <div class="loading-fill quest"></div>
+                    </div>
+
+                </div>
+
+                <div class="loading-item">
+
+                    <span>Audio System</span>
+
+                    <div class="loading-bar">
+                        <div class="loading-fill audio"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="boot-status">
+
+                <p id="boot-status-text">
+
+                    Preparing adventure...
+
+                </p>
+
+            </div>
+
+            <button id="start-btn" class="retro-btn">
+
+                ▶ START
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+
 
 <!-- ========================================= -->
 <!-- HERO -->
 <!-- ========================================= -->
+
 
 <header class="hero-window">
 
@@ -182,7 +285,7 @@
 
         <div class="hero-image">
 
-            <img src="images/JPLpicture.png"
+            <img src="/assets/images/hero/JPLpicture.png"
                  alt="JP Library">
 
         </div>
@@ -422,10 +525,10 @@
 
             </p>
 
-            <a href="pages/N5s/n5-grammar.html"
+            <a href="/pages/N5/n5-grammar.html"
                class="retro-btn">
 
-                ▶ Continue Learning
+                ▶ Continue the adventure
 
             </a>
 
@@ -519,7 +622,7 @@
 
             </div>
 
-            <a href="pages/N5s/lessons/self-introduction.html"
+            <a href="pages/N5/grammar/lesson-02-self-introduction.html"
                class="retro-btn">
 
                 ▶ START MISSION
@@ -776,21 +879,10 @@
 
 </main>
 
-<script src="JS/index.js"></script>
+<script src="/assets/js/index.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
-</html>
-
-<main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Your JS -->
-    <script src="JS/index.js"></script>
-
-</body>
 </html>
