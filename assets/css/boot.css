@@ -1,0 +1,625 @@
+/* ======================================================
+   JP LIBRARY OS
+   BOOT SCREEN
+====================================================== */
+
+.boot-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#F6F2EA;
+
+    z-index:9999;
+
+}
+
+
+
+.boot-window{
+
+    width:min(700px,90%);
+
+    background:#FFFDF9;
+
+    border:3px solid #B7C7E6;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.15);
+
+}
+
+
+
+.boot-title{
+
+    background:#8FAFD8;
+
+    color:white;
+
+    padding:18px;
+
+    font-family:var(--title-font);
+
+    text-align:center;
+
+    letter-spacing:2px;
+
+}
+
+
+
+.boot-body{
+
+    padding:40px;
+
+}
+
+
+
+.boot-body h1{
+
+    text-align:center;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.boot-message{
+
+    text-align:center;
+
+    margin-bottom:35px;
+
+    color:var(--text-light);
+
+}
+
+
+
+/* ==============================================
+LOADING
+============================================== */
+
+.loading-item{
+
+    margin-bottom:22px;
+
+}
+
+
+
+.loading-item span{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:bold;
+
+}
+
+
+
+.loading-bar{
+
+    width:100%;
+
+    height:14px;
+
+    background:#EAEAEA;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+
+
+.loading-fill{
+
+    width:0;
+
+    height:100%;
+
+    border-radius:999px;
+
+    transition:width .8s ease;
+
+}
+.grammar{
+
+    background:#89A8D8;
+
+}
+
+.vocabulary{
+
+    background:#D69DB0;
+
+}
+
+.kanji{
+
+    background:#A8CFA8;
+
+}
+
+.quest{
+
+    background:#E5C77B;
+
+}
+
+.audio{
+
+    background:#B9B0E8;
+
+}
+
+
+
+@keyframes loading{
+
+    from{
+
+        width:0%;
+
+    }
+
+    to{
+
+        width:100%;
+
+    }
+
+}
+
+
+
+#boot-status-text{
+
+    margin-top:35px;
+
+    text-align:center;
+
+    font-style:italic;
+
+}
+
+
+
+#start-btn{
+
+    display:block;
+
+    margin:35px auto 0;
+
+}
+
+
+
+/* ======================================================
+DISC SCREEN
+====================================================== */
+
+#disc-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#F6F2EA;
+
+    z-index:9998;
+
+}
+
+
+
+.disc-window{
+
+    width:min(650px,90%);
+
+    text-align:center;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:50px;
+
+    border:3px solid #B7C7E6;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.15);
+
+}
+
+
+
+.disc-window h2{
+
+    color:#5274A7;
+
+}
+
+
+
+.disc-window h3{
+
+    color:#D58CA5;
+
+    margin-top:25px;
+
+}
+
+
+
+.disc-container{
+
+    margin:35px 0;
+
+}
+
+
+
+/* ==============================================
+DISC
+============================================== */
+
+.jp-disc{
+
+    width:320px;
+
+    margin:auto;
+
+    animation:spinDisc 15s linear infinite;
+
+    transition:.4s;
+
+    cursor:pointer;
+
+}
+
+
+
+.jp-disc:hover{
+
+    transform:scale(1.05);
+
+    filter:drop-shadow(0 0 25px rgba(213,140,165,.5));
+
+    animation-play-state:paused;
+
+}
+
+
+
+@keyframes spinDisc{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+/* ==============================================
+DESKTOP
+============================================== */
+
+#desktop{
+
+    display:none;
+
+}
+
+
+
+
+
+/* ==============================================
+FADE ANIMATIONS
+============================================== */
+
+.fade-out{
+
+    animation:fadeOut .6s forwards;
+
+}
+
+.fade-in{
+
+    animation:fadeIn .6s forwards;
+
+}
+
+@keyframes fadeOut{
+
+    from{
+
+        opacity:1;
+
+    }
+
+    to{
+
+        opacity:0;
+
+    }
+
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+/* ==============================================
+DISC INSERT
+============================================== */
+
+.inserting{
+
+    animation:insertDisc 1s ease forwards;
+
+}
+
+@keyframes insertDisc{
+
+    0%{
+
+        transform:translateY(0) rotate(0deg) scale(1);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:translateY(350px) rotate(720deg) scale(.3);
+
+        opacity:0;
+
+    }
+
+}
+
+/*======================================================
+DISC AREA
+======================================================*/
+
+.disc-area{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin:40px 0;
+
+}
+
+
+
+/*======================================================
+DISC
+======================================================*/
+
+.jp-disc{
+
+    width:280px;
+
+    animation:spinDisc 15s linear infinite;
+
+    transition:.4s;
+
+}
+
+
+
+.jp-disc:hover{
+
+    animation-play-state:paused;
+
+    transform:scale(1.05);
+
+}
+
+
+
+/*======================================================
+ARROW
+======================================================*/
+
+.disc-arrow{
+
+    font-size:2rem;
+
+    color:#89A8D8;
+
+    animation:bounce 1.5s infinite;
+
+}
+
+
+
+@keyframes bounce{
+
+    0%,100%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(10px);
+
+    }
+
+}
+
+
+
+/*======================================================
+DISC DRIVE
+======================================================*/
+
+.disc-drive{
+
+    width:430px;
+
+    background:linear-gradient(
+
+        #EFEFEF,
+
+        #DCDCDC
+
+    );
+
+    border-radius:18px;
+
+    border:2px solid #C9C9C9;
+
+    padding:20px;
+
+    box-shadow:
+
+        inset 0 2px 4px white,
+
+        0 12px 25px rgba(0,0,0,.15);
+
+}
+
+
+
+/*======================================================
+LABEL
+======================================================*/
+
+.drive-label{
+
+    font-family:var(--title-font);
+
+    font-size:.45rem;
+
+    color:#666;
+
+    margin-bottom:15px;
+
+}
+
+
+
+/*======================================================
+DISC SLOT
+======================================================*/
+
+.drive-slot{
+
+    height:18px;
+
+    width:100%;
+
+    background:#222;
+
+    border-radius:999px;
+
+    box-shadow:
+
+        inset 0 3px 6px rgba(0,0,0,.7);
+
+}
+
+
+
+/*======================================================
+BOTTOM
+======================================================*/
+
+.drive-bottom{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:20px;
+
+}
+
+
+
+.drive-bottom span{
+
+    color:#777;
+
+    font-size:.9rem;
+
+}
+
+
+
+/*======================================================
+LED
+======================================================*/
+
+.drive-led{
+
+    width:14px;
+
+    height:14px;
+
+    border-radius:50%;
+
+    background:#6CD95A;
+
+    box-shadow:
+
+        0 0 12px #6CD95A;
+
+}
