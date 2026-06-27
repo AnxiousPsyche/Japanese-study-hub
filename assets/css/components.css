@@ -1,0 +1,504 @@
+/* ======================================================
+   JP LIBRARY OS
+   COMPONENTS
+====================================================== */
+
+
+
+/* ======================================================
+   RETRO WINDOW
+====================================================== */
+
+.retro-window{
+
+    background:var(--bg-window);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow-window);
+
+    transition:var(--transition);
+
+}
+
+.retro-window:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:var(--shadow-hover);
+
+}
+
+
+
+/* ======================================================
+   WINDOW TITLE BAR
+====================================================== */
+
+.window-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 20px;
+
+    background:var(--title-bar);
+
+    color:white;
+
+    font-family:var(--title-font);
+
+    font-size:.55rem;
+
+    letter-spacing:1px;
+
+}
+
+.window-title-icons{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.window-title-icons span{
+
+    width:12px;
+
+    height:12px;
+
+    border-radius:50%;
+
+}
+
+.window-close{
+
+    background:#FF8F8F;
+
+}
+
+.window-minimize{
+
+    background:#FFD966;
+
+}
+
+.window-maximize{
+
+    background:#8FD19E;
+
+}
+
+
+
+/* ======================================================
+   WINDOW BODY
+====================================================== */
+
+.window-body{
+
+    padding:30px;
+
+}
+
+
+
+/* ======================================================
+   RETRO BUTTON
+====================================================== */
+
+.retro-btn{
+
+    display:inline-block;
+
+    padding:14px 26px;
+
+    background:var(--pink);
+
+    color:white;
+
+    border:2px solid var(--border-dark);
+
+    border-radius:var(--radius);
+
+    font-weight:700;
+
+    transition:var(--transition);
+
+    box-shadow:3px 3px 0 rgba(0,0,0,.18);
+
+}
+
+.retro-btn:hover{
+
+    transform:translateY(-3px);
+
+    background:#D37E90;
+
+}
+
+.retro-btn:active{
+
+    transform:translateY(2px);
+
+    box-shadow:none;
+
+}
+
+
+
+/* ======================================================
+   SECONDARY BUTTON
+====================================================== */
+
+.retro-btn-secondary{
+
+    background:var(--mint);
+
+}
+
+.retro-btn-secondary:hover{
+
+    background:#78A884;
+
+}
+
+
+
+/* ======================================================
+   WARNING BUTTON
+====================================================== */
+
+.retro-btn-warning{
+
+    background:var(--yellow);
+
+    color:var(--text-main);
+
+}
+
+.retro-btn-warning:hover{
+
+    background:#E8C45D;
+
+}
+
+
+
+/* ======================================================
+   CARD
+====================================================== */
+
+.retro-card{
+
+    background:var(--bg-card);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    box-shadow:var(--shadow-window);
+
+    transition:var(--transition);
+
+}
+
+.retro-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+/* ======================================================
+   BADGES
+====================================================== */
+
+.badge{
+
+    display:inline-block;
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    font-size:.8rem;
+
+    font-weight:700;
+
+}
+
+.badge-beginner{
+
+    background:var(--mint);
+
+    color:white;
+
+}
+
+.badge-easy{
+
+    background:var(--title-bar);
+
+    color:white;
+
+}
+
+.badge-medium{
+
+    background:var(--yellow);
+
+    color:var(--text-main);
+
+}
+
+.badge-hard{
+
+    background:var(--pink);
+
+    color:white;
+
+}
+
+
+
+/* ======================================================
+   LESSON TAG
+====================================================== */
+
+.lesson-tag{
+
+    display:inline-block;
+
+    padding:8px 18px;
+
+    border-radius:999px;
+
+    background:var(--title-bar);
+
+    color:white;
+
+    font-size:.75rem;
+
+    font-weight:700;
+
+}
+
+
+
+/* ======================================================
+   INFO BOX
+====================================================== */
+
+.info-box{
+
+    background:#FFFDF7;
+
+    border-left:6px solid var(--title-bar);
+
+    padding:25px;
+
+    border-radius:var(--radius);
+
+}
+
+
+
+/* ======================================================
+   NOTE BOX
+====================================================== */
+
+.note-box{
+
+    background:#FFFBE8;
+
+    border-left:6px solid var(--yellow);
+
+    padding:25px;
+
+    border-radius:var(--radius);
+
+}
+
+
+
+/* ======================================================
+   SUCCESS BOX
+====================================================== */
+
+.success-box{
+
+    background:#F3FFF4;
+
+    border-left:6px solid var(--success);
+
+    padding:25px;
+
+    border-radius:var(--radius);
+
+}
+
+
+
+/* ======================================================
+   MISSION BOX
+====================================================== */
+
+.mission-box{
+
+    background:#EEF5FF;
+
+    border:2px dashed var(--title-bar);
+
+    border-radius:var(--radius);
+
+    padding:30px;
+
+}
+
+
+
+/* ======================================================
+   INPUTS
+====================================================== */
+
+input,
+textarea{
+
+    width:100%;
+
+    padding:16px;
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    background:white;
+
+    font-family:var(--body-font);
+
+    transition:var(--transition);
+
+}
+
+input:focus,
+textarea:focus{
+
+    outline:none;
+
+    border-color:var(--title-bar);
+
+}
+
+
+
+/* ======================================================
+   PROGRESS BAR
+====================================================== */
+
+.progress{
+
+    background:#DDD;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    height:18px;
+
+}
+
+.progress-fill{
+
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        var(--mint),
+        var(--title-bar)
+    );
+
+}
+
+
+
+/* ======================================================
+   TABLE
+====================================================== */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+th{
+
+    background:var(--title-bar);
+
+    color:white;
+
+    padding:15px;
+
+}
+
+td{
+
+    padding:15px;
+
+    border:1px solid var(--border);
+
+    background:white;
+
+}
+
+
+
+/* ======================================================
+   FLEX HELPERS
+====================================================== */
+
+.flex{
+
+    display:flex;
+
+}
+
+.flex-between{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.flex-center{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.gap{
+
+    gap:20px;
+
+}

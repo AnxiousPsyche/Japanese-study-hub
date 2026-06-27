@@ -1,0 +1,336 @@
+/* ======================================================
+   JP LIBRARY OS
+   QUIZ SYSTEM
+======================================================*/
+
+
+
+/*======================================================
+QUIZ PAGE
+======================================================*/
+
+.quiz-page{
+
+    width:min(900px,92%);
+
+    margin:50px auto;
+
+}
+
+
+
+/*======================================================
+QUIZ HEADER
+======================================================*/
+
+.quiz-header{
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+}
+
+
+
+.quiz-header h1{
+
+    font-family:var(--title-font);
+
+    color:var(--title-bar-dark);
+
+    line-height:1.8;
+
+}
+
+
+
+.quiz-header p{
+
+    color:var(--text-light);
+
+}
+
+
+
+/*======================================================
+STATUS BAR
+======================================================*/
+
+.quiz-status{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.status-card{
+
+    flex:1;
+
+    min-width:160px;
+
+    background:var(--bg-card);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:18px;
+
+    text-align:center;
+
+}
+
+
+
+.status-card h3{
+
+    margin-bottom:8px;
+
+}
+
+
+
+.status-card p{
+
+    font-size:1.1rem;
+
+    font-weight:bold;
+
+}
+
+
+
+/*======================================================
+QUESTION
+======================================================*/
+
+.question-box{
+
+    background:white;
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:35px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.question-number{
+
+    color:var(--pink);
+
+    font-weight:bold;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.question-title{
+
+    font-size:2rem;
+
+    margin-bottom:30px;
+
+}
+
+
+
+/*======================================================
+OPTIONS
+======================================================*/
+
+.option{
+
+    display:block;
+
+    background:var(--bg-card);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:18px 22px;
+
+    margin-bottom:18px;
+
+    cursor:pointer;
+
+    transition:var(--transition);
+
+}
+
+
+
+.option:hover{
+
+    background:#FFF4F6;
+
+    transform:translateX(8px);
+
+}
+
+
+
+.option.correct{
+
+    background:#DFF8E5;
+
+    border-color:var(--success);
+
+}
+
+
+
+.option.wrong{
+
+    background:#FFE3E3;
+
+    border-color:var(--danger);
+
+}
+
+
+
+/*======================================================
+BUTTONS
+======================================================*/
+
+.quiz-buttons{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-top:40px;
+
+}
+
+
+
+/*======================================================
+RESULT
+======================================================*/
+
+.result-screen{
+
+    text-align:center;
+
+    background:#F8FFF8;
+
+    border:3px solid var(--success);
+
+    border-radius:var(--radius);
+
+    padding:45px;
+
+}
+
+
+
+.result-screen h2{
+
+    color:var(--success);
+
+    margin-bottom:20px;
+
+}
+
+
+
+.result-screen p{
+
+    margin-bottom:12px;
+
+}
+
+
+
+/*======================================================
+XP REWARD
+======================================================*/
+
+.xp-reward{
+
+    display:inline-block;
+
+    margin-top:25px;
+
+    background:var(--yellow);
+
+    padding:14px 24px;
+
+    border-radius:999px;
+
+    font-weight:bold;
+
+}
+
+
+
+/*======================================================
+BADGE
+======================================================*/
+
+.badge-earned{
+
+    margin-top:30px;
+
+    padding:30px;
+
+    background:#FFF8DD;
+
+    border-radius:var(--radius);
+
+    border:2px dashed var(--warning);
+
+}
+
+
+
+/*======================================================
+HEARTS
+======================================================*/
+
+.hearts{
+
+    font-size:1.5rem;
+
+    color:#E05656;
+
+    letter-spacing:6px;
+
+}
+
+
+
+/*======================================================
+TIMER
+======================================================*/
+
+.timer{
+
+    font-weight:bold;
+
+    color:var(--pink);
+
+}

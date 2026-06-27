@@ -1,0 +1,252 @@
+/* ======================================================
+   JP LIBRARY OS
+   RESET & BASE STYLES
+====================================================== */
+
+/* ==============================
+   RESET
+================================ */
+
+*,
+*::before,
+*::after{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+/* ==============================
+   ROOT
+================================ */
+
+html{
+
+    font-size:16px;
+
+    scroll-behavior:smooth;
+
+}
+
+/* ==============================
+   BODY
+================================ */
+
+body{
+
+    font-family:var(--body-font);
+
+    background:var(--bg-main);
+
+    color:var(--text-main);
+
+    line-height:1.7;
+
+    min-height:100vh;
+
+    overflow-x:hidden;
+
+    text-rendering:optimizeLegibility;
+
+}
+
+/* ==============================
+   HEADINGS
+================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+
+    font-weight:700;
+
+    line-height:1.4;
+
+    margin-bottom:1rem;
+
+}
+
+/* ==============================
+   PARAGRAPH
+================================ */
+
+p{
+
+    margin-bottom:1rem;
+
+    color:var(--text-light);
+
+}
+
+/* ==============================
+   LINKS
+================================ */
+
+a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+    transition:var(--transition);
+
+}
+
+/* ==============================
+   LISTS
+================================ */
+
+ul,
+ol{
+
+    list-style:none;
+
+}
+
+/* ==============================
+   IMAGES
+================================ */
+
+img{
+
+    display:block;
+
+    max-width:100%;
+
+    height:auto;
+
+}
+
+/* ==============================
+   BUTTONS
+================================ */
+
+button{
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+}
+
+/* ==============================
+   INPUTS
+================================ */
+
+input,
+textarea,
+select{
+
+    font:inherit;
+
+    border:none;
+
+    outline:none;
+
+}
+
+/* ==============================
+   TABLE
+================================ */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+/* ==============================
+   HR
+================================ */
+
+hr{
+
+    border:none;
+
+}
+
+/* ==============================
+   IFRAME
+================================ */
+
+iframe{
+
+    border:none;
+
+}
+
+/* ==============================
+   SECTIONS
+================================ */
+
+section{
+
+    margin-bottom:4rem;
+
+}
+
+/* ==============================
+   MAIN
+================================ */
+
+main{
+
+    width:min(1300px,92%);
+
+    margin:auto;
+
+}
+
+/* ==============================
+   SELECTION
+================================ */
+
+::selection{
+
+    background:var(--pink);
+
+    color:white;
+
+}
+
+/* ==============================
+   SCROLLBAR
+================================ */
+
+::-webkit-scrollbar{
+
+    width:12px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:var(--bg-window);
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--title-bar);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--title-bar-dark);
+
+}

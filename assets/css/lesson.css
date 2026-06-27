@@ -1,0 +1,431 @@
+/* ======================================================
+   LESSON PAGES
+====================================================== */
+
+
+
+.lesson-page{
+
+    width:min(1000px,92%);
+
+    margin:50px auto;
+
+}
+
+
+
+/*======================================================
+HEADER
+======================================================*/
+
+.lesson-header{
+
+    margin-bottom:35px;
+
+}
+
+.lesson-header h1{
+
+    font-family:var(--title-font);
+
+    color:var(--title-bar-dark);
+
+    line-height:1.8;
+
+    font-size:1.35rem;
+
+}
+
+.lesson-header p{
+
+    color:var(--text-light);
+
+    margin-top:15px;
+
+}
+
+
+
+/*======================================================
+SECTION SPACING
+======================================================*/
+
+.lesson-section{
+
+    margin-bottom:40px;
+
+}
+
+
+
+/*======================================================
+WINDOW BODY
+======================================================*/
+
+.window-body h2{
+
+    color:var(--title-bar-dark);
+
+    margin-bottom:20px;
+
+}
+
+.window-body p{
+
+    margin-bottom:15px;
+
+}
+
+
+
+/*======================================================
+PATTERN GRID
+======================================================*/
+
+.pattern-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+    gap:25px;
+
+    margin-top:30px;
+
+}
+
+
+
+.pattern-item{
+
+    background:var(--bg-card);
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    text-align:center;
+
+}
+
+
+
+.pattern-item h2{
+
+    font-size:2rem;
+
+    color:var(--pink);
+
+}
+
+
+
+.pattern-item h4{
+
+    margin:15px 0;
+
+}
+
+
+
+.down-arrow{
+
+    font-size:1.5rem;
+
+    margin:10px 0;
+
+    color:var(--title-bar);
+
+}
+
+
+
+/*======================================================
+EXAMPLES
+======================================================*/
+
+.example-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+}
+
+
+
+.example-card{
+
+    background:white;
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:25px;
+
+    transition:var(--transition);
+
+}
+
+
+
+.example-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+.example-card h2{
+
+    color:var(--title-bar-dark);
+
+    margin-bottom:10px;
+
+}
+
+
+
+.example-card h4{
+
+    color:var(--pink);
+
+    margin-bottom:12px;
+
+}
+
+
+
+/*======================================================
+VOCAB BOX
+======================================================*/
+
+.vocab-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+
+    gap:20px;
+
+}
+
+
+
+.vocab-card{
+
+    background:white;
+
+    border:2px solid var(--border);
+
+    border-radius:var(--radius);
+
+    text-align:center;
+
+    padding:20px;
+
+}
+
+
+
+.vocab-card h2{
+
+    color:var(--pink);
+
+}
+
+
+
+.vocab-card p{
+
+    margin-top:10px;
+
+}
+
+
+
+/*======================================================
+PRACTICE
+======================================================*/
+
+.practice-box{
+
+    background:#FFFDF8;
+
+    border:2px dashed var(--yellow);
+
+    border-radius:var(--radius);
+
+    padding:35px;
+
+}
+
+
+
+.practice-box input{
+
+    margin-top:20px;
+
+}
+
+
+
+.answer-btn{
+
+    margin-top:20px;
+
+}
+
+
+
+/*======================================================
+MISSION
+======================================================*/
+
+.lesson-mission{
+
+    background:#EEF6FF;
+
+    border-left:8px solid var(--title-bar);
+
+    padding:30px;
+
+    border-radius:var(--radius);
+
+}
+
+
+
+.lesson-mission h3{
+
+    margin-bottom:15px;
+
+}
+
+
+
+/*======================================================
+QUEST COMPLETE
+======================================================*/
+
+.quest-complete{
+
+    background:#F3FFF4;
+
+    border-left:8px solid var(--success);
+
+    padding:30px;
+
+    border-radius:var(--radius);
+
+    text-align:center;
+
+}
+
+
+
+.quest-complete h2{
+
+    color:var(--success);
+
+}
+
+
+
+.quest-complete p{
+
+    margin-top:15px;
+
+}
+
+
+
+/*======================================================
+LESSON NAVIGATION
+======================================================*/
+
+.lesson-navigation{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:60px;
+
+}
+
+
+
+.lesson-navigation a{
+
+    display:inline-block;
+
+}
+
+
+
+/*======================================================
+CHECKLIST
+======================================================*/
+
+.checklist{
+
+    list-style:none;
+
+    margin-top:20px;
+
+}
+
+
+
+.checklist li{
+
+    padding:12px 0;
+
+}
+
+
+
+.checklist li::before{
+
+    content:"✔ ";
+
+    color:var(--success);
+
+    font-weight:bold;
+
+}
+
+
+
+/*======================================================
+REMINDER BOX
+======================================================*/
+
+.reminder{
+
+    background:#FFF8DD;
+
+    border-left:8px solid var(--warning);
+
+    padding:25px;
+
+    border-radius:var(--radius);
+
+}
+
+
+
+.reminder strong{
+
+    display:block;
+
+    margin-bottom:10px;
+
+}

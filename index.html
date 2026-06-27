@@ -1,237 +1,790 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>JP Library</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/css/style.css">
+    <title>JP Library OS</title>
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Press+Start+2P&display=swap"
+          rel="stylesheet">
 
     <!-- Bootstrap -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
 </head>
 
 <body>
 
-    <!-- ========================= -->
-    <!--          NAVBAR          -->
-    <!-- ========================= -->
+<!-- ========================================= -->
+<!-- NAVIGATION -->
+<!-- ========================================= -->
 
-    <nav class="navbar navbar-expand-lg custom-navbar">
+<nav class="jp-navbar">
 
-        <div class="container-fluid">
+    <div class="nav-left">
 
-            <!-- Logo -->
-            <a class="navbar-brand logo" href="/images/JPLlogo.png">
+        <a href="index.html"
+           class="logo">
 
-                <img src="images/JPLlogo.png"
-                     alt="JP Library"
-                     class="nav-logo">
+            <img src="images/JPLlogo.png"
+                 alt="JP Library">
 
-                <span>JP</span> Library
+            <span>
+
+                JP Library
+
+            </span>
+
+        </a>
+
+    </div>
+
+    <div class="nav-center">
+
+        <a href="pages/N5s/n5-grammar.html">
+
+            N5
+
+        </a>
+
+        <a href="#">
+
+            N4
+
+        </a>
+
+        <a href="#">
+
+            N3
+
+        </a>
+
+        <a href="#">
+
+            N2
+
+        </a>
+
+        <a href="#">
+
+            N1
+
+        </a>
+
+    </div>
+
+    <div class="nav-right">
+
+        <button class="retro-button">
+
+            <i class="bi bi-search"></i>
+
+        </button>
+
+        <button class="retro-button">
+
+            <i class="bi bi-bookmark-heart"></i>
+
+        </button>
+
+        <button class="retro-button">
+
+            <i class="bi bi-person-circle"></i>
+
+        </button>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ========================================= -->
+<!-- HERO -->
+<!-- ========================================= -->
+
+<header class="hero-window">
+
+    <div class="window-title">
+
+        <span>
+
+            JP-LIBRARY.EXE
+
+        </span>
+
+        <div>
+
+            <i class="bi bi-dash"></i>
+
+            <i class="bi bi-square"></i>
+
+            <i class="bi bi-x"></i>
+
+        </div>
+
+    </div>
+
+    <div class="hero-content">
+
+        <div class="hero-text">
+
+            <h1>
+
+                Learn Japanese<br>
+
+                Like An RPG
+
+            </h1>
+
+            <p>
+
+                Master Japanese from JLPT N5 to N1 through
+                interactive lessons, missions, flashcards,
+                achievements and retro adventures.
+
+            </p>
+
+            <a href="pages/N5s/n5-grammar.html"
+               class="start-button">
+
+                ▶ START GAME
 
             </a>
 
-            <!-- Mobile Menu -->
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#mainNav"
-                    aria-controls="mainNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
+        </div>
 
-                <span class="navbar-toggler-icon"></span>
+        <div class="hero-image">
 
-            </button>
+            <img src="images/JPLpicture.png"
+                 alt="JP Library">
 
-            <div class="collapse navbar-collapse" id="mainNav">
+        </div>
 
-                <!-- ========================= -->
-                <!--      LEFT NAVIGATION      -->
-                <!-- ========================= -->
+    </div>
 
-                <ul class="navbar-nav me-auto">
+</header>
 
-                    <!-- N5 -->
-                    <li class="nav-item dropdown">
 
-                        <a class="nav-link dropdown-toggle active"
-                           href="#"
-                           role="button"
-                           data-bs-toggle="dropdown">
 
-                            N5
+<!-- ========================================= -->
+<!-- BOOT SCREEN -->
+<!-- ========================================= -->
 
-                        </a>
+<section class="boot-window">
 
-                        <ul class="dropdown-menu">
+    <div class="window-title">
 
-                            <li><a class="dropdown-item" href="pages/N5s/n5-grammar.html">Grammar</a></li>
-                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
-                            <li><a class="dropdown-item" href="#">Kanji</a></li>
-                            <li><a class="dropdown-item" href="#">Reading</a></li>
-                            <li><a class="dropdown-item" href="#">Listening</a></li>
-                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+        <span>
 
-                        </ul>
+            JP LIBRARY OS v1.0
 
-                    </li>
+        </span>
 
-                    <!-- N4 -->
-                    <li class="nav-item dropdown">
+        <div>
 
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           role="button"
-                           data-bs-toggle="dropdown">
+            □ ✕
 
-                            N4
+        </div>
 
-                        </a>
+    </div>
 
-                        <ul class="dropdown-menu">
+    <div class="boot-content">
 
-                            <li><a class="dropdown-item" href="#">Grammar</a></li>
-                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
-                            <li><a class="dropdown-item" href="#">Kanji</a></li>
-                            <li><a class="dropdown-item" href="#">Reading</a></li>
-                            <li><a class="dropdown-item" href="#">Listening</a></li>
-                            <li><a class="dropdown-item" href="#">Quiz</a></li>
+        <h2>
 
-                        </ul>
+            INITIALIZING...
 
-                    </li>
+        </h2>
 
-                    <!-- N3 -->
-                    <li class="nav-item dropdown">
+        <div class="boot-row">
 
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           role="button"
-                           data-bs-toggle="dropdown">
+            <span>
 
-                            N3
+                Grammar Database
 
-                        </a>
+            </span>
 
-                        <ul class="dropdown-menu">
+            <div class="boot-bar">
 
-                            <li><a class="dropdown-item" href="#">Grammar</a></li>
-                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
-                            <li><a class="dropdown-item" href="#">Kanji</a></li>
-                            <li><a class="dropdown-item" href="#">Reading</a></li>
-                            <li><a class="dropdown-item" href="#">Listening</a></li>
-                            <li><a class="dropdown-item" href="#">Quiz</a></li>
-
-                        </ul>
-
-                    </li>
-
-                    <!-- N2 -->
-                    <li class="nav-item dropdown">
-
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           role="button"
-                           data-bs-toggle="dropdown">
-
-                            N2
-
-                        </a>
-
-                        <ul class="dropdown-menu">
-
-                            <li><a class="dropdown-item" href="#">Grammar</a></li>
-                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
-                            <li><a class="dropdown-item" href="#">Kanji</a></li>
-                            <li><a class="dropdown-item" href="#">Reading</a></li>
-                            <li><a class="dropdown-item" href="#">Listening</a></li>
-                            <li><a class="dropdown-item" href="#">Quiz</a></li>
-
-                        </ul>
-
-                    </li>
-
-                    <!-- N1 -->
-                    <li class="nav-item dropdown">
-
-                        <a class="nav-link dropdown-toggle"
-                           href="#"
-                           role="button"
-                           data-bs-toggle="dropdown">
-
-                            N1
-
-                        </a>
-
-                        <ul class="dropdown-menu">
-
-                            <li><a class="dropdown-item" href="#">Grammar</a></li>
-                            <li><a class="dropdown-item" href="#">Vocabulary</a></li>
-                            <li><a class="dropdown-item" href="#">Kanji</a></li>
-                            <li><a class="dropdown-item" href="#">Reading</a></li>
-                            <li><a class="dropdown-item" href="#">Listening</a></li>
-                            <li><a class="dropdown-item" href="#">Quiz</a></li>
-
-                        </ul>
-
-                    </li>
-
-                </ul>
-
-                <!-- ========================= -->
-                <!--         SEARCH            -->
-                <!-- ========================= -->
-
-                <form class="d-flex me-3">
-
-                    <input class="form-control custom-search"
-                           type="search"
-                           placeholder="Search EN or 日本語">
-
-                </form>
-
-                <!-- ========================= -->
-                <!--      RIGHT NAVIGATION     -->
-                <!-- ========================= -->
-
-                <ul class="navbar-nav">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Theme</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="btn login-btn ms-2" href="#">
-                            Login
-                        </a>
-                    </li>
-
-                </ul>
+                <div class="boot-fill"></div>
 
             </div>
 
         </div>
 
-    </nav>
+        <div class="boot-row">
 
-    <!-- ========================= -->
-    <!--      PAGE CONTENT         -->
-    <!-- ========================= -->
+            <span>
 
-    <main>
+                Vocabulary Database
 
-        <!-- Replace this section with the content for each page -->
+            </span>
 
-    </main>
+            <div class="boot-bar">
+
+                <div class="boot-fill"></div>
+
+            </div>
+
+        </div>
+
+        <div class="boot-row">
+
+            <span>
+
+                Kanji Database
+
+            </span>
+
+            <div class="boot-bar">
+
+                <div class="boot-fill"></div>
+
+            </div>
+
+        </div>
+
+        <div class="boot-row">
+
+            <span>
+
+                Mission Engine
+
+            </span>
+
+            <div class="boot-bar">
+
+                <div class="boot-fill"></div>
+
+            </div>
+
+        </div>
+
+        <p class="boot-ready">
+
+            ✔ System Ready
+
+        </p>
+
+    </div>
+
+</section>
+
+    <!-- ========================================= -->
+    <!-- PLAYER DASHBOARD -->
+    <!-- ========================================= -->
+
+    <section class="dashboard">
+
+        <div class="dashboard-left">
+
+            <div class="retro-window">
+
+                <div class="window-title">
+
+                    <span>PLAYER_PROFILE.SAV</span>
+
+                    <div>□ ✕</div>
+
+                </div>
+
+                <div class="window-content">
+
+                    <h2>WELCOME BACK</h2>
+
+                    <h1>REYA</h1>
+
+                    <p class="player-rank">
+
+                        Grammar Explorer
+
+                    </p>
+
+                    <div class="player-level">
+
+                        <span>LEVEL 1</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-right">
+
+            <div class="stats-grid">
+
+                <div class="stat-window">
+
+                    <i class="bi bi-star-fill"></i>
+
+                    <h3>XP</h3>
+
+                    <p>0 / 500</p>
+
+                </div>
+
+                <div class="stat-window">
+
+                    <i class="bi bi-fire"></i>
+
+                    <h3>Streak</h3>
+
+                    <p>0 Days</p>
+
+                </div>
+
+                <div class="stat-window">
+
+                    <i class="bi bi-book-half"></i>
+
+                    <h3>Lessons</h3>
+
+                    <p>0 / 16</p>
+
+                </div>
+
+                <div class="stat-window">
+
+                    <i class="bi bi-award-fill"></i>
+
+                    <h3>Badges</h3>
+
+                    <p>0</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- CONTINUE LEARNING -->
+    <!-- ========================================= -->
+
+    <section class="continue-window">
+
+        <div class="window-title">
+
+            <span>CONTINUE.EXE</span>
+
+            <div>□ ✕</div>
+
+        </div>
+
+        <div class="window-content">
+
+            <h2>
+
+                Continue Your Adventure
+
+            </h2>
+
+            <p>
+
+                Welcome back, adventurer.
+
+                Continue your Japanese journey from where
+                you left off.
+
+            </p>
+
+            <a href="pages/N5s/n5-grammar.html"
+               class="retro-btn">
+
+                ▶ Continue Learning
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- TODAY'S MISSION -->
+    <!-- ========================================= -->
+
+    <section class="mission-window">
+
+        <div class="window-title">
+
+            <span>MISSION_001.EXE</span>
+
+            <div>□ ✕</div>
+
+        </div>
+
+        <div class="window-content">
+
+            <h2>
+
+                🎮 FIRST DAY OF SCHOOL
+
+            </h2>
+
+            <div class="mission-box">
+
+                <p>
+
+                    <strong>Location</strong>
+
+                </p>
+
+                <p>
+
+                    Sakura Japanese Academy
+
+                </p>
+
+                <br>
+
+                <p>
+
+                    <strong>NPC</strong>
+
+                </p>
+
+                <p>
+
+                    👩 Tanaka Sensei
+
+                </p>
+
+                <br>
+
+                <p>
+
+                    <strong>Mission</strong>
+
+                </p>
+
+                <p>
+
+                    Introduce yourself in Japanese.
+
+                </p>
+
+                <br>
+
+                <p>
+
+                    <strong>Reward</strong>
+
+                </p>
+
+                <p>
+
+                    ⭐ +50 XP
+
+                    <br>
+
+                    🏆 First Introduction
+
+                </p>
+
+            </div>
+
+            <a href="pages/N5s/lessons/self-introduction.html"
+               class="retro-btn">
+
+                ▶ START MISSION
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- CURRENT PROGRESS -->
+    <!-- ========================================= -->
+
+    <section class="progress-window">
+
+        <div class="window-title">
+
+            <span>PROGRESS.DAT</span>
+
+            <div>□ ✕</div>
+
+        </div>
+
+        <div class="window-content">
+
+            <h2>
+
+                Current Progress
+
+            </h2>
+
+            <p>
+
+                JLPT N5
+
+            </p>
+
+            <div class="progress-bar-retro">
+
+                <div class="progress-fill-retro">
+
+                    6%
+
+                </div>
+
+            </div>
+
+            <p>
+
+                Lessons Completed
+
+                1 / 16
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- LEARNING JOURNEY -->
+    <!-- ========================================= -->
+
+    <section class="journey-section">
+
+        <h2>
+
+            Your Journey
+
+        </h2>
+
+        <div class="journey-grid">
+
+            <div class="journey-card current">
+
+                <h3>N5</h3>
+
+                <p>
+
+                    Foundation
+
+                </p>
+
+            </div>
+
+            <div class="journey-card">
+
+                <h3>N4</h3>
+
+                <p>
+
+                    Elementary
+
+                </p>
+
+            </div>
+
+            <div class="journey-card">
+
+                <h3>N3</h3>
+
+                <p>
+
+                    Intermediate
+
+                </p>
+
+            </div>
+
+            <div class="journey-card">
+
+                <h3>N2</h3>
+
+                <p>
+
+                    Advanced
+
+                </p>
+
+            </div>
+
+            <div class="journey-card">
+
+                <h3>N1</h3>
+
+                <p>
+
+                    Master
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- ACHIEVEMENTS -->
+    <!-- ========================================= -->
+
+    <section class="achievement-section">
+
+        <h2>
+
+            Recent Achievements
+
+        </h2>
+
+        <div class="achievement-grid">
+
+            <div class="achievement-card">
+
+                <i class="bi bi-book"></i>
+
+                <h4>
+
+                    First Lesson
+
+                </h4>
+
+            </div>
+
+            <div class="achievement-card">
+
+                <i class="bi bi-fire"></i>
+
+                <h4>
+
+                    7 Day Streak
+
+                </h4>
+
+            </div>
+
+            <div class="achievement-card">
+
+                <i class="bi bi-award"></i>
+
+                <h4>
+
+                    Grammar Beginner
+
+                </h4>
+
+            </div>
+
+            <div class="achievement-card">
+
+                <i class="bi bi-stars"></i>
+
+                <h4>
+
+                    N5 Explorer
+
+                </h4>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- FOOTER -->
+    <!-- ========================================= -->
+
+    <footer class="jp-footer">
+
+        <div class="retro-window">
+
+            <div class="window-title">
+
+                <span>SYSTEM_INFO.TXT</span>
+
+                <div>□ ✕</div>
+
+            </div>
+
+            <div class="window-content">
+
+                <p>
+
+                    JP Library OS v1.0
+
+                </p>
+
+                <p>
+
+                    Developed by Leah Mae Almazan
+
+                </p>
+
+                <p>
+
+                    © 2026 JP Library
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</main>
+
+<script src="JS/index.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
+
+<main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

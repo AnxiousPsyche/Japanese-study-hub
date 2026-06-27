@@ -1,0 +1,139 @@
+/* ======================================================
+   JP LIBRARY NAVIGATION
+====================================================== */
+
+.jp-navbar{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:999;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 40px;
+
+    background:var(--bg-window);
+
+    border-bottom:2px solid var(--border);
+
+    box-shadow:var(--shadow-window);
+
+}
+
+
+
+/*============================
+Logo
+============================*/
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.logo img{
+
+    width:50px;
+
+}
+
+.logo span{
+
+    font-family:var(--title-font);
+
+    font-size:.8rem;
+
+    color:var(--title-bar-dark);
+
+}
+
+
+
+/*============================
+Center Navigation
+============================*/
+
+.nav-center{
+
+    display:flex;
+
+    gap:30px;
+
+}
+
+.nav-center a{
+
+    font-weight:700;
+
+    transition:var(--transition);
+
+    position:relative;
+
+}
+
+.nav-center a:hover{
+
+    color:var(--pink);
+
+}
+
+.nav-center a::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+
+    bottom:-6px;
+
+    width:0;
+
+    height:2px;
+
+    background:var(--pink);
+
+    transition:.3s;
+
+}
+
+.nav-center a:hover::after{
+
+    width:100%;
+
+}
+
+
+
+/*============================
+Right Side
+============================*/
+
+.nav-right{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.nav-right button{
+
+    width:45px;
+
+    height:45px;
+
+    border:none;
+
+}

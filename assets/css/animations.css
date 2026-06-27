@@ -1,0 +1,424 @@
+/* ======================================================
+   JP LIBRARY OS
+   ANIMATIONS
+====================================================== */
+
+
+
+/*======================================================
+FADE IN
+======================================================*/
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+.fade-in{
+
+    animation:fadeIn .8s ease;
+
+}
+
+
+
+/*======================================================
+SLIDE UP
+======================================================*/
+
+@keyframes slideUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.slide-up{
+
+    animation:slideUp .7s ease;
+
+}
+
+
+
+/*======================================================
+WINDOW OPEN
+======================================================*/
+
+@keyframes windowOpen{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.92);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+.window-open{
+
+    animation:windowOpen .45s ease;
+
+}
+
+
+
+/*======================================================
+POP
+======================================================*/
+
+@keyframes pop{
+
+    0%{
+
+        transform:scale(.9);
+
+    }
+
+    80%{
+
+        transform:scale(1.05);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+.pop{
+
+    animation:pop .35s ease;
+
+}
+
+
+
+/*======================================================
+FLOAT
+======================================================*/
+
+@keyframes float{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-6px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.float{
+
+    animation:float 3s ease-in-out infinite;
+
+}
+
+
+
+/*======================================================
+BUTTON PRESS
+======================================================*/
+
+.retro-btn{
+
+    transition:.2s;
+
+}
+
+.retro-btn:active{
+
+    transform:translateY(3px);
+
+}
+
+
+
+/*======================================================
+CARD HOVER
+======================================================*/
+
+.retro-card{
+
+    transition:.3s;
+
+}
+
+.retro-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+/*======================================================
+WINDOW HOVER
+======================================================*/
+
+.retro-window{
+
+    transition:.35s;
+
+}
+
+.retro-window:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+/*======================================================
+ICON ROTATE
+======================================================*/
+
+.icon-hover{
+
+    transition:.3s;
+
+}
+
+.icon-hover:hover{
+
+    transform:rotate(10deg) scale(1.1);
+
+}
+
+
+
+/*======================================================
+XP GLOW
+======================================================*/
+
+@keyframes xpGlow{
+
+    0%{
+
+        box-shadow:0 0 0 transparent;
+
+    }
+
+    50%{
+
+        box-shadow:0 0 25px rgba(241,210,122,.8);
+
+    }
+
+    100%{
+
+        box-shadow:0 0 0 transparent;
+
+    }
+
+}
+
+.xp-glow{
+
+    animation:xpGlow 1.5s ease infinite;
+
+}
+
+
+
+/*======================================================
+MISSION PULSE
+======================================================*/
+
+@keyframes pulseMission{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.02);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+.mission-pulse{
+
+    animation:pulseMission 2.5s infinite;
+
+}
+
+
+
+/*======================================================
+SAVE FLASH
+======================================================*/
+
+@keyframes saveFlash{
+
+    0%{
+
+        opacity:.4;
+
+    }
+
+    50%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        opacity:.4;
+
+    }
+
+}
+
+.save-flash{
+
+    animation:saveFlash .8s infinite;
+
+}
+
+
+
+/*======================================================
+LEVEL UP
+======================================================*/
+
+@keyframes levelUp{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    30%{
+
+        transform:scale(1.15);
+
+    }
+
+    60%{
+
+        transform:scale(.95);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+.level-up{
+
+    animation:levelUp .8s ease;
+
+}
+
+
+
+/*======================================================
+SHAKE
+======================================================*/
+
+@keyframes shake{
+
+    0%{
+
+        transform:translateX(0);
+
+    }
+
+    25%{
+
+        transform:translateX(-4px);
+
+    }
+
+    50%{
+
+        transform:translateX(4px);
+
+    }
+
+    75%{
+
+        transform:translateX(-4px);
+
+    }
+
+    100%{
+
+        transform:translateX(0);
+
+    }
+
+}
+
+.shake{
+
+    animation:shake .4s;
+
+}

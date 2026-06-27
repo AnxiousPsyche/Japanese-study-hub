@@ -1,0 +1,354 @@
+/* ======================================================
+   JP LIBRARY OS
+   RESPONSIVE DESIGN
+====================================================== */
+
+
+
+/*======================================================
+1200px
+======================================================*/
+
+@media (max-width:1200px){
+
+    main{
+
+        width:95%;
+
+    }
+
+}
+
+
+
+/*======================================================
+992px
+======================================================*/
+
+@media (max-width:992px){
+
+    /*--------------------
+    NAVBAR
+    --------------------*/
+
+    .jp-navbar{
+
+        flex-direction:column;
+
+        gap:20px;
+
+        padding:20px;
+
+    }
+
+    .nav-center{
+
+        flex-wrap:wrap;
+
+        justify-content:center;
+
+    }
+
+
+
+    /*--------------------
+    HERO
+    --------------------*/
+
+    .hero-content{
+
+        grid-template-columns:1fr;
+
+        text-align:center;
+
+    }
+
+    .hero-right{
+
+        order:-1;
+
+    }
+
+
+
+    /*--------------------
+    DASHBOARD
+    --------------------*/
+
+    .dashboard{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    /*--------------------
+    QUICK MENU
+    --------------------*/
+
+    .quick-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+
+
+/*======================================================
+768px
+======================================================*/
+
+@media (max-width:768px){
+
+    body{
+
+        font-size:.95rem;
+
+    }
+
+
+
+    .window-body{
+
+        padding:20px;
+
+    }
+
+
+
+    .lesson-header h1{
+
+        font-size:1rem;
+
+        line-height:1.7;
+
+    }
+
+
+
+    .pattern-grid{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+
+
+    .example-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .vocab-grid{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+
+
+    .stats-grid{
+
+        grid-template-columns:1fr 1fr;
+
+    }
+
+
+
+    .quest-info{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .lesson-navigation{
+
+        flex-direction:column;
+
+        gap:20px;
+
+    }
+
+}
+
+
+
+/*======================================================
+576px
+======================================================*/
+
+@media (max-width:576px){
+
+    .jp-navbar{
+
+        padding:15px;
+
+    }
+
+
+
+    .logo img{
+
+        width:40px;
+
+    }
+
+
+
+    .logo span{
+
+        font-size:.65rem;
+
+    }
+
+
+
+    .nav-center{
+
+        gap:15px;
+
+    }
+
+
+
+    .nav-center a{
+
+        font-size:.9rem;
+
+    }
+
+
+
+    .retro-btn{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+
+
+    .hero-left{
+
+        padding:25px;
+
+    }
+
+
+
+    .hero-left h1{
+
+        font-size:.95rem;
+
+        line-height:2;
+
+    }
+
+
+
+    .hero-left p{
+
+        font-size:.95rem;
+
+    }
+
+
+
+    .quick-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .stats-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .pattern-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .vocab-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .window-title{
+
+        font-size:.45rem;
+
+        padding:12px 15px;
+
+    }
+
+
+
+    table{
+
+        font-size:.9rem;
+
+    }
+
+}
+
+
+
+/*======================================================
+400px
+======================================================*/
+
+@media (max-width:400px){
+
+    body{
+
+        font-size:.9rem;
+
+    }
+
+
+
+    .hero-left h1{
+
+        font-size:.8rem;
+
+    }
+
+
+
+    .lesson-header h1{
+
+        font-size:.85rem;
+
+    }
+
+
+
+    .retro-btn{
+
+        padding:12px;
+
+    }
+
+}
