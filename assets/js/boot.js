@@ -5,6 +5,7 @@
 
 const bootScreen = document.getElementById("boot-screen");
 const discScreen = document.getElementById("disc-screen");
+const discDrive = document.getElementById("disc-drive");
 const desktop = document.getElementById("desktop");
 
 const startButton = document.getElementById("start-btn");
@@ -91,6 +92,9 @@ window.addEventListener("load", () => {
 // START
 startButton.addEventListener("click", () => {
 
+
+    startButton.disabled = true;
+    
     bootScreen.classList.add("fade-out");
 
     setTimeout(() => {
@@ -112,15 +116,27 @@ const driveLed = document.querySelector(".drive-led");
 
 insertButton.addEventListener("click", () => {
 
+    insertButton.disabled = true;
+    
     disc.style.animation = "none";
+    
     disc.offsetHeight;
+    
     disc.classList.add("inserting");
+    
+    setTimeout(() => {
+
+    discDrive.classList.add("drive-accept");},700);
 
     driveLed.classList.add("reading");
 
     readingText.textContent = "Reading Disc...";
 
-    readingProgress.style.width = "100%";
+    readingProgress.style.width = "0%";
+    
+    void readingProgress.offsetWidth;
+
+readingProgress.style.width = "100%";
 
     setTimeout(() => {
 
@@ -136,12 +152,16 @@ insertButton.addEventListener("click", () => {
 
     setTimeout(() => {
 
-        discScreen.style.display="none";
+    driveLed.classList.remove("reading");
 
-        desktop.style.display="block";
+    discScreen.style.display = "none";
 
-        desktop.classList.add("fade-in");
+    discDrive.classList.remove("drive-accept");
 
-    },3200);
+    desktop.style.display = "block";
+
+    desktop.classList.add("fade-in");
+
+},3200);
 
 });

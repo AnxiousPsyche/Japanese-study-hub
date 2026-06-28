@@ -9,19 +9,27 @@
    RETRO WINDOW
 ====================================================== */
 
+/* ======================================================
+   RETRO WINDOW
+====================================================== */
+
 .retro-window{
 
-    background:var(--bg-window);
+    background:#FFFDF8;
 
-    border:2px solid var(--border);
+    border:3px solid #B8C5D6;
 
-    border-radius:var(--radius);
+    border-radius:18px;
 
     overflow:hidden;
 
-    box-shadow:var(--shadow-window);
+    box-shadow:
 
-    transition:var(--transition);
+        0 14px 30px rgba(0,0,0,.10),
+
+        inset 0 1px 0 rgba(255,255,255,.7);
+
+    transition:.25s ease;
 
 }
 
@@ -29,7 +37,9 @@
 
     transform:translateY(-4px);
 
-    box-shadow:var(--shadow-hover);
+    box-shadow:
+
+        0 20px 40px rgba(0,0,0,.16);
 
 }
 
@@ -500,5 +510,61 @@ td{
 .gap{
 
     gap:20px;
+
+}
+
+/* ======================================================
+   WINDOW TITLE BAR
+====================================================== */
+
+.window-title{
+
+    background:linear-gradient(
+
+        90deg,
+
+        #89A8D8,
+
+        #A7C0E8
+
+    );
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px 18px;
+
+    font-family:var(--title-font);
+
+    font-size:.70rem;
+
+    letter-spacing:1px;
+
+}
+
+.window-buttons{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.window-buttons span{
+
+    width:14px;
+
+    height:14px;
+
+    border-radius:50%;
+
+    background:white;
+
+    opacity:.75;
 
 }
