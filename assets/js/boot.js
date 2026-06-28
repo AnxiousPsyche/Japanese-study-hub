@@ -162,6 +162,16 @@ readingProgress.style.width = "100%";
 
     desktop.classList.add("fade-in");
 
+    bgMusic.play();
+    
+    musicToggle.textContent = "🔊";
+    
+    musicPlaying = true;
+
+    updateGreeting();
+    
+    
+
 },3200);
 
 });

@@ -304,7 +304,7 @@ DESKTOP
 
         <div class="nav-center">
 
-            <a href="pages/N5/n5-grammar.html">
+            <a href="pages/N5/n5-dashboard.html">
 
                 🌸 N5
 
@@ -336,7 +336,12 @@ DESKTOP
 
         </div>
 
+
         <div class="nav-right">
+
+            <button id="musicToggle"
+            class="retro-btn">🔊
+        </button>
 
             <button class="retro-btn">
 
@@ -387,15 +392,15 @@ DESKTOP
 
             <div class="desktop-header-content">
 
-                <div>
+                <h1 id="jpGreeting">
+                    おかえりなさい！
+                </h1>
+                <p id="englishGreeting">Welcome back, Rei.
 
-                    <h1>おかえりなさい！</h1>
-
-                    <p>Welcome back, Rei.</p>
-
-                    <p>Your Japanese adventure continues today.</p>
-
-                </div>
+                </p>
+                <p id="greetingMessage">
+                    Your Japanese adventure continues today.
+                </p>
 
                 <div class="desktop-clock">
 
@@ -423,7 +428,7 @@ DESKTOP
 
         <!-- PLAYER -->
 
-        <article class="retro-window">
+        <article class="retro-window player-card">
 
             <div class="window-title">
 
@@ -503,7 +508,7 @@ DESKTOP
 
         <!-- CURRENT DISC -->
 
-        <article class="retro-window">
+        <article class="retro-window current-disc">
 
             <div class="window-title">
 
@@ -529,11 +534,10 @@ DESKTOP
 
                 <p>Grammar Explorer</p>
 
-                <button class="retro-btn big-btn">
-
-                    ▶ Resume Adventure
-
-                </button>
+            <a href="pages/N5/n5-dashboard.html"
+                class="retro-btn big-btn">
+                ▶ Resume Adventure
+            </a>
 
             </div>
 
@@ -543,7 +547,7 @@ DESKTOP
 
         <!-- TODAY'S QUEST -->
 
-        <article class="retro-window">
+        <article class="retro-window quest-card">
 
             <div class="window-title">
 
@@ -709,15 +713,15 @@ DESKTOP
 
             <ul class="journey-list">
 
-                <li>✅ JLPT N5</li>
+                <li>⚔️ JLPT N5 <span class="status current">Quest Active</span></li>
 
-                <li>🔒 JLPT N4</li>
+                <li>🔒 JLPT N4<span class="status locked">Level Locked</span></li>
 
-                <li>🔒 JLPT N3</li>
+                <li>🔒 JLPT N3<span class="status locked">Level Locked</span></li>
 
-                <li>🔒 JLPT N2</li>
+                <li>🔒 JLPT N2<span class="status locked">Level Locked</span></li>
 
-                <li>🔒 JLPT N1</li>
+                <li>🔒 JLPT N1<span class="status locked"> Level Locked</span></li>
 
             </ul>
 
@@ -751,7 +755,7 @@ DESKTOP
 
             <p>
 
-                © 2026 JP Library OS • Built by Leah Mae Almazan
+                © 2026 JP Library OS • Built by AnxiousPsyche
 
             </p>
 
@@ -760,17 +764,25 @@ DESKTOP
     </footer>
 
 </main> 
-
-
-        
-
-    </main>
 </div>
 
+<audio id="bgMusic" loop>
+
+    <source src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3" type="audio/mpeg">
+
+</audio>
+
+<div id="achievement-container"></div>
+
+<div id="sakura-container"></div>
+
 <script src="assets/js/boot.js"></script>
+
+<script src="assets/js/homepage.js"></script>
 
 <script src="assets/js/index.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
