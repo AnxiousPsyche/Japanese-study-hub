@@ -116,8 +116,7 @@ insertButton.addEventListener("click", () => {
     disc.offsetHeight;
     disc.classList.add("inserting");
 
-    driveLed.style.background = "#F8C146";
-    driveLed.style.boxShadow = "0 0 15px #F8C146";
+    driveLed.classList.add("reading");
 
     readingText.textContent = "Reading Disc...";
 
