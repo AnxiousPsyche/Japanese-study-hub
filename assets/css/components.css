@@ -9,10 +9,6 @@
    RETRO WINDOW
 ====================================================== */
 
-/* ======================================================
-   RETRO WINDOW
-====================================================== */
-
 .retro-window{
 
     background:#FFFDF8;
@@ -48,28 +44,6 @@
 /* ======================================================
    WINDOW TITLE BAR
 ====================================================== */
-
-.window-title{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:14px 20px;
-
-    background:var(--title-bar);
-
-    color:white;
-
-    font-family:var(--title-font);
-
-    font-size:.55rem;
-
-    letter-spacing:1px;
-
-}
 
 .window-title-icons{
 

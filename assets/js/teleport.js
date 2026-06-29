@@ -1,40 +1,54 @@
 // ==========================================
-// TELEPORT
+// DISC INSERT
 // ==========================================
 
-const overlay = document.getElementById("teleport-overlay");
-const teleportLinks = document.querySelectorAll(".teleport-link");
-const teleportSound = document.getElementById("teleportSound");
+const loader=
+document.getElementById("discLoader");
 
-teleportLinks.forEach(link => {
+const loaderDisc=
+document.getElementById("loaderDisc");
 
-    link.addEventListener("click", (e) => {
+const loaderTitle=
+document.getElementById("loaderTitle");
 
-        e.preventDefault();
+const loaderFill=
+document.querySelector(".loader-fill");
 
-        overlay.classList.add("active");
+const teleportSound=
+document.getElementById("teleportSound");
 
-        if (teleportSound) {
+insertButton.onclick=function(){
 
-            teleportSound.currentTime = 0;
-            teleportSound.volume = 1;
+    if(!selectedDisc){
 
-            teleportSound.play()
-                .then(() => {
-                    console.log("Teleport sound is playing!");
-                })
-                .catch(error => {
-                    console.error("Audio Error:", error);
-                });
+        return;
 
-        }
+    }
 
-        setTimeout(() => {
+    loaderDisc.src=
 
-            window.location.href = link.href;
+    selectedDisc.src;
 
-        }, 850);
+    loaderTitle.textContent=
 
-    });
+    "Reading "+selectedDisc.dataset.level+
 
-});
+    " Learning Disc...";
+
+    loader.classList.add("show");
+
+    loaderFill.style.width="100%";
+
+    teleportSound.currentTime=0;
+
+    teleportSound.play();
+
+    setTimeout(()=>{
+
+        window.location.href=
+
+        selectedDisc.dataset.target;
+
+    },2200);
+
+};

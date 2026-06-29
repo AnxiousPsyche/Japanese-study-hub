@@ -13,7 +13,7 @@
           content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-          content="JP Library OS - Learn Japanese through interactive lessons, quests, flashcards, and retro-inspired adventures.">
+          content="JP Library OS - Learn Japanese through an interactive desktop operating system.">
 
     <title>JP Library OS</title>
 
@@ -46,32 +46,32 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- =========================================
-         JP LIBRARY CSS
+         CSS
     ========================================== -->
 
-    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet"
+          href="assets/css/variables.css">
 
-    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet"
+          href="assets/css/reset.css">
 
-    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet"
+          href="assets/css/components.css">
 
-    <link rel="stylesheet" href="assets/css/navbar.css">
+    <link rel="stylesheet"
+          href="assets/css/homepage.css">
 
-    <link rel="stylesheet" href="assets/css/homepage.css">
+    <link rel="stylesheet"
+          href="assets/css/os.css">
 
-    <link rel="stylesheet" href="assets/css/lessons.css">
+    <link rel="stylesheet"
+          href="assets/css/teleport.css">
 
-    <link rel="stylesheet" href="assets/css/mission.css">
+    <link rel="stylesheet"
+          href="assets/css/animations.css">
 
-    <link rel="stylesheet" href="assets/css/quiz.css">
-
-    <link rel="stylesheet" href="assets/css/animations.css">
-
-    <link rel="stylesheet" href="assets/css/responsive.css">
-
-    <link rel="stylesheet" href="assets/css/boot.css">
-
-    <link rel="stylesheet" href="assets/css/teleport.css">
+    <link rel="stylesheet"
+          href="assets/css/responsive.css">
 
 </head>
 
@@ -79,199 +79,61 @@
 
 <!-- =========================================
      BOOT SCREEN
-========================================== -->
+========================================= -->
 
-<section id="boot-screen"
-         class="boot-screen">
+<section id="boot-screen">
 
     <div class="boot-window">
 
-        <div class="boot-title">
+        <img src="assets/images/logo/JPLlogo.png"
+             alt="JP Library Logo"
+             class="boot-logo">
 
-            JP Library OS v1.0
+        <h1>
 
-        </div>
+            JP Library OS
 
-        <div class="boot-body">
+        </h1>
 
-            <h1>
+        <p id="boot-status-text">
 
-                Starting System...
-
-            </h1>
-
-            <p class="boot-message">
-
-                Initializing learning environment...
-
-            </p>
-
-            <div class="loading-group">
-
-                <div class="loading-item">
-
-                    <span>Grammar Database</span>
-
-                    <div class="loading-bar">
-
-                        <div class="loading-fill grammar"></div>
-
-                    </div>
-
-                </div>
-
-                <div class="loading-item">
-
-                    <span>Vocabulary Database</span>
-
-                    <div class="loading-bar">
-
-                        <div class="loading-fill vocabulary"></div>
-
-                    </div>
-
-                </div>
-
-                <div class="loading-item">
-
-                    <span>Kanji Database</span>
-
-                    <div class="loading-bar">
-
-                        <div class="loading-fill kanji"></div>
-
-                    </div>
-
-                </div>
-
-                <div class="loading-item">
-
-                    <span>Quest Engine</span>
-
-                    <div class="loading-bar">
-
-                        <div class="loading-fill quest"></div>
-
-                    </div>
-
-                </div>
-
-                <div class="loading-item">
-
-                    <span>Audio System</span>
-
-                    <div class="loading-bar">
-
-                        <div class="loading-fill audio"></div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <p id="boot-status-text">
-
-                Preparing your adventure...
-
-            </p>
-
-            <button id="start-btn"
-            class="retro-btn"
-            disabled>
-            BOOTING...
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ==========================================================
-DISC SCREEN
-=========================================================== -->
-
-<section id="disc-screen">
-
-    <div class="disc-window">
-
-        <h1>JP LIBRARY OS</h1>
-
-        <p class="disc-subtitle">
-
-            Insert Learning Disc
+            Initializing...
 
         </p>
 
-        <div class="disc-area">
+        <div class="loading-group">
 
-            <img src="assets/images/discs/N5Disc.png"
-                 alt="N5 Disc"
-                 class="jp-disc">
+            <div class="loading-bar">
 
-            <div class="disc-arrow">
-
-                ▼
+                <div class="loading-fill"></div>
 
             </div>
 
-            <div class="disc-drive" id="disc-drive">
+            <div class="loading-bar">
 
-    <div class="drive-top">
+                <div class="loading-fill"></div>
 
-        <span>DISC DRIVE</span>
+            </div>
 
-        <span>JPL-05</span>
+            <div class="loading-bar">
 
-    </div>
+                <div class="loading-fill"></div>
 
-    <div class="drive-slot">
+            </div>
 
-        <div class="drive-opening"></div>
-    </div>
+            <div class="loading-bar">
 
-    <div class="drive-bottom">
+                <div class="loading-fill"></div>
 
-        <button class="eject-button">
-
-            ⏏
-
-        </button>
-
-        <div class="drive-status">
-
-            <span>POWER</span>
-
-            <div class="drive-led"></div>
+            </div>
 
         </div>
 
-    </div>
+        <button id="start-btn"
+                class="retro-btn"
+                disabled>
 
-</div>
-        </div>
-
-<div class="reading-box">
-
-    <p id="reading-text">
-
-        Waiting for disc...
-
-    </p>
-
-    <div class="reading-bar">
-
-        <div class="reading-progress"></div>
-
-    </div>
-
-</div>
-
-        <button id="insert-disc"
-                class="retro-btn">
-
-            💿 INSERT DISC
+            ▶ PRESS START
 
         </button>
 
@@ -279,514 +141,564 @@ DISC SCREEN
 
 </section>
 
-<!-- ==========================================================
-DESKTOP
-=========================================================== -->
+<!-- =========================================
+     DESKTOP
+========================================= -->
 
 <div id="desktop">
 
-    <!-- ==========================================================
-    NAVIGATION
-    =========================================================== -->
+    <!-- =========================================
+         PLAYER APP
+    ========================================== -->
 
-    <nav class="jp-navbar">
+    <section class="retro-window player-window">
 
-        <div class="logo">
-
-            <img src="assets/images/logo/JPLlogo.png"
-                 alt="JP Library">
+        <div class="window-title">
 
             <span>
 
-                JP Library OS
+                👤 PLAYER
 
             </span>
 
         </div>
 
-        <div class="nav-center">
-
-            <a href="pages/N5/n5-dashboard.html">
-
-                🌸 N5
-
-            </a>
-
-            <a href="#">
-
-                🌸 N4
-
-            </a>
-
-            <a href="#">
-
-                🌸 N3
-
-            </a>
-
-            <a href="#">
-
-                🌸 N2
-
-            </a>
-
-            <a href="#">
-
-                🌸 N1
-
-            </a>
-
-        </div>
-
-
-        <div class="nav-right">
-
-            <button id="musicToggle"
-            class="retro-btn">🔊
-        </button>
-
-            <button class="retro-btn">
-
-                <i class="bi bi-search"></i>
-
-            </button>
-
-            <button class="retro-btn">
-
-                <i class="bi bi-bookmark-heart"></i>
-
-            </button>
-
-            <button class="retro-btn">
-
-                <i class="bi bi-person-circle"></i>
-
-            </button>
-
-        </div>
-
-    </nav>
-
-                         <!-- homepage content goes here -->
-
-                         
-      <main class="desktop-container">
-
-    <!-- =========================================
-         WELCOME WINDOW
-    ========================================== -->
-
-    <section class="retro-window desktop-header">
-
-        <div class="window-title">
-
-            <span>🌸 JP LIBRARY OS</span>
-
-            <div class="window-buttons">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
-        </div>
-
         <div class="window-content">
 
-            <div class="desktop-header-content">
+            <img src="assets/images/hero/smeagol.png"
+                 class="player-avatar"
+                 alt="Player">
 
-                <h1 id="jpGreeting">
-                    おかえりなさい！
-                </h1>
-                <p id="englishGreeting">Welcome back, Rei.
+            <h2>
 
-                </p>
-                <p id="greetingMessage">
-                    Your Japanese adventure continues today.
-                </p>
+                Rei
 
-                <div class="desktop-clock">
-
-                    <span id="currentTime">
-
-                        10:30 AM
-
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =========================================
-         DESKTOP GRID
-    ========================================== -->
-
-    <section class="dashboard-grid">
-
-        <!-- PLAYER -->
-
-        <article class="retro-window player-card">
-
-            <div class="window-title">
-
-                <span>👤 PLAYER STATUS</span>
-
-                <div class="window-buttons">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="window-content">
-
-                <img src="assets/images/logo/JPLlogo.png"
-                     class="player-avatar"
-                     alt="Player">
-
-                <h2>Rei</h2>
-
-                <p>Grammar Explorer</p>
-
-                <h3>Level 1</h3>
-
-                <div class="xp-bar">
-
-                    <div class="xp-fill"></div>
-
-                </div>
-
-                <p>150 / 500 XP</p>
-
-                <hr>
-
-                <div class="player-stats">
-
-                    <div>
-
-                        <h3>🔥</h3>
-
-                        <strong>12</strong>
-
-                        <p>Day Streak</p>
-
-                    </div>
-
-                    <div>
-
-                        <h3>🏆</h3>
-
-                        <strong>3</strong>
-
-                        <p>Badges</p>
-
-                    </div>
-
-                    <div>
-
-                        <h3>📚</h3>
-
-                        <strong>8</strong>
-
-                        <p>Lessons</p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- CURRENT DISC -->
-
-        <article class="retro-window current-disc">
-
-            <div class="window-title">
-
-                <span>💿 CURRENT DISC</span>
-
-                <div class="window-buttons">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="window-content">
-
-                <img src="assets/images/discs/N5Disc.png"
-                     class="current-disc-image"
-                     alt="N5 Disc">
-
-                <h2>JLPT N5 Edition</h2>
-
-                <p>Grammar Explorer</p>
-
-            <a href="pages/N5/n5-dashboard.html" 
-                class="retro-btn big-btn teleport-link">
-                ▶ Resume Adventure
-            </a>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- TODAY'S QUEST -->
-
-        <article class="retro-window quest-card">
-
-            <div class="window-title">
-
-                <span>📜 TODAY'S QUEST</span>
-
-                <div class="window-buttons">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="window-content">
-
-                <h2>Self Introduction</h2>
-
-                <p>
-
-                    Complete today's lesson and finish the practice exercises.
-
-                </p>
-
-                <div class="quest-reward">
-
-                    ⭐ +50 XP
-
-                </div>
-
-                <button class="retro-btn">
-
-                    Continue
-
-                </button>
-
-            </div>
-
-        </article>
-
-    </section>
-
-
-
-    <!-- =========================================
-         QUICK ACCESS
-    ========================================== -->
-
-    <section class="retro-window quick-access">
-
-        <div class="window-title">
-
-            <span>🖥 DESKTOP SHORTCUTS</span>
-
-            <div class="window-buttons">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-        </div>
-
-        <div class="window-content">
-
-            <div class="shortcut-grid">
-
-                <a href="pages/N5/n5-grammar.html" class="desktop-icon">
-
-                    📚
-
-                    <span>Grammar</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    📖
-
-                    <span>Vocabulary</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    🎴
-
-                    <span>Flashcards</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    📝
-
-                    <span>Practice</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    🏆
-
-                    <span>Trophies</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    ❤️
-
-                    <span>Favorites</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    📊
-
-                    <span>Progress</span>
-
-                </a>
-
-                <a href="#" class="desktop-icon">
-
-                    ⚙
-
-                    <span>Settings</span>
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =========================================
-         JOURNEY
-    ========================================== -->
-
-    <section class="retro-window">
-
-        <div class="window-title">
-
-            <span>🗺 YOUR JOURNEY</span>
-
-            <div class="window-buttons">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-        </div>
-
-        <div class="window-content">
-
-            <ul class="journey-list">
-
-                <li>⚔️ JLPT N5 <span class="status current">Quest Active</span></li>
-
-                <li>🔒 JLPT N4<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N3<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N2<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N1<span class="status locked"> Level Locked</span></li>
-
-            </ul>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =========================================
-         FOOTER
-    ========================================== -->
-
-    <footer class="retro-window footer-window">
-
-        <div class="window-title">
-
-            <span>💾 JP LIBRARY OS</span>
-
-            <div class="window-buttons">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-        </div>
-
-        <div class="window-content">
+            </h2>
 
             <p>
 
-                © 2026 JP Library OS • Built by AnxiousPsyche
+                Grammar Explorer
+
+            </p>
+
+            <hr>
+
+            <p>
+
+                ⭐ Level 5
+
+            </p>
+
+            <p>
+
+                🔥 12 Day Streak
+
+            </p>
+
+            <p>
+
+                💰 350 XP
 
             </p>
 
         </div>
 
-    </footer>
+    </section>
 
-</main> 
+        <!-- =========================================
+         DISC LAUNCHER
+    ========================================== -->
+
+    <section class="retro-window launcher-window">
+
+        <div class="window-title">
+
+            <span>
+
+                💿 JP LIBRARY DISC DRIVE
+
+            </span>
+
+            <div class="window-buttons">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+        <div class="window-content launcher-content">
+
+            <h2>
+
+                No Disc Inserted
+
+            </h2>
+
+            <p>
+
+                Choose a Learning Disc
+
+            </p>
+
+            <!-- =========================================
+                 DISC SHELF
+            ========================================== -->
+
+            <div class="disc-shelf">
+
+                <img
+                    src="assets/images/discs/N5Disc.png"
+                    class="launcher-disc unlocked"
+                    data-level="N5"
+                    data-target="pages/N5/n5-dashboard.html"
+                    alt="JLPT N5">
+
+                <img
+                    src="assets/images/discs/N4Disc.png"
+                    class="launcher-disc locked"
+                    data-level="N4"
+                    alt="JLPT N4">
+
+                <img
+                    src="assets/images/discs/N3Disc.png"
+                    class="launcher-disc locked"
+                    data-level="N3"
+                    alt="JLPT N3">
+
+                <img
+                    src="assets/images/discs/N2Disc.png"
+                    class="launcher-disc locked"
+                    data-level="N2"
+                    alt="JLPT N2">
+
+                <img
+                    src="assets/images/discs/N1Disc.png"
+                    class="launcher-disc locked"
+                    data-level="N1"
+                    alt="JLPT N1">
+
+            </div>
+
+            <p id="selectedDisc">
+
+                Select a learning disc...
+
+            </p>
+
+            <button
+
+                id="insertDiscButton"
+
+                class="retro-btn big-btn"
+
+                disabled>
+
+                💿 INSERT DISC
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         QUEST APP
+    ========================================== -->
+
+    <section class="retro-window quest-window">
+
+        <div class="window-title">
+
+            <span>
+
+                🏆 DAILY QUEST
+
+            </span>
+
+            <div class="window-buttons">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+        <div class="window-content">
+
+            <h3>
+
+                Today's Mission
+
+            </h3>
+
+            <p>
+
+                Complete the Greetings Lesson.
+
+            </p>
+
+            <div class="quest-reward">
+
+                ⭐ +50 XP
+
+            </div>
+
+            <hr>
+
+            <h3>
+
+                Current Streak
+
+            </h3>
+
+            <p>
+
+                🔥 12 Days
+
+            </p>
+
+            <hr>
+
+            <h3>
+
+                Latest Achievement
+
+            </h3>
+
+            <p>
+
+                🏆 Grammar Explorer
+
+            </p>
+
+        </div>
+
+    </section>
+
 </div>
 
-<audio id="bgMusic" loop>
+<!-- =========================================
+     TASKBAR
+========================================= -->
 
-    <source src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3" type="audio/mpeg">
+<footer class="taskbar">
 
-</audio>
+    <!-- Start -->
 
-<audio id="teleportSound">
+    <button id="startMenuButton"
+            class="start-btn">
 
-    <source
-        src="./assets/sounds/teleportSound.mp3"
-        type="audio/mpeg">
+        <img src="assets/images/icons/windows.png"
+             alt="Start">
 
-</audio>
+        <span>
 
-<!--=====================================
-TELEPORT EFFECT
-======================================-->
+            Start
+
+        </span>
+
+    </button>
+
+    <!-- Search -->
+
+    <div class="taskbar-search">
+
+        <i class="bi bi-search"></i>
+
+        <input
+            type="text"
+            placeholder="Search lessons, grammar, vocabulary...">
+
+    </div>
+
+    <!-- Files -->
+
+    <button class="taskbar-btn">
+
+        <img src="assets/images/icons/pixels/folder.png"
+             alt="Files">
+
+        <span>
+
+            Files
+
+        </span>
+
+    </button>
+
+    <!-- Spacer -->
+
+    <div class="taskbar-spacer"></div>
+
+    <!-- Theme -->
+
+    <button id="themeToggle"
+            class="tray-btn">
+
+        🌙
+
+    </button>
+
+    <!-- Language -->
+
+    <button id="languageButton"
+            class="tray-btn">
+
+        ENG
+
+    </button>
+
+    <!-- Music -->
+
+    <button id="volumeButton"
+            class="tray-btn">
+
+        🔊
+
+    </button>
+
+    <!-- Clock -->
+
+    <div class="tray-clock">
+
+        <span id="taskbarClock">
+
+            10:30 PM
+
+        </span>
+
+        <span id="taskbarDate">
+
+            Jul 1
+
+        </span>
+
+    </div>
+
+</footer>
+
+
+
+<!-- =========================================
+     START MENU
+========================================= -->
+
+<div id="startMenu"
+     class="start-menu">
+
+    <div class="start-profile">
+
+        <img src="assets/images/hero/smeagol.png"
+             alt="Player">
+
+        <div>
+
+            <strong>
+
+                Rei
+
+            </strong>
+
+            <p>
+
+                Grammar Explorer
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="start-apps">
+
+        <button class="teleport-link"
+
+                data-level="N5"
+
+                data-target="pages/N5/n5-dashboard.html">
+
+            🌸 JLPT N5
+
+        </button>
+
+        <button>
+
+            🍃 JLPT N4
+
+        </button>
+
+        <button>
+
+            🌊 JLPT N3
+
+        </button>
+
+        <button>
+
+            🔥 JLPT N2
+
+        </button>
+
+        <button>
+
+            ✨ JLPT N1
+
+        </button>
+
+        <hr>
+
+        <button>
+
+            🃏 Flashcards
+
+        </button>
+
+        <button>
+
+            📖 Dictionary
+
+        </button>
+
+        <button>
+
+            📝 Notes
+
+        </button>
+
+        <button>
+
+            🏆 Achievements
+
+        </button>
+
+        <button>
+
+            🎵 Music
+
+        </button>
+
+        <button>
+
+            ⚙ Settings
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     VOLUME PANEL
+========================================= -->
+
+<div id="volumePanel"
+     class="volume-panel">
+
+    <h4>
+
+        🎵 JP Library Player
+
+    </h4>
+
+    <label>
+
+        Volume
+
+    </label>
+
+    <input
+
+        id="volumeSlider"
+
+        type="range"
+
+        min="0"
+
+        max="100"
+
+        value="30">
+
+    <hr>
+
+    <h5>
+
+        Playlist
+
+    </h5>
+
+    <button class="playlist-btn">
+
+        🌸 Kyoto
+
+    </button>
+
+    <button class="playlist-btn">
+
+        🍃 Spring Wind
+
+    </button>
+
+    <button class="playlist-btn">
+
+        🌙 Evening Shrine
+
+    </button>
+
+    <button class="playlist-btn">
+
+        🌧 Rainy Study
+
+    </button>
+
+</div>
+
+<!-- =========================================
+     DISC LOADER
+========================================= -->
+
+<div id="discLoader"
+     class="disc-loader">
+
+    <div class="disc-loader-window">
+
+        <img id="loaderDisc"
+             src="assets/images/discs/N5Disc.png"
+             alt="Current Disc">
+
+        <h2 id="loaderTitle">
+
+            Reading Learning Disc...
+
+        </h2>
+
+        <div class="loader-progress">
+
+            <div class="loader-fill"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     TELEPORT OVERLAY
+========================================= -->
 
 <div id="teleport-overlay">
+
+    <div class="teleport-glow"></div>
 
     <div class="teleport-beam"></div>
 
@@ -794,19 +706,54 @@ TELEPORT EFFECT
 
 </div>
 
+
+
+<!-- =========================================
+     AUDIO
+========================================= -->
+
+<audio id="bgMusic" loop>
+
+    <source
+        src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
+        type="audio/mpeg">
+
+</audio>
+
+<audio id="teleportSound">
+
+    <source
+        src="assets/sounds/teleportSound.mp3"
+        type="audio/mpeg">
+
+</audio>
+
+
+
+<!-- =========================================
+     EFFECTS
+========================================= -->
+
 <div id="achievement-container"></div>
 
 <div id="sakura-container"></div>
+
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
 
 <script src="assets/js/boot.js"></script>
 
 <script src="assets/js/homepage.js"></script>
 
-<script src="assets/js/teleport.js"></script>
+<script src="assets/js/os.js"></script>
 
-<script src="assets/js/index.js"></script>
+<script src="assets/js/teleport.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

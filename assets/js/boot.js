@@ -1,28 +1,23 @@
 // ==========================================
-// JP LIBRARY OS
-// Boot Sequence
+// BOOT SCREEN
 // ==========================================
 
-const bootScreen = document.getElementById("boot-screen");
-const discScreen = document.getElementById("disc-screen");
-const discDrive = document.getElementById("disc-drive");
-const desktop = document.getElementById("desktop");
+const bootScreen =
+document.getElementById("boot-screen");
 
-const startButton = document.getElementById("start-btn");
-const insertButton = document.getElementById("insert-disc");
+const desktop =
+document.getElementById("desktop");
 
-const disc = document.querySelector(".jp-disc");
+const startButton =
+document.getElementById("start-btn");
 
-const statusText = document.getElementById("boot-status-text");
+const statusText =
+document.getElementById("boot-status-text");
 
-const bars = document.querySelectorAll(".loading-fill");
+const loadingBars =
+document.querySelectorAll(".loading-fill");
 
-// Hide screens
-discScreen.style.display = "none";
-desktop.style.display = "none";
-
-// Boot messages
-const messages = [
+const bootMessages=[
 
     "🌸 Connecting to Sakura Academy...",
 
@@ -36,142 +31,71 @@ const messages = [
 
     "📖 Opening Your Japanese Textbook...",
 
-    "✨ Welcome back, Reya!",
+    "💿 Initializing Disc Drive...",
 
-    "💿 System Ready."
+    "✨ System Ready."
 
 ];
 
-// Animate loading bars
-let current = 0;
+let currentMessage=0;
 
-function loadNext(){
+desktop.style.display="none";
 
-    if(current < bars.length){
+function bootSequence(){
 
-    statusText.textContent = messages[current];
+    if(currentMessage<loadingBars.length){
 
-    bars[current].style.width = "100%";
+        statusText.textContent=
+        bootMessages[currentMessage];
 
-    current++;
+        loadingBars[currentMessage].style.width="100%";
 
-    setTimeout(loadNext,1000);
+        currentMessage++;
+
+        setTimeout(bootSequence,900);
+
+    }
+
+    else if(currentMessage<bootMessages.length){
+
+        statusText.textContent=
+        bootMessages[currentMessage];
+
+        currentMessage++;
+
+        setTimeout(bootSequence,700);
+
+    }
+
+    else{
+
+        statusText.textContent=
+        "▶ Press START";
+
+        startButton.disabled=false;
+
+    }
 
 }
 
-else if(current < messages.length){
+window.addEventListener("load",()=>{
 
-    statusText.textContent = messages[current];
-
-    current++;
-
-    setTimeout(loadNext,800);
-
-}
-
-else{
-
-    statusText.textContent = "🎮 Press START to begin your adventure.";
-
-    startButton.disabled = false;
-
-    startButton.textContent = "▶ PRESS START";
-
-    startButton.classList.add("xp-glow");
-
-}
-
-}
-
-window.addEventListener("load", () => {
-
-    setTimeout(loadNext,700);
+    setTimeout(bootSequence,600);
 
 });
 
-// START
-startButton.addEventListener("click", () => {
+startButton.onclick=function(){
 
-
-    startButton.disabled = true;
-    
     bootScreen.classList.add("fade-out");
 
-    setTimeout(() => {
+    setTimeout(()=>{
 
-        bootScreen.style.display = "none";
+        bootScreen.style.display="none";
 
-        discScreen.style.display = "flex";
+        desktop.style.display="block";
 
-        discScreen.classList.add("fade-in");
+        desktop.classList.add("fade-in");
 
     },600);
 
-});
-
-// INSERT DISC
-const readingText = document.getElementById("reading-text");
-const readingProgress = document.querySelector(".reading-progress");
-const driveLed = document.querySelector(".drive-led");
-
-insertButton.addEventListener("click", () => {
-
-    insertButton.disabled = true;
-    
-    disc.style.animation = "none";
-    
-    disc.offsetHeight;
-    
-    disc.classList.add("inserting");
-    
-    setTimeout(() => {
-
-    discDrive.classList.add("drive-accept");},700);
-
-    driveLed.classList.add("reading");
-
-    readingText.textContent = "Reading Disc...";
-
-    readingProgress.style.width = "0%";
-    
-    void readingProgress.offsetWidth;
-
-readingProgress.style.width = "100%";
-
-    setTimeout(() => {
-
-        readingText.textContent = "Launching JP Library...";
-
-    },1800);
-
-    setTimeout(() => {
-
-        discScreen.classList.add("fade-out");
-
-    },2600);
-
-    setTimeout(() => {
-
-    driveLed.classList.remove("reading");
-
-    discScreen.style.display = "none";
-
-    discDrive.classList.remove("drive-accept");
-
-    desktop.style.display = "block";
-
-    desktop.classList.add("fade-in");
-
-    bgMusic.play();
-    
-    musicToggle.textContent = "🔊";
-    
-    musicPlaying = true;
-
-    updateGreeting();
-    
-    
-
-},3200);
-
-});
+};

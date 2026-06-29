@@ -2,105 +2,63 @@
 // START MENU
 // ==========================================
 
-const startButton =
+const startButton=
 document.getElementById("startMenuButton");
 
-const startMenu =
+const startMenu=
 document.getElementById("startMenu");
 
-if(startButton && startMenu){
+startButton.onclick=function(){
 
-    startButton.addEventListener("click",()=>{
+    startMenu.classList.toggle("show");
 
-        startMenu.classList.toggle("show");
+};
 
-    });
+document.addEventListener("click",(event)=>{
 
-}
+    if(
 
-if(startButton && startMenu){
+        !startMenu.contains(event.target)
 
-    document.addEventListener("click",(event)=>{
+        &&
 
-        if(
+        !startButton.contains(event.target)
 
-            !startMenu.contains(event.target)
+    ){
 
-            &&
+        startMenu.classList.remove("show");
 
-            !startButton.contains(event.target)
-
-        ){
-
-            startMenu.classList.remove("show");
-
-        }
-
-    });
-
-}
-
-// ==========================================
-// MUSIC PANEL
-// ==========================================
-
-const musicButton =
-document.getElementById("musicToggle");
-
-const volumePanel =
-document.getElementById("volumePanel");
-
-const volumeSlider =
-document.getElementById("volumeSlider");
-
-const bgMusic =
-document.getElementById("bgMusic");
-
-if(bgMusic){
-
-    bgMusic.volume = .35;
-
-}
-
-musicButton.addEventListener("click",()=>{
-
-    volumePanel.classList.toggle("show");
+    }
 
 });
 
-volumeSlider.addEventListener("input",()=>{
-
-    bgMusic.volume =
-    volumeSlider.value / 100;
-
-});
 
 // ==========================================
-// TASKBAR CLOCK
+// CLOCK
 // ==========================================
 
-const clock =
+const taskbarClock=
 document.getElementById("taskbarClock");
 
-const date =
+const taskbarDate=
 document.getElementById("taskbarDate");
 
-function updateTaskbarClock(){
+function updateClock(){
 
-    const now = new Date();
+    const now=new Date();
 
-    clock.textContent =
+    taskbarClock.textContent=
+
     now.toLocaleTimeString([],{
 
         hour:"2-digit",
 
-        minute:"2-digit",
-
-        hour12:true
+        minute:"2-digit"
 
     });
 
-    date.textContent =
+    taskbarDate.textContent=
+
     now.toLocaleDateString([],{
 
         month:"short",
@@ -111,36 +69,40 @@ function updateTaskbarClock(){
 
 }
 
-updateTaskbarClock();
+updateClock();
 
-setInterval(updateTaskbarClock,1000);
+setInterval(updateClock,1000);
 
 
-const speakerButton =
-document.getElementById("speakerButton");
+// ==========================================
+// VOLUME PANEL
+// ==========================================
 
-const musicPlayer =
-document.getElementById("musicPlayer");
+const volumeButton=
+document.getElementById("volumeButton");
 
-speakerButton.addEventListener("click",()=>{
+const volumePanel=
+document.getElementById("volumePanel");
 
-    musicPlayer.classList.toggle("show");
+volumeButton.onclick=function(){
 
-});
+    volumePanel.classList.toggle("show");
+
+};
 
 document.addEventListener("click",(event)=>{
 
     if(
 
-        !musicPlayer.contains(event.target)
+        !volumePanel.contains(event.target)
 
         &&
 
-        !speakerButton.contains(event.target)
+        !volumeButton.contains(event.target)
 
     ){
 
-        musicPlayer.classList.remove("show");
+        volumePanel.classList.remove("show");
 
     }
 

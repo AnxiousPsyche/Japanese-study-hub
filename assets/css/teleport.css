@@ -1,156 +1,142 @@
 /*======================================================
-TELEPORT OVERLAY
+DISC LOADER
 ======================================================*/
 
-#teleport-overlay{
+#discLoader{
 
     position:fixed;
 
     inset:0;
 
-    display:flex;
+    background:rgba(15,18,32,.96);
+
+    display:none;
 
     justify-content:center;
 
     align-items:center;
 
-    background:rgba(25,25,35,0);
+    flex-direction:column;
 
-    pointer-events:none;
+    gap:35px;
 
-    opacity:0;
-
-    z-index:999999;
-
-    transition:
-        opacity .2s ease,
-        background .25s ease;
+    z-index:99999;
 
 }
 
-/*======================================================
-TELEPORT BEAM
-======================================================*/
+#discLoader.show{
 
-.teleport-beam{
-
-    width:12px;
-
-    height:0;
-
-    border-radius:999px;
-
-    background:linear-gradient(
-
-        to bottom,
-
-        #FFFFFF,
-
-        #C7A8FF,
-
-        #8F7CFF
-
-    );
-
-    box-shadow:
-
-        0 0 25px #B58CFF,
-
-        0 0 60px #D9C7FF;
+    display:flex;
 
 }
 
-/*======================================================
-FLASH
-======================================================*/
+.loader-disc{
 
-.teleport-flash{
-
-    position:absolute;
-
-    inset:0;
-
-    background:white;
-
-    opacity:0;
-
-}
-
-/*======================================================
-ACTIVE
-======================================================*/
-
-#teleport-overlay.active{
-
-    opacity:1;
-
-    background:rgba(30,30,40,.45);
-
-}
-
-#teleport-overlay.active .teleport-beam{
+    width:210px;
 
     animation:
 
-        beamGrow .45s ease forwards;
+        discInsert .8s ease,
+
+        discSpin 1.6s linear infinite;
 
 }
 
-#teleport-overlay.active .teleport-flash{
+@keyframes discInsert{
 
-    animation:
+    from{
 
-        flash .18s ease .55s forwards;
-
-}
-
-@keyframes beamGrow{
-
-    0%{
-
-        height:0;
-
-        transform:scaleX(.3);
+        transform:
+            translateY(300px)
+            scale(.4);
 
         opacity:0;
 
     }
 
-    60%{
+    to{
 
-        height:80vh;
+        transform:
+            translateY(0)
+            scale(1);
 
         opacity:1;
 
     }
 
-    100%{
+}
 
-        height:100vh;
+@keyframes discSpin{
 
-        opacity:0;
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
 
     }
 
 }
 
-@keyframes flash{
+.loader-title{
 
-    0%{
+    color:white;
 
-        opacity:0;
+    font-size:1.4rem;
 
-    }
+    font-weight:bold;
 
-    50%{
+}
 
-        opacity:.9;
+.loader-subtitle{
 
-    }
+    color:#d5d5d5;
 
-    100%{
+}
 
-        opacity:0;
+.loader-progress{
+
+    width:330px;
+
+    height:12px;
+
+    border-radius:999px;
+
+    background:#555;
+
+    overflow:hidden;
+
+}
+
+.loader-fill{
+
+    width:0;
+
+    height:100%;
+
+    background:linear-gradient(
+
+        90deg,
+
+        #88A8D8,
+
+        #D9B7D2
+
+    );
+
+    animation:loading 2.2s linear forwards;
+
+}
+
+@keyframes loading{
+
+    to{
+
+        width:100%;
 
     }
 
