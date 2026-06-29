@@ -2,26 +2,38 @@
 // TELEPORT
 // ==========================================
 
-const overlay =
-document.getElementById("teleport-overlay");
+const overlay = document.getElementById("teleport-overlay");
+const teleportLinks = document.querySelectorAll(".teleport-link");
+const teleportSound = document.getElementById("teleportSound");
 
-const teleportLinks =
-document.querySelectorAll(".teleport-link");
+teleportLinks.forEach(link => {
 
-teleportLinks.forEach(link=>{
-
-    link.addEventListener("click",(e)=>{
+    link.addEventListener("click", (e) => {
 
         e.preventDefault();
 
         overlay.classList.add("active");
 
-        setTimeout(()=>{
+        if (teleportSound) {
 
-            window.location.href =
-            link.href;
+            teleportSound.currentTime = 0;
+            teleportSound.volume = 1;
 
-        },850);
+            teleportSound.play()
+                .then(() => {
+                    console.log("Teleport sound is playing!");
+                })
+                .catch(error => {
+                    console.error("Audio Error:", error);
+                });
+
+        }
+
+        setTimeout(() => {
+
+            window.location.href = link.href;
+
+        }, 850);
 
     });
 

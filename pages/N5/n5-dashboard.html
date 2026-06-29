@@ -13,7 +13,7 @@
           content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-          content="JP Library OS - Learn Japanese through interactive lessons, quests and adventures.">
+          content="JP Library OS - Learn Japanese through interactive lessons and adventures.">
 
     <title>JP Library OS | JLPT N5 Dashboard</title>
 
@@ -49,44 +49,31 @@
          CSS
     ========================================== -->
 
-    <link rel="stylesheet"
-          href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/variables.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/components.css">
+    <link rel="stylesheet" href="../../assets/css/components.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/navbar.css">
+    <link rel="stylesheet" href="../../assets/css/os.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/homepage.css">
+    <link rel="stylesheet" href="../../assets/css/n5-map.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/n5-map.css">
+    <link rel="stylesheet" href="../../assets/css/teleport.css">
 
-    <link rel="stylesheet"
-          href="../../assets/css/teleport.css">
-
-    <link rel="stylesheet"
-          href="../../assets/css/animations.css">
-
-    <link rel="stylesheet"
-          href="../../assets/css/responsive.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
 
 </head>
 
 <body>
 
 <!-- =========================================
-     NAVIGATION
+     TOP BAR
 ========================================== -->
 
-<nav class="jp-navbar">
+<nav class="os-navbar">
 
-    <div class="logo">
+    <div class="os-left">
 
         <img src="../../assets/images/logo/JPLlogo.png"
              alt="JP Library">
@@ -99,65 +86,48 @@
 
     </div>
 
-    <div class="nav-center">
+    <div class="os-center">
 
-        <a href="#"
-           class="active">
-
-            🌸 N5
-
-        </a>
-
-        <a href="#">
-
-            🌸 N4
-
-        </a>
-
-        <a href="#">
-
-            🌸 N3
-
-        </a>
-
-        <a href="#">
-
-            🌸 N2
-
-        </a>
-
-        <a href="#">
-
-            🌸 N1
-
-        </a>
+        🌸 Sakura Village
 
     </div>
 
-    <div class="nav-right">
+    <div class="os-right">
 
-        <button id="musicToggle"
-                class="retro-btn">
+        <button
+            class="os-btn"
+            id="musicToggle">
 
-            🔊
-
-        </button>
-
-        <button class="retro-btn">
-
-            <i class="bi bi-search"></i>
+            <img src="../../assets/images/icons/pixels/headphones.png"
+                 alt="Music">
 
         </button>
 
-        <button class="retro-btn">
+        <button class="os-btn">
 
-            <i class="bi bi-bookmark-heart"></i>
+            <img src="../../assets/images/icons/pixels/magnifying-glass-3-Original.png"
+                 alt="Search">
 
         </button>
 
-        <button class="retro-btn">
+        <button class="os-btn">
 
-            <i class="bi bi-person-circle"></i>
+            <img src="../../assets/images/icons/pixels/mail.png"
+                 alt="Mail">
+
+        </button>
+
+        <button class="os-btn">
+
+            <img src="../../assets/images/icons/pixels/suit.png"
+                 alt="Profile">
+
+        </button>
+
+        <button class="os-btn">
+
+            <img src="../../assets/images/icons/pixels/gear-icon-Original.png"
+                 alt="Settings">
 
         </button>
 
@@ -165,255 +135,349 @@
 
 </nav>
 
-<main class="n5-dashboard">
+<!-- =========================================
+     GAME WORLD
+========================================== -->
+
+<div class="game-world">
 
     <!-- =========================================
-         HEADER
+         PLAYER WINDOW
     ========================================== -->
 
-    <section class="retro-window dashboard-header">
+    <aside class="retro-window player-window">
 
         <div class="window-title">
 
-            <span>🌸 SAKURA VILLAGE</span>
-
-            <div class="window-buttons">
-
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
+            <span>👤 PLAYER</span>
 
         </div>
 
         <div class="window-content">
 
-            <h1>
+            <img src="../../assets/images/hero/smeagol.png"
+                 class="player-avatar"
+                 alt="Player">
 
-                Welcome to Sakura Village
+            <h2>Rei</h2>
 
-            </h1>
+            <p>Grammar Explorer</p>
 
-            <p>
+            <hr>
 
-                Continue your Japanese adventure.
+            <p>⭐ Level 5</p>
 
-            </p>
+            <p>🔥 12 Day Streak</p>
 
-            <div class="overall-progress">
-
-                <span>
-
-                    Overall Progress
-
-                </span>
-
-                <div class="xp-bar">
-
-                    <div class="xp-fill"
-                         style="width:20%;">
-
-                    </div>
-
-                </div>
-
-                <strong>
-
-                    8 / 40 Lessons Complete
-
-                </strong>
-
-            </div>
+            <p>💰 350 XP</p>
 
         </div>
 
-    </section>
+    </aside>
 
 
 
     <!-- =========================================
-         MAIN LAYOUT
+         QUEST WINDOW
     ========================================== -->
 
-    <section class="dashboard-grid">
+    <aside class="retro-window quest-window">
 
-        <!-- =========================================
-             PLAYER PANEL
-        ========================================== -->
+        <div class="window-title">
 
-        <aside class="retro-window player-panel">
+            <span>🏆 TODAY</span>
 
-            <div class="window-title">
+        </div>
 
-                <span>
+        <div class="window-content">
 
-                    👤 PLAYER
+            <h3>Daily Quest</h3>
 
-                </span>
+            <p>Complete Greetings.</p>
 
-            </div>
+            <div class="quest-reward">
 
-            <div class="window-content">
-
-                <img src="../../assets/images/hero/smeagol.png"
-                     class="player-avatar"
-                     alt="Player">
-
-                <h2>
-
-                    Rei
-
-                </h2>
-
-                <p>
-
-                    Grammar Explorer
-
-                </p>
-
-                <hr>
-
-                <p>
-
-                    ⭐ Level 5
-
-                </p>
-
-                <p>
-
-                    🔥 12 Day Streak
-
-                </p>
-
-                <p>
-
-                    💰 350 XP
-
-                </p>
+                ⭐ +50 XP
 
             </div>
 
-        </aside>
+            <hr>
+
+            <h3>Latest Achievement</h3>
+
+            <p>🏆 Grammar Explorer</p>
+
+            <hr>
+
+            <button class="retro-btn">
+
+                🎁 Claim Reward
+
+            </button>
+
+        </div>
+
+    </aside>
 
 
 
-        <!-- =========================================
-             WORLD MAP
-        ========================================== -->
+    <!-- =========================================
+         WORLD MAP
+    ========================================== -->
 
-        <section class="retro-window map-window">
+    <main class="map-window">
 
-            <div class="window-title">
+        <div class="map-background">
 
-                <span>
+            <div class="sky"></div>
 
-                    🌸 SAKURA VILLAGE
+            <div class="mountains"></div>
 
-                </span>
+            <div class="grass"></div>
 
-            </div>
+            <div class="river"></div>
 
-            <div class="map-background">
+            <!-- Trees -->
 
-                <div class="sky"></div>
+            <div class="tree tree1">🌸</div>
+            <div class="tree tree2">🌸</div>
+            <div class="tree tree3">🌸</div>
+            <div class="tree tree4">🌸</div>
 
-                <div class="mountains"></div>
+            <!-- Roads -->
 
-                <div class="grass"></div>
+            <div class="road road1"></div>
+            <div class="road road2"></div>
+            <div class="road road3"></div>
+            <div class="road road4"></div>
 
-                <div class="river"></div>
+            <!-- Buildings -->
 
-                <!-- Houses go here later -->
+            <button class="building intro unlocked">
 
-                <!-- Roads go here later -->
+                🏡
 
-                <!-- Trees go here later -->
+                <span>Self Introduction</span>
 
-                <!-- Castle goes here later -->
+            </button>
 
-            </div>
+            <button class="building greetings active">
 
-        </section>
+                🏡
 
+                <span>Greetings</span>
 
+            </button>
 
-        <!-- =========================================
-             QUEST PANEL
-        ========================================== -->
+            <button class="building numbers locked">
 
-        <aside class="retro-window quest-panel">
+                🏪
 
-            <div class="window-title">
+                <span>Numbers</span>
 
-                <span>
+            </button>
 
-                    🏆 TODAY
+            <button class="building shrine locked">
 
-                </span>
+                ⛩
 
-            </div>
+                <span>Time Shrine</span>
 
-            <div class="window-content">
+            </button>
 
-                <h3>
+            <button class="building castle locked">
 
-                    Daily Quest
+                🏰
 
-                </h3>
+                <span>Boss Castle</span>
 
-                <p>
+            </button>
 
-                    Complete Greetings.
+        </div>
 
-                </p>
+    </main>
 
-                <div class="quest-reward">
-
-                    ⭐ +50 XP
-
-                </div>
-
-                <hr>
-
-                <h3>
-
-                    Latest Achievement
-
-                </h3>
-
-                <p>
-
-                    🏆 Grammar Explorer
-
-                </p>
-
-                <hr>
-
-                <button class="retro-btn">
-
-                    🎁 Claim Reward
-
-                </button>
-
-            </div>
-
-        </aside>
-
-    </section>
-
-</main>
+</div>
 
 
+
+<!-- =========================================
+     START MENU
+========================================== -->
+
+<div
+    class="start-menu"
+    id="startMenu">
+
+    <div class="start-profile">
+
+        <img src="../../assets/images/hero/smeagol.png"
+             alt="Player">
+
+        <div>
+
+            <strong>Rei</strong>
+
+            <br>
+
+            Grammar Explorer
+
+        </div>
+
+    </div>
+
+    <button>📚 Lessons</button>
+
+    <button>📝 Flashcards</button>
+
+    <button>🏆 Achievements</button>
+
+    <button>⚙ Settings</button>
+
+    <button>🚪 Logout</button>
+
+</div>
+
+
+
+<!-- =========================================
+     TASKBAR
+========================================== -->
+
+<footer class="taskbar">
+
+    <button
+        class="start-btn"
+        id="startMenuButton">
+
+        <img
+            src="../../assets/images/icons/pixels/picture-window-Original.png"
+            alt="JP">
+
+        <span>
+
+            Menu
+
+        </span>
+
+    </button>
+
+    <button>N5</button>
+
+    <button>Flashcards</button>
+
+    <button>Achievements</button>
+
+    <button>Settings</button>
+
+    <button>Quests</button>
+
+<!--====================================
+SYSTEM TRAY
+=====================================-->
+
+   <div class="system-tray">
+
+    <div class="tray-icons">
+
+        <button id="languageButton">ENG</button>
+
+        <button id="displayButton">
+            <img src="../../assets/images/icons/pixels/monitor.png">
+        </button>
+
+        <button id="speakerButton">
+            <img src="../../assets/images/icons/pixels/headphones.png">
+        </button>
+
+        <button id="notificationButton">
+            <img src="../../assets/images/icons/pixels/mail.png">
+        </button>
+
+    </div>
+
+    <div class="tray-clock">
+
+        <span id="taskbarClock"></span>
+
+        <span id="taskbarDate"></span>
+
+    </div>
+
+</div>
+
+<!--====================================
+MUSIC PLAYER
+=====================================-->
+
+<div
+    class="music-player"
+    id="musicPlayer">
+
+    <h3>
+
+        🎵 JP Library Music
+
+    </h3>
+
+    <p id="currentSong">
+
+        Kyoto
+
+    </p>
+
+    <input
+        type="range"
+        id="volumeSlider"
+        min="0"
+        max="100"
+        value="35">
+
+    <div class="player-controls">
+
+        <button id="prevSong">
+
+            ⏮
+
+        </button>
+
+        <button id="playPause">
+
+            ⏸
+
+        </button>
+
+        <button id="nextSong">
+
+            ⏭
+
+        </button>
+
+    </div>
+
+</div>
 
 <!-- =========================================
      AUDIO
 ========================================== -->
 
-<audio id="bgMusic" loop>
+<audio
+    id="bgMusic"
+    loop>
 
-    <source src="../../assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
-            type="audio/mpeg">
+    <source
+        src="../../assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
+        type="audio/mpeg">
+
+</audio>
+
+
+<audio
+    id="teleportSound">
+
+    <source
+        src="../../assets/sounds/teleportSound.mp3"
+        type="audio/mpeg">
 
 </audio>
 
@@ -422,13 +486,6 @@
 <!-- =========================================
      TELEPORT
 ========================================== -->
-
-<audio id="teleportSound">
-
-    <source src="../../assets/audio/teleport.mp3"
-            type="audio/mpeg">
-
-</audio>
 
 <div id="teleport-overlay">
 
@@ -453,10 +510,10 @@
 
 
 <!-- =========================================
-     SCRIPTS
+     JAVASCRIPT
 ========================================== -->
 
-<script src="../../assets/js/homepage.js"></script>
+<script src="../../assets/js/os.js"></script>
 
 <script src="../../assets/js/n5-map.js"></script>
 
