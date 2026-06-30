@@ -109,6 +109,162 @@ its own nested grid for the three cards inside it.
 }
 
 /*======================================================
+DISC CAROUSEL (jukebox style N5–N1 switcher)
+======================================================*/
+
+.disc-carousel{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.disc-viewport{
+
+    flex:1;
+
+    overflow:hidden;
+
+}
+
+.disc-track{
+
+    display:flex;
+
+    transition:transform .45s cubic-bezier(.22,.68,.32,1);
+
+    will-change:transform;
+
+}
+
+.disc-slide{
+
+    flex:0 0 100%;
+
+    width:100%;
+
+    text-align:center;
+
+    padding:0 8px;
+
+    box-sizing:border-box;
+
+}
+
+.disc-slide[data-locked="true"] .current-disc-image{
+
+    filter:grayscale(1) brightness(.85);
+
+    opacity:.6;
+
+}
+
+.disc-slide[data-locked="true"] h2{
+
+    color:#9AA6BC;
+
+}
+
+.disc-arrow{
+
+    flex:0 0 auto;
+
+    width:44px;
+
+    height:44px;
+
+    border-radius:50%;
+
+    border:2px solid #B7C7E6;
+
+    background:#FFFDF8;
+
+    color:#5B77A8;
+
+    font-size:1.2rem;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.disc-arrow:hover{
+
+    background:#EAF0FB;
+
+    transform:scale(1.08);
+
+}
+
+.disc-arrow:active{
+
+    transform:scale(.95);
+
+}
+
+.disc-arrow:disabled{
+
+    opacity:.35;
+
+    cursor:default;
+
+    transform:none;
+
+}
+
+.disc-dots{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+    margin-top:14px;
+
+}
+
+.disc-dot{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    background:#D7E0F2;
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:0;
+
+    transition:.2s;
+
+}
+
+.disc-dot.active{
+
+    background:#6A88BC;
+
+    transform:scale(1.2);
+
+}
+
+/*======================================================
 COMMON WINDOWS
 
 Default state: windows are grid children, NOT absolutely
@@ -199,6 +355,35 @@ WELCOME WINDOW
 }
 
 /*======================================================
+TYPING EFFECT CURSOR
+Applied while greeting.js is actively typing a line;
+removed once that line finishes.
+======================================================*/
+
+#englishGreeting.typing-cursor::after,
+#greetingMessage.typing-cursor::after{
+
+    content:"|";
+
+    display:inline-block;
+
+    margin-left:2px;
+
+    animation:cursorBlink .8s step-end infinite;
+
+    color:#6A88BC;
+
+}
+
+@keyframes cursorBlink{
+
+    0%, 100%{ opacity:1; }
+
+    50%{ opacity:0; }
+
+}
+
+/*======================================================
 PLAYER WINDOW
 ======================================================*/
 
@@ -269,6 +454,16 @@ CURRENT DISC
 .big-btn{
 
     margin-top:25px;
+
+}
+
+.big-btn.disabled{
+
+    pointer-events:none;
+
+    opacity:.5;
+
+    filter:grayscale(.3);
 
 }
 

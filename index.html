@@ -342,43 +342,161 @@ DESKTOP
 
         <!-- CURRENT DISC -->
 
-        <article
-            id="discWindow"
-            class="retro-window current-disc">
+        <!-- =========================================
+     CURRENT DISC — replace the existing
+     <article id="discWindow" class="retro-window current-disc">
+     window-content with the block below. It swaps the
+     single disc image for a jukebox-style carousel with
+     left/right arrows that glide between N5–N1.
+========================================== -->
 
-            <div class="window-title">
+<article
+    id="discWindow"
+    class="retro-window current-disc">
 
-                <span>💿 CURRENT DISC</span>
+    <div class="window-title">
 
-                <div class="window-buttons">
+        <span>💿 CURRENT DISC</span>
 
-                    <span></span>
-                    <span></span>
-                    <span></span>
+        <div class="window-buttons">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+    </div>
+
+    <div class="window-content">
+
+        <div class="disc-carousel">
+
+            <button
+                class="disc-arrow disc-arrow-left"
+                id="discPrev"
+                aria-label="Previous disc">
+
+                <i class="bi bi-chevron-left"></i>
+
+            </button>
+
+            <div class="disc-viewport">
+
+                <div class="disc-track" id="discTrack">
+
+                    <!-- one .disc-slide per JLPT level -->
+
+                    <div
+                        class="disc-slide"
+                        data-level="N5"
+                        data-locked="false"
+                        data-href="pages/N5/n5-dashboard.html">
+
+                        <img
+                            src="assets/images/discs/N5disc.png"
+                            class="current-disc-image"
+                            alt="N5 Disc">
+
+                        <h2>JLPT N5 Edition</h2>
+
+                        <p>Grammar Explorer</p>
+
+                    </div>
+
+                    <div
+                        class="disc-slide"
+                        data-level="N4"
+                        data-locked="true">
+
+                        <img
+                            src="assets/images/discs/N4disc.png"
+                            class="current-disc-image"
+                            alt="N4 Disc">
+
+                        <h2>JLPT N4 Edition</h2>
+
+                        <p>🔒 Level Locked</p>
+
+                    </div>
+
+                    <div
+                        class="disc-slide"
+                        data-level="N3"
+                        data-locked="true">
+
+                        <img
+                            src="assets/images/discs/N3disc.png"
+                            class="current-disc-image"
+                            alt="N3 Disc">
+
+                        <h2>JLPT N3 Edition</h2>
+
+                        <p>🔒 Level Locked</p>
+
+                    </div>
+
+                    <div
+                        class="disc-slide"
+                        data-level="N2"
+                        data-locked="true">
+
+                        <img
+                            src="assets/images/discs/N2disc.png"
+                            class="current-disc-image"
+                            alt="N2 Disc">
+
+                        <h2>JLPT N2 Edition</h2>
+
+                        <p>🔒 Level Locked</p>
+
+                    </div>
+
+                    <div
+                        class="disc-slide"
+                        data-level="N1"
+                        data-locked="true">
+
+                        <img
+                            src="assets/images/discs/N1disc.png"
+                            class="current-disc-image"
+                            alt="N1 Disc">
+
+                        <h2>JLPT N1 Edition</h2>
+
+                        <p>🔒 Level Locked</p>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <div class="window-content">
+            <button
+                class="disc-arrow disc-arrow-right"
+                id="discNext"
+                aria-label="Next disc">
 
-                <img src="assets/images/discs/N5Disc.png"
-                     class="current-disc-image"
-                     alt="N5 Disc">
+                <i class="bi bi-chevron-right"></i>
 
-                <h2>JLPT N5 Edition</h2>
+            </button>
 
-                <p>Grammar Explorer</p>
+        </div>
 
-            <a href="pages/N5/n5-dashboard.html" 
-                class="retro-btn big-btn teleport-link">
-                ▶ Resume Adventure
-            </a>
+        <div class="disc-dots" id="discDots"></div>
 
-            </div>
+        <a
+            href="pages/N5/n5-dashboard.html"
+            class="retro-btn big-btn teleport-link"
+            id="discResumeBtn">
 
-        </article>
+            ▶ Resume Adventure
 
+        </a>
+
+    </div>
+
+</article>
 
 
         <!-- TODAY'S QUEST -->
