@@ -1,109 +1,265 @@
-// ==========================================
-// START MENU
-// ==========================================
+//======================================================
+// JP LIBRARY OS
+// INITIALIZATION
+//======================================================
 
-const startButton=
-document.getElementById("startMenuButton");
+document.addEventListener("DOMContentLoaded",()=>{
 
-const startMenu=
-document.getElementById("startMenu");
+    initializeStartMenu();
 
-startButton.onclick=function(){
+    initializeVolumePanel();
 
-    startMenu.classList.toggle("show");
+    initializeClock();
 
-};
-
-document.addEventListener("click",(event)=>{
-
-    if(
-
-        !startMenu.contains(event.target)
-
-        &&
-
-        !startButton.contains(event.target)
-
-    ){
-
-        startMenu.classList.remove("show");
-
-    }
+    initializeWindowManager();
 
 });
 
+//======================================================
+// START MENU
+//======================================================
 
-// ==========================================
-// CLOCK
-// ==========================================
+const startButton =
+document.getElementById("startButton");
 
-const taskbarClock=
-document.getElementById("taskbarClock");
+const startMenu =
+document.getElementById("startMenu");
 
-const taskbarDate=
-document.getElementById("taskbarDate");
+function initializeStartMenu(){
 
-function updateClock(){
+    if(!startButton || !startMenu) return;
 
-    const now=new Date();
+    startButton.addEventListener("click",(event)=>{
 
-    taskbarClock.textContent=
+        event.stopPropagation();
 
-    now.toLocaleTimeString([],{
+        startMenu.classList.toggle("show");
 
-        hour:"2-digit",
-
-        minute:"2-digit"
+        volumePanel?.classList.remove("show");
 
     });
 
-    taskbarDate.textContent=
+    document.addEventListener("click",(event)=>{
 
-    now.toLocaleDateString([],{
+        if(
 
-        month:"short",
+            !startMenu.contains(event.target)
 
-        day:"numeric"
+            &&
+
+            !startButton.contains(event.target)
+
+        ){
+
+            startMenu.classList.remove("show");
+
+        }
 
     });
 
 }
 
-updateClock();
-
-setInterval(updateClock,1000);
-
-
-// ==========================================
+//======================================================
 // VOLUME PANEL
-// ==========================================
+//======================================================
 
-const volumeButton=
+const volumeButton =
 document.getElementById("volumeButton");
 
-const volumePanel=
+const volumePanel =
 document.getElementById("volumePanel");
 
-volumeButton.onclick=function(){
+function initializeVolumePanel(){
 
-    volumePanel.classList.toggle("show");
+    if(!volumeButton || !volumePanel) return;
 
-};
+    volumeButton.addEventListener("click",(event)=>{
 
-document.addEventListener("click",(event)=>{
+        event.stopPropagation();
 
-    if(
+        volumePanel.classList.toggle("show");
 
-        !volumePanel.contains(event.target)
+        startMenu?.classList.remove("show");
 
-        &&
+    });
 
-        !volumeButton.contains(event.target)
+    document.addEventListener("click",(event)=>{
 
-    ){
+        if(
 
-        volumePanel.classList.remove("show");
+            !volumePanel.contains(event.target)
+
+            &&
+
+            !volumeButton.contains(event.target)
+
+        ){
+
+            volumePanel.classList.remove("show");
+
+        }
+
+    });
+
+}
+
+//======================================================
+// TASKBAR CLOCK
+//======================================================
+
+const taskbarClock =
+document.getElementById("taskbarClock");
+
+const taskbarDate =
+document.getElementById("taskbarDate");
+
+function initializeClock(){
+
+    updateClock();
+
+    setInterval(updateClock,1000);
+
+}
+
+function updateClock(){
+
+    const now = new Date();
+
+    if(taskbarClock){
+
+        taskbarClock.textContent=
+
+        now.toLocaleTimeString(
+
+            [],
+
+            {
+
+                hour:"2-digit",
+
+                minute:"2-digit"
+
+            }
+
+        );
 
     }
 
+    if(taskbarDate){
+
+        taskbarDate.textContent=
+
+        now.toLocaleDateString(
+
+            [],
+
+            {
+
+                month:"short",
+
+                day:"numeric"
+
+            }
+
+        );
+
+    }
+
+}
+
+//======================================================
+// WINDOW MANAGER
+//======================================================
+
+let highestZ = 100;
+
+function initializeWindowManager(){
+
+    const windows =
+
+    document.querySelectorAll(".retro-window");
+
+    windows.forEach(window=>{
+
+        window.addEventListener("mousedown",()=>{
+
+            highestZ++;
+
+            window.style.zIndex = highestZ;
+
+        });
+
+    });
+
+}
+
+//======================================================
+// MINIMIZE
+//======================================================
+
+document.querySelectorAll(".window-minimize")
+
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        const window =
+
+        button.closest(".retro-window");
+
+        if(!window) return;
+
+        window.classList.add("window-minimizing");
+
+        setTimeout(()=>{
+
+            window.style.display="none";
+
+        },250);
+
+    });
+
 });
+
+//======================================================
+// MAXIMIZE
+//======================================================
+
+document.querySelectorAll(".window-maximize")
+
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        const window=
+
+        button.closest(".retro-window");
+
+        if(!window) return;
+
+        window.classList.toggle("window-maximized");
+
+    });
+
+});
+
+
+//======================================================
+// RESTORE WINDOW
+//======================================================
+
+function restoreWindow(id){
+
+    const window =
+
+    document.getElementById(id);
+
+    if(!window) return;
+
+    window.style.display="block";
+
+    window.classList.remove("window-minimizing");
+
+    window.classList.add("window-restoring");
+
+}

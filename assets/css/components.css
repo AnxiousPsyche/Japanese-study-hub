@@ -45,23 +45,6 @@
    WINDOW TITLE BAR
 ====================================================== */
 
-.window-title-icons{
-
-    display:flex;
-
-    gap:8px;
-
-}
-
-.window-title-icons span{
-
-    width:12px;
-
-    height:12px;
-
-    border-radius:50%;
-
-}
 
 .window-close{
 
@@ -87,7 +70,7 @@
    WINDOW BODY
 ====================================================== */
 
-.window-body{
+.window-content{
 
     padding:30px;
 
@@ -113,7 +96,15 @@
 
     border-radius:var(--radius);
 
+    font-family:var(--title-font);
+
+    font-size:.65rem;
+
+    letter-spacing:1px;
+
     font-weight:700;
+
+    cursor:pointer;
 
     transition:var(--transition);
 
@@ -132,6 +123,18 @@
 .retro-btn:active{
 
     transform:translateY(2px);
+
+    box-shadow:none;
+
+}
+
+.retro-btn:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+    transform:none;
 
     box-shadow:none;
 

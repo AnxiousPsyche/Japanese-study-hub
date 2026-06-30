@@ -1,0 +1,109 @@
+/*======================================================
+MUSIC PLAYER
+======================================================*/
+
+.volume-panel{
+
+    position:fixed;
+
+    right:12px;
+
+    bottom:65px;
+
+    width:280px;
+
+    display:none;
+
+    flex-direction:column;
+
+    gap:15px;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:#FFFDF8;
+
+    border:3px solid #89A8D8;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+
+    z-index:9999;
+
+}
+
+.volume-panel.show{
+
+    display:flex;
+
+}
+
+.music-player.show{
+
+    display:flex;
+
+}
+
+.music-player h3{
+
+    margin:0;
+
+    text-align:center;
+
+    font-family:'Press Start 2P';
+
+    font-size:.75rem;
+
+    color:#5D7DBA;
+
+}
+
+.music-player p{
+
+    margin:0;
+
+    text-align:center;
+
+    font-weight:bold;
+
+}
+
+.music-player input{
+
+    width:100%;
+
+}
+
+.player-controls{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:16px;
+
+}
+
+.player-controls button{
+
+    width:44px;
+
+    height:44px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#D8E5FB;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.player-controls button:hover{
+
+    background:white;
+
+}

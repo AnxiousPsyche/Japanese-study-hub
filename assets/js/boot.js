@@ -25,13 +25,7 @@ const bootMessages=[
 
     "🍵 Brewing Green Tea...",
 
-    "🏫 Opening Classroom Door...",
-
-    "👩 Tanaka Sensei is waiting...",
-
     "📖 Opening Your Japanese Textbook...",
-
-    "💿 Initializing Disc Drive...",
 
     "✨ System Ready."
 
@@ -69,12 +63,16 @@ function bootSequence(){
 
     else{
 
-        statusText.textContent=
-        "▶ Press START";
+    statusText.textContent =
+    "🎮 System Ready.";
 
-        startButton.disabled=false;
+    startButton.disabled = false;
 
-    }
+    startButton.textContent = "▶ PRESS START";
+
+    startButton.classList.add("xp-glow");
+
+}
 
 }
 
@@ -86,6 +84,8 @@ window.addEventListener("load",()=>{
 
 startButton.onclick=function(){
 
+    startButton.disabled=true;
+
     bootScreen.classList.add("fade-out");
 
     setTimeout(()=>{
@@ -93,9 +93,24 @@ startButton.onclick=function(){
         bootScreen.style.display="none";
 
         desktop.style.display="block";
+    
 
-        desktop.classList.add("fade-in");
+desktop.classList.add("fade-in");
 
-    },600);
+window.scrollTo(0,0);
+
+const bgMusic=document.getElementById("bgMusic");
+
+if(bgMusic){
+
+    bgMusic.play().catch(()=>{
+
+        console.log("Music autoplay blocked.");
+
+    });
+
+}
+
+},600);
 
 };

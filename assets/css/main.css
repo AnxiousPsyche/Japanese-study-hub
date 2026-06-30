@@ -1,13 +1,14 @@
-@import url("variables.css");
-@import url("reset.css");
-@import url("navbar.css");
-@import url("components.css");
-@import url("homepage.css");
-@import url("lessons.css");
-@import url("mission.css");
-@import url("quiz.css");
-@import url("animations.css");
-@import url("responsive.css");
+@import "reset.css";
+@import "variables.css";
+@import "components.css";
+
+@import "boot.css";
+@import "homepage.css";
+@import "os.css";
+@import "navbar.css";
+@import "teleport.css";
+@import "animations.css";
+@import "responsive.css";
 
 *{
 

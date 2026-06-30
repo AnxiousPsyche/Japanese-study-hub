@@ -1,13 +1,11 @@
 /*======================================================
 JP LIBRARY OS
-DESKTOP
+HOMEPAGE DESKTOP
 ======================================================*/
 
 body{
 
     margin:0;
-
-    padding:0;
 
     overflow:hidden;
 
@@ -16,8 +14,6 @@ body{
     font-family:'Nunito',sans-serif;
 
 }
-
-
 
 /*======================================================
 DESKTOP
@@ -33,73 +29,322 @@ DESKTOP
 
     overflow:hidden;
 
-    background-image:url("../images/backgrounds/desktop-wallpaper.png");
-
-    background-size:cover;
-
-    background-position:center;
-
-    background-repeat:no-repeat;
+    background:url("../images/backgrounds/desktop-wallpaper.png")
+    center center/cover no-repeat;
 
 }
 
+/*======================================================
+DESKTOP CONTAINER
+======================================================*/
 
+.desktop-container{
+
+    position:relative;
+
+    width:100%;
+
+    height:calc(100vh - 55px);
+
+}
 
 /*======================================================
-RETRO WINDOWS
+COMMON WINDOWS
 ======================================================*/
 
 .retro-window{
 
     position:absolute;
 
-    overflow:hidden;
-
-    border-radius:18px;
+    background:#FFFDF8;
 
     border:3px solid #B7C7E6;
 
-    background:#FFFDF8;
+    border-radius:18px;
+
+    overflow:hidden;
 
     box-shadow:
 
-        0 15px 35px rgba(0,0,0,.18);
+        0 14px 30px rgba(0,0,0,.18);
 
 }
 
-
-
 /*======================================================
-WINDOW TITLE
+WINDOW CONTENT
 ======================================================*/
 
-.window-title{
+.window-content{
+
+    padding:24px;
+
+}
+
+/*======================================================
+WELCOME WINDOW
+======================================================*/
+
+.desktop-header{
+
+    top:25px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:720px;
+
+}
+
+.desktop-header-content{
+
+    text-align:center;
+
+}
+
+.desktop-header h1{
+
+    margin-bottom:12px;
+
+}
+
+.desktop-clock{
+
+    margin-top:18px;
+
+    font-size:1.4rem;
+
+    font-weight:bold;
+
+    color:#6A88BC;
+
+}
+
+/*======================================================
+PLAYER WINDOW
+======================================================*/
+
+.player-card{
+
+    top:120px;
+
+    left:30px;
+
+    width:270px;
+
+}
+
+.player-avatar{
+
+    width:120px;
+
+    display:block;
+
+    margin:0 auto 15px;
+
+}
+
+.player-card .window-content{
+
+    text-align:center;
+
+}
+
+.player-stats{
 
     display:flex;
 
-    justify-content:space-between;
+    justify-content:space-around;
 
-    align-items:center;
-
-    padding:12px 18px;
-
-    background:linear-gradient(
-
-        #90AED9,
-
-        #B7C7E6
-
-    );
-
-    color:white;
-
-    font-family:'Press Start 2P';
-
-    font-size:.62rem;
+    margin-top:20px;
 
 }
 
+/*======================================================
+CURRENT DISC
+======================================================*/
 
+.current-disc{
+
+    top:120px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:560px;
+
+}
+
+.current-disc-image{
+
+    width:100%;
+
+    max-width:520px;
+
+    display:block;
+
+    margin:auto;
+
+}
+
+.current-disc .window-content{
+
+    text-align:center;
+
+}
+
+.big-btn{
+
+    margin-top:25px;
+
+}
+
+/*======================================================
+QUEST WINDOW
+======================================================*/
+
+.quest-card{
+
+    top:120px;
+
+    right:30px;
+
+    width:270px;
+
+}
+
+.quest-card .window-content{
+
+    text-align:center;
+
+}
+
+.quest-reward{
+
+    margin:20px 0;
+
+    padding:14px;
+
+    background:#FFF4BF;
+
+    border-radius:12px;
+
+    font-weight:bold;
+
+}
+
+/*======================================================
+QUICK ACCESS
+Moved to START MENU
+======================================================*/
+
+.quick-access{
+
+    display:none;
+
+}
+
+/*======================================================
+JOURNEY
+Moved to START MENU
+======================================================*/
+
+.journey-window{
+
+    display:none;
+
+}
+
+/*======================================================
+FOOTER
+======================================================*/
+
+.footer-window{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:70px;
+
+    transform:translateX(-50%);
+
+    width:520px;
+
+    text-align:center;
+
+    opacity:.9;
+
+}
+
+/*======================================================
+XP BAR
+======================================================*/
+
+.xp-bar{
+
+    width:100%;
+
+    height:14px;
+
+    margin:18px 0;
+
+    border-radius:999px;
+
+    background:#E8E8E8;
+
+    overflow:hidden;
+
+}
+
+.xp-fill{
+
+    height:100%;
+
+    width:35%;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+
+        90deg,
+
+        #F3D36E,
+
+        #89A8D8
+
+    );
+
+}
+
+/*======================================================
+PLAYER STATS
+======================================================*/
+
+.player-stats div{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+.player-stats strong{
+
+    font-size:1.2rem;
+
+    color:#5B77A8;
+
+}
+
+/*======================================================
+WINDOW TITLE BUTTONS
+======================================================*/
 
 .window-buttons{
 
@@ -109,441 +354,93 @@ WINDOW TITLE
 
 }
 
-
-
 .window-buttons span{
 
-    width:11px;
+    width:12px;
 
-    height:11px;
+    height:12px;
 
     border-radius:50%;
 
     background:white;
 
-    opacity:.8;
+    opacity:.85;
+
+    transition:.2s;
 
 }
 
+.window-buttons span:hover{
 
-
-/*======================================================
-WINDOW CONTENT
-======================================================*/
-
-.window-content{
-
-    padding:22px;
-
-}
-
-
-
-/*======================================================
-PLAYER WINDOW
-======================================================*/
-
-.player-window{
-
-    top:28px;
-
-    left:28px;
-
-    width:250px;
-
-    animation:windowAppear .45s ease;
-
-}
-
-
-
-.player-avatar{
-
-    display:block;
-
-    width:120px;
-
-    margin:15px auto;
-
-    border-radius:50%;
-
-}
-
-
-
-.player-window .window-content{
-
-    text-align:center;
-
-}
-
-
-
-.player-window h2{
-
-    margin-top:10px;
-
-    margin-bottom:6px;
-
-}
-
-
-
-.player-window p{
-
-    margin:10px 0;
-
-}
-
-
-
-.player-window hr{
-
-    margin:18px 0;
-
-}
-
-
-
-/*======================================================
-QUEST WINDOW
-======================================================*/
-
-.quest-window{
-
-    top:28px;
-
-    right:28px;
-
-    width:270px;
-
-    animation:windowAppear .45s ease;
-
-}
-
-
-
-.quest-window h3{
-
-    margin-bottom:8px;
-
-}
-
-
-
-.quest-window hr{
-
-    margin:20px 0;
-
-}
-
-
-
-.quest-reward{
-
-    margin:18px auto;
-
-    padding:15px;
-
-    border-radius:12px;
-
-    background:#FFF3C6;
-
-    text-align:center;
-
-    font-weight:bold;
-
-}
-
-
-
-/*======================================================
-WINDOW ANIMATION
-======================================================*/
-
-@keyframes windowAppear{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(25px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
+    transform:scale(1.2);
 
 }
 
 /*======================================================
-DISC LAUNCHER
+WINDOW SHADOW
 ======================================================*/
 
-.launcher-window{
-
-    position:absolute;
-
-    top:50%;
-
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-    width:700px;
-
-    min-height:480px;
-
-    animation:windowAppear .45s ease;
-
-}
-
-.launcher-content{
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-}
-
-.launcher-content h2{
-
-    margin-top:10px;
-
-    margin-bottom:8px;
-
-    color:#5B77A8;
-
-}
-
-.launcher-content p{
-
-    color:#666;
-
-    margin-bottom:25px;
-
-}
-
-
-
-/*======================================================
-DISC SHELF
-======================================================*/
-
-.disc-shelf{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:flex-end;
-
-    gap:22px;
-
-    margin:35px 0;
-
-    flex-wrap:wrap;
-
-}
-
-
-
-/*======================================================
-DISCS
-======================================================*/
-
-.launcher-disc{
-
-    width:110px;
-
-    cursor:pointer;
+.retro-window{
 
     transition:
 
         transform .25s,
 
-        filter .25s,
-
         box-shadow .25s;
 
-    user-select:none;
-
 }
 
-.launcher-disc:hover{
+.retro-window:hover{
 
-    transform:
-
-        translateY(-12px)
-
-        scale(1.08)
-
-        rotate(-6deg);
-
-    filter:drop-shadow(
-
-        0 0 18px
-
-        rgba(255,180,220,.8)
-
-    );
-
-}
-
-
-
-/*======================================================
-SELECTED DISC
-======================================================*/
-
-.launcher-disc.selected{
-
-    transform:scale(1.12);
-
-    filter:drop-shadow(
-
-        0 0 24px
-
-        rgba(255,200,120,.95)
-
-    );
-
-}
-
-
-
-/*======================================================
-LOCKED DISC
-======================================================*/
-
-.launcher-disc.locked{
-
-    opacity:.35;
-
-    filter:grayscale(100%);
-
-    cursor:not-allowed;
-
-}
-
-.launcher-disc.locked:hover{
-
-    transform:none;
-
-    filter:grayscale(100%);
-
-}
-
-
-
-/*======================================================
-DISC LABEL
-======================================================*/
-
-#selectedDisc{
-
-    min-height:28px;
-
-    margin-top:15px;
-
-    font-weight:bold;
-
-    color:#5B77A8;
-
-}
-
-
-
-/*======================================================
-INSERT DISC BUTTON
-======================================================*/
-
-#insertDiscButton{
-
-    margin-top:28px;
-
-    padding:14px 42px;
-
-    border:none;
-
-    border-radius:14px;
-
-    background:linear-gradient(
-
-        #F8C8D7,
-
-        #E8AFC4
-
-    );
-
-    color:#444;
-
-    font-size:1rem;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    transition:.25s;
-
-}
-
-#insertDiscButton:hover{
-
-    transform:translateY(-3px);
+    transform:translateY(-4px);
 
     box-shadow:
 
-        0 12px 25px
-
-        rgba(0,0,0,.18);
+        0 20px 45px rgba(0,0,0,.22);
 
 }
-
-#insertDiscButton:disabled{
-
-    cursor:not-allowed;
-
-    opacity:.45;
-
-    box-shadow:none;
-
-}
-
-
 
 /*======================================================
-DISC DRIVE SLOT
+DISABLED WINDOWS
+For future minimize animation
 ======================================================*/
 
-.drive-slot{
+.window-hidden{
 
-    width:260px;
+    display:none;
 
-    height:18px;
+}
 
-    margin:25px auto;
+/*======================================================
+WINDOW MAXIMIZED
+(JS will use later)
+======================================================*/
 
-    border-radius:999px;
+.window-maximized{
 
-    background:#C9CCD6;
+    position:fixed !important;
 
-    border:2px solid #999;
+    inset:20px;
 
-    box-shadow:
+    width:auto !important;
 
-        inset 0 2px 6px rgba(0,0,0,.35);
+    height:auto !important;
+
+    transform:none !important;
+
+    z-index:9998;
+
+}
+
+/*======================================================
+FLOATING WINDOW LOOK
+======================================================*/
+
+.player-card,
+.current-disc,
+.quest-card{
+
+    animation:windowAppear .45s ease;
 
 }
 
@@ -571,13 +468,13 @@ WINDOW ANIMATIONS
 
 }
 
-@keyframes windowDisappear{
+@keyframes windowMinimize{
 
     from{
 
         opacity:1;
 
-        transform:translateY(0);
+        transform:scale(1);
 
     }
 
@@ -585,41 +482,87 @@ WINDOW ANIMATIONS
 
         opacity:0;
 
-        transform:translateY(20px);
+        transform:scale(.75);
 
     }
 
 }
 
-@keyframes discGlow{
+@keyframes windowRestore{
 
-    0%{
+    from{
 
-        filter:drop-shadow(0 0 8px rgba(255,190,220,.3));
+        opacity:0;
 
-    }
-
-    50%{
-
-        filter:drop-shadow(0 0 24px rgba(255,190,220,.9));
+        transform:scale(.75);
 
     }
 
-    100%{
+    to{
 
-        filter:drop-shadow(0 0 8px rgba(255,190,220,.3));
+        opacity:1;
+
+        transform:scale(1);
 
     }
 
 }
 
-.selected{
+.window-minimizing{
 
-    animation:discGlow 2s infinite;
+    animation:windowMinimize .28s forwards;
 
 }
 
+.window-restoring{
 
+    animation:windowRestore .28s ease;
+
+}
+
+/*======================================================
+WINDOW DRAGGING
+======================================================*/
+
+.retro-window{
+
+    user-select:none;
+
+}
+
+.window-title{
+
+    cursor:grab;
+
+}
+
+.window-title:active{
+
+    cursor:grabbing;
+
+}
+
+.dragging{
+
+    opacity:.92;
+
+    transition:none;
+
+    z-index:99999;
+
+}
+
+/*======================================================
+WINDOW ACTIVE
+======================================================*/
+
+.window-active{
+
+    box-shadow:
+
+        0 20px 45px rgba(0,0,0,.28);
+
+}
 
 /*======================================================
 SAKURA PETALS
@@ -635,7 +578,7 @@ SAKURA PETALS
 
     overflow:hidden;
 
-    z-index:999;
+    z-index:2;
 
 }
 
@@ -646,8 +589,6 @@ SAKURA PETALS
     top:-40px;
 
     font-size:22px;
-
-    user-select:none;
 
     opacity:.9;
 
@@ -665,7 +606,7 @@ SAKURA PETALS
 
         transform:
 
-            translate(0,-50px)
+            translate(0,-60px)
 
             rotate(0deg);
 
@@ -673,29 +614,19 @@ SAKURA PETALS
 
     }
 
-    15%{
+    20%{
 
         opacity:1;
 
     }
 
-    40%{
+    50%{
 
         transform:
 
-            translate(-35px,35vh)
+            translate(-35px,50vh)
 
-            rotate(140deg);
-
-    }
-
-    70%{
-
-        transform:
-
-            translate(40px,70vh)
-
-            rotate(260deg);
+            rotate(180deg);
 
     }
 
@@ -703,7 +634,7 @@ SAKURA PETALS
 
         transform:
 
-            translate(-20px,110vh)
+            translate(25px,110vh)
 
             rotate(360deg);
 
@@ -713,8 +644,6 @@ SAKURA PETALS
 
 }
 
-
-
 /*======================================================
 ACHIEVEMENT POPUP
 ======================================================*/
@@ -723,9 +652,9 @@ ACHIEVEMENT POPUP
 
     position:fixed;
 
-    right:25px;
+    right:20px;
 
-    bottom:85px;
+    bottom:75px;
 
     display:flex;
 
@@ -751,7 +680,7 @@ ACHIEVEMENT POPUP
 
     box-shadow:
 
-        0 15px 35px rgba(0,0,0,.18);
+        0 15px 35px rgba(0,0,0,.22);
 
     transform:translateX(380px);
 
@@ -799,7 +728,27 @@ ACHIEVEMENT POPUP
 
 }
 
+/*======================================================
+WINDOW LAYER ORDER
+======================================================*/
 
+.player-card{
+
+    z-index:20;
+
+}
+
+.current-disc{
+
+    z-index:25;
+
+}
+
+.quest-card{
+
+    z-index:20;
+
+}
 
 /*======================================================
 RESPONSIVE
@@ -807,35 +756,31 @@ RESPONSIVE
 
 @media(max-width:1200px){
 
-    .launcher-window{
+    .current-disc{
 
-        width:90%;
+        width:460px;
 
     }
 
 }
 
-@media(max-width:900px){
+@media(max-width:992px){
 
-    .player-window{
-
-        left:15px;
-
-        width:210px;
-
-    }
-
-    .quest-window{
-
-        right:15px;
+    .player-card{
 
         width:220px;
 
     }
 
-    .launcher-disc{
+    .quest-card{
 
-        width:90px;
+        width:220px;
+
+    }
+
+    .current-disc{
+
+        width:420px;
 
     }
 
@@ -843,55 +788,43 @@ RESPONSIVE
 
 @media(max-width:768px){
 
-    .player-window{
+    .player-card,
+
+    .quest-card{
 
         display:none;
 
     }
 
-    .quest-window{
+    .current-disc{
 
-        display:none;
+        width:92%;
 
-    }
+        left:50%;
 
-    .launcher-window{
-
-        width:95%;
+        transform:translateX(-50%);
 
     }
 
-    .disc-shelf{
+    .desktop-header{
 
-        gap:12px;
-
-    }
-
-    .launcher-disc{
-
-        width:75px;
+        width:92%;
 
     }
 
 }
 
-@media(max-width:500px){
+@media(max-width:576px){
 
-    .launcher-content h2{
+    .desktop-header h1{
 
-        font-size:1.2rem;
-
-    }
-
-    .launcher-disc{
-
-        width:60px;
+        font-size:1.3rem;
 
     }
 
-    #insertDiscButton{
+    .desktop-clock{
 
-        width:100%;
+        font-size:1rem;
 
     }
 
