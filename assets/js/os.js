@@ -35,7 +35,10 @@ function initializeStartMenu(){
 
         startMenu.classList.toggle("show");
 
-        volumePanel?.classList.remove("show");
+        if(volumePanel){
+            volumePanel.classList.remove("show");
+
+        }
 
     });
 
@@ -79,7 +82,11 @@ function initializeVolumePanel(){
 
         volumePanel.classList.toggle("show");
 
-        startMenu?.classList.remove("show");
+        if(startMenu){
+
+        startMenu.classList.remove("show");
+
+        }
 
     });
 
@@ -186,6 +193,97 @@ function initializeWindowManager(){
             highestZ++;
 
             window.style.zIndex = highestZ;
+
+            window.classList.add("window-active");
+
+        });
+
+    });
+
+    initializeDraggableWindows();
+
+}
+
+
+
+//======================================================
+// DRAG WINDOWS
+//======================================================
+
+function initializeDraggableWindows(){
+
+    const draggableWindows =
+
+        document.querySelectorAll(
+
+    "#playerWindow, #discWindow, #questWindow"
+
+);
+
+    draggableWindows.forEach(window=>{
+
+        const titleBar =
+
+        window.querySelector(".window-title");
+
+        if(!titleBar) return;
+
+        let dragging = false;
+
+        let offsetX = 0;
+
+        let offsetY = 0;
+
+        titleBar.addEventListener("mousedown",(event)=>{
+
+            dragging = true;
+
+            event.preventDefault();
+
+            window.style.right = "auto";
+            window.style.bottom = "auto";
+
+            window.style.transform = "none";
+
+            highestZ++;
+
+            window.style.zIndex = highestZ;
+
+            window.classList.add("dragging");
+
+            offsetX =
+
+                event.clientX -
+
+                window.offsetLeft;
+
+            offsetY =
+
+                event.clientY -
+
+                window.offsetTop;
+
+        });
+
+        document.addEventListener("mousemove",(event)=>{
+
+            if(!dragging) return;
+
+            window.style.position="absolute";
+
+            window.style.left=
+            (event.clientX-offsetX)+"px";
+
+            window.style.top=
+            (event.clientY-offsetY)+"px";
+
+        });
+
+        document.addEventListener("mouseup",()=>{
+
+            dragging = false;
+
+            window.classList.remove("dragging");
 
         });
 

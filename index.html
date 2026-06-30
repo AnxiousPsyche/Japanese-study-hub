@@ -262,7 +262,9 @@ DESKTOP
 
         <!-- PLAYER -->
 
-        <article class="retro-window player-card">
+        <article
+            id="playerWindow"
+            class="retro-window player-card">
 
             <div class="window-title">
 
@@ -342,7 +344,9 @@ DESKTOP
 
         <!-- CURRENT DISC -->
 
-        <article class="retro-window current-disc">
+        <article
+            id="discWindow"
+            class="retro-window current-disc">
 
             <div class="window-title">
 
@@ -381,7 +385,9 @@ DESKTOP
 
         <!-- TODAY'S QUEST -->
 
-        <article class="retro-window quest-card">
+        <article
+            id="questWindow"
+            class="retro-window quest-card">
 
             <div class="window-title">
 
@@ -623,6 +629,292 @@ TASKBAR
 
 </footer>
 
+<!-- ==========================================================
+START MENU
+=========================================================== -->
+
+<div
+    id="startMenu"
+    class="start-menu">
+
+    <!-- =====================================
+         PROFILE
+    ====================================== -->
+
+    <div class="start-profile">
+
+        <img
+            src="assets/images/logo/JPLlogo.png"
+            alt="Player">
+
+        <div>
+
+            <h3>Rei</h3>
+
+            <p>Grammar Explorer</p>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================
+         MENU
+    ====================================== -->
+
+    <div class="start-body">
+
+        <button
+            class="start-item"
+            data-app="grammar">
+
+            <i class="bi bi-book"></i>
+
+            <span>Grammar</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="vocabulary">
+
+            <i class="bi bi-journal-text"></i>
+
+            <span>Vocabulary</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="flashcards">
+
+            <i class="bi bi-card-text"></i>
+
+            <span>Flashcards</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="practice">
+
+            <i class="bi bi-pencil-square"></i>
+
+            <span>Practice</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="achievements">
+
+            <i class="bi bi-trophy"></i>
+
+            <span>Achievements</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="favorites">
+
+            <i class="bi bi-heart"></i>
+
+            <span>Favorites</span>
+
+        </button>
+
+        <button
+            class="start-item"
+            data-app="progress">
+
+            <i class="bi bi-graph-up"></i>
+
+            <span>Progress</span>
+
+        </button>
+
+        <button
+            class="start-item settings"
+            data-app="settings">
+
+            <i class="bi bi-gear-fill"></i>
+
+            <span>Settings</span>
+
+        </button>
+
+    </div>
+
+    <div class="start-divider"></div>
+
+    <!-- =====================================
+         BOTTOM
+    ====================================== -->
+
+    <div class="start-bottom">
+
+        <button
+            class="start-item save">
+
+            <i class="bi bi-floppy-fill"></i>
+
+            <span>Save Progress</span>
+
+        </button>
+
+        <button
+            class="start-item exit">
+
+            <i class="bi bi-box-arrow-right"></i>
+
+            <span>Exit JP Library</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+VOLUME PANEL / MUSIC PLAYER
+=========================================================== -->
+
+<div
+    id="volumePanel"
+    class="volume-panel">
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <div class="volume-header">
+
+        🎵 JP LIBRARY PLAYER
+
+    </div>
+
+    <!-- =====================================
+         BODY
+    ====================================== -->
+
+    <div class="volume-body">
+
+        <h4>Now Playing</h4>
+
+        <p id="currentTrack">
+
+            🌸 Kyoto
+
+        </p>
+
+        <!-- =========================
+             VOLUME
+        ========================== -->
+
+        <div class="volume-slider">
+
+            <label for="volumeRange">
+
+                Volume
+
+            </label>
+
+            <input
+
+                id="volumeRange"
+
+                type="range"
+
+                min="0"
+
+                max="100"
+
+                value="40">
+
+        </div>
+
+        <!-- =========================
+             CONTROLS
+        ========================== -->
+
+        <div class="player-controls">
+
+            <button
+                id="previousTrack">
+
+                <i class="bi bi-skip-back-fill"></i>
+
+            </button>
+
+            <button
+                id="playPause">
+
+                <i class="bi bi-play-fill"></i>
+
+            </button>
+
+            <button
+                id="nextTrack">
+
+                <i class="bi bi-skip-forward-fill"></i>
+
+            </button>
+
+        </div>
+
+        <!-- =========================
+             PLAYLIST
+        ========================== -->
+
+        <div class="playlist">
+
+            <button
+
+                class="playlist-item"
+
+                data-track="kyoto">
+
+                🌸 Kyoto
+
+            </button>
+
+            <button
+
+                class="playlist-item"
+
+                data-track="spring">
+
+                🍃 Spring Wind
+
+            </button>
+
+            <button
+
+                class="playlist-item"
+
+                data-track="evening">
+
+                🌙 Evening Shrine
+
+            </button>
+
+            <button
+
+                class="playlist-item"
+
+                data-track="rain">
+
+                ☔ Rainy Study
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!--=====================================
 AUDIO
 ======================================-->
@@ -665,6 +957,8 @@ TELEPORT EFFECT
 <script src="assets/js/teleport.js"></script>
 
 <script src="assets/js/music-player.js"></script>
+
+<script src="assets/js/os.js"></script>
 
 <script src="assets/js/index.js"></script>
 

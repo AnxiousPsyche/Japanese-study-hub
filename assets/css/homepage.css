@@ -21,7 +21,7 @@ DESKTOP
 
 #desktop{
 
-    position:relative;
+    position:absolute;
 
     width:100vw;
 
@@ -40,7 +40,7 @@ DESKTOP CONTAINER
 
 .desktop-container{
 
-    position:relative;
+    position:absolute;
 
     width:100%;
 
@@ -88,9 +88,7 @@ WELCOME WINDOW
 
     top:25px;
 
-    left:50%;
-
-    transform:translateX(-50%);
+    left:calc(50% - 360px);
 
     width:720px;
 
@@ -168,9 +166,7 @@ CURRENT DISC
 
     top:120px;
 
-    left:50%;
-
-    transform:translateX(-50%);
+    left:calc(50% - 280px);
 
     width:560px;
 
@@ -392,8 +388,7 @@ WINDOW SHADOW
 
 .retro-window:hover{
 
-    transform:translateY(-4px);
-
+    transform:none;
     box-shadow:
 
         0 20px 45px rgba(0,0,0,.22);
@@ -441,6 +436,8 @@ FLOATING WINDOW LOOK
 .quest-card{
 
     animation:windowAppear .45s ease;
+
+    animation-fill-mode:both;
 
 }
 
@@ -747,6 +744,24 @@ WINDOW LAYER ORDER
 .quest-card{
 
     z-index:20;
+
+}
+
+/*======================================================
+DRAGGING
+======================================================*/
+
+.dragging{
+
+    transition:none !important;
+
+    cursor:grabbing;
+
+}
+
+.dragging:hover{
+
+    transform:none !important;
 
 }
 
