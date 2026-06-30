@@ -61,8 +61,6 @@
 
     <link rel="stylesheet" href="assets/css/homepage.css">
 
-    <link rel="stylesheet" href="assets/css/lessons.css">
-
     <link rel="stylesheet" href="assets/css/mission.css">
 
     <link rel="stylesheet" href="assets/css/quiz.css">
@@ -178,7 +176,7 @@
 
             </p>
 
-            <button id="start-btn"
+            <button id="startBoot-btn"
             class="retro-btn"
             disabled>
             BOOTING...
@@ -438,41 +436,48 @@ DESKTOP
          JOURNEY
     ========================================== -->
 
-    <section class="retro-window">
+   <!-- =========================================
+     JOURNEY  — find this section in index.html
+     (it currently has no class besides retro-window)
+     and update its opening tag to match below so the
+     CSS grid-area:journey rule actually applies to it.
+========================================== -->
 
-        <div class="window-title">
+<section class="retro-window journey-window">
 
-            <span>🗺 YOUR JOURNEY</span>
+    <div class="window-title">
 
-            <div class="window-buttons">
+        <span>🗺 YOUR JOURNEY</span>
 
-                <span></span>
-                <span></span>
-                <span></span>
+        <div class="window-buttons">
 
-            </div>
-
-        </div>
-
-        <div class="window-content">
-
-            <ul class="journey-list">
-
-                <li>⚔️ JLPT N5 <span class="status current">Quest Active</span></li>
-
-                <li>🔒 JLPT N4<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N3<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N2<span class="status locked">Level Locked</span></li>
-
-                <li>🔒 JLPT N1<span class="status locked"> Level Locked</span></li>
-
-            </ul>
+            <span></span>
+            <span></span>
+            <span></span>
 
         </div>
 
-    </section>
+    </div>
+
+    <div class="window-content">
+
+        <ul class="journey-list">
+
+            <li>⚔️ JLPT N5 <span class="status current">Quest Active</span></li>
+
+            <li>🔒 JLPT N4<span class="status locked">Level Locked</span></li>
+
+            <li>🔒 JLPT N3<span class="status locked">Level Locked</span></li>
+
+            <li>🔒 JLPT N2<span class="status locked">Level Locked</span></li>
+
+            <li>🔒 JLPT N1<span class="status locked"> Level Locked</span></li>
+
+        </ul>
+
+    </div>
+
+</section>
 
 
 
@@ -524,7 +529,7 @@ TASKBAR
         class="start-btn">
 
         <img
-            src="assets/images/icons/start.png"
+            src="assets/images/icons/pixels/picture-window-Original.png"
             alt="Start">
 
         <span>START</span>

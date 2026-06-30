@@ -8,8 +8,8 @@ document.getElementById("boot-screen");
 const desktop =
 document.getElementById("desktop");
 
-const startButton =
-document.getElementById("start-btn");
+const startBootButton =
+document.getElementById("startBoot-btn");
 
 const statusText =
 document.getElementById("boot-status-text");
@@ -66,11 +66,11 @@ function bootSequence(){
     statusText.textContent =
     "🎮 System Ready.";
 
-    startButton.disabled = false;
+    startBootButton.disabled = false;
 
-    startButton.textContent = "▶ PRESS START";
+    startBootButton.textContent = "▶ PRESS START";
 
-    startButton.classList.add("xp-glow");
+    startBootButton.classList.add("xp-glow");
 
 }
 
@@ -82,9 +82,9 @@ window.addEventListener("load",()=>{
 
 });
 
-startButton.onclick=function(){
+startBootButton.onclick=function(){
 
-    startButton.disabled=true;
+    startBootButton.disabled=true;
 
     bootScreen.classList.add("fade-out");
 

@@ -36,25 +36,90 @@ DESKTOP
 
 /*======================================================
 DESKTOP CONTAINER
+
+NOTE: this is now a grid. Grid lays the windows out
+correctly on first load at ANY viewport width, with
+zero overlap. Once a window starts being dragged, your
+JS should switch it to `position:absolute` (and set
+inline top/left from getBoundingClientRect()) — at that
+point .dragging below takes over and the grid placement
+for that one window stops applying.
 ======================================================*/
 
 .desktop-container{
 
-    position:absolute;
+    position:relative;
 
     width:100%;
 
     height:calc(100vh - 55px);
 
+    padding:25px 30px 100px;
+
+    box-sizing:border-box;
+
+    overflow:hidden;
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    grid-template-areas:
+
+        "header"
+
+        "row"
+
+        "journey"
+
+        "footer";
+
+    row-gap:20px;
+
+    align-items:start;
+
+    justify-items:stretch;
+
+}
+
+/*======================================================
+DASHBOARD ROW
+
+In the actual HTML, .player-card / .current-disc /
+.quest-card are nested inside a <section class=
+"dashboard-grid">, not direct children of
+.desktop-container. grid-area only works on DIRECT
+children of the grid that declares it, so this wrapper
+needs to be the one assigned grid-area, and it becomes
+its own nested grid for the three cards inside it.
+======================================================*/
+
+.dashboard-grid{
+
+    grid-area:row;
+
+    display:grid;
+
+    grid-template-columns:270px 1fr 270px;
+
+    column-gap:24px;
+
+    align-items:start;
+
 }
 
 /*======================================================
 COMMON WINDOWS
+
+Default state: windows are grid children, NOT absolutely
+positioned. This is what guarantees they're all visible
+and non-overlapping on first load, regardless of screen
+size.
 ======================================================*/
 
 .retro-window{
 
-    position:absolute;
+    position:relative;
 
     background:#FFFDF8;
 
@@ -67,6 +132,19 @@ COMMON WINDOWS
     box-shadow:
 
         0 14px 30px rgba(0,0,0,.18);
+
+    transition:
+
+        transform .25s,
+
+        box-shadow .25s;
+
+}
+
+.retro-window:hover{
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.22);
 
 }
 
@@ -86,11 +164,13 @@ WELCOME WINDOW
 
 .desktop-header{
 
-    top:25px;
+    grid-area:header;
 
-    left:calc(50% - 360px);
+    max-width:720px;
 
-    width:720px;
+    margin:0 auto;
+
+    width:100%;
 
 }
 
@@ -124,11 +204,7 @@ PLAYER WINDOW
 
 .player-card{
 
-    top:120px;
-
-    left:30px;
-
-    width:270px;
+    width:100%;
 
 }
 
@@ -164,11 +240,11 @@ CURRENT DISC
 
 .current-disc{
 
-    top:120px;
+    width:100%;
 
-    left:calc(50% - 280px);
+    max-width:560px;
 
-    width:560px;
+    margin:0 auto;
 
 }
 
@@ -202,11 +278,7 @@ QUEST WINDOW
 
 .quest-card{
 
-    top:120px;
-
-    right:30px;
-
-    width:270px;
+    width:100%;
 
 }
 
@@ -243,12 +315,71 @@ Moved to START MENU
 
 /*======================================================
 JOURNEY
-Moved to START MENU
 ======================================================*/
 
 .journey-window{
 
-    display:none;
+    grid-area:journey;
+
+}
+
+.journey-list{
+
+    list-style:none;
+
+    margin:0;
+
+    padding:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.journey-list li{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:10px 16px;
+
+    border-radius:12px;
+
+    background:#F4F7FD;
+
+}
+
+.journey-list .status{
+
+    font-size:.85rem;
+
+    font-weight:700;
+
+    padding:4px 10px;
+
+    border-radius:999px;
+
+}
+
+.journey-list .status.current{
+
+    background:#FFF4BF;
+
+    color:#8A6D1A;
+
+}
+
+.journey-list .status.locked{
+
+    background:#E8E8E8;
+
+    color:#8A8A8A;
 
 }
 
@@ -258,15 +389,13 @@ FOOTER
 
 .footer-window{
 
-    position:fixed;
+    grid-area:footer;
 
-    left:50%;
+    max-width:520px;
 
-    bottom:70px;
+    margin:0 auto;
 
-    transform:translateX(-50%);
-
-    width:520px;
+    width:100%;
 
     text-align:center;
 
@@ -369,29 +498,6 @@ WINDOW TITLE BUTTONS
 .window-buttons span:hover{
 
     transform:scale(1.2);
-
-}
-
-/*======================================================
-WINDOW SHADOW
-======================================================*/
-
-.retro-window{
-
-    transition:
-
-        transform .25s,
-
-        box-shadow .25s;
-
-}
-
-.retro-window:hover{
-
-    transform:none;
-    box-shadow:
-
-        0 20px 45px rgba(0,0,0,.22);
 
 }
 
@@ -519,6 +625,21 @@ WINDOW ANIMATIONS
 
 /*======================================================
 WINDOW DRAGGING
+
+When your drag-start JS fires, set the dragged window's
+inline style to `position:absolute` and compute its
+top/left from getBoundingClientRect() relative to
+#desktop (or .desktop-container if you keep it
+position:relative, which it now is, so absolute children
+inside it position correctly). The .dragging class below
+then takes over visually. Once a window is absolutely
+positioned, the grid simply ignores it (grid only lays
+out in-flow children), and the rest of the grid will
+NOT reflow to fill the gap unless you also remove it
+from the DOM flow — if you want the other windows to
+stay put while one is dragged, also give the dragged
+window `grid-area: unset` or move it to a sibling
+overlay layer so its old grid cell empties out.
 ======================================================*/
 
 .retro-window{
@@ -541,11 +662,21 @@ WINDOW DRAGGING
 
 .dragging{
 
+    position:absolute;
+
     opacity:.92;
 
     transition:none;
 
     z-index:99999;
+
+    transform:none !important;
+
+}
+
+.dragging:hover{
+
+    transform:none !important;
 
 }
 
@@ -726,54 +857,19 @@ ACHIEVEMENT POPUP
 }
 
 /*======================================================
-WINDOW LAYER ORDER
-======================================================*/
-
-.player-card{
-
-    z-index:20;
-
-}
-
-.current-disc{
-
-    z-index:25;
-
-}
-
-.quest-card{
-
-    z-index:20;
-
-}
-
-/*======================================================
-DRAGGING
-======================================================*/
-
-.dragging{
-
-    transition:none !important;
-
-    cursor:grabbing;
-
-}
-
-.dragging:hover{
-
-    transform:none !important;
-
-}
-
-/*======================================================
 RESPONSIVE
+
+Grid columns collapse gracefully instead of relying on
+fixed left/width math. Player and quest windows now
+stack under the disc on narrower screens instead of
+disappearing.
 ======================================================*/
 
 @media(max-width:1200px){
 
-    .current-disc{
+    .desktop-container{
 
-        width:460px;
+        grid-template-columns:240px 1fr 240px;
 
     }
 
@@ -781,21 +877,31 @@ RESPONSIVE
 
 @media(max-width:992px){
 
-    .player-card{
+    .desktop-container{
 
-        width:220px;
+        grid-template-columns:1fr;
+
+        grid-template-areas:
+
+            "header"
+
+            "disc"
+
+            "player"
+
+            "quest"
+
+            "footer";
 
     }
 
+    .player-card,
+    .current-disc,
     .quest-card{
 
-        width:220px;
+        max-width:560px;
 
-    }
-
-    .current-disc{
-
-        width:420px;
+        margin:0 auto;
 
     }
 
@@ -803,39 +909,23 @@ RESPONSIVE
 
 @media(max-width:768px){
 
-    .player-card,
+    .desktop-container{
 
-    .quest-card{
+        padding:16px 16px 90px;
 
-        display:none;
-
-    }
-
-    .current-disc{
-
-        width:92%;
-
-        left:50%;
-
-        transform:translateX(-50%);
+        overflow-y:auto;
 
     }
-
-    .desktop-header{
-
-        width:92%;
-
-    }
-
-}
-
-@media(max-width:576px){
 
     .desktop-header h1{
 
         font-size:1.3rem;
 
     }
+
+}
+
+@media(max-width:576px){
 
     .desktop-clock{
 
