@@ -196,8 +196,57 @@ DESKTOP
 
 <div id="desktop">
 
+<!--======================================================
+WINDOWS XP DESKTOP SHORTCUTS
+=======================================================-->
+
+<div class="desktop-icons">
+
+    <!-- Greetings -->
+
+    <button
+        class="desktop-icon"
+        onclick="restoreWindow('greetingWindow')">
+
+        <img
+            src="assets/images/icons/pixels/fortunecat-Original.png"
+            alt="Greetings">
+
+        <span>Greetings</span>
+
+    </button>
+
+    <!-- Player -->
+
+    <button
+        class="desktop-icon"
+        onclick="restoreWindow('playerWindow')">
+
+        <img
+            src="assets/images/icons/pixels/bluesuit-Original.png"
+            alt="Player Status">
+
+        <span>Player Status</span>
+
+    </button>
+
+    <!-- Journey -->
+
+    <button
+        class="desktop-icon"
+        onclick="restoreWindow('journeyWindow')">
+
+        <img
+            src="assets/images/icons/pixels/treasure-map-Original.png"
+            alt="Journey">
+
+        <span>Journey</span>
+
+    </button>
+
+</div>
     
-                         <!-- homepage content goes here -->
+        
 
                          
       <main class="desktop-container">
@@ -206,7 +255,8 @@ DESKTOP
          WELCOME WINDOW
     ========================================== -->
 
-    <section class="retro-window desktop-header">
+    <section id="greetingWindow"
+    class="retro-window desktop-header">
 
         <div class="window-title">
 
@@ -280,7 +330,7 @@ DESKTOP
 
             <div class="window-content">
 
-                <img src="assets/images/logo/JPLlogo.png"
+                <img src="assets/images/avatars/smeagol.png"
                      class="player-avatar"
                      alt="Player">
 
@@ -561,7 +611,8 @@ DESKTOP
      CSS grid-area:journey rule actually applies to it.
 ========================================== -->
 
-<section class="retro-window journey-window">
+<section id="journeyWindow"
+    class="retro-window journey-window">
 
     <div class="window-title">
 
@@ -767,7 +818,7 @@ START MENU
     <div class="start-profile">
 
         <img
-            src="assets/images/logo/JPLlogo.png"
+            src="assets/images/avatars/smeagol.png"
             alt="Player">
 
         <div>

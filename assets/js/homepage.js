@@ -539,3 +539,4 @@ function updateHeaderClock(clockEl){
         });
 
 }
+

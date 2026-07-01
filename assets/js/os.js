@@ -1,4 +1,5 @@
-// JP LIBRARY OS
+// JP LIBRARY OS — os.js
+//======================================================
 // INITIALIZATION
 //======================================================
 
@@ -7,11 +8,8 @@ let highestZ = 100;
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeStartMenu();
-
     initializeVolumePanel();
-
     initializeClock();
-
     initializeWindowManager();
 
 });
@@ -21,23 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // ELEMENTS
 //======================================================
 
-const startButton =
-document.getElementById("startButton");
-
-const startMenu =
-document.getElementById("startMenu");
-
-const volumeButton =
-document.getElementById("volumeButton");
-
-const volumePanel =
-document.getElementById("volumePanel");
-
-const taskbarClock =
-document.getElementById("taskbarClock");
-
-const taskbarDate =
-document.getElementById("taskbarDate");
+const startButton  = document.getElementById("startButton");
+const startMenu    = document.getElementById("startMenu");
+const volumeButton = document.getElementById("volumeButton");
+const volumePanel  = document.getElementById("volumePanel");
+const taskbarClock = document.getElementById("taskbarClock");
+const taskbarDate  = document.getElementById("taskbarDate");
 
 
 //======================================================
@@ -46,42 +33,18 @@ document.getElementById("taskbarDate");
 
 function initializeStartMenu(){
 
-    if(!startButton || !startMenu){
+    if(!startButton || !startMenu) return;
 
-        return;
-
-    }
-
-    startButton.addEventListener("click",(event)=>{
-
-        event.stopPropagation();
-
+    startButton.addEventListener("click", (e) => {
+        e.stopPropagation();
         startMenu.classList.toggle("show");
-
-        if(volumePanel){
-
-            volumePanel.classList.remove("show");
-
-        }
-
+        if(volumePanel) volumePanel.classList.remove("show");
     });
 
-    document.addEventListener("click",(event)=>{
-
-        if(
-
-            !startMenu.contains(event.target)
-
-            &&
-
-            !startButton.contains(event.target)
-
-        ){
-
+    document.addEventListener("click", (e) => {
+        if(!startMenu.contains(e.target) && !startButton.contains(e.target)){
             startMenu.classList.remove("show");
-
         }
-
     });
 
 }
@@ -93,57 +56,30 @@ function initializeStartMenu(){
 
 function initializeVolumePanel(){
 
-    if(!volumeButton || !volumePanel){
+    if(!volumeButton || !volumePanel) return;
 
-        return;
-
-    }
-
-    volumeButton.addEventListener("click",(event)=>{
-
-        event.stopPropagation();
-
+    volumeButton.addEventListener("click", (e) => {
+        e.stopPropagation();
         volumePanel.classList.toggle("show");
-
-        if(startMenu){
-
-            startMenu.classList.remove("show");
-
-        }
-
+        if(startMenu) startMenu.classList.remove("show");
     });
 
-    document.addEventListener("click",(event)=>{
-
-        if(
-
-            !volumePanel.contains(event.target)
-
-            &&
-
-            !volumeButton.contains(event.target)
-
-        ){
-
+    document.addEventListener("click", (e) => {
+        if(!volumePanel.contains(e.target) && !volumeButton.contains(e.target)){
             volumePanel.classList.remove("show");
-
         }
-
     });
 
 }
 
 
 //======================================================
-// CLOCK
+// TASKBAR CLOCK
 //======================================================
 
 function initializeClock(){
-
     updateClock();
-
-    setInterval(updateClock,1000);
-
+    setInterval(updateClock, 1000);
 }
 
 function updateClock(){
@@ -151,199 +87,294 @@ function updateClock(){
     const now = new Date();
 
     if(taskbarClock){
-
-        taskbarClock.textContent =
-
-        now.toLocaleTimeString([],{
-
-            hour:"2-digit",
-
-            minute:"2-digit"
-
+        taskbarClock.textContent = now.toLocaleTimeString([], {
+            hour:"2-digit", minute:"2-digit"
         });
-
     }
 
     if(taskbarDate){
-
-        taskbarDate.textContent =
-
-        now.toLocaleDateString([],{
-
-            month:"short",
-
-            day:"numeric"
-
+        taskbarDate.textContent = now.toLocaleDateString([], {
+            month:"short", day:"numeric"
         });
-
     }
 
 }
+
 
 //======================================================
 // WINDOW MANAGER
 //======================================================
 
 function initializeWindowManager(){
-
     initializeDraggableWindows();
-
     initializeWindowButtons();
-
 }
 
 let activeWindow = null;
 
 
 //======================================================
-// DRAG WINDOWS
+// COORDINATE HELPERS
 //
-// FIX: left/top must be computed relative to the
-// window's offsetParent (the nearest positioned
-// ancestor — here, .desktop-container), NOT relative
-// to the viewport. clientX/clientY from mouse events
-// are always viewport-relative, so we have to subtract
-// the offsetParent's own position on the page before
-// using them to set left/top. Previously this subtraction
-// was missing, which is why windows would jump/fly away
-// the moment you started dragging: the further the
-// container was from the page's top-left corner, the
-// bigger the jump.
+// All drag/resize math uses TWO numbers to convert a
+// viewport coordinate into a container-relative one:
+//
+//   containerLeft(el)  =  the viewport X of the
+//                         container's left padding edge
+//   containerTop(el)   =  the viewport Y of the
+//                         container's top  padding edge
+//
+// For position:absolute children, CSS `left`/`top` are
+// measured from the containing block's PADDING EDGE.
+// Since .desktop-container has no border, its padding
+// edge equals getBoundingClientRect().left / .top.
+//
+// Therefore:
+//   style.left  =  viewportX  −  containerLeft
+//   style.top   =  viewportY  −  containerTop
+//
+// No padding subtraction is needed or correct.
+// Subtracting padLeft/padTop was the cause of the jump —
+// it double-counted padding that is already baked into
+// the position of grid children (their wRect.left
+// already reflects the container's padding offset).
 //======================================================
+
+function getDesktop(){
+    return document.querySelector(".desktop-container");
+}
+
+function containerLeft(){
+    return getDesktop().getBoundingClientRect().left;
+}
+
+function containerTop(){
+    return getDesktop().getBoundingClientRect().top;
+}
+
+
+//======================================================
+// DETACH FROM GRID
+//
+// Called once, the first time a window is dragged or
+// resized. Steps in strict order:
+//
+//  1. Snapshot window rect NOW, before any DOM changes.
+//  2. Insert an invisible ghost in the original parent
+//     so sibling grid items don't enlarge/reflow.
+//  3. Reparent window to .desktop-container and set
+//     position:absolute at the identical visual spot.
+//
+// position formula:
+//   left = wRect.left − containerLeft()
+//   top  = wRect.top  − containerTop()
+//======================================================
+
+function detachFromGrid(windowEl){
+
+    if(windowEl.dataset.detached === "true") return;
+
+    const desktop = getDesktop();
+
+    // Step 1 — snapshot before touching DOM
+    const wRect = windowEl.getBoundingClientRect();
+    const cLeft = containerLeft();
+    const cTop  = containerTop();
+
+    // Step 2 — ghost holds the original grid cell open
+    const wStyle = getComputedStyle(windowEl);
+    const ghost  = document.createElement("div");
+
+    ghost.className        = "window-ghost";
+    ghost.style.width      = wRect.width  + "px";
+    ghost.style.height     = wRect.height + "px";
+    ghost.style.gridArea   = wStyle.gridArea;
+    ghost.style.gridColumn = wStyle.gridColumn;
+    ghost.style.gridRow    = wStyle.gridRow;
+
+    windowEl.parentElement.insertBefore(ghost, windowEl);
+    windowEl._ghost = ghost;
+
+    // Step 3 — reparent + place at exact same visual position
+    desktop.appendChild(windowEl);
+
+    windowEl.style.position  = "absolute";
+    windowEl.style.left      = (wRect.left - cLeft) + "px";
+    windowEl.style.top       = (wRect.top  - cTop)  + "px";
+    windowEl.style.width     = wRect.width  + "px";
+    windowEl.style.height    = wRect.height + "px";
+    windowEl.style.right     = "auto";
+    windowEl.style.bottom    = "auto";
+    windowEl.style.margin    = "0";
+    windowEl.style.transform = "none";
+
+    windowEl.dataset.detached = "true";
+
+}
+
+
+//======================================================
+// INIT ALL WINDOWS
+//======================================================
+
+const MIN_W = 180;
+const MIN_H = 100;
 
 function initializeDraggableWindows(){
 
-    const windows =
+    document.querySelectorAll(".retro-window").forEach(windowEl => {
+        injectResizeHandles(windowEl);
+        initDrag(windowEl);
+        initResize(windowEl);
+    });
 
-    document.querySelectorAll(
+}
 
-        "#playerWindow, #discWindow, #questWindow"
 
-    );
+//======================================================
+// RESIZE HANDLE INJECTION
+//======================================================
 
-    windows.forEach(windowEl=>{
+function injectResizeHandles(windowEl){
 
-        const titleBar =
+    if(windowEl.querySelector(".resize-handle")) return;
 
-        windowEl.querySelector(".window-title");
+    ["n","ne","e","se","s","sw","w","nw"].forEach(dir => {
+        const handle       = document.createElement("div");
+        handle.className   = "resize-handle " + dir;
+        handle.dataset.dir = dir;
+        windowEl.appendChild(handle);
+    });
 
-        if(!titleBar) return;
+}
 
-        let dragging = false;
 
-        let offsetX = 0;
+//======================================================
+// DRAG
+//
+// grabX/grabY are read BEFORE detachFromGrid so any
+// micro layout-shift from the ghost insertion doesn't
+// corrupt the offset. detachFromGrid then places the
+// window at the exact same visual spot, so the grab
+// offset stays valid throughout the drag.
+//======================================================
 
-        let offsetY = 0;
+function initDrag(windowEl){
 
-        titleBar.addEventListener("mousedown",(event)=>{
+    const titleBar = windowEl.querySelector(".window-title");
+    if(!titleBar) return;
 
-            event.preventDefault();
+    let dragging = false;
+    let grabX = 0;
+    let grabY = 0;
 
-            dragging = true;
+    titleBar.addEventListener("mousedown", (e) => {
 
-            activeWindow = windowEl;
+        if(e.target.closest(".window-buttons")) return;
+        e.preventDefault();
 
-            highestZ++;
+        // Read where inside the window we grabbed —
+        // MUST happen before detachFromGrid
+        const wRect = windowEl.getBoundingClientRect();
+        grabX = e.clientX - wRect.left;
+        grabY = e.clientY - wRect.top;
 
-            windowEl.style.zIndex = highestZ;
+        detachFromGrid(windowEl);
 
-            // Snapshot the window's CURRENT on-screen box
+        dragging = true;
+        activeWindow = windowEl;
+        highestZ++;
+        windowEl.style.zIndex = highestZ;
+        windowEl.classList.add("dragging");
 
-            // before we touch position, so it doesn't
+    });
 
-            // visually jump when it switches from a grid
+    document.addEventListener("mousemove", (e) => {
 
-            // item to an absolutely positioned element.
+        if(!dragging) return;
 
-            const windowRect =
+        // viewport position where window-left-edge should be
+        // = mouse position minus grab offset
+        // convert to container space: subtract container's own left/top
+        windowEl.style.left = (e.clientX - grabX - containerLeft()) + "px";
+        windowEl.style.top  = (e.clientY - grabY - containerTop())  + "px";
 
-                windowEl.getBoundingClientRect();
+    });
 
-            const parentRect =
+    document.addEventListener("mouseup", () => {
+        if(!dragging) return;
+        dragging = false;
+        windowEl.classList.remove("dragging");
+    });
 
-                windowEl.offsetParent
+}
 
-                ? windowEl.offsetParent.getBoundingClientRect()
 
-                : { left:0, top:0 };
+//======================================================
+// RESIZE
+//======================================================
 
-            windowEl.style.position = "absolute";
+function initResize(windowEl){
 
-            windowEl.style.right = "auto";
+    windowEl.addEventListener("mousedown", (e) => {
 
-            windowEl.style.bottom = "auto";
+        const handle = e.target.closest(".resize-handle");
+        if(!handle) return;
 
-            windowEl.style.transform = "none";
+        e.preventDefault();
+        e.stopPropagation();
 
-            windowEl.style.width =
+        detachFromGrid(windowEl);
 
-                windowRect.width + "px";
+        highestZ++;
+        windowEl.style.zIndex = highestZ;
+        windowEl.classList.add("resizing");
 
-            // Re-anchor at the exact same visual spot,
+        const dir = handle.dataset.dir;
+        const startMouseX = e.clientX;
+        const startMouseY = e.clientY;
+        const startW = windowEl.offsetWidth;
+        const startH = windowEl.offsetHeight;
+        const startL = parseFloat(windowEl.style.left) || 0;
+        const startT = parseFloat(windowEl.style.top)  || 0;
 
-            // now expressed relative to offsetParent.
+        function onMouseMove(e){
 
-            windowEl.style.left =
+            const dx = e.clientX - startMouseX;
+            const dy = e.clientY - startMouseY;
 
-                (windowRect.left - parentRect.left) + "px";
+            let newW = startW, newH = startH;
+            let newL = startL, newT = startT;
 
-            windowEl.style.top =
+            if(dir.includes("e")) newW = Math.max(MIN_W, startW + dx);
 
-                (windowRect.top - parentRect.top) + "px";
+            if(dir.includes("w")){
+                newW = Math.max(MIN_W, startW - dx);
+                newL = startL + (startW - newW);
+            }
 
-            // Once detached from the grid, give it its
+            if(dir.includes("s")) newH = Math.max(MIN_H, startH + dy);
 
-            // own stacking layer so the grid doesn't try
+            if(dir.includes("n")){
+                newH = Math.max(MIN_H, startH - dy);
+                newT = startT + (startH - newH);
+            }
 
-            // to reflow other windows into its old slot.
+            windowEl.style.width  = newW + "px";
+            windowEl.style.height = newH + "px";
+            windowEl.style.left   = newL + "px";
+            windowEl.style.top    = newT + "px";
 
-            windowEl.style.gridArea = "unset";
+        }
 
-            offsetX =
+        function onMouseUp(){
+            windowEl.classList.remove("resizing");
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup",   onMouseUp);
+        }
 
-                event.clientX -
-
-                windowEl.getBoundingClientRect().left;
-
-            offsetY =
-
-                event.clientY -
-
-                windowEl.getBoundingClientRect().top;
-
-            windowEl.classList.add("dragging");
-
-        });
-
-        document.addEventListener("mousemove",(event)=>{
-
-            if(!dragging) return;
-
-            const parentRect =
-
-                windowEl.offsetParent
-
-                ? windowEl.offsetParent.getBoundingClientRect()
-
-                : { left:0, top:0 };
-
-            windowEl.style.left =
-
-                (event.clientX - offsetX - parentRect.left) + "px";
-
-            windowEl.style.top =
-
-                (event.clientY - offsetY - parentRect.top) + "px";
-
-        });
-
-        document.addEventListener("mouseup",()=>{
-
-            dragging = false;
-
-            windowEl.classList.remove("dragging");
-
-        });
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup",   onMouseUp);
 
     });
 
@@ -356,56 +387,30 @@ function initializeDraggableWindows(){
 
 function initializeWindowButtons(){
 
-    document
+    document.querySelectorAll(".window-buttons").forEach(buttonGroup => {
 
-    .querySelectorAll(".window-buttons")
-
-    .forEach(buttonGroup=>{
-
-        const windowEl =
-
-        buttonGroup.closest(".retro-window");
-
+        const windowEl = buttonGroup.closest(".retro-window");
         if(!windowEl) return;
 
-        const buttons =
+        const buttons = buttonGroup.querySelectorAll("span");
+        if(buttons.length < 3) return;
 
-        buttonGroup.querySelectorAll("span");
-
-        if(buttons.length<3) return;
-
-        // Close Button (disabled for now)
-
-        buttons[0].addEventListener("click",(event)=>{
-
-            event.stopPropagation();
-
+        // Red — close (noop for now)
+        buttons[0].addEventListener("click", (e) => {
+            e.stopPropagation();
         });
 
-        // Minimize
-
-        buttons[1].addEventListener("click",(event)=>{
-
-            event.stopPropagation();
-
+        // Yellow — minimize
+        buttons[1].addEventListener("click", (e) => {
+            e.stopPropagation();
             windowEl.classList.add("window-minimizing");
-
-            setTimeout(()=>{
-
-                windowEl.style.display="none";
-
-            },250);
-
+            setTimeout(() => { windowEl.style.display = "none"; }, 250);
         });
 
-        // Maximize
-
-        buttons[2].addEventListener("click",(event)=>{
-
-            event.stopPropagation();
-
+        // Green — maximize / restore
+        buttons[2].addEventListener("click", (e) => {
+            e.stopPropagation();
             windowEl.classList.toggle("window-maximized");
-
         });
 
     });
@@ -414,44 +419,23 @@ function initializeWindowButtons(){
 
 
 //======================================================
-// RESTORE WINDOW
+// RESTORE WINDOW (called by taskbar buttons)
 //======================================================
 
 function restoreWindow(id){
 
-    const windowEl =
-
-    document.getElementById(id);
-
+    const windowEl = document.getElementById(id);
     if(!windowEl) return;
 
     windowEl.style.display = "block";
-
     highestZ++;
-
     windowEl.style.zIndex = highestZ;
+    windowEl.classList.remove("window-minimizing");
+    windowEl.classList.add("window-restoring");
 
-    windowEl.classList.remove(
-
-        "window-minimizing"
-
-    );
-
-    windowEl.classList.add(
-
-        "window-restoring"
-
-    );
-
-    setTimeout(()=>{
-
-        windowEl.classList.remove(
-
-            "window-restoring"
-
-        );
-
-    },300);
+    setTimeout(() => {
+        windowEl.classList.remove("window-restoring");
+    }, 300);
 
 }
 
@@ -460,19 +444,35 @@ function restoreWindow(id){
 // TASKBAR WINDOW BUTTONS
 //======================================================
 
+document.querySelectorAll(".taskbar-app").forEach(button => {
+    button.addEventListener("click", () => {
+        restoreWindow(button.dataset.window);
+    });
+});
+
+//======================================================
+// DESKTOP SHORTCUT SELECTION
+//======================================================
+
 document
 
-.querySelectorAll(".taskbar-app")
+.querySelectorAll(".desktop-icon")
 
-.forEach(button=>{
+.forEach(shortcut=>{
 
-    button.addEventListener("click",()=>{
+    shortcut.addEventListener("click",()=>{
 
-        restoreWindow(
+        document
 
-            button.dataset.window
+        .querySelectorAll(".desktop-icon")
 
-        );
+        .forEach(item=>{
+
+            item.classList.remove("selected");
+
+        });
+
+        shortcut.classList.add("selected");
 
     });
 

@@ -1,6 +1,10 @@
 /*======================================================
-JP LIBRARY OS
-HOMEPAGE DESKTOP
+JP LIBRARY OS — homepage.css
+
+Rules here are DESKTOP-ONLY layout and overrides.
+Global window chrome (retro-window, window-title,
+window-buttons, retro-btn, resize handles) lives in
+components.css. Don't duplicate those here.
 ======================================================*/
 
 body{
@@ -37,13 +41,9 @@ DESKTOP
 /*======================================================
 DESKTOP CONTAINER
 
-NOTE: this is now a grid. Grid lays the windows out
-correctly on first load at ANY viewport width, with
-zero overlap. Once a window starts being dragged, your
-JS should switch it to `position:absolute` (and set
-inline top/left from getBoundingClientRect()) — at that
-point .dragging below takes over and the grid placement
-for that one window stops applying.
+Single positioned ancestor for all free-floating
+(dragged) windows. os.js moves detached windows here
+so offsetParent is always consistent.
 ======================================================*/
 
 .desktop-container{
@@ -52,13 +52,13 @@ for that one window stops applying.
 
     width:100%;
 
-    height:calc(100vh - 55px);
+    height:calc(100vh - 56px);
 
-    padding:25px 30px 100px;
+    padding:25px 30px 80px;
 
     box-sizing:border-box;
 
-    overflow:hidden;
+    overflow:visible;
 
     display:grid;
 
@@ -85,36 +85,265 @@ for that one window stops applying.
 /*======================================================
 DASHBOARD ROW
 
-In the actual HTML, .player-card / .current-disc /
-.quest-card are nested inside a <section class=
-"dashboard-grid">, not direct children of
-.desktop-container. grid-area only works on DIRECT
-children of the grid that declares it, so this wrapper
-needs to be the one assigned grid-area, and it becomes
-its own nested grid for the three cards inside it.
+.dashboard-grid wraps player / disc / quest in the HTML.
+It is a direct child of .desktop-container (grid-area:row)
+and is itself a nested 3-column grid.
+
+Each card gets an explicit grid-column so auto-placement
+never redistributes them when a sibling is dragged out
+of flow.
 ======================================================*/
 
 .dashboard-grid{
 
     grid-area:row;
 
-    display:grid;
+    position:relative;
 
-    grid-template-columns:270px 1fr 270px;
+    width:100%;
 
-    column-gap:24px;
+    height:700px;
 
-    align-items:start;
+}
+
+#playerWindow{
+
+    position:absolute;
+
+    width:250px;
+
+    left:0;
+
+    top:25px;
+
+}
+
+#discWindow{
+
+    position:absolute;
+
+    width:650px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    top:0;
+
+}
+
+#questWindow{
+
+    position:absolute;
+
+    width:250px;
+
+    right:0;
+
+    top:25px;
 
 }
 
 /*======================================================
-DISC CAROUSEL (jukebox style N5–N1 switcher)
+GHOST PLACEHOLDER
+
+Inserted by os.js when a window is dragged off the grid.
+Holds the original cell open so siblings don't enlarge.
+======================================================*/
+
+.window-ghost{
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+    border-radius:18px;
+
+    box-sizing:border-box;
+
+}
+
+/*======================================================
+OVERRIDE: desktop windows must not clip resize handles.
+components.css sets overflow:hidden globally; we revert
+that on .desktop-container children only, keeping the
+inner layers (title + content) clipped.
+======================================================*/
+
+.desktop-container .retro-window{
+
+    overflow:visible;
+
+}
+
+/*======================================================
+WINDOW TITLE — desktop override
+
+Slightly different padding/size from the lesson pages.
+The gradient + cursor:grab is already in components.css;
+this just tightens the pixel values for the compact OS.
+======================================================*/
+
+.desktop-container .window-title{
+
+    padding:10px 16px;
+
+    font-size:.55rem;
+
+}
+
+/*======================================================
+WELCOME WINDOW
+======================================================*/
+
+.desktop-header{
+
+    position:absolute;
+
+    width:720px;
+
+    left:50%;
+
+    top:20px;
+
+    transform:translateX(-50%);
+
+}
+
+.desktop-header-content{
+
+    text-align:center;
+
+}
+
+.desktop-header h1{
+
+    margin-bottom:12px;
+
+}
+
+.desktop-clock{
+
+    margin-top:18px;
+
+    font-size:1.4rem;
+
+    font-weight:bold;
+
+    color:#6A88BC;
+
+}
+
+/*======================================================
+TYPING CURSOR
+======================================================*/
+
+#englishGreeting.typing-cursor::after,
+#greetingMessage.typing-cursor::after{
+
+    content:"|";
+
+    display:inline-block;
+
+    margin-left:2px;
+
+    animation:cursorBlink .8s step-end infinite;
+
+    color:#6A88BC;
+
+}
+
+@keyframes cursorBlink{
+
+    0%, 100%{ opacity:1; }
+
+    50%{ opacity:0; }
+
+}
+
+/*======================================================
+PLAYER WINDOW
+======================================================*/
+
+.player-avatar{
+
+    width:120px;
+
+    display:block;
+
+    margin:0 auto 15px;
+
+}
+
+.player-card .window-content{
+
+    text-align:center;
+
+}
+
+.player-stats{
+
+    display:flex;
+
+    justify-content:space-around;
+
+    margin-top:20px;
+
+}
+
+.player-stats div{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+.player-stats strong{
+
+    font-size:1.2rem;
+
+    color:#5B77A8;
+
+}
+
+/*======================================================
+CURRENT DISC
+======================================================*/
+
+.current-disc .window-content{
+
+    text-align:center;
+
+}
+
+.current-disc-image{
+
+    width:100%;
+
+    max-width:520px;
+
+    display:block;
+
+    margin:auto;
+
+}
+
+.big-btn{
+
+    margin-top:25px;
+
+}
+
+/*======================================================
+DISC CAROUSEL
 ======================================================*/
 
 .disc-carousel{
-
-    position:relative;
 
     display:flex;
 
@@ -200,29 +429,11 @@ DISC CAROUSEL (jukebox style N5–N1 switcher)
 
 }
 
-.disc-arrow:hover{
+.disc-arrow:hover{ background:#EAF0FB; transform:scale(1.08); }
 
-    background:#EAF0FB;
+.disc-arrow:active{ transform:scale(.95); }
 
-    transform:scale(1.08);
-
-}
-
-.disc-arrow:active{
-
-    transform:scale(.95);
-
-}
-
-.disc-arrow:disabled{
-
-    opacity:.35;
-
-    cursor:default;
-
-    transform:none;
-
-}
+.disc-arrow:disabled{ opacity:.35; cursor:default; transform:none; }
 
 .disc-dots{
 
@@ -256,230 +467,17 @@ DISC CAROUSEL (jukebox style N5–N1 switcher)
 
 }
 
-.disc-dot.active{
-
-    background:#6A88BC;
-
-    transform:scale(1.2);
-
-}
-
-/*======================================================
-COMMON WINDOWS
-
-Default state: windows are grid children, NOT absolutely
-positioned. This is what guarantees they're all visible
-and non-overlapping on first load, regardless of screen
-size.
-======================================================*/
-
-.retro-window{
-
-    position:relative;
-
-    background:#FFFDF8;
-
-    border:3px solid #B7C7E6;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    box-shadow:
-
-        0 14px 30px rgba(0,0,0,.18);
-
-    transition:
-
-        transform .25s,
-
-        box-shadow .25s;
-
-}
-
-.retro-window:hover{
-
-    box-shadow:
-        0 20px 45px rgba(0,0,0,.22);
-
-}
-
-/*======================================================
-WINDOW CONTENT
-======================================================*/
-
-.window-content{
-
-    padding:24px;
-
-}
-
-/*======================================================
-WELCOME WINDOW
-======================================================*/
-
-.desktop-header{
-
-    grid-area:header;
-
-    max-width:720px;
-
-    margin:0 auto;
-
-    width:100%;
-
-}
-
-.desktop-header-content{
-
-    text-align:center;
-
-}
-
-.desktop-header h1{
-
-    margin-bottom:12px;
-
-}
-
-.desktop-clock{
-
-    margin-top:18px;
-
-    font-size:1.4rem;
-
-    font-weight:bold;
-
-    color:#6A88BC;
-
-}
-
-/*======================================================
-TYPING EFFECT CURSOR
-Applied while greeting.js is actively typing a line;
-removed once that line finishes.
-======================================================*/
-
-#englishGreeting.typing-cursor::after,
-#greetingMessage.typing-cursor::after{
-
-    content:"|";
-
-    display:inline-block;
-
-    margin-left:2px;
-
-    animation:cursorBlink .8s step-end infinite;
-
-    color:#6A88BC;
-
-}
-
-@keyframes cursorBlink{
-
-    0%, 100%{ opacity:1; }
-
-    50%{ opacity:0; }
-
-}
-
-/*======================================================
-PLAYER WINDOW
-======================================================*/
-
-.player-card{
-
-    width:100%;
-
-}
-
-.player-avatar{
-
-    width:120px;
-
-    display:block;
-
-    margin:0 auto 15px;
-
-}
-
-.player-card .window-content{
-
-    text-align:center;
-
-}
-
-.player-stats{
-
-    display:flex;
-
-    justify-content:space-around;
-
-    margin-top:20px;
-
-}
-
-/*======================================================
-CURRENT DISC
-======================================================*/
-
-.current-disc{
-
-    width:100%;
-
-    max-width:560px;
-
-    margin:0 auto;
-
-}
-
-.current-disc-image{
-
-    width:100%;
-
-    max-width:520px;
-
-    display:block;
-
-    margin:auto;
-
-}
-
-.current-disc .window-content{
-
-    text-align:center;
-
-}
-
-.big-btn{
-
-    margin-top:25px;
-
-}
-
-.big-btn.disabled{
-
-    pointer-events:none;
-
-    opacity:.5;
-
-    filter:grayscale(.3);
-
-}
+.disc-dot.active{ background:#6A88BC; transform:scale(1.2); }
 
 /*======================================================
 QUEST WINDOW
 ======================================================*/
 
-.quest-card{
-
-    width:100%;
-
-}
-
 .quest-card .window-content{
 
     text-align:center;
+
+    opacity:.9;
 
 }
 
@@ -498,23 +496,20 @@ QUEST WINDOW
 }
 
 /*======================================================
-QUICK ACCESS
-Moved to START MENU
-======================================================*/
-
-.quick-access{
-
-    display:none;
-
-}
-
-/*======================================================
 JOURNEY
 ======================================================*/
 
 .journey-window{
 
-    grid-area:journey;
+    position:absolute;
+
+    width:250px;
+
+    left:0;
+
+    bottom:120px;
+
+    opacity:.9;
 
 }
 
@@ -562,21 +557,9 @@ JOURNEY
 
 }
 
-.journey-list .status.current{
+.journey-list .status.current{ background:#FFF4BF; color:#8A6D1A; }
 
-    background:#FFF4BF;
-
-    color:#8A6D1A;
-
-}
-
-.journey-list .status.locked{
-
-    background:#E8E8E8;
-
-    color:#8A8A8A;
-
-}
+.journey-list .status.locked{  background:#E8E8E8; color:#8A8A8A; }
 
 /*======================================================
 FOOTER
@@ -584,15 +567,17 @@ FOOTER
 
 .footer-window{
 
-    grid-area:footer;
+    position:absolute;
 
-    max-width:520px;
+    width:520px;
 
-    margin:0 auto;
+    left:50%;
 
-    width:100%;
+    bottom:120px;
 
     text-align:center;
+
+    transform:translateX(-50%)
 
     opacity:.9;
 
@@ -626,91 +611,55 @@ XP BAR
 
     border-radius:999px;
 
-    background:linear-gradient(
-
-        90deg,
-
-        #F3D36E,
-
-        #89A8D8
-
-    );
+    background:linear-gradient(90deg, #F3D36E, #89A8D8);
 
 }
 
 /*======================================================
-PLAYER STATS
+WINDOW ANIMATIONS
 ======================================================*/
 
-.player-stats div{
+.player-card,
+.current-disc,
+.quest-card{
 
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    gap:6px;
+    animation:windowAppear .45s ease both;
 
 }
 
-.player-stats strong{
+@keyframes windowAppear{
 
-    font-size:1.2rem;
+    from{ opacity:0; transform:translateY(25px); }
 
-    color:#5B77A8;
+    to{   opacity:1; transform:translateY(0); }
 
 }
+
+@keyframes windowMinimize{
+
+    from{ opacity:1; transform:scale(1); }
+
+    to{   opacity:0; transform:scale(.75); }
+
+}
+
+@keyframes windowRestore{
+
+    from{ opacity:0; transform:scale(.75); }
+
+    to{   opacity:1; transform:scale(1); }
+
+}
+
+.window-minimizing{ animation:windowMinimize .28s forwards; }
+
+.window-restoring{  animation:windowRestore  .28s ease; }
 
 /*======================================================
-WINDOW TITLE BUTTONS
+WINDOW STATES
 ======================================================*/
 
-.window-buttons{
-
-    display:flex;
-
-    gap:8px;
-
-}
-
-.window-buttons span{
-
-    width:12px;
-
-    height:12px;
-
-    border-radius:50%;
-
-    background:white;
-
-    opacity:.85;
-
-    transition:.2s;
-
-}
-
-.window-buttons span:hover{
-
-    transform:scale(1.2);
-
-}
-
-/*======================================================
-DISABLED WINDOWS
-For future minimize animation
-======================================================*/
-
-.window-hidden{
-
-    display:none;
-
-}
-
-/*======================================================
-WINDOW MAXIMIZED
-(JS will use later)
-======================================================*/
+.window-hidden{ display:none; }
 
 .window-maximized{
 
@@ -718,7 +667,7 @@ WINDOW MAXIMIZED
 
     inset:20px;
 
-    width:auto !important;
+    width:auto  !important;
 
     height:auto !important;
 
@@ -728,162 +677,9 @@ WINDOW MAXIMIZED
 
 }
 
-/*======================================================
-FLOATING WINDOW LOOK
-======================================================*/
-
-.player-card,
-.current-disc,
-.quest-card{
-
-    animation:windowAppear .45s ease;
-
-    animation-fill-mode:both;
-
-}
-
-/*======================================================
-WINDOW ANIMATIONS
-======================================================*/
-
-@keyframes windowAppear{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(25px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
-
-}
-
-@keyframes windowMinimize{
-
-    from{
-
-        opacity:1;
-
-        transform:scale(1);
-
-    }
-
-    to{
-
-        opacity:0;
-
-        transform:scale(.75);
-
-    }
-
-}
-
-@keyframes windowRestore{
-
-    from{
-
-        opacity:0;
-
-        transform:scale(.75);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:scale(1);
-
-    }
-
-}
-
-.window-minimizing{
-
-    animation:windowMinimize .28s forwards;
-
-}
-
-.window-restoring{
-
-    animation:windowRestore .28s ease;
-
-}
-
-/*======================================================
-WINDOW DRAGGING
-
-When your drag-start JS fires, set the dragged window's
-inline style to `position:absolute` and compute its
-top/left from getBoundingClientRect() relative to
-#desktop (or .desktop-container if you keep it
-position:relative, which it now is, so absolute children
-inside it position correctly). The .dragging class below
-then takes over visually. Once a window is absolutely
-positioned, the grid simply ignores it (grid only lays
-out in-flow children), and the rest of the grid will
-NOT reflow to fill the gap unless you also remove it
-from the DOM flow — if you want the other windows to
-stay put while one is dragged, also give the dragged
-window `grid-area: unset` or move it to a sibling
-overlay layer so its old grid cell empties out.
-======================================================*/
-
-.retro-window{
-
-    user-select:none;
-
-}
-
-.window-title{
-
-    cursor:grab;
-
-}
-
-.window-title:active{
-
-    cursor:grabbing;
-
-}
-
-.dragging{
-
-    position:absolute;
-
-    opacity:.92;
-
-    transition:none;
-
-    z-index:99999;
-
-    transform:none !important;
-
-}
-
-.dragging:hover{
-
-    transform:none !important;
-
-}
-
-/*======================================================
-WINDOW ACTIVE
-======================================================*/
-
 .window-active{
 
-    box-shadow:
-
-        0 20px 45px rgba(0,0,0,.28);
+    box-shadow:0 20px 45px rgba(0,0,0,.28);
 
 }
 
@@ -915,55 +711,19 @@ SAKURA PETALS
 
     opacity:.9;
 
-    animation-name:fall;
-
-    animation-timing-function:linear;
-
-    animation-iteration-count:1;
+    animation:fall linear 1 forwards;
 
 }
 
 @keyframes fall{
 
-    0%{
+    0%  { transform:translate(0,-60px)    rotate(0deg);   opacity:0; }
 
-        transform:
+    20% { opacity:1; }
 
-            translate(0,-60px)
+    50% { transform:translate(-35px,50vh) rotate(180deg); }
 
-            rotate(0deg);
-
-        opacity:0;
-
-    }
-
-    20%{
-
-        opacity:1;
-
-    }
-
-    50%{
-
-        transform:
-
-            translate(-35px,50vh)
-
-            rotate(180deg);
-
-    }
-
-    100%{
-
-        transform:
-
-            translate(25px,110vh)
-
-            rotate(360deg);
-
-        opacity:0;
-
-    }
+    100%{ transform:translate(25px,110vh) rotate(360deg); opacity:0; }
 
 }
 
@@ -1001,102 +761,176 @@ ACHIEVEMENT POPUP
 
     border:3px solid #B7C7E6;
 
-    box-shadow:
-
-        0 15px 35px rgba(0,0,0,.22);
+    box-shadow:0 15px 35px rgba(0,0,0,.22);
 
     transform:translateX(380px);
 
-    animation:
-
-        achievementIn .45s forwards,
-
-        achievementOut .45s forwards 4.5s;
+    animation:achievementIn .45s forwards, achievementOut .45s forwards 4.5s;
 
 }
 
-@keyframes achievementIn{
+@keyframes achievementIn{ to{ transform:translateX(0); } }
 
-    to{
+@keyframes achievementOut{ to{ transform:translateX(380px); opacity:0; } }
 
-        transform:translateX(0);
+.achievement h3{ margin-bottom:8px; color:#5B77A8; }
 
-    }
+.achievement p { margin:4px 0; }
+
+
+
+/*======================================================
+DESKTOP ICONS
+======================================================*/
+
+.desktop-icons{
+
+    position:absolute;
+
+    top:30px;
+
+    left:25px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+    z-index:50;
 
 }
 
-@keyframes achievementOut{
+.desktop-icon{
 
-    to{
+    width:95px;
 
-        transform:translateX(380px);
+    background:none;
 
-        opacity:0;
+    border:none;
 
-    }
+    cursor:pointer;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:white;
+
+    font-size:.75rem;
+
+    font-weight:bold;
+
+    text-shadow:
+
+        0 2px 4px rgba(0,0,0,.45);
+
+    transition:.2s;
 
 }
 
-.achievement h3{
+.desktop-icon img{
 
-    margin-bottom:8px;
+    width:64px;
 
-    color:#5B77A8;
+    image-rendering:pixelated;
+
+    transition:.25s;
 
 }
 
-.achievement p{
 
-    margin:4px 0;
+.desktop-icon:hover{
+
+    transform:translateY(-4px);
+
+}
+
+.desktop-icon:hover img{
+
+    transform:scale(1.08);
+
+}
+
+.desktop-icon:active{
+
+    transform:scale(.95);
+
+}
+
+.desktop-icon span{
+
+    color:white;
+
+    font-size:.78rem;
+
+    font-weight:bold;
+
+    text-align:center;
+
+    line-height:1.25;
+
+    text-shadow:
+
+        2px 2px 3px rgba(0,0,0,.65);
+
+}
+
+.desktop-icon.selected{
+
+    background:
+
+        rgba(40,110,255,.35);
+
+    border:
+
+        1px solid
+
+        rgba(255,255,255,.65);
+
+    border-radius:8px;
 
 }
 
 /*======================================================
 RESPONSIVE
-
-Grid columns collapse gracefully instead of relying on
-fixed left/width math. Player and quest windows now
-stack under the disc on narrower screens instead of
-disappearing.
 ======================================================*/
 
 @media(max-width:1200px){
 
-    .desktop-container{
-
-        grid-template-columns:240px 1fr 240px;
-
-    }
+    .dashboard-grid{ grid-template-columns:220px 1fr 220px; }
 
 }
 
 @media(max-width:992px){
 
-    .desktop-container{
+    .dashboard-grid{
 
         grid-template-columns:1fr;
 
-        grid-template-areas:
-
-            "header"
-
-            "disc"
-
-            "player"
-
-            "quest"
-
-            "footer";
-
     }
 
-    .player-card,
-    .current-disc,
-    .quest-card{
+    #playerWindow,
+    #discWindow,
+    #questWindow{
+
+        grid-column:1;
 
         max-width:560px;
 
         margin:0 auto;
+
+        width:100%;
+
+    }
+
+    .desktop-container{
+
+        overflow-y:auto;
 
     }
 
@@ -1104,28 +938,14 @@ disappearing.
 
 @media(max-width:768px){
 
-    .desktop-container{
+    .desktop-container{ padding:16px 16px 90px; }
 
-        padding:16px 16px 90px;
-
-        overflow-y:auto;
-
-    }
-
-    .desktop-header h1{
-
-        font-size:1.3rem;
-
-    }
+    .desktop-header h1{ font-size:1.3rem; }
 
 }
 
 @media(max-width:576px){
 
-    .desktop-clock{
-
-        font-size:1rem;
-
-    }
+    .desktop-clock{ font-size:1rem; }
 
 }

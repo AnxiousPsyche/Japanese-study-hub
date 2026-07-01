@@ -7,6 +7,12 @@
 
 /* ======================================================
    RETRO WINDOW
+
+   overflow is set to VISIBLE here so that resize handles
+   (which extend a few px outside the border box) are not
+   clipped. Each inner layer (title bar, content) carries
+   its own overflow:hidden so images and text still clip
+   correctly inside the window itself.
 ====================================================== */
 
 .retro-window{
@@ -17,7 +23,7 @@
 
     border-radius:18px;
 
-    overflow:hidden;
+    overflow:visible;
 
     box-shadow:
 
@@ -26,6 +32,14 @@
         inset 0 1px 0 rgba(255,255,255,.7);
 
     transition:.25s ease;
+
+    user-select:none;
+
+    min-width:180px;
+
+    min-height:100px;
+
+    box-sizing:border-box;
 
 }
 
@@ -39,28 +53,122 @@
 
 }
 
+/* Dragging suppresses the hover lift */
+
+.retro-window.dragging,
+.retro-window.dragging:hover{
+
+    transform:none !important;
+
+    opacity:.92;
+
+    box-shadow:0 24px 55px rgba(0,0,0,.32) !important;
+
+    transition:none !important;
+
+}
+
+.retro-window.resizing,
+.retro-window.resizing:hover{
+
+    transform:none !important;
+
+    transition:none !important;
+
+}
+
 
 
 /* ======================================================
    WINDOW TITLE BAR
 ====================================================== */
 
+.window-title{
 
-.window-close{
+    background:linear-gradient(
 
-    background:#FF8F8F;
+        90deg,
+
+        #89A8D8,
+
+        #A7C0E8
+
+    );
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px 18px;
+
+    font-family:var(--title-font);
+
+    font-size:.70rem;
+
+    letter-spacing:1px;
+
+    /* Clip content (long titles) without affecting the
+       resize handles that live on the window root */
+
+    overflow:hidden;
+
+    border-radius:15px 15px 0 0;
+
+    cursor:grab;
 
 }
 
-.window-minimize{
+.window-title:active{
 
-    background:#FFD966;
+    cursor:grabbing;
 
 }
 
-.window-maximize{
+.window-buttons{
 
-    background:#8FD19E;
+    display:flex;
+
+    gap:8px;
+
+    flex-shrink:0;
+
+}
+
+.window-buttons span{
+
+    width:14px;
+
+    height:14px;
+
+    border-radius:50%;
+
+    background:white;
+
+    opacity:.75;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    display:block;
+
+}
+
+.window-buttons span:first-child{ background:#FF8F8F; }
+
+.window-buttons span:nth-child(2){ background:#FFD966; }
+
+.window-buttons span:last-child{  background:#8FD19E; }
+
+.window-buttons span:hover{
+
+    opacity:1;
+
+    transform:scale(1.15);
 
 }
 
@@ -73,6 +181,117 @@
 .window-content{
 
     padding:30px;
+
+    overflow:hidden;
+
+    border-radius:0 0 15px 15px;
+
+}
+
+
+
+/* ======================================================
+   RESIZE HANDLES
+
+   Thin invisible strips on each edge and corner.
+   Injected by os.js. Visible only on hover via the
+   rule in homepage.css, except the SE corner which
+   always shows a small triangle grip.
+====================================================== */
+
+.resize-handle{
+
+    position:absolute;
+
+    z-index:10;
+
+    opacity:0;
+
+    transition:opacity .15s;
+
+}
+
+.retro-window:hover .resize-handle{
+
+    opacity:1;
+
+}
+
+.resize-handle.n{
+
+    top:-5px; left:18px; right:18px; height:10px;
+
+    cursor:n-resize;
+
+}
+
+.resize-handle.s{
+
+    bottom:-5px; left:18px; right:18px; height:10px;
+
+    cursor:s-resize;
+
+}
+
+.resize-handle.e{
+
+    right:-5px; top:18px; bottom:18px; width:10px;
+
+    cursor:e-resize;
+
+}
+
+.resize-handle.w{
+
+    left:-5px; top:18px; bottom:18px; width:10px;
+
+    cursor:w-resize;
+
+}
+
+.resize-handle.ne{
+
+    top:-5px; right:-5px; width:16px; height:16px;
+
+    cursor:ne-resize;
+
+}
+
+.resize-handle.nw{
+
+    top:-5px; left:-5px; width:16px; height:16px;
+
+    cursor:nw-resize;
+
+}
+
+.resize-handle.se{
+
+    bottom:-5px; right:-5px; width:18px; height:18px;
+
+    cursor:se-resize;
+
+    background:linear-gradient(
+
+        135deg,
+
+        transparent 50%,
+
+        #B7C7E6 50%
+
+    );
+
+    border-radius:0 0 14px 0;
+
+    opacity:1 !important;
+
+}
+
+.resize-handle.sw{
+
+    bottom:-5px; left:-5px; width:16px; height:16px;
+
+    cursor:sw-resize;
 
 }
 
@@ -110,6 +329,8 @@
 
     box-shadow:3px 3px 0 rgba(0,0,0,.18);
 
+    text-decoration:none;
+
 }
 
 .retro-btn:hover{
@@ -128,15 +349,20 @@
 
 }
 
-.retro-btn:disabled{
+.retro-btn:disabled,
+.retro-btn.disabled{
 
-    opacity:.6;
+    opacity:.5;
 
     cursor:not-allowed;
 
     transform:none;
 
     box-shadow:none;
+
+    filter:grayscale(.3);
+
+    pointer-events:none;
 
 }
 
@@ -226,37 +452,13 @@
 
 }
 
-.badge-beginner{
+.badge-beginner{ background:var(--mint);       color:white; }
 
-    background:var(--mint);
+.badge-easy{     background:var(--title-bar);  color:white; }
 
-    color:white;
+.badge-medium{   background:var(--yellow);     color:var(--text-main); }
 
-}
-
-.badge-easy{
-
-    background:var(--title-bar);
-
-    color:white;
-
-}
-
-.badge-medium{
-
-    background:var(--yellow);
-
-    color:var(--text-main);
-
-}
-
-.badge-hard{
-
-    background:var(--pink);
-
-    color:white;
-
-}
+.badge-hard{     background:var(--pink);       color:white; }
 
 
 
@@ -285,7 +487,7 @@
 
 
 /* ======================================================
-   INFO BOX
+   INFO / NOTE / SUCCESS / MISSION BOXES
 ====================================================== */
 
 .info-box{
@@ -300,12 +502,6 @@
 
 }
 
-
-
-/* ======================================================
-   NOTE BOX
-====================================================== */
-
 .note-box{
 
     background:#FFFBE8;
@@ -318,12 +514,6 @@
 
 }
 
-
-
-/* ======================================================
-   SUCCESS BOX
-====================================================== */
-
 .success-box{
 
     background:#F3FFF4;
@@ -335,12 +525,6 @@
     border-radius:var(--radius);
 
 }
-
-
-
-/* ======================================================
-   MISSION BOX
-====================================================== */
 
 .mission-box{
 
@@ -411,9 +595,13 @@ textarea:focus{
     height:100%;
 
     background:linear-gradient(
+
         90deg,
+
         var(--mint),
+
         var(--title-bar)
+
     );
 
 }
@@ -458,90 +646,10 @@ td{
    FLEX HELPERS
 ====================================================== */
 
-.flex{
+.flex{         display:flex; }
 
-    display:flex;
+.flex-between{ display:flex; justify-content:space-between; align-items:center; }
 
-}
+.flex-center{  display:flex; justify-content:center; align-items:center; }
 
-.flex-between{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
-.flex-center{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-}
-
-.gap{
-
-    gap:20px;
-
-}
-
-/* ======================================================
-   WINDOW TITLE BAR
-====================================================== */
-
-.window-title{
-
-    background:linear-gradient(
-
-        90deg,
-
-        #89A8D8,
-
-        #A7C0E8
-
-    );
-
-    color:white;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:12px 18px;
-
-    font-family:var(--title-font);
-
-    font-size:.70rem;
-
-    letter-spacing:1px;
-
-}
-
-.window-buttons{
-
-    display:flex;
-
-    gap:8px;
-
-}
-
-.window-buttons span{
-
-    width:14px;
-
-    height:14px;
-
-    border-radius:50%;
-
-    background:white;
-
-    opacity:.75;
-
-}
+.gap{          gap:20px; }
