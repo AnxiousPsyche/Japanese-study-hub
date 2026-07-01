@@ -838,3 +838,27 @@ TASKBAR RESPONSIVE
     }
 
 }
+
+/* ======================================================
+   START MENU — new bottom button colours
+   Add these to os.css (or taskbar.css) alongside
+   the existing .start-item.save and .start-item.exit rules.
+====================================================== */
+
+.start-item.profile:hover{
+
+    background:#EEF5FF;
+
+}
+
+.start-item.logout:hover{
+
+    background:#FFF2F2;
+
+}
+
+.start-item.exit:hover{
+
+    background:#F0FFF4;
+
+}

@@ -196,6 +196,8 @@ DESKTOP
 
 <div id="desktop">
 
+    <div id="sakura-container"></div>
+
 <!--======================================================
 WINDOWS XP DESKTOP SHORTCUTS
 =======================================================-->
@@ -807,6 +809,11 @@ TASKBAR
 START MENU
 =========================================================== -->
 
+<!-- ==========================================================
+START MENU — replace the entire <div id="startMenu"> block
+in your index.html with this.
+=========================================================== -->
+
 <div
     id="startMenu"
     class="start-menu">
@@ -832,40 +839,24 @@ START MENU
     </div>
 
     <!-- =====================================
-         MENU
+         MENU BODY
     ====================================== -->
 
     <div class="start-body">
 
-        <button
-            class="start-item"
-            data-app="grammar">
-
-            <i class="bi bi-book"></i>
-
-            <span>Grammar</span>
-
-        </button>
+        <!-- Progress -->
 
         <button
             class="start-item"
-            data-app="vocabulary">
+            data-app="progress">
 
-            <i class="bi bi-journal-text"></i>
+            <i class="bi bi-graph-up-arrow"></i>
 
-            <span>Vocabulary</span>
-
-        </button>
-
-        <button
-            class="start-item"
-            data-app="flashcards">
-
-            <i class="bi bi-card-text"></i>
-
-            <span>Flashcards</span>
+            <span>Progress</span>
 
         </button>
+
+        <!-- Practice -->
 
         <button
             class="start-item"
@@ -877,49 +868,86 @@ START MENU
 
         </button>
 
+        <!-- Flashcards -->
+
+        <button
+            class="start-item"
+            data-app="flashcards">
+
+            <i class="bi bi-card-text"></i>
+
+            <span>Flashcards</span>
+
+        </button>
+
+        <!-- Achievements -->
+
         <button
             class="start-item"
             data-app="achievements">
 
-            <i class="bi bi-trophy"></i>
+            <i class="bi bi-trophy-fill"></i>
 
             <span>Achievements</span>
 
         </button>
 
+        <!-- Favorites -->
+
         <button
             class="start-item"
             data-app="favorites">
 
-            <i class="bi bi-heart"></i>
+            <i class="bi bi-heart-fill"></i>
 
             <span>Favorites</span>
-
-        </button>
-
-        <button
-            class="start-item"
-            data-app="progress">
-
-            <i class="bi bi-graph-up"></i>
-
-            <span>Progress</span>
-
-        </button>
-
-        <button
-            class="start-item settings"
-            data-app="settings">
-
-            <i class="bi bi-gear-fill"></i>
-
-            <span>Settings</span>
 
         </button>
 
     </div>
 
     <div class="start-divider"></div>
+
+    <!-- =====================================
+         BOTTOM
+    ====================================== -->
+
+    <div class="start-bottom">
+
+        <!-- Profile -->
+
+        <button
+            class="start-item profile">
+
+            <i class="bi bi-person-circle"></i>
+
+            <span>Profile</span>
+
+        </button>
+
+        <!-- Switch Profile / Log Out -->
+
+        <button
+            class="start-item exit">
+
+            <i class="bi bi-arrow-left-right"></i>
+
+            <span>Switch Profile</span>
+
+        </button>
+
+        <button
+            class="start-item logout">
+
+            <i class="bi bi-box-arrow-right"></i>
+
+            <span>Log Out</span>
+
+        </button>
+
+    </div>
+
+</div>
 
     <!-- =====================================
          BOTTOM
@@ -1133,6 +1161,8 @@ TELEPORT EFFECT
 <script src="assets/js/music-player.js"></script>
 
 <script src="assets/js/os.js"></script>
+
+<script src="assets/js/sakura.js"></script>
 
 <script src="assets/js/index.js"></script>
 

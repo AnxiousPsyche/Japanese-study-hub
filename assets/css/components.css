@@ -45,10 +45,7 @@
 
 .retro-window:hover{
 
-    transform:translateY(-4px);
-
     box-shadow:
-
         0 20px 40px rgba(0,0,0,.16);
 
 }
@@ -653,3 +650,14 @@ td{
 .flex-center{  display:flex; justify-content:center; align-items:center; }
 
 .gap{          gap:20px; }
+
+
+/*======================================================
+DESKTOP WINDOWS DON'T FLOAT ON HOVER
+======================================================*/
+
+#desktop .retro-window:hover{
+
+    transform:none !important;
+
+}
