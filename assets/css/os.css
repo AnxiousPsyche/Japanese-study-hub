@@ -203,7 +203,7 @@ START MENU
 
     flex-direction:column;
 
-    overflow:hidden;
+    overflow-x:hidden;
 
     border-radius:18px;
 
@@ -607,7 +607,7 @@ VOLUME PANEL
 
     flex-direction:column;
 
-    overflow:hidden;
+    overflow-x:hidden;
 
     border-radius:18px;
 

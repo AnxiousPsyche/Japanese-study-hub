@@ -41,6 +41,16 @@
 
     box-sizing:border-box;
 
+    display:flex;
+
+    flex-direction:column;
+
+    position:absolute;
+
+    resize:none;
+
+    box-sizing:border-box;
+
 }
 
 .retro-window:hover{
@@ -177,11 +187,21 @@
 
 .window-content{
 
-    padding:30px;
+    flex:1;
 
-    overflow:hidden;
+    width:100%;
 
-    border-radius:0 0 15px 15px;
+    height:auto;
+
+    padding:24px;
+
+    overflow:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    box-sizing:border-box;
 
 }
 
