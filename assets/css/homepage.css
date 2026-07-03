@@ -15,8 +15,6 @@ body{
 
     background:#8EC5F4;
 
-    font-family:'Nunito',sans-serif;
-
 }
 
 /*======================================================
@@ -816,13 +814,13 @@ everything including dragged windows.
 
     55%{
 
-        transform:translate(-200px, 52vh) rotate(-230deg);
+        transform:translate(100vw, 108vh) rotate(-230deg);
 
     }
 
     80%{
 
-        transform:translate(-310px, 78vh) rotate(-330deg);
+        transform:translate(100vw, 108vh) rotate(-330deg);
 
         opacity:.75;
 
@@ -830,7 +828,7 @@ everything including dragged windows.
 
     100%{
 
-        transform:translate(-420px, 108vh) rotate(-430deg);
+        transform:translate(100vw, 108vh) rotate(-430deg);
 
         opacity:0;
 
@@ -895,7 +893,7 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 — renamed to match so the icon column actually renders.
 ======================================================*/
 
-.desktop-shortcuts{
+.desktop-icons{
 
     position:absolute;
 

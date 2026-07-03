@@ -9,11 +9,13 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <meta name="description"
-          content="JP Library OS - Learn Japanese through interactive lessons, quests, flashcards, and retro-inspired adventures.">
+    <meta
+        name="description"
+        content="JP Library OS - Learn Japanese through interactive lessons, quests, flashcards, and retro-inspired adventures.">
 
     <title>JP Library OS</title>
 
@@ -21,68 +23,247 @@
          GOOGLE FONTS
     ========================================== -->
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Press+Start+2P&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Press+Start+2P&display=swap"
+        rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="preconnect" 
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" 
+        href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=Jacquard+12&display=swap" 
+        rel="stylesheet">
+
+    <!-- =========================================
+         FONT AWESOME
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- =========================================
          BOOTSTRAP
     ========================================== -->
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
     <!-- =========================================
          BOOTSTRAP ICONS
     ========================================== -->
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- =========================================
          JP LIBRARY CSS
     ========================================== -->
 
     <link rel="stylesheet" href="assets/css/variables.css">
-
     <link rel="stylesheet" href="assets/css/reset.css">
-
+    <link rel="stylesheet" href="assets/css/login.css">
     <link rel="stylesheet" href="assets/css/components.css">
-
     <link rel="stylesheet" href="assets/css/navbar.css">
-
     <link rel="stylesheet" href="assets/css/os.css">
-
     <link rel="stylesheet" href="assets/css/homepage.css">
-
     <link rel="stylesheet" href="assets/css/mission.css">
-
     <link rel="stylesheet" href="assets/css/quiz.css">
-
     <link rel="stylesheet" href="assets/css/animations.css">
-
     <link rel="stylesheet" href="assets/css/responsive.css">
-
     <link rel="stylesheet" href="assets/css/boot.css">
-
     <link rel="stylesheet" href="assets/css/teleport.css">
 
 </head>
 
 <body>
 
-<!-- =========================================
+    <!-- =========================================
+         LOGIN SCREEN
+    ========================================== -->
+
+    <section id="login-screen">
+
+        <!-- Optional: Login-only sakura layer -->
+        <!-- <div id="login-sakura-container"></div> -->
+
+        <div class="login-glass">
+
+    <div class="login-header">
+
+    <img
+        src="assets/images/logo/JPLnewlogo.png"
+        class="login-logo"
+        alt="JP Library Logo">
+
+    <h1 class="scroll-title">
+
+        🌸 Welcome, Explorer! 🌸
+
+    </h1>
+
+    <p class="scroll-description">
+
+        Every great adventure begins with a single page.
+        Open your journal and continue your Japanese journey.
+
+    </p>
+
+</div>
+
+    <form id="loginForm">
+
+        <h3 class="scroll-heading">
+
+            Returning Explorer
+
+        </h3>
+
+        <div class="login-input">
+
+            <label for="playerName">
+
+                Explorer Name
+
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                autocomplete="username">
+
+        </div>
+
+        <div class="login-input">
+
+            <label for="playerPassword">
+
+                Secret Passphrase
+
+            </label>
+
+            <input
+                type="password"
+                id="playerPassword"
+                autocomplete="current-password">
+
+        </div>
+
+        <div class="scroll-divider">
+
+            ✦ ✦ ✦
+
+        </div>
+
+        <h3 class="scroll-heading">
+
+            New Explorer
+
+        </h3>
+
+        <p class="scroll-small">
+
+            Haven't begun your adventure yet?
+
+            Create your explorer and receive your first journal.
+
+        </p>
+
+        <div class="login-input">
+
+            <label for="newPlayerName">
+
+                What shall we call you?
+
+            </label>
+
+            <input
+                type="text"
+                id="newPlayerName">
+
+        </div>
+
+        <div class="avatar-upload">
+
+            <label
+                class="avatar-label"
+                for="avatarUpload">
+
+                🎒 Adventure Portrait
+
+            </label>
+
+            <input
+                type="file"
+                id="avatarUpload"
+                accept="image/*">
+
+            <small>
+
+                Bring a portrait that represents your adventure.
+
+            </small>
+
+        </div>
+
+        <button
+            id="loginButton"
+            class="retro-btn"
+            type="submit">
+
+            ▶ Begin Adventure
+
+        </button>
+
+    </form>
+
+</div>
+</section>
+
+    <!-- =========================================
      BOOT SCREEN
 ========================================== -->
 
-<section id="boot-screen"
-         class="boot-screen">
+<section
+    id="boot-screen"
+    class="boot-screen">
 
     <div class="boot-window">
 
@@ -93,6 +274,13 @@
         </div>
 
         <div class="boot-body">
+
+            <!-- Logo -->
+
+            <img
+                src="assets/images/logo/JPLnewlogo.png"
+                alt="JP Library Logo"
+                class="boot-logo">
 
             <h1>
 
@@ -106,11 +294,17 @@
 
             </p>
 
+            <!-- Loading Bars -->
+
             <div class="loading-group">
 
                 <div class="loading-item">
 
-                    <span>Grammar Database</span>
+                    <span>
+
+                        Grammar Database
+
+                    </span>
 
                     <div class="loading-bar">
 
@@ -122,7 +316,11 @@
 
                 <div class="loading-item">
 
-                    <span>Vocabulary Database</span>
+                    <span>
+
+                        Vocabulary Database
+
+                    </span>
 
                     <div class="loading-bar">
 
@@ -134,7 +332,11 @@
 
                 <div class="loading-item">
 
-                    <span>Kanji Database</span>
+                    <span>
+
+                        Kanji Database
+
+                    </span>
 
                     <div class="loading-bar">
 
@@ -146,7 +348,11 @@
 
                 <div class="loading-item">
 
-                    <span>Quest Engine</span>
+                    <span>
+
+                        Quest Engine
+
+                    </span>
 
                     <div class="loading-bar">
 
@@ -158,7 +364,11 @@
 
                 <div class="loading-item">
 
-                    <span>Audio System</span>
+                    <span>
+
+                        Audio System
+
+                    </span>
 
                     <div class="loading-bar">
 
@@ -170,16 +380,24 @@
 
             </div>
 
+            <!-- Boot Status -->
+
             <p id="boot-status-text">
 
                 Preparing your adventure...
 
             </p>
 
-            <button id="startBoot-btn"
-            class="retro-btn"
-            disabled>
-            BOOTING...
+            <!-- Boot Button -->
+
+            <button
+                id="startBoot-btn"
+                class="retro-btn"
+                type="button"
+                disabled>
+
+                BOOTING...
+
             </button>
 
         </div>
@@ -188,218 +406,161 @@
 
 </section>
 
-
-
 <!-- ==========================================================
 DESKTOP
 =========================================================== -->
 
 <div id="desktop">
 
+    <!-- Sakura Layer -->
+
     <div id="sakura-container"></div>
 
-<!--======================================================
-WINDOWS XP DESKTOP SHORTCUTS
-=======================================================-->
+    <!--======================================================
+    WINDOWS XP DESKTOP SHORTCUTS
+    ======================================================-->
 
-<div class="desktop-icons">
+    <div class="desktop-icons">
 
-    <!-- Greetings -->
+        <!-- Greetings -->
 
-    <button
-        class="desktop-icon"
-        onclick="restoreWindow('greetingWindow')">
+        <button
+            class="desktop-icon"
+            onclick="restoreWindow('greetingWindow')">
 
-        <img
-            src="assets/images/icons/pixels/fortunecat-Original.png"
-            alt="Greetings">
+            <img
+                src="assets/images/icons/pixels/fortunecat-Original.png"
+                alt="Greetings">
 
-        <span>Greetings</span>
+            <span>
 
-    </button>
+                Greetings
 
-    <!-- Player -->
+            </span>
 
-    <button
-        class="desktop-icon"
-        onclick="restoreWindow('playerWindow')">
+        </button>
 
-        <img
-            src="assets/images/icons/pixels/bluesuit-Original.png"
-            alt="Player Status">
+        <!-- Player -->
 
-        <span>Player Status</span>
+        <button
+            class="desktop-icon"
+            onclick="restoreWindow('playerWindow')">
 
-    </button>
+            <img
+                src="assets/images/icons/pixels/bluesuit-Original.png"
+                alt="Player Status">
 
-    <!-- Journey -->
+            <span>
 
-    <button
-        class="desktop-icon"
-        onclick="restoreWindow('journeyWindow')">
+                Player Status
 
-        <img
-            src="assets/images/icons/pixels/treasure-map-Original.png"
-            alt="Journey">
+            </span>
 
-        <span>Journey</span>
+        </button>
 
-    </button>
+        <!-- Journey -->
 
-</div>
-    
-        
+        <button
+            class="desktop-icon"
+            onclick="restoreWindow('journeyWindow')">
 
-                         
-      <main class="desktop-container">
+            <img
+                src="assets/images/icons/pixels/treasure-map-Original.png"
+                alt="Journey">
 
-    <!-- =========================================
-         WELCOME WINDOW
-    ========================================== -->
+            <span>
 
-    <section id="greetingWindow"
+                Journey
+
+            </span>
+
+        </button>
+
+    </div>
+
+    <!--======================================================
+    DESKTOP CONTENT
+    ======================================================-->
+
+    <main class="desktop-container">
+
+<!-- =========================================
+     WELCOME WINDOW
+========================================== -->
+
+<section
+    id="greetingWindow"
     class="retro-window desktop-header">
 
-        <div class="window-title">
+    <div class="window-title">
 
-            <span>🌸 JP LIBRARY OS</span>
+        <span>
 
-            <div class="window-buttons">
-                <span></span>
-                <span></span>
-                <span></span>
+            🌸 JP LIBRARY OS
+
+        </span>
+
+        <div class="window-buttons">
+
+            <span
+                class="window-close"
+                title="Close">
+            </span>
+
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="window-content">
+
+        <div class="desktop-header-content">
+
+            <h1 id="jpGreeting">
+
+                おかえりなさい！
+
+            </h1>
+
+            <p id="englishGreeting">
+
+                Welcome back, Rei.
+
+            </p>
+
+            <p id="greetingMessage">
+
+                Your Japanese adventure continues today.
+
+            </p>
+
+            <div class="desktop-clock">
+
+                <span id="currentTime">
+
+                    10:30 AM
+
+                </span>
+
             </div>
 
         </div>
 
-        <div class="window-content">
+    </div>
 
-            <div class="desktop-header-content">
+</section>
 
-                <h1 id="jpGreeting">
-                    おかえりなさい！
-                </h1>
-                <p id="englishGreeting">Welcome back, Rei.
-
-                </p>
-                <p id="greetingMessage">
-                    Your Japanese adventure continues today.
-                </p>
-
-                <div class="desktop-clock">
-
-                    <span id="currentTime">
-
-                        10:30 AM
-
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =========================================
-         DESKTOP GRID
-    ========================================== -->
-
-    <section class="dashboard-grid">
-
-        <!-- PLAYER -->
-
-        <article
-            id="playerWindow"
-            class="retro-window player-card">
-
-            <div class="window-title">
-
-                <span>👤 PLAYER STATUS</span>
-
-                <div class="window-buttons">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="window-content">
-
-                <img src="assets/images/avatars/smeagol.png"
-                     class="player-avatar"
-                     alt="Player">
-
-                <h2>Rei</h2>
-
-                <p>Grammar Explorer</p>
-
-                <h3>Level 1</h3>
-
-                <div class="xp-bar">
-
-                    <div class="xp-fill"></div>
-
-                </div>
-
-                <p>150 / 500 XP</p>
-
-                <hr>
-
-                <div class="player-stats">
-
-                    <div>
-
-                        <h3>🔥</h3>
-
-                        <strong>12</strong>
-
-                        <p>Day Streak</p>
-
-                    </div>
-
-                    <div>
-
-                        <h3>🏆</h3>
-
-                        <strong>3</strong>
-
-                        <p>Badges</p>
-
-                    </div>
-
-                    <div>
-
-                        <h3>📚</h3>
-
-                        <strong>8</strong>
-
-                        <p>Lessons</p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- CURRENT DISC -->
-
-        <!-- =========================================
-     CURRENT DISC — replace the existing
-     <article id="discWindow" class="retro-window current-disc">
-     window-content with the block below. It swaps the
-     single disc image for a jukebox-style carousel with
-     left/right arrows that glide between N5–N1.
+<!-- =========================================
+     CURRENT DISC
 ========================================== -->
 
 <article
@@ -408,13 +569,28 @@ WINDOWS XP DESKTOP SHORTCUTS
 
     <div class="window-title">
 
-        <span>💿 CURRENT DISC</span>
+        <span>
+
+            💿 CURRENT DISC
+
+        </span>
 
         <div class="window-buttons">
 
-            <span></span>
-            <span></span>
-            <span></span>
+            <span
+                class="window-close"
+                title="Close">
+            </span>
+
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
 
         </div>
 
@@ -422,11 +598,14 @@ WINDOWS XP DESKTOP SHORTCUTS
 
     <div class="window-content">
 
-        <div class="disc-carousel">
+        <div
+            class="disc-carousel"
+            tabindex="0">
 
             <button
                 class="disc-arrow disc-arrow-left"
                 id="discPrev"
+                type="button"
                 aria-label="Previous disc">
 
                 <i class="bi bi-chevron-left"></i>
@@ -435,9 +614,11 @@ WINDOWS XP DESKTOP SHORTCUTS
 
             <div class="disc-viewport">
 
-                <div class="disc-track" id="discTrack">
+                <div
+                    class="disc-track"
+                    id="discTrack">
 
-                    <!-- one .disc-slide per JLPT level -->
+                    <!-- JLPT N5 -->
 
                     <div
                         class="disc-slide"
@@ -448,13 +629,23 @@ WINDOWS XP DESKTOP SHORTCUTS
                         <img
                             src="assets/images/discs/N5disc.png"
                             class="current-disc-image"
-                            alt="N5 Disc">
+                            alt="JLPT N5 Disc">
 
-                        <h2>JLPT N5 Edition</h2>
+                        <h2>
 
-                        <p>Grammar Explorer</p>
+                            JLPT N5 Edition
+
+                        </h2>
+
+                        <p>
+
+                            Grammar Explorer
+
+                        </p>
 
                     </div>
+
+                    <!-- JLPT N4 -->
 
                     <div
                         class="disc-slide"
@@ -464,13 +655,23 @@ WINDOWS XP DESKTOP SHORTCUTS
                         <img
                             src="assets/images/discs/N4disc.png"
                             class="current-disc-image"
-                            alt="N4 Disc">
+                            alt="JLPT N4 Disc">
 
-                        <h2>JLPT N4 Edition</h2>
+                        <h2>
 
-                        <p>🔒 Level Locked</p>
+                            JLPT N4 Edition
+
+                        </h2>
+
+                        <p>
+
+                            🔒 Level Locked
+
+                        </p>
 
                     </div>
+
+                    <!-- JLPT N3 -->
 
                     <div
                         class="disc-slide"
@@ -480,13 +681,23 @@ WINDOWS XP DESKTOP SHORTCUTS
                         <img
                             src="assets/images/discs/N3disc.png"
                             class="current-disc-image"
-                            alt="N3 Disc">
+                            alt="JLPT N3 Disc">
 
-                        <h2>JLPT N3 Edition</h2>
+                        <h2>
 
-                        <p>🔒 Level Locked</p>
+                            JLPT N3 Edition
+
+                        </h2>
+
+                        <p>
+
+                            🔒 Level Locked
+
+                        </p>
 
                     </div>
+
+                    <!-- JLPT N2 -->
 
                     <div
                         class="disc-slide"
@@ -496,13 +707,23 @@ WINDOWS XP DESKTOP SHORTCUTS
                         <img
                             src="assets/images/discs/N2disc.png"
                             class="current-disc-image"
-                            alt="N2 Disc">
+                            alt="JLPT N2 Disc">
 
-                        <h2>JLPT N2 Edition</h2>
+                        <h2>
 
-                        <p>🔒 Level Locked</p>
+                            JLPT N2 Edition
+
+                        </h2>
+
+                        <p>
+
+                            🔒 Level Locked
+
+                        </p>
 
                     </div>
+
+                    <!-- JLPT N1 -->
 
                     <div
                         class="disc-slide"
@@ -512,11 +733,19 @@ WINDOWS XP DESKTOP SHORTCUTS
                         <img
                             src="assets/images/discs/N1disc.png"
                             class="current-disc-image"
-                            alt="N1 Disc">
+                            alt="JLPT N1 Disc">
 
-                        <h2>JLPT N1 Edition</h2>
+                        <h2>
 
-                        <p>🔒 Level Locked</p>
+                            JLPT N1 Edition
+
+                        </h2>
+
+                        <p>
+
+                            🔒 Level Locked
+
+                        </p>
 
                     </div>
 
@@ -527,6 +756,7 @@ WINDOWS XP DESKTOP SHORTCUTS
             <button
                 class="disc-arrow disc-arrow-right"
                 id="discNext"
+                type="button"
                 aria-label="Next disc">
 
                 <i class="bi bi-chevron-right"></i>
@@ -535,7 +765,11 @@ WINDOWS XP DESKTOP SHORTCUTS
 
         </div>
 
-        <div class="disc-dots" id="discDots"></div>
+        <div
+            class="disc-dots"
+            id="discDots">
+
+        </div>
 
         <a
             href="pages/N5/n5-dashboard.html"
@@ -550,81 +784,107 @@ WINDOWS XP DESKTOP SHORTCUTS
 
 </article>
 
-
-        <!-- TODAY'S QUEST -->
-
-        <article
-            id="questWindow"
-            class="retro-window quest-card">
-
-            <div class="window-title">
-
-                <span>📜 TODAY'S QUEST</span>
-
-                <div class="window-buttons">
-
-                    <span></span>
-                    <span></span>
-                    <span></span>
-
-                </div>
-
-            </div>
-
-            <div class="window-content">
-
-                <h2>Self Introduction</h2>
-
-                <p>
-
-                    Complete today's lesson and finish the practice exercises.
-
-                </p>
-
-                <div class="quest-reward">
-
-                    ⭐ +50 XP
-
-                </div>
-
-                <button class="retro-btn">
-
-                    Continue
-
-                </button>
-
-            </div>
-
-        </article>
-
-    </section>
-
-
-
-    
-    <!-- =========================================
-         JOURNEY
-    ========================================== -->
-
-   <!-- =========================================
-     JOURNEY  — find this section in index.html
-     (it currently has no class besides retro-window)
-     and update its opening tag to match below so the
-     CSS grid-area:journey rule actually applies to it.
+<!-- =========================================
+     TODAY'S QUEST
 ========================================== -->
 
-<section id="journeyWindow"
+<article
+    id="questWindow"
+    class="retro-window quest-card">
+
+    <div class="window-title">
+
+        <span>
+
+            📜 TODAY'S QUEST
+
+        </span>
+
+        <div class="window-buttons">
+
+            <span
+                class="window-close"
+                title="Close">
+            </span>
+
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="window-content">
+
+        <h2>
+
+            Self Introduction
+
+        </h2>
+
+        <p>
+
+            Complete today's lesson and finish the practice exercises.
+
+        </p>
+
+        <div class="quest-reward">
+
+            ⭐ +50 XP
+
+        </div>
+
+        <button
+            class="retro-btn"
+            type="button">
+
+            Continue
+
+        </button>
+
+    </div>
+
+</article>
+
+<!-- =========================================
+     JOURNEY
+========================================== -->
+
+<section
+    id="journeyWindow"
     class="retro-window journey-window">
 
     <div class="window-title">
 
-        <span>🗺 YOUR JOURNEY</span>
+        <span>
+
+            🗺 YOUR JOURNEY
+
+        </span>
 
         <div class="window-buttons">
 
-            <span></span>
-            <span></span>
-            <span></span>
+            <span
+                class="window-close"
+                title="Close">
+            </span>
+
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
 
         </div>
 
@@ -634,15 +894,65 @@ WINDOWS XP DESKTOP SHORTCUTS
 
         <ul class="journey-list">
 
-            <li>⚔️ JLPT N5 <span class="status current">Quest Active</span></li>
+            <li>
 
-            <li>🔒 JLPT N4<span class="status locked">Level Locked</span></li>
+                ⚔️ JLPT N5
 
-            <li>🔒 JLPT N3<span class="status locked">Level Locked</span></li>
+                <span class="status current">
 
-            <li>🔒 JLPT N2<span class="status locked">Level Locked</span></li>
+                    Quest Active
 
-            <li>🔒 JLPT N1<span class="status locked"> Level Locked</span></li>
+                </span>
+
+            </li>
+
+            <li>
+
+                🔒 JLPT N4
+
+                <span class="status locked">
+
+                    Level Locked
+
+                </span>
+
+            </li>
+
+            <li>
+
+                🔒 JLPT N3
+
+                <span class="status locked">
+
+                    Level Locked
+
+                </span>
+
+            </li>
+
+            <li>
+
+                🔒 JLPT N2
+
+                <span class="status locked">
+
+                    Level Locked
+
+                </span>
+
+            </li>
+
+            <li>
+
+                🔒 JLPT N1
+
+                <span class="status locked">
+
+                    Level Locked
+
+                </span>
+
+            </li>
 
         </ul>
 
@@ -650,42 +960,55 @@ WINDOWS XP DESKTOP SHORTCUTS
 
 </section>
 
+<!-- =========================================
+     FOOTER
+========================================== -->
 
+<footer
+    class="retro-window footer-window">
 
-    <!-- =========================================
-         FOOTER
-    ========================================== -->
+    <div class="window-title">
 
-    <footer class="retro-window footer-window">
+        <span>
 
-        <div class="window-title">
+            💾 JP LIBRARY OS
 
-            <span>💾 JP LIBRARY OS</span>
+        </span>
 
-            <div class="window-buttons">
+        <div class="window-buttons">
 
-                <span></span>
-                <span></span>
-                <span></span>
+            <span
+                class="window-close"
+                title="Close">
+            </span>
 
-            </div>
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
 
         </div>
 
-        <div class="window-content">
+    </div>
 
-            <p>
+    <div class="window-content">
 
-                © 2026 JP Library OS • Built by AnxiousPsyche
+        <p>
 
-            </p>
+            © 2026 JP Library OS • Built by AnxiousPsyche
 
-        </div>
+        </p>
 
-    </footer>
+    </div>
 
-</main> 
-</div>
+</footer>
+
+</main>
 
 <!-- ==========================================================
 TASKBAR
@@ -697,16 +1020,20 @@ TASKBAR
 
     <button
         id="startButton"
-        class="start-btn">
+        class="start-btn"
+        type="button">
 
         <img
             src="assets/images/icons/pixels/picture-window-Original.png"
-            alt="Start">
+            alt="Start Menu">
 
-        <span>START</span>
+        <span>
+
+            START
+
+        </span>
 
     </button>
-
 
     <!-- SEARCH -->
 
@@ -715,12 +1042,12 @@ TASKBAR
         <i class="bi bi-search"></i>
 
         <input
-            type="text"
+            type="search"
             id="desktopSearch"
-            placeholder="Search JP Library">
+            placeholder="Search JP Library"
+            autocomplete="off">
 
     </div>
-
 
     <!-- OPEN WINDOWS -->
 
@@ -728,7 +1055,8 @@ TASKBAR
 
         <button
             class="taskbar-app"
-            data-window="playerWindow">
+            data-window="playerWindow"
+            type="button">
 
             👤 Player
 
@@ -736,7 +1064,8 @@ TASKBAR
 
         <button
             class="taskbar-app"
-            data-window="discWindow">
+            data-window="discWindow"
+            type="button">
 
             💿 Current Disc
 
@@ -744,14 +1073,14 @@ TASKBAR
 
         <button
             class="taskbar-app"
-            data-window="questWindow">
+            data-window="questWindow"
+            type="button">
 
             📜 Quest
 
         </button>
 
     </div>
-
 
     <!-- SYSTEM TRAY -->
 
@@ -760,28 +1089,25 @@ TASKBAR
         <!-- Language -->
 
         <button
-
             id="languageButton"
-
-            class="language-btn">
+            class="language-btn"
+            type="button">
 
             ENG
 
         </button>
 
-
         <!-- Volume -->
 
         <button
-
             id="volumeButton"
-
-            class="system-btn">
+            class="system-btn"
+            type="button"
+            aria-label="Volume">
 
             <i class="bi bi-volume-up-fill"></i>
 
         </button>
-
 
         <!-- Clock -->
 
@@ -805,15 +1131,6 @@ TASKBAR
 
 </footer>
 
-<!-- ==========================================================
-START MENU
-=========================================================== -->
-
-<!-- ==========================================================
-START MENU — replace the entire <div id="startMenu"> block
-in your index.html with this.
-=========================================================== -->
-
 <div
     id="startMenu"
     class="start-menu">
@@ -826,13 +1143,21 @@ in your index.html with this.
 
         <img
             src="assets/images/avatars/smeagol.png"
-            alt="Player">
+            alt="Player Avatar">
 
         <div>
 
-            <h3>Rei</h3>
+            <h3>
 
-            <p>Grammar Explorer</p>
+                Rei
+
+            </h3>
+
+            <p>
+
+                Grammar Explorer
+
+            </p>
 
         </div>
 
@@ -848,11 +1173,16 @@ in your index.html with this.
 
         <button
             class="start-item"
-            data-app="progress">
+            data-app="progress"
+            type="button">
 
             <i class="bi bi-graph-up-arrow"></i>
 
-            <span>Progress</span>
+            <span>
+
+                Progress
+
+            </span>
 
         </button>
 
@@ -860,11 +1190,16 @@ in your index.html with this.
 
         <button
             class="start-item"
-            data-app="practice">
+            data-app="practice"
+            type="button">
 
             <i class="bi bi-pencil-square"></i>
 
-            <span>Practice</span>
+            <span>
+
+                Practice
+
+            </span>
 
         </button>
 
@@ -872,11 +1207,16 @@ in your index.html with this.
 
         <button
             class="start-item"
-            data-app="flashcards">
+            data-app="flashcards"
+            type="button">
 
             <i class="bi bi-card-text"></i>
 
-            <span>Flashcards</span>
+            <span>
+
+                Flashcards
+
+            </span>
 
         </button>
 
@@ -884,11 +1224,16 @@ in your index.html with this.
 
         <button
             class="start-item"
-            data-app="achievements">
+            data-app="achievements"
+            type="button">
 
             <i class="bi bi-trophy-fill"></i>
 
-            <span>Achievements</span>
+            <span>
+
+                Achievements
+
+            </span>
 
         </button>
 
@@ -896,11 +1241,16 @@ in your index.html with this.
 
         <button
             class="start-item"
-            data-app="favorites">
+            data-app="favorites"
+            type="button">
 
             <i class="bi bi-heart-fill"></i>
 
-            <span>Favorites</span>
+            <span>
+
+                Favorites
+
+            </span>
 
         </button>
 
@@ -917,31 +1267,48 @@ in your index.html with this.
         <!-- Profile -->
 
         <button
-            class="start-item profile">
+            class="start-item profile"
+            type="button">
 
             <i class="bi bi-person-circle"></i>
 
-            <span>Profile</span>
+            <span>
+
+                Profile
+
+            </span>
 
         </button>
 
-        <!-- Switch Profile / Log Out -->
+        <!-- Switch Profile -->
 
         <button
-            class="start-item exit">
+            class="start-item exit"
+            type="button">
 
             <i class="bi bi-arrow-left-right"></i>
 
-            <span>Switch Profile</span>
+            <span>
+
+                Switch Profile
+
+            </span>
 
         </button>
 
+        <!-- Log Out -->
+
         <button
-            class="start-item logout">
+            class="start-item logout"
+            type="button">
 
             <i class="bi bi-box-arrow-right"></i>
 
-            <span>Log Out</span>
+            <span>
+
+                Log Out
+
+            </span>
 
         </button>
 
@@ -949,34 +1316,43 @@ in your index.html with this.
 
 </div>
 
-    <!-- =====================================
-         BOTTOM
-    ====================================== -->
+<div class="start-bottom">
 
-    <div class="start-bottom">
+    <!-- SAVE -->
 
-        <button
-            class="start-item save">
+    <button
+        class="start-item save"
+        type="button">
 
-            <i class="bi bi-floppy-fill"></i>
+        <i class="bi bi-floppy-fill"></i>
 
-            <span>Save Progress</span>
+        <span>
 
-        </button>
+            Save Progress
 
-        <button
-            class="start-item exit">
+        </span>
 
-            <i class="bi bi-box-arrow-right"></i>
+    </button>
 
-            <span>Exit JP Library</span>
+    <!-- EXIT -->
 
-        </button>
+    <button
+        class="start-item exit"
+        type="button">
 
-    </div>
+        <i class="bi bi-box-arrow-right"></i>
+
+        <span>
+
+            Exit JP Library
+
+        </span>
+
+    </button>
 
 </div>
 
+</div>
 
 <!-- ==========================================================
 VOLUME PANEL / MUSIC PLAYER
@@ -1002,7 +1378,11 @@ VOLUME PANEL / MUSIC PLAYER
 
     <div class="volume-body">
 
-        <h4>Now Playing</h4>
+        <h4>
+
+            Now Playing
+
+        </h4>
 
         <p id="currentTrack">
 
@@ -1023,15 +1403,10 @@ VOLUME PANEL / MUSIC PLAYER
             </label>
 
             <input
-
                 id="volumeRange"
-
                 type="range"
-
                 min="0"
-
                 max="100"
-
                 value="40">
 
         </div>
@@ -1043,21 +1418,24 @@ VOLUME PANEL / MUSIC PLAYER
         <div class="player-controls">
 
             <button
-                id="previousTrack">
+                id="previousTrack"
+                type="button">
 
                 <i class="bi bi-skip-back-fill"></i>
 
             </button>
 
             <button
-                id="playPause">
+                id="playPause"
+                type="button">
 
                 <i class="bi bi-play-fill"></i>
 
             </button>
 
             <button
-                id="nextTrack">
+                id="nextTrack"
+                type="button">
 
                 <i class="bi bi-skip-forward-fill"></i>
 
@@ -1072,40 +1450,36 @@ VOLUME PANEL / MUSIC PLAYER
         <div class="playlist">
 
             <button
-
                 class="playlist-item"
-
-                data-track="kyoto">
+                data-track="kyoto"
+                type="button">
 
                 🌸 Kyoto
 
             </button>
 
             <button
-
                 class="playlist-item"
-
-                data-track="spring">
+                data-track="spring"
+                type="button">
 
                 🍃 Spring Wind
 
             </button>
 
             <button
-
                 class="playlist-item"
-
-                data-track="evening">
+                data-track="evening"
+                type="button">
 
                 🌙 Evening Shrine
 
             </button>
 
             <button
-
                 class="playlist-item"
-
-                data-track="rain">
+                data-track="rain"
+                type="button">
 
                 ☔ Rainy Study
 
@@ -1121,17 +1495,23 @@ VOLUME PANEL / MUSIC PLAYER
 AUDIO
 ======================================-->
 
+<audio
+    id="bgMusic"
+    preload="auto"
+    loop>
 
-<audio id="bgMusic" loop>
-
-    <source src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3" type="audio/mpeg">
+    <source
+        src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
+        type="audio/mpeg">
 
 </audio>
 
-<audio id="teleportSound">
+<audio
+    id="teleportSound"
+    preload="auto">
 
     <source
-        src="./assets/sounds/teleportSound.mp3"
+        src="assets/sounds/teleportSound.mp3"
         type="audio/mpeg">
 
 </audio>
@@ -1148,9 +1528,15 @@ TELEPORT EFFECT
 
 </div>
 
+<!--=====================================
+ACHIEVEMENTS
+======================================-->
+
 <div id="achievement-container"></div>
 
-<div id="sakura-container"></div>
+<!-- CLOSE DESKTOP -->
+
+</div>
 
 <script src="assets/js/boot.js"></script>
 
@@ -1159,6 +1545,8 @@ TELEPORT EFFECT
 <script src="assets/js/teleport.js"></script>
 
 <script src="assets/js/music-player.js"></script>
+
+<script src="assets/js/login.js"></script>
 
 <script src="assets/js/os.js"></script>
 

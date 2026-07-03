@@ -92,10 +92,10 @@ startBootButton.onclick=function(){
 
         bootScreen.style.display="none";
 
-        desktop.style.display="block";
+        document.getElementById("login-screen")
+        
+        .style.display="flex";
     
-
-desktop.classList.add("fade-in");
 
 window.scrollTo(0,0);
 

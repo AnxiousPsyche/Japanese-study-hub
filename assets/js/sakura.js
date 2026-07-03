@@ -62,8 +62,8 @@
         // Start just off the RIGHT edge of the screen.
         // The horizontal start is between 95 vw and 115 vw
         // so some petals enter mid-screen, some from further right.
-        petal.style.left =
-            rand(92, 115) + "vw";
+        petal.style.top =
+        rand(-15,100)+"vh";
 
         // Spawn at a random height in the upper 60% of
         // the screen so petals feel like they come in at

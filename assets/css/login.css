@@ -1,0 +1,374 @@
+/*======================================================
+LOGIN SCREEN
+======================================================*/
+
+#login-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+
+        linear-gradient(
+
+            rgba(15,18,28,.35),
+
+            rgba(15,18,28,.45)
+
+        ),
+
+        url("../images/backgrounds/login-bg.png");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+
+    overflow:hidden;
+
+    z-index:9998;
+
+}
+
+
+/*======================================================
+LOGIN CARD
+======================================================*/
+
+.login-glass{
+
+    width:min(620px,92vw);
+     
+    max-width:620px;
+
+    padding:45px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+
+    -webkit-backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+
+        0 20px 60px rgba(0,0,0,.35),
+
+        inset 0 1px 0 rgba(255,255,255,.35);
+
+    animation:scrollOpen .8s ease;
+
+    position:relative;
+    
+    overflow:hidden;
+
+}
+
+.login-glass::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:inherit;
+
+    border:1px solid rgba(255,255,255,.25);
+
+    pointer-events:none;
+
+}
+
+
+/*======================================================
+LOGO
+======================================================*/
+
+.login-logo{
+
+    width:90px;
+
+    margin-bottom:18px;
+
+}
+
+
+/*======================================================
+TITLE
+======================================================*/
+
+.scroll-title{
+
+    font-family:Eagle Lake,serif;
+
+    font-size:2.4rem;
+
+    color:white;
+
+    text-align:center;
+
+    margin-bottom:15px;
+
+    text-shadow:
+
+        0 4px 18px rgba(0,0,0,.35);
+
+}
+
+/*======================================================
+DESCRIPTION
+======================================================*/
+
+.scroll-description{
+
+    color:rgba(255,255,255,.92);
+
+    text-align:center;
+
+    line-height:1.8;
+
+    margin-bottom:30px;
+
+}
+
+
+/*======================================================
+FORM
+======================================================*/
+
+#loginForm{
+
+    width:100%;
+
+}
+
+
+/*======================================================
+HEADINGS
+======================================================*/
+
+.scroll-heading{
+
+    font-family:"Eagle Lake",serif;
+
+    font-size:1.3rem;
+
+    color:#FFF7E8;
+
+    margin-bottom:18px;
+
+    text-shadow:
+        0 2px 10px rgba(0,0,0,.55);
+
+}
+
+
+/*======================================================
+LABELS
+======================================================*/
+
+.login-input{
+
+    margin-bottom:22px;
+
+}
+
+
+.login-input label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:700;
+
+    color:rgba(255,255,255,.95);
+
+}
+
+
+.login-input input{
+
+    width:100%;
+
+    padding:14px 18px;
+
+    border:2px solid #A97A42;
+
+    border-radius:8px;
+
+    background:rgba(255,248,230,.75);
+
+    font-size:1rem;
+
+    color:#2C2C2C;
+
+    font-weight:600;
+
+}
+
+
+/*======================================================
+DIVIDER
+======================================================*/
+
+.scroll-divider{
+
+    text-align:center;
+
+    margin:35px 0;
+
+    color:rgba(255,255,255,.85);
+
+    font-size:1.4rem;
+
+}
+
+
+/*======================================================
+SMALL TEXT
+======================================================*/
+
+.scroll-small{
+
+    margin-bottom:22px;
+
+    color:rgba(255,255,255,.82);
+
+    line-height:1.7;
+
+}
+
+
+/*======================================================
+UPLOAD
+======================================================*/
+
+.avatar-upload{
+
+    margin-bottom:30px;
+
+}
+
+
+.avatar-label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-weight:700;
+
+    color:#FFF7E8;
+
+}
+
+
+#avatarUpload{
+
+    width:100%;
+
+    padding:12px;
+
+    border:2px dashed #B18B53;
+
+    background:rgba(255,248,236,.55);
+
+    border-radius:8px;
+
+}
+
+
+.avatar-upload small{
+
+    display:block;
+
+    margin-top:10px;
+
+    color:rgba(255,255,255,.75);
+
+}
+
+/*======================================================
+BUTTON
+======================================================*/
+
+#loginButton{
+
+    font-family:"Eagle Lake",serif;
+
+    font-size:1rem;
+
+    letter-spacing:1px;
+
+}
+
+
+/*======================================================
+ANIMATION
+======================================================*/
+
+@keyframes scrollOpen{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(40px) scale(.9);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+/*======================================================
+HIDE DESKTOP DURING LOGIN
+======================================================*/
+
+#login-screen{
+
+    z-index:100000;
+
+}
+
+#login-screen ~ .taskbar,
+
+#login-screen ~ #desktop{
+
+    display:none;
+
+}
+
+.login-header{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin-bottom:35px;
+
+    text-align:center;
+
+}
