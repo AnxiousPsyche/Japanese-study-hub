@@ -1,4 +1,25 @@
 /*======================================================
+LOGIN SECTION
+======================================================*/
+
+.login-section{
+
+    width:100%;
+
+    padding:22px;
+
+    margin-bottom:25px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.06);
+
+    border:1px solid rgba(255,255,255,.12);
+
+}
+
+
+/*======================================================
 LOGIN SCREEN
 ======================================================*/
 
@@ -113,7 +134,7 @@ TITLE
 
     font-family:Eagle Lake,serif;
 
-    font-size:2.4rem;
+    font-size:2.3rem;
 
     color:white;
 
@@ -156,35 +177,16 @@ FORM
 
 
 /*======================================================
-HEADINGS
-======================================================*/
-
-.scroll-heading{
-
-    font-family:"Eagle Lake",serif;
-
-    font-size:1.3rem;
-
-    color:#FFF7E8;
-
-    margin-bottom:18px;
-
-    text-shadow:
-        0 2px 10px rgba(0,0,0,.55);
-
-}
-
-
-/*======================================================
-LABELS
+LOGIN INPUT
 ======================================================*/
 
 .login-input{
 
+    width:100%;
+
     margin-bottom:22px;
 
 }
-
 
 .login-input label{
 
@@ -192,33 +194,47 @@ LABELS
 
     margin-bottom:8px;
 
+    color:#FFF8EE;
+
     font-weight:700;
 
-    color:rgba(255,255,255,.95);
+    font-size:.95rem;
 
 }
-
 
 .login-input input{
 
     width:100%;
 
-    padding:14px 18px;
+    padding:15px 18px;
 
-    border:2px solid #A97A42;
+    border:none;
 
-    border-radius:8px;
+    border-radius:12px;
 
-    background:rgba(255,248,230,.75);
-
-    font-size:1rem;
+    background:rgba(255,255,255,.88);
 
     color:#2C2C2C;
 
+    font-size:1rem;
+
     font-weight:600;
+
+    transition:.25s;
 
 }
 
+.login-input input:focus{
+
+    outline:none;
+
+    background:white;
+
+    box-shadow:
+
+        0 0 0 3px rgba(214,157,176,.35);
+
+}
 
 /*======================================================
 DIVIDER
@@ -226,42 +242,73 @@ DIVIDER
 
 .scroll-divider{
 
-    text-align:center;
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
 
     margin:35px 0;
 
     color:rgba(255,255,255,.85);
 
-    font-size:1.4rem;
+    font-size:1.1rem;
+
+    letter-spacing:8px;
 
 }
-
-
 /*======================================================
-SMALL TEXT
+NEW EXPLORER
 ======================================================*/
+
+.scroll-heading{
+
+    font-family:"Eagle Lake", serif;
+
+    font-size:1.45rem;
+
+    color:#FFF8EE;
+
+    margin-top:15px;
+
+    margin-bottom:18px;
+
+    text-align:center;
+
+    text-shadow:
+
+        0 2px 12px rgba(0,0,0,.55);
+
+}
 
 .scroll-small{
 
-    margin-bottom:22px;
+    color:rgba(255,255,255,.88);
 
-    color:rgba(255,255,255,.82);
+    line-height:1.8;
 
-    line-height:1.7;
+    font-size:.95rem;
+
+    text-align:center;
+
+    margin-bottom:28px;
 
 }
 
 
 /*======================================================
-UPLOAD
+AVATAR
 ======================================================*/
 
 .avatar-upload{
 
-    margin-bottom:30px;
+    width:100%;
+
+    margin-top:10px;
+
+    margin-bottom:28px;
 
 }
-
 
 .avatar-label{
 
@@ -269,27 +316,27 @@ UPLOAD
 
     margin-bottom:10px;
 
+    color:#FFF8EE;
+
     font-weight:700;
 
-    color:#FFF7E8;
-
 }
-
 
 #avatarUpload{
 
     width:100%;
 
-    padding:12px;
+    padding:14px;
 
-    border:2px dashed #B18B53;
+    border-radius:12px;
 
-    background:rgba(255,248,236,.55);
+    border:2px dashed rgba(255,255,255,.35);
 
-    border-radius:8px;
+    background:rgba(255,255,255,.14);
+
+    color:white;
 
 }
-
 
 .avatar-upload small{
 
@@ -297,7 +344,11 @@ UPLOAD
 
     margin-top:10px;
 
-    color:rgba(255,255,255,.75);
+    color:rgba(255,255,255,.78);
+
+    font-size:.82rem;
+
+    line-height:1.5;
 
 }
 
@@ -307,7 +358,15 @@ BUTTON
 
 #loginButton{
 
-    font-family:"Eagle Lake",serif;
+    width:100%;
+
+    margin-top:10px;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    font-family:"Eagle Lake", serif;
 
     font-size:1rem;
 

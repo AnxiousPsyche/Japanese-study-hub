@@ -1,10 +1,5 @@
 /*======================================================
 JP LIBRARY OS — homepage.css
-
-Rules here are DESKTOP-ONLY layout and overrides.
-Global window chrome (retro-window, window-title,
-window-buttons, retro-btn, resize handles) lives in
-components.css. Don't duplicate those here.
 ======================================================*/
 
 body{
@@ -540,13 +535,13 @@ JOURNEY
 
     position:absolute;
 
-    width:250px;
+    left:80px;
 
-    left:0;
+    right:80px;
 
     bottom:120px;
 
-    opacity:.9;
+    width:auto;
 
 }
 
@@ -556,7 +551,7 @@ JOURNEY
 
     flex-direction:column;
 
-    gap:10px;
+    gap:2px;
 
     width:100%;
 
@@ -572,7 +567,7 @@ JOURNEY
 
     align-items:center;
 
-    gap:12px;
+    gap:10px;
 
     width:100%;
 

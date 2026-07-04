@@ -5,6 +5,9 @@
 const bootScreen =
 document.getElementById("boot-screen");
 
+const loginScreen =
+document.getElementById("login-screen");
+
 const desktop =
 document.getElementById("desktop");
 
@@ -17,7 +20,7 @@ document.getElementById("boot-status-text");
 const loadingBars =
 document.querySelectorAll(".loading-fill");
 
-const bootMessages=[
+const bootMessages = [
 
     "🌸 Connecting to Sakura Academy...",
 
@@ -31,86 +34,107 @@ const bootMessages=[
 
 ];
 
-let currentMessage=0;
+let currentMessage = 0;
 
-desktop.style.display="none";
+// ==========================================
+// INITIAL STATE
+// ==========================================
+
+bootScreen.style.display = "flex";
+
+loginScreen.style.display = "none";
+
+desktop.style.display = "none";
+
+// ==========================================
+// BOOT SEQUENCE
+// ==========================================
 
 function bootSequence(){
 
-    if(currentMessage<loadingBars.length){
+    if(currentMessage < loadingBars.length){
 
-        statusText.textContent=
+        statusText.textContent =
         bootMessages[currentMessage];
 
-        loadingBars[currentMessage].style.width="100%";
+        loadingBars[currentMessage].style.width = "100%";
 
         currentMessage++;
 
-        setTimeout(bootSequence,900);
+        setTimeout(bootSequence, 900);
 
     }
 
-    else if(currentMessage<bootMessages.length){
+    else if(currentMessage < bootMessages.length){
 
-        statusText.textContent=
+        statusText.textContent =
         bootMessages[currentMessage];
 
         currentMessage++;
 
-        setTimeout(bootSequence,700);
+        setTimeout(bootSequence, 700);
 
     }
 
     else{
 
-    statusText.textContent =
-    "🎮 System Ready.";
+        statusText.textContent =
+        "🎮 System Ready.";
 
-    startBootButton.disabled = false;
+        startBootButton.disabled = false;
 
-    startBootButton.textContent = "▶ PRESS START";
+        startBootButton.textContent =
+        "▶ PRESS START";
 
-    startBootButton.classList.add("xp-glow");
+        startBootButton.classList.add("xp-glow");
+
+    }
 
 }
 
-}
+// ==========================================
+// START BOOT WHEN PAGE LOADS
+// ==========================================
 
-window.addEventListener("load",()=>{
+window.addEventListener("load", () => {
 
-    setTimeout(bootSequence,600);
+    setTimeout(bootSequence, 600);
 
 });
 
-startBootButton.onclick=function(){
+// ==========================================
+// BOOT BUTTON
+// ==========================================
 
-    startBootButton.disabled=true;
+startBootButton.onclick = function(){
+
+    startBootButton.disabled = true;
 
     bootScreen.classList.add("fade-out");
 
-    setTimeout(()=>{
+    setTimeout(() => {
 
-        bootScreen.style.display="none";
+        bootScreen.style.display = "none";
 
-        document.getElementById("login-screen")
-        
-        .style.display="flex";
-    
+        loginScreen.style.display = "flex";
 
-window.scrollTo(0,0);
+        loginScreen.classList.add("fade-in");
 
-const bgMusic=document.getElementById("bgMusic");
+        window.scrollTo(0, 0);
 
-if(bgMusic){
+        const bgMusic =
+        document.getElementById("bgMusic");
 
-    bgMusic.play().catch(()=>{
+        if(bgMusic){
 
-        console.log("Music autoplay blocked.");
+            bgMusic.play().catch(() => {
 
-    });
+                console.log("Music autoplay blocked.");
 
-}
+            });
 
-},600);
+        }
+
+    }, 600);
 
 };

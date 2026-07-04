@@ -116,145 +116,193 @@
 <body>
 
     <!-- =========================================
-         LOGIN SCREEN
-    ========================================== -->
+     LOGIN SCREEN
+========================================== -->
 
-    <section id="login-screen">
+<section id="login-screen">
 
-        <!-- Optional: Login-only sakura layer -->
-        <!-- <div id="login-sakura-container"></div> -->
+    <!-- Optional Login Sakura -->
+    <!-- <div id="login-sakura-container"></div> -->
 
-        <div class="login-glass">
+    <div class="login-glass">
 
-    <div class="login-header">
+        <!-- =====================================
+             HEADER
+        ====================================== -->
 
-    <img
-        src="assets/images/logo/JPLnewlogo.png"
-        class="login-logo"
-        alt="JP Library Logo">
+        <div class="login-header">
 
-    <h1 class="scroll-title">
+            <img
+                src="assets/images/logo/JPLnewlogo.png"
+                class="login-logo"
+                alt="JP Library Logo">
 
-        🌸 Welcome, Explorer! 🌸
+            <h1 class="scroll-title">
 
-    </h1>
+                🌸 Welcome, Explorer! 🌸
 
-    <p class="scroll-description">
+            </h1>
 
-        Every great adventure begins with a single page.
-        Open your journal and continue your Japanese journey.
+            <p class="scroll-description">
 
-    </p>
+                Every great adventure begins with a single page.
+                Open your journal and continue your Japanese journey.
 
-</div>
-
-    <form id="loginForm">
-
-        <h3 class="scroll-heading">
-
-            Returning Explorer
-
-        </h3>
-
-        <div class="login-input">
-
-            <label for="playerName">
-
-                Explorer Name
-
-            </label>
-
-            <input
-                type="text"
-                id="playerName"
-                autocomplete="username">
+            </p>
 
         </div>
 
-        <div class="login-input">
+        <!-- =====================================
+             LOGIN FORM
+        ====================================== -->
 
-            <label for="playerPassword">
+        <form id="loginForm">
 
-                Secret Passphrase
+            <!-- =====================================
+                 RETURNING EXPLORER
+            ====================================== -->
 
-            </label>
+            <div class="login-section">
 
-            <input
-                type="password"
-                id="playerPassword"
-                autocomplete="current-password">
+                <h3 class="scroll-heading">
 
-        </div>
+                    Returning Explorer
 
-        <div class="scroll-divider">
+                </h3>
 
-            ✦ ✦ ✦
+                <div class="login-input">
 
-        </div>
+                    <label for="playerName">
 
-        <h3 class="scroll-heading">
+                        Explorer Name
 
-            New Explorer
+                    </label>
 
-        </h3>
+                    <input
+                        type="text"
+                        id="playerName"
+                        autocomplete="username"
+                        placeholder="Enter your explorer name">
 
-        <p class="scroll-small">
+                </div>
 
-            Haven't begun your adventure yet?
+                <div class="login-input">
 
-            Create your explorer and receive your first journal.
+                    <label for="playerPassword">
 
-        </p>
+                        Secret Passphrase
 
-        <div class="login-input">
+                    </label>
 
-            <label for="newPlayerName">
+                    <input
+                        type="password"
+                        id="playerPassword"
+                        autocomplete="current-password"
+                        placeholder="Enter your secret passphrase">
 
-                What shall we call you?
+                </div>
 
-            </label>
+            </div>
 
-            <input
-                type="text"
-                id="newPlayerName">
+            <!-- Divider -->
 
-        </div>
+            <div class="scroll-divider">
 
-        <div class="avatar-upload">
+                ✦ ✦ ✦
 
-            <label
-                class="avatar-label"
-                for="avatarUpload">
+            </div>
 
-                🎒 Adventure Portrait
+            <!-- =====================================
+                 NEW EXPLORER
+            ====================================== -->
 
-            </label>
+            <div class="login-section">
 
-            <input
-                type="file"
-                id="avatarUpload"
-                accept="image/*">
+                <h3 class="scroll-heading">
 
-            <small>
+                    New Explorer
 
-                Bring a portrait that represents your adventure.
+                </h3>
 
-            </small>
+                <p class="scroll-small">
 
-        </div>
+                    Haven't begun your adventure yet?
+                    Create your explorer and receive your first journal.
 
-        <button
-            id="loginButton"
-            class="retro-btn"
-            type="submit">
+                </p>
 
-            ▶ Begin Adventure
+                <div class="login-input">
 
-        </button>
+                    <label for="newPlayerName">
 
-    </form>
+                        What shall we call you, Explorer?
 
-</div>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="newPlayerName"
+                        placeholder="Choose your explorer name">
+
+                </div>
+
+                <div class="login-input">
+
+                    <label for="newPlayerPassword">
+
+                        Create your Secret Passphrase
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="newPlayerPassword"
+                        placeholder="Choose a secret passphrase">
+
+                </div>
+
+                <div class="avatar-upload">
+
+                    <label
+                        class="avatar-label"
+                        for="avatarUpload">
+
+                        🎒 Hand us the portrait by which you wish to be known.
+
+                    </label>
+
+                    <input
+                        type="file"
+                        id="avatarUpload"
+                        accept="image/*">
+
+                    <small>
+
+                        PNG, JPG or WEBP • You may change this later inside your profile.
+
+                    </small>
+
+                </div>
+
+            </div>
+
+            <!-- =====================================
+                 BUTTON
+            ====================================== -->
+
+            <button
+                id="loginButton"
+                class="retro-btn"
+                type="submit">
+
+                ▶ Begin Adventure
+
+            </button>
+
+        </form>
+
+    </div>
+
 </section>
 
     <!-- =========================================
