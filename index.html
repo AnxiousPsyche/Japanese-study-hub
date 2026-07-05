@@ -115,14 +115,14 @@
 
 <body>
 
+    <!-- Sakura Layer — falls over every screen (boot, login, desktop) -->
+    <div id="sakura-container"></div>
+
     <!-- =========================================
      LOGIN SCREEN
 ========================================== -->
 
 <section id="login-screen">
-
-    <!-- Optional Login Sakura -->
-    <!-- <div id="login-sakura-container"></div> -->
 
     <div class="login-glass">
 
@@ -194,11 +194,51 @@
 
                     </label>
 
-                    <input
-                        type="password"
-                        id="playerPassword"
-                        autocomplete="current-password"
-                        placeholder="Enter your secret passphrase">
+                    <div class="password-field">
+
+                        <input
+                            type="password"
+                            id="playerPassword"
+                            autocomplete="current-password"
+                            placeholder="Enter your secret passphrase">
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="playerPassword"
+                            aria-label="Show secret passphrase">
+
+                            <i class="bi bi-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="recallPassphrase"
+                        class="forgot-link">
+
+                        🔮 Passphrase Gone Amiss?
+
+                    </button>
+
+                    <p
+                        id="recallMessage"
+                        class="recall-message"></p>
+
+                </div>
+
+                <div class="login-button-group">
+
+                    <button
+                        id="continueButton"
+                        class="retro-btn"
+                        type="submit">
+
+                        ▶ Continue Your Adventure
+
+                    </button>
 
                 </div>
 
@@ -254,10 +294,24 @@
 
                     </label>
 
-                    <input
-                        type="password"
-                        id="newPlayerPassword"
-                        placeholder="Choose a secret passphrase">
+                    <div class="password-field">
+
+                        <input
+                            type="password"
+                            id="newPlayerPassword"
+                            placeholder="Choose a secret passphrase">
+
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="newPlayerPassword"
+                            aria-label="Show secret passphrase">
+
+                            <i class="bi bi-eye"></i>
+
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -284,20 +338,20 @@
 
                 </div>
 
+                <div class="login-button-group">
+
+                    <button
+                        id="loginButton"
+                        class="retro-btn"
+                        type="submit">
+
+                        ▶ Begin Adventure
+
+                    </button>
+
+                </div>
+
             </div>
-
-            <!-- =====================================
-                 BUTTON
-            ====================================== -->
-
-            <button
-                id="loginButton"
-                class="retro-btn"
-                type="submit">
-
-                ▶ Begin Adventure
-
-            </button>
 
         </form>
 
@@ -460,10 +514,6 @@ DESKTOP
 
 <div id="desktop">
 
-    <!-- Sakura Layer -->
-
-    <div id="sakura-container"></div>
-
     <!--======================================================
     WINDOWS XP DESKTOP SHORTCUTS
     ======================================================-->
@@ -606,6 +656,123 @@ DESKTOP
     </div>
 
 </section>
+
+<!-- =========================================
+     PLAYER STATUS
+========================================== -->
+
+<article
+    id="playerWindow"
+    class="retro-window player-card">
+
+    <div class="window-title">
+
+        <span>
+
+            👤 PLAYER STATUS
+
+        </span>
+
+        <div class="window-buttons">
+
+            <span
+                class="window-close"
+                title="Close">
+            </span>
+
+            <span
+                class="window-minimize"
+                title="Minimize">
+            </span>
+
+            <span
+                class="window-maximize"
+                title="Maximize">
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="window-content">
+
+        <img
+            id="playerAvatar"
+            src="assets/images/avatars/smeagol.png"
+            class="player-avatar"
+            alt="Player">
+
+        <h2 id="playerNameText">
+
+            Rei
+
+        </h2>
+
+        <p id="playerTitleText">
+
+            Grammar Explorer
+
+        </p>
+
+        <h3 id="playerLevelText">
+
+            Level 1
+
+        </h3>
+
+        <div class="xp-bar">
+
+            <div
+                id="playerXpFill"
+                class="xp-fill"></div>
+
+        </div>
+
+        <p id="playerXpText">
+
+            0 / 500 XP
+
+        </p>
+
+        <hr>
+
+        <div class="player-stats">
+
+            <div>
+
+                <h3>🔥</h3>
+
+                <strong id="playerStreakText">0</strong>
+
+                <p>Day Streak</p>
+
+            </div>
+
+            <div>
+
+                <h3>🏆</h3>
+
+                <strong id="playerBadgesText">0</strong>
+
+                <p>Badges</p>
+
+            </div>
+
+            <div>
+
+                <h3>📚</h3>
+
+                <strong id="playerLessonsText">0</strong>
+
+                <p>Lessons</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</article>
 
 <!-- =========================================
      CURRENT DISC
@@ -1364,44 +1531,6 @@ TASKBAR
 
 </div>
 
-<div class="start-bottom">
-
-    <!-- SAVE -->
-
-    <button
-        class="start-item save"
-        type="button">
-
-        <i class="bi bi-floppy-fill"></i>
-
-        <span>
-
-            Save Progress
-
-        </span>
-
-    </button>
-
-    <!-- EXIT -->
-
-    <button
-        class="start-item exit"
-        type="button">
-
-        <i class="bi bi-box-arrow-right"></i>
-
-        <span>
-
-            Exit JP Library
-
-        </span>
-
-    </button>
-
-</div>
-
-</div>
-
 <!-- ==========================================================
 VOLUME PANEL / MUSIC PLAYER
 =========================================================== -->
@@ -1455,7 +1584,7 @@ VOLUME PANEL / MUSIC PLAYER
                 type="range"
                 min="0"
                 max="100"
-                value="40">
+                value="0">
 
         </div>
 
@@ -1593,6 +1722,8 @@ ACHIEVEMENTS
 <script src="assets/js/teleport.js"></script>
 
 <script src="assets/js/music-player.js"></script>
+
+<script src="assets/js/progress.js"></script>
 
 <script src="assets/js/login.js"></script>
 

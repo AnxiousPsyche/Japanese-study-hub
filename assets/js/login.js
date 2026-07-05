@@ -19,7 +19,128 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadExplorer();
 
+    initPasswordToggles();
+
+    initRecallPassphrase();
+
 });
+
+//======================================================
+// SHOW / HIDE PASSPHRASE
+//======================================================
+
+function initPasswordToggles(){
+
+    document
+        .querySelectorAll(".toggle-password")
+        .forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                const input =
+                    document.getElementById(
+                        button.dataset.target
+                    );
+
+                if(!input) return;
+
+                const icon = button.querySelector("i");
+
+                const isHidden = input.type === "password";
+
+                input.type = isHidden ? "text" : "password";
+
+                if(icon){
+
+                    icon.className =
+                        isHidden ? "bi bi-eye-slash" : "bi bi-eye";
+
+                }
+
+                button.setAttribute(
+                    "aria-label",
+                    isHidden ? "Hide secret passphrase" : "Show secret passphrase"
+                );
+
+            });
+
+        });
+
+}
+
+//======================================================
+// PASSPHRASE GONE AMISS?
+//======================================================
+
+function initRecallPassphrase(){
+
+    const recallButton =
+        document.getElementById("recallPassphrase");
+
+    if(!recallButton) return;
+
+    recallButton.addEventListener("click", () => {
+
+        const message =
+            document.getElementById("recallMessage");
+
+        const explorer = JSON.parse(
+            localStorage.getItem("jpExplorer")
+        );
+
+        if(!explorer){
+
+            if(message){
+
+                message.textContent =
+                    "📜 No journal has been recorded in this realm yet. Begin your adventure below.";
+
+            }
+
+            return;
+
+        }
+
+        const passwordInput =
+            document.getElementById("playerPassword");
+
+        const toggleButton =
+            document.querySelector(
+                '.toggle-password[data-target="playerPassword"]'
+            );
+
+        if(passwordInput){
+
+            passwordInput.value = explorer.password;
+            passwordInput.type = "text";
+
+        }
+
+        if(toggleButton){
+
+            const icon = toggleButton.querySelector("i");
+
+            if(icon) icon.className = "bi bi-eye-slash";
+
+            toggleButton.setAttribute(
+                "aria-label",
+                "Hide secret passphrase"
+            );
+
+        }
+
+        if(message){
+
+            message.textContent =
+                "🔮 A raven has delivered your secret passphrase, " +
+                explorer.name +
+                ". It now lies revealed below.";
+
+        }
+
+    });
+
+}
 
 //======================================================
 // LOGIN / CREATE ACCOUNT
@@ -50,11 +171,17 @@ function loginExplorer(event){
 
     );
 
+    const clickedContinue =
+        event.submitter &&
+        event.submitter.id === "continueButton";
+
     //==================================================
     // NEW EXPLORER
     //==================================================
 
     if(
+
+        !clickedContinue &&
 
         newName.value.trim() !== "" &&
 
@@ -72,6 +199,8 @@ function loginExplorer(event){
 
             avatar:"",
 
+            title:"Grammar Explorer",
+
             level:1,
 
             xp:0,
@@ -81,6 +210,12 @@ function loginExplorer(event){
             currentQuest:"Self Introduction",
 
             achievements:[],
+
+            lessonsCompleted:[],
+
+            streak:0,
+
+            lastPlayedDate:null,
 
             created:
 
@@ -261,22 +396,12 @@ function updateDesktop(explorer){
     }
 
     //--------------------------------------------------
-    // Player Name
+    // Player Status window (level, XP, streak, stats)
     //--------------------------------------------------
 
-    const playerName =
+    if(typeof applyPlayerProgress === "function"){
 
-        document.getElementById(
-
-            "playerNameText"
-
-        );
-
-    if(playerName){
-
-        playerName.textContent =
-
-            explorer.name;
+        applyPlayerProgress(explorer);
 
     }
 
@@ -323,102 +448,3 @@ function updateDesktop(explorer){
     }
 
 }
-
-//======================================================
-// LOGIN
-//======================================================
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-    const loginForm =
-        document.getElementById("loginForm");
-
-    const loginScreen =
-        document.getElementById("login-screen");
-
-    const desktop =
-        document.getElementById("desktop");
-
-    if(!loginForm) return;
-
-    loginForm.addEventListener("submit",(event)=>{
-
-        event.preventDefault();
-
-        const newExplorer =
-            document.getElementById("newPlayerName");
-
-        const currentExplorer =
-            document.getElementById("playerName");
-
-        let explorerName = "";
-
-        if(
-
-            newExplorer &&
-            newExplorer.value.trim() !== ""
-
-        ){
-
-            explorerName =
-                newExplorer.value.trim();
-
-        }
-
-        else if(
-
-            currentExplorer &&
-            currentExplorer.value.trim() !== ""
-
-        ){
-
-            explorerName =
-                currentExplorer.value.trim();
-
-        }
-
-        else{
-
-            explorerName = "Explorer";
-
-        }
-
-        localStorage.setItem(
-
-            "jpExplorer",
-
-            explorerName
-
-        );
-
-        const greeting =
-
-            document.getElementById("englishGreeting");
-
-        if(greeting){
-
-            greeting.textContent =
-
-                "Welcome back, " +
-
-                explorerName +
-
-                ".";
-
-        }
-
-        loginScreen.classList.add("fade-out");
-
-        setTimeout(()=>{
-
-            loginScreen.style.display = "none";
-
-            desktop.style.display = "block";
-
-            desktop.classList.add("fade-in");
-
-        },600);
-
-    });
-
-});

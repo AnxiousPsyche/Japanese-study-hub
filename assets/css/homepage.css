@@ -29,6 +29,8 @@ DESKTOP
     background:url("../images/backgrounds/desktop-wallpaper.png")
     center center/cover no-repeat;
 
+    font-family:var(--title-font);
+
 }
 
 /*======================================================
@@ -148,6 +150,8 @@ OVERRIDE: allow resize handles to extend past border
 
     overflow:visible;
 
+    z-index:10;
+
 }
 
 /*======================================================
@@ -189,11 +193,27 @@ WELCOME WINDOW
 
 }
 
+#englishGreeting{
+
+    font-size:.66rem;
+
+    line-height:1.9;
+
+}
+
+#greetingMessage{
+
+    font-size:.6rem;
+
+    line-height:1.9;
+
+}
+
 .desktop-clock{
 
     margin-top:18px;
 
-    font-size:1.4rem;
+    font-size:.8rem;
 
     font-weight:bold;
 
@@ -266,25 +286,45 @@ PLAYER WINDOW
 
 }
 
+.player-card .window-content h2{
+
+    font-size:.85rem;
+
+}
+
+.player-card .window-content h3{
+
+    font-size:.7rem;
+
+}
+
+.player-card .window-content > p{
+
+    font-size:.6rem;
+
+    line-height:1.7;
+
+}
+
 .player-stats{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
+    grid-template-columns:repeat(3,1fr);
 
-    gap:16px;
+    gap:10px;
 
     width:100%;
 
     justify-content:space-around;
 
     margin-top:20px;
-    
+
     align-items:stretch;
 
-    flex:1;
+    flex:0 1 auto;
 
-    font-size:clamp(.65rem,.9vw,.95rem);
+    font-size:clamp(.55rem,.75vw,.75rem);
 
 }
 
@@ -304,11 +344,9 @@ PLAYER WINDOW
 
 .player-stats strong{
 
-    font-size:1.2rem;
-
     color:#5B77A8;
- 
-    font-size:clamp(.9rem,2vw,1.2rem);
+
+    font-size:clamp(.7rem,1.5vw,.9rem);
 }
 
 /*======================================================
@@ -493,6 +531,14 @@ QUEST WINDOW
 
 }
 
+.quest-card .window-content p{
+
+    font-size:.58rem;
+
+    line-height:1.9;
+
+}
+
 .quest-card .retro-btn{
 
     width:100%;
@@ -503,7 +549,9 @@ QUEST WINDOW
 
 .quest-card h2{
 
-    font-size:clamp(.9rem,1.4vw,1.3rem);
+    font-size:clamp(.62rem,.9vw,.8rem);
+
+    line-height:1.6;
 
 }
 
@@ -535,13 +583,19 @@ JOURNEY
 
     position:absolute;
 
-    left:80px;
+    left:50%;
 
-    right:80px;
+    transform:translateX(-50%);
 
-    bottom:120px;
+    bottom:100px;
 
-    width:auto;
+    width:min(520px,70%);
+
+}
+
+.journey-window .window-content{
+
+    padding:14px 18px;
 
 }
 
@@ -573,7 +627,7 @@ JOURNEY
 
     flex-wrap:wrap;
 
-    font-size:clamp(.68rem,.9vw,.9rem);
+    font-size:clamp(.58rem,.75vw,.72rem);
 
     padding:clamp(4px,.8vw,10px);
 
@@ -591,7 +645,7 @@ JOURNEY
 
 .journey-list .status{
 
-    font-size:.85rem;
+    font-size:.62rem;
 
     font-weight:700;
 
@@ -626,6 +680,14 @@ making the footer appear un-centered and fully opaque.
     transform:translateX(-50%);
 
     z-index:50;
+
+}
+
+.footer-window .window-content p{
+
+    font-size:.55rem;
+
+    line-height:1.9;
 
 }
 
@@ -769,11 +831,13 @@ everything including dragged windows.
 
     inset:0;
 
+    margin:0;
+
     pointer-events:none;
 
     overflow:hidden;
 
-    z-index:2;
+    z-index:100001;
 
 }
 
@@ -890,19 +954,21 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
 .desktop-icons{
 
-    position:absolute;
-
-    top:30px;
-
-    left:25px;
+    position:relative;
 
     display:flex;
 
-    flex-direction:column;
+    flex-direction:row;
 
-    gap:20px;
+    flex-wrap:wrap;
 
-    z-index:50;
+    justify-content:center;
+
+    gap:24px;
+
+    padding:20px 0 10px;
+
+    z-index:1;
 
 }
 
@@ -968,13 +1034,13 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
     color:white;
 
-    font-size:.78rem;
+    font-size:.6rem;
 
     font-weight:bold;
 
     text-align:center;
 
-    line-height:1.25;
+    line-height:1.4;
 
     text-shadow:2px 2px 3px rgba(0,0,0,.65);
 
@@ -1006,6 +1072,14 @@ RESPONSIVE
 
         grid-template-columns:1fr;
 
+        height:auto;
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:20px;
+
     }
 
     #playerWindow,
@@ -1022,6 +1096,8 @@ RESPONSIVE
 
         top:auto;
 
+        bottom:auto;
+
         transform:none;
 
         max-width:560px;
@@ -1030,9 +1106,75 @@ RESPONSIVE
 
     }
 
-    .desktop-container{
+    body{
 
         overflow-y:auto;
+
+        overflow-x:hidden;
+
+    }
+
+    #desktop{
+
+        overflow-y:visible;
+
+    }
+
+    .desktop-container{
+
+        overflow-y:visible;
+
+    }
+
+    .desktop-header{
+
+        position:relative;
+
+        left:auto;
+
+        top:auto;
+
+        width:100%;
+
+        max-width:560px;
+
+        margin:0 auto;
+
+    }
+
+    .footer-window{
+
+        position:relative;
+
+        left:auto;
+
+        bottom:auto;
+
+        transform:none;
+
+        width:100%;
+
+        max-width:560px;
+
+        margin:20px auto 0;
+
+    }
+
+    .journey-window{
+
+        position:relative;
+
+        left:auto;
+
+        bottom:auto;
+
+        transform:none;
+
+        width:100%;
+
+        max-width:560px;
+
+        margin:0 auto;
 
     }
 
