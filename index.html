@@ -66,8 +66,12 @@
     <link rel="preconnect" 
         href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=Jacquard+12&display=swap" 
+    <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&family=Jacquard+12&display=swap"
         rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Tourney:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <!-- =========================================
          FONT AWESOME
@@ -574,6 +578,22 @@ DESKTOP
 
         </button>
 
+        <button
+            class="desktop-icon"
+            onclick="restoreWindow('questWindow')">
+
+            <img
+                src="assets/images/icons/pixels/magic-scroll-Original.png"
+                alt="Quest">
+
+            <span>
+
+                Quest
+
+            </span>
+
+        </button>
+
     </div>
 
     <!--======================================================
@@ -594,7 +614,7 @@ DESKTOP
 
         <span>
 
-            🌸 JP LIBRARY OS
+            <span class="window-icon">🌸</span> JP LIBRARY OS
 
         </span>
 
@@ -658,8 +678,17 @@ DESKTOP
 </section>
 
 <!-- =========================================
-     PLAYER STATUS
+     DASHBOARD ROW — player / disc / quest.
+     Real wrapper for the .dashboard-grid CSS/JS
+     already assumed to exist (it didn't — the
+     missing wrapper let these absolute-positioned
+     windows sit as direct grid-auto-placed children
+     of .desktop-container, so dragging one confused
+     the grid's placement of the other in-flow
+     sections and reflowed the whole page height).
 ========================================== -->
+
+<div class="dashboard-grid">
 
 <article
     id="playerWindow"
@@ -669,7 +698,7 @@ DESKTOP
 
         <span>
 
-            👤 PLAYER STATUS
+            <span class="window-icon">👤</span> PLAYER STATUS
 
         </span>
 
@@ -786,7 +815,7 @@ DESKTOP
 
         <span>
 
-            💿 CURRENT DISC
+            <span class="window-icon">💿</span> CURRENT DISC
 
         </span>
 
@@ -1011,7 +1040,7 @@ DESKTOP
 
         <span>
 
-            📜 TODAY'S QUEST
+            <span class="window-icon">📜</span> TODAY'S QUEST
 
         </span>
 
@@ -1068,6 +1097,8 @@ DESKTOP
 
 </article>
 
+</div>
+
 <!-- =========================================
      JOURNEY
 ========================================== -->
@@ -1080,7 +1111,7 @@ DESKTOP
 
         <span>
 
-            🗺 YOUR JOURNEY
+            <span class="window-icon">🗺</span> YOUR JOURNEY
 
         </span>
 
@@ -1186,7 +1217,7 @@ DESKTOP
 
         <span>
 
-            💾 JP LIBRARY OS
+            <span class="window-icon">💾</span> JP LIBRARY OS
 
         </span>
 
@@ -1270,6 +1301,15 @@ TASKBAR
 
         <button
             class="taskbar-app"
+            data-window="greetingWindow"
+            type="button">
+
+            🌸 Greeting
+
+        </button>
+
+        <button
+            class="taskbar-app"
             data-window="playerWindow"
             type="button">
 
@@ -1282,7 +1322,7 @@ TASKBAR
             data-window="discWindow"
             type="button">
 
-            💿 Current Disc
+            💿 Disc
 
         </button>
 
@@ -1292,6 +1332,15 @@ TASKBAR
             type="button">
 
             📜 Quest
+
+        </button>
+
+        <button
+            class="taskbar-app"
+            data-window="journeyWindow"
+            type="button">
+
+            🗺 Journey
 
         </button>
 
@@ -1391,7 +1440,7 @@ TASKBAR
             data-app="progress"
             type="button">
 
-            <i class="bi bi-graph-up-arrow"></i>
+            <img src="assets/images/icons/pixels/charts-Original.png" alt="Progress">
 
             <span>
 
@@ -1408,7 +1457,7 @@ TASKBAR
             data-app="practice"
             type="button">
 
-            <i class="bi bi-pencil-square"></i>
+            <img src="assets/images/icons/pixels/jigsaw-puzzle-1-Original.png" alt="Practice">
 
             <span>
 
@@ -1425,7 +1474,7 @@ TASKBAR
             data-app="flashcards"
             type="button">
 
-            <i class="bi bi-card-text"></i>
+            <img src="assets/images/icons/pixels/index-cards-Original.png" alt="Flashcards">
 
             <span>
 
@@ -1442,7 +1491,7 @@ TASKBAR
             data-app="achievements"
             type="button">
 
-            <i class="bi bi-trophy-fill"></i>
+            <img src="assets/images/icons/pixels/trophy-cup-Original.png" alt="Achievements">
 
             <span>
 
@@ -1459,7 +1508,7 @@ TASKBAR
             data-app="favorites"
             type="button">
 
-            <i class="bi bi-heart-fill"></i>
+            <img src="assets/images/icons/pixels/gay.png" alt="Favorites">
 
             <span>
 

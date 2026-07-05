@@ -674,10 +674,10 @@ td{
 
 /*======================================================
 DESKTOP WINDOWS DON'T FLOAT ON HOVER
+
+Removed: this used to force transform:none !important on
+hover, but no .retro-window:hover rule sets a transform
+(only box-shadow) — so it did nothing except clobber the
+translateX(-50%) centering on .journey-window and
+.footer-window, causing a visible jump/jitter on hover.
 ======================================================*/
-
-#desktop .retro-window:hover{
-
-    transform:none !important;
-
-}

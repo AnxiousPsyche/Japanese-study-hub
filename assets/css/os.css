@@ -149,25 +149,33 @@ OPEN APPS
 
     align-items:center;
 
-    gap:8px;
+    gap:6px;
+
+    flex:1;
+
+    min-width:0;
+
+    overflow-x:auto;
 
 }
 
 .taskbar-app{
 
-    min-width:120px;
+    min-width:0;
 
-    height:40px;
+    height:36px;
 
-    padding:0 16px;
+    padding:0 10px;
 
-    border-radius:10px;
+    border-radius:8px;
 
     display:flex;
 
     align-items:center;
 
     justify-content:center;
+
+    white-space:nowrap;
 
     background:rgba(255,255,255,.18);
 
@@ -177,7 +185,7 @@ OPEN APPS
 
     transition:.25s;
 
-    font-size:.62rem;
+    font-size:.55rem;
 
 }
 
@@ -579,7 +587,7 @@ CLOCK
 
 #taskbarClock{
 
-    font-size:.78rem;
+    font-size:.58rem;
 
     font-weight:bold;
 
@@ -587,7 +595,7 @@ CLOCK
 
 #taskbarDate{
 
-    font-size:.65rem;
+    font-size:.5rem;
 
     opacity:.9;
 

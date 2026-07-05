@@ -26,6 +26,37 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //======================================================
+// SAFE READ — self-heals corrupted/legacy save data
+// instead of throwing and freezing every button on
+// the page (JSON.parse on bad data used to crash here).
+//======================================================
+
+function getSavedExplorer(){
+
+    const raw = localStorage.getItem("jpExplorer");
+
+    if(!raw) return null;
+
+    try{
+
+        return JSON.parse(raw);
+
+    } catch(err){
+
+        console.warn(
+            "Corrupted jpExplorer save data found — clearing it.",
+            err
+        );
+
+        localStorage.removeItem("jpExplorer");
+
+        return null;
+
+    }
+
+}
+
+//======================================================
 // SHOW / HIDE PASSPHRASE
 //======================================================
 
@@ -84,9 +115,7 @@ function initRecallPassphrase(){
         const message =
             document.getElementById("recallMessage");
 
-        const explorer = JSON.parse(
-            localStorage.getItem("jpExplorer")
-        );
+        const explorer = getSavedExplorer();
 
         if(!explorer){
 
@@ -165,11 +194,7 @@ function loginExplorer(event){
     const avatar =
         document.getElementById("avatarUpload");
 
-    let explorer = JSON.parse(
-
-        localStorage.getItem("jpExplorer")
-
-    );
+    let explorer = getSavedExplorer();
 
     const clickedContinue =
         event.submitter &&
@@ -310,11 +335,7 @@ function loginExplorer(event){
 
 function loadExplorer(){
 
-    const explorer = JSON.parse(
-
-        localStorage.getItem("jpExplorer")
-
-    );
+    const explorer = getSavedExplorer();
 
     if(!explorer) return;
 

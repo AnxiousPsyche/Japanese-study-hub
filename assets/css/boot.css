@@ -65,9 +65,15 @@
 
     margin-bottom:18px;
 
-    line-height:1.9;
+    line-height:1.6;
 
-    font-size:.58rem;
+    font-family:var(--readable-font);
+
+    font-weight:400;
+
+    font-style:italic;
+
+    font-size:.85rem;
 
 }
 
@@ -156,9 +162,11 @@ LOADING
 
     margin-bottom:8px;
 
-    font-weight:bold;
+    font-family:var(--readable-font);
 
-    font-size:.56rem;
+    font-weight:400;
+
+    font-size:.85rem;
 
 }
 
@@ -249,9 +257,13 @@ LOADING
 
     color:#666;
 
+    font-family:var(--readable-font);
+
+    font-weight:400;
+
     font-style:italic;
 
-    font-size:.58rem;
+    font-size:.85rem;
 
     min-height:20px;
 

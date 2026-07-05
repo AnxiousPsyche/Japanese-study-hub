@@ -57,6 +57,8 @@ LOGIN SCREEN
 
     overflow:hidden;
 
+    font-family:var(--login-font);
+
     z-index:9998;
 
 }
@@ -221,6 +223,8 @@ LOGIN INPUT
     background:rgba(255,255,255,.88);
 
     color:#2C2C2C;
+
+    font-family:var(--login-font);
 
     font-size:.9rem;
 
@@ -459,6 +463,8 @@ AVATAR
     background:rgba(255,255,255,.14);
 
     color:white;
+
+    font-family:var(--login-font);
 
     font-size:.85rem;
 

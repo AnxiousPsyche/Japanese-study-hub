@@ -93,7 +93,7 @@ DASHBOARD ROW
 
     position:absolute;
 
-    width:250px;
+    width:220px;
 
     left:0;
 
@@ -105,10 +105,10 @@ DASHBOARD ROW
 
     position:absolute;
 
-    width:650px;
+    width:520px;
 
-    left:calc(50% - 325px);
-    
+    left:calc(50% - 260px);
+
     top:150px;
 
 
@@ -118,27 +118,11 @@ DASHBOARD ROW
 
     position:absolute;
 
-    width:250px;
+    width:220px;
 
    right:30px;
 
     top:160px;
-
-}
-
-/*======================================================
-GHOST PLACEHOLDER
-======================================================*/
-
-.window-ghost{
-
-    visibility:hidden;
-
-    pointer-events:none;
-
-    border-radius:18px;
-
-    box-sizing:border-box;
 
 }
 
@@ -162,7 +146,19 @@ WINDOW TITLE — desktop override
 
     padding:10px 16px;
 
-    font-size:.55rem;
+    font-size:.46rem;
+
+}
+
+.desktop-container .window-title .window-icon{
+
+    font-size:1.7em;
+
+    display:inline-block;
+
+    vertical-align:middle;
+
+    margin-right:2px;
 
 }
 
@@ -254,7 +250,7 @@ PLAYER WINDOW
 
 .player-avatar{
 
-    width:clamp(55px,22%,160px);
+    width:clamp(85px,32%,180px);
 
     aspect-ratio:1;
 
@@ -292,7 +288,7 @@ PLAYER WINDOW
 
 }
 
-.player-card .window-content h3{
+.player-card .window-content > h3{
 
     font-size:.7rem;
 
@@ -342,6 +338,14 @@ PLAYER WINDOW
 
 }
 
+.player-stats h3{
+
+    font-size:1.4rem;
+
+    line-height:1;
+
+}
+
 .player-stats strong{
 
     color:#5B77A8;
@@ -356,6 +360,20 @@ CURRENT DISC
 .current-disc .window-content{
 
     text-align:center;
+
+}
+
+.disc-slide h2{
+
+    font-size:1.05rem;
+
+    line-height:1.3;
+
+}
+
+.disc-slide p{
+
+    font-size:.7rem;
 
 }
 
@@ -589,13 +607,15 @@ JOURNEY
 
     bottom:100px;
 
-    width:min(520px,70%);
+    width:min(230px,52%);
+
+    font-family:var(--journey-font);
 
 }
 
 .journey-window .window-content{
 
-    padding:14px 18px;
+    padding:8px 12px;
 
 }
 
@@ -621,7 +641,7 @@ JOURNEY
 
     align-items:center;
 
-    gap:10px;
+    gap:6px;
 
     width:100%;
 
@@ -629,7 +649,7 @@ JOURNEY
 
     font-size:clamp(.58rem,.75vw,.72rem);
 
-    padding:clamp(4px,.8vw,10px);
+    padding:4px 2px;
 
 }
 
@@ -675,7 +695,7 @@ making the footer appear un-centered and fully opaque.
 
     bottom:70px;
 
-    width:520px;
+    width:220px;
 
     transform:translateX(-50%);
 
@@ -683,11 +703,17 @@ making the footer appear un-centered and fully opaque.
 
 }
 
+.footer-window .window-content{
+
+    padding:6px 10px;
+
+}
+
 .footer-window .window-content p{
 
-    font-size:.55rem;
+    font-size:7px;
 
-    line-height:1.9;
+    line-height:1.4;
 
 }
 
@@ -812,17 +838,13 @@ everything including dragged windows.
 
 .sakura — each individual petal <span>.
   - left, top, font-size, animation-duration,
-    animation-delay, and opacity are all set
-    dynamically by sakura.js so petals vary in
-    position, size, speed and depth.
-  - top is intentionally NOT hardcoded here
-    so the JS can spawn petals from the right edge
-    at any height.
+    animation-delay, opacity, and the --sway custom
+    property are all set dynamically by sakura.js so
+    petals vary in position, size, speed and depth.
 
-@keyframes fall — wind-blown right-to-left arc.
-  Petals enter from the right and drift diagonally
-  down-left in three wave steps, rotating
-  counter-clockwise throughout, then fade out.
+@keyframes fall — straight top-to-bottom fall with a
+  gentle side-to-side sway, like a petal drifting down
+  from a tree overhead.
 ======================================================*/
 
 #sakura-container{
@@ -849,6 +871,8 @@ everything including dragged windows.
 
     opacity:.9;
 
+    --sway:40px;
+
     animation:fall linear 1 forwards;
 
 }
@@ -863,33 +887,31 @@ everything including dragged windows.
 
     }
 
-    10%{ opacity:1; }
+    8%{ opacity:1; }
 
-    30%{
+    25%{
 
-        transform:translate(-90px, 26vh) rotate(-110deg);
-
-    }
-
-    55%{
-
-        transform:translate(100vw, 108vh) rotate(-230deg);
+        transform:translate(var(--sway), 25vh) rotate(90deg);
 
     }
 
-    80%{
+    50%{
 
-        transform:translate(100vw, 108vh) rotate(-330deg);
+        transform:translate(0, 55vh) rotate(180deg);
 
-        opacity:.75;
+    }
+
+    75%{
+
+        transform:translate(var(--sway), 85vh) rotate(270deg);
 
     }
 
     100%{
 
-        transform:translate(100vw, 108vh) rotate(-430deg);
+        transform:translate(0, 112vh) rotate(360deg);
 
-        opacity:0;
+        opacity:.5;
 
     }
 
@@ -1034,9 +1056,11 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
     color:white;
 
-    font-size:.6rem;
+    font-family:var(--readable-font);
 
-    font-weight:bold;
+    font-size:.78rem;
+
+    font-weight:600;
 
     text-align:center;
 
@@ -1062,7 +1086,7 @@ RESPONSIVE
 
 @media(max-width:1200px){
 
-    #discWindow{ width:500px; }
+    #discWindow{ width:420px; }
 
 }
 

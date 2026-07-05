@@ -116,91 +116,58 @@ let activeWindow = null;
 //======================================================
 // COORDINATE HELPERS
 //
-// All drag/resize math uses TWO numbers to convert a
-// viewport coordinate into a container-relative one:
+// Every .retro-window is ALREADY position:absolute or
+// position:fixed via its own CSS (base rule + per-window
+// overrides) — none of them are real in-flow grid items,
+// so .dashboard-grid / .desktop-container never actually
+// need to "hold a window's place." A window's own
+// offsetParent (the browser's built-in nearest-positioned-
+// ancestor lookup) is always the correct reference frame,
+// whether that's .dashboard-grid, .desktop-container, or
+// (for position:fixed windows) the viewport itself, where
+// offsetParent is null.
 //
-//   containerLeft(el)  =  the viewport X of the
-//                         container's left padding edge
-//   containerTop(el)   =  the viewport Y of the
-//                         container's top  padding edge
-//
-// For position:absolute children, CSS `left`/`top` are
-// measured from the containing block's PADDING EDGE.
-// Since .desktop-container has no border, its padding
-// edge equals getBoundingClientRect().left / .top.
-//
-// Therefore:
-//   style.left  =  viewportX  −  containerLeft
-//   style.top   =  viewportY  −  containerTop
-//
-// No padding subtraction is needed or correct.
-// Subtracting padLeft/padTop was the cause of the jump —
-// it double-counted padding that is already baked into
-// the position of grid children (their wRect.left
-// already reflects the container's padding offset).
+// This replaces an earlier "ghost + reparent to
+// .desktop-container" system: that system inserted a
+// plain position:static placeholder div into a CSS Grid
+// container to "hold the grid cell open" while dragging —
+// but since nothing here is ever a real grid item, that
+// placeholder became a brand-new in-flow block the moment
+// it was inserted, growing .desktop-container's height by
+// exactly the dragged window's own height. Because
+// #desktop's wallpaper uses background-size:cover, that
+// sudden height growth rescaled the image — the "zoom"
+// bug. Tracking each window's own offsetParent instead
+// needs no placeholder and no reparenting at all.
 //======================================================
 
-function getDesktop(){
-    return document.querySelector(".desktop-container");
-}
-
-function containerLeft(){
-    return getDesktop().getBoundingClientRect().left;
-}
-
-function containerTop(){
-    return getDesktop().getBoundingClientRect().top;
+function parentOrigin(windowEl){
+    const parent = windowEl.offsetParent;
+    if(!parent) return {left:0, top:0};
+    const r = parent.getBoundingClientRect();
+    return {left:r.left, top:r.top};
 }
 
 
 //======================================================
-// DETACH FROM GRID
+// LOCK POSITION
 //
 // Called once, the first time a window is dragged or
-// resized. Steps in strict order:
-//
-//  1. Snapshot window rect NOW, before any DOM changes.
-//  2. Insert an invisible ghost in the original parent
-//     so sibling grid items don't enlarge/reflow.
-//  3. Reparent window to .desktop-container and set
-//     position:absolute at the identical visual spot.
-//
-// position formula:
-//   left = wRect.left − containerLeft()
-//   top  = wRect.top  − containerTop()
+// resized. Converts whatever positioned it originally
+// (left/right/bottom/transform/CSS centering, etc.) into
+// plain left/top pixel values at the identical visual
+// spot, so dragging can just update left/top from there.
 //======================================================
 
-function detachFromGrid(windowEl){
+function lockPosition(windowEl){
 
-    if(windowEl.dataset.detached === "true") return;
+    if(windowEl.dataset.locked === "true") return;
 
-    const desktop = getDesktop();
+    const wRect  = windowEl.getBoundingClientRect();
+    const origin = parentOrigin(windowEl);
 
-    // Step 1 — snapshot before touching DOM
-    const wRect = windowEl.getBoundingClientRect();
-    const cLeft = containerLeft();
-    const cTop  = containerTop();
-
-    // Step 2 — ghost holds the original grid cell open
-    const wStyle = getComputedStyle(windowEl);
-    const ghost  = document.createElement("div");
-
-    ghost.className        = "window-ghost";
-    ghost.style.width      = wRect.width  + "px";
-    ghost.style.height     = wRect.height + "px";
-    ghost.style.gridArea   = wStyle.gridArea;
-    ghost.style.gridColumn = wStyle.gridColumn;
-    ghost.style.gridRow    = wStyle.gridRow;
-
-    windowEl.parentElement.insertBefore(ghost, windowEl);
-    windowEl._ghost = ghost;
-
-    // Step 3 — reparent + place at exact same visual position
-    desktop.appendChild(windowEl);
-
-    windowEl.style.position  = "absolute";
-    windowEl.style.left      = (wRect.left - cLeft) + "px";
-    windowEl.style.top       = (wRect.top  - cTop)  + "px";
+    windowEl.style.left      = (wRect.left - origin.left) + "px";
+    windowEl.style.top       = (wRect.top  - origin.top)  + "px";
     windowEl.style.width     = wRect.width  + "px";
     windowEl.style.height    = wRect.height + "px";
     windowEl.style.right     = "auto";
@@ -208,7 +175,7 @@ function detachFromGrid(windowEl){
     windowEl.style.margin    = "0";
     windowEl.style.transform = "none";
 
-    windowEl.dataset.detached = "true";
+    windowEl.dataset.locked = "true";
 
 }
 
@@ -252,11 +219,11 @@ function injectResizeHandles(windowEl){
 //======================================================
 // DRAG
 //
-// grabX/grabY are read BEFORE detachFromGrid so any
-// micro layout-shift from the ghost insertion doesn't
-// corrupt the offset. detachFromGrid then places the
-// window at the exact same visual spot, so the grab
-// offset stays valid throughout the drag.
+// grabX/grabY are read BEFORE lockPosition so any
+// micro layout-shift (there shouldn't be any now, since
+// nothing is reparented) doesn't corrupt the offset.
+// lockPosition then places the window at the identical
+// visual spot, so the grab offset stays valid throughout.
 //======================================================
 
 function initDrag(windowEl){
@@ -274,12 +241,12 @@ function initDrag(windowEl){
         e.preventDefault();
 
         // Read where inside the window we grabbed —
-        // MUST happen before detachFromGrid
+        // MUST happen before lockPosition
         const wRect = windowEl.getBoundingClientRect();
         grabX = e.clientX - wRect.left;
         grabY = e.clientY - wRect.top;
 
-        detachFromGrid(windowEl);
+        lockPosition(windowEl);
 
         dragging = true;
         activeWindow = windowEl;
@@ -295,9 +262,11 @@ function initDrag(windowEl){
 
         // viewport position where window-left-edge should be
         // = mouse position minus grab offset
-        // convert to container space: subtract container's own left/top
-        windowEl.style.left = (e.clientX - grabX - containerLeft()) + "px";
-        windowEl.style.top  = (e.clientY - grabY - containerTop())  + "px";
+        // convert to this window's own positioned-ancestor space
+        const origin = parentOrigin(windowEl);
+
+        windowEl.style.left = (e.clientX - grabX - origin.left) + "px";
+        windowEl.style.top  = (e.clientY - grabY - origin.top)  + "px";
 
     });
 
@@ -324,7 +293,7 @@ function initResize(windowEl){
         e.preventDefault();
         e.stopPropagation();
 
-        detachFromGrid(windowEl);
+        lockPosition(windowEl);
 
         highestZ++;
         windowEl.style.zIndex = highestZ;

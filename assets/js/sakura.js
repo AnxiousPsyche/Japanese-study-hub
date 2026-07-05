@@ -1,12 +1,11 @@
 //======================================================
-// SAKURA — wind-blown petal spawner
+// SAKURA — petals falling from above
 //
-// Petals enter from the RIGHT side of the screen and
-// drift left-and-downward, as if blown by wind.
-// Each petal self-removes after its animation ends.
-//
-// Add to index.html after os.js:
-//   <script src="assets/js/sakura.js"></script>
+// Petals spawn across the FULL WIDTH of the page and
+// drift straight down with a gentle sway, like they're
+// falling from a tree overhead. Active on the login
+// screen and the desktop; paused during the boot
+// sequence.
 //======================================================
 
 (function(){
@@ -21,15 +20,15 @@
         "🍃","🍃",               // leaf (occasional)
     ];
 
-    // Gap between each new petal (randomised so they
-    // don't march out in a neat row)
-    const SPAWN_MIN_MS = 350;
-    const SPAWN_MAX_MS = 1000;
+    // Gap between each new petal
+    const SPAWN_MIN_MS = 500;
+    const SPAWN_MAX_MS = 1400;
 
-    // How long each petal takes to cross the screen.
-    // Slower = more gentle; faster = gust-like.
-    const FALL_MIN_S = 7;
-    const FALL_MAX_S = 13;
+    // How long each petal takes to fall top to bottom.
+    // Slower = gentle drift; this is a real "falling
+    // leaf" pace, not a gust.
+    const FALL_MIN_S = 14;
+    const FALL_MAX_S = 22;
 
     //──────────────────────────────────────────────────
     // HELPERS
@@ -41,6 +40,22 @@
 
     function randItem(arr){
         return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function isVisible(id){
+
+        const el = document.getElementById(id);
+
+        if(!el) return false;
+
+        return getComputedStyle(el).display !== "none";
+
+    }
+
+    function shouldShowPetals(){
+
+        return isVisible("login-screen") || isVisible("desktop");
+
     }
 
     //──────────────────────────────────────────────────
@@ -59,20 +74,20 @@
         petal.className   = "sakura";
         petal.textContent = randItem(PETALS);
 
-        // Start just off the RIGHT edge of the screen.
-        // The horizontal start is between 95 vw and 115 vw
-        // so some petals enter mid-screen, some from further right.
-        petal.style.top =
-        rand(-15,100)+"vh";
+        // Spread across the FULL width of the page, not
+        // just one side.
+        petal.style.left = rand(0, 96) + "vw";
 
-        // Spawn at a random height in the upper 60% of
-        // the screen so petals feel like they come in at
-        // different heights on the wind.
-        petal.style.top =
-            rand(-10, 55) + "vh";
+        // Start just above the visible area — the fall
+        // keyframes carry it down from there.
+        petal.style.top = "-40px";
+
+        // Small horizontal sway amount, varies per petal
+        // so they don't all swing in unison.
+        petal.style.setProperty("--sway", rand(20, 60) + "px");
 
         // Size variation gives a sense of depth
-        const size = rand(15, 28);
+        const size = rand(15, 26);
         petal.style.fontSize = size + "px";
 
         // Duration — slower petals feel further away
@@ -80,7 +95,7 @@
         petal.style.animationDuration = duration + "s";
 
         // Small stagger so bursts of spawns don't all
-        // arrive at the left edge simultaneously
+        // move in lockstep
         petal.style.animationDelay =
             rand(0, 0.5) + "s";
 
@@ -101,7 +116,11 @@
     }
 
     //──────────────────────────────────────────────────
-    // LOOP — schedule next petal after a random gap
+    // LOOP — schedule next petal after a random gap.
+    // Keeps running always, but only actually spawns
+    // (and only leaves existing petals falling) while
+    // the login screen or desktop is visible — paused
+    // during the boot sequence.
     //──────────────────────────────────────────────────
 
     function scheduleNext(){
@@ -109,9 +128,31 @@
         const delay = rand(SPAWN_MIN_MS, SPAWN_MAX_MS);
 
         setTimeout(() => {
-            spawnPetal();
+
+            if(shouldShowPetals()){
+
+                spawnPetal();
+
+            } else {
+
+                clearPetals();
+
+            }
+
             scheduleNext();
+
         }, delay);
+
+    }
+
+    function clearPetals(){
+
+        const container =
+            document.getElementById("sakura-container");
+
+        if(!container) return;
+
+        container.innerHTML = "";
 
     }
 
