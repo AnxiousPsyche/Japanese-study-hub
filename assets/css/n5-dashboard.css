@@ -1,0 +1,1584 @@
+/*======================================================
+JLPT N5 JOURNEY
+By AnxiousPsyche
+======================================================*/
+
+
+/*======================================================
+ROOT
+======================================================*/
+
+:root{
+
+    --hud-height:90px;
+
+    --hud-bg:rgba(255,252,245,.88);
+
+    --hud-border:#CBAE74;
+
+    --hud-shadow:
+
+        0 12px 30px rgba(0,0,0,.18);
+
+    --panel-radius:18px;
+
+    --transition:.30s ease;
+
+}
+
+
+/*======================================================
+RESET
+======================================================*/
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    overflow:hidden;
+
+    font-family:var(--body-font);
+
+    background:#E7F5FF;
+
+    color:#2F2F2F;
+
+}
+
+
+/*======================================================
+HUD
+======================================================*/
+
+#gameHUD{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    height:var(--hud-height);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 35px;
+
+    background:var(--hud-bg);
+
+    backdrop-filter:blur(16px);
+
+    -webkit-backdrop-filter:blur(16px);
+
+    border-bottom:3px solid var(--hud-border);
+
+    box-shadow:var(--hud-shadow);
+
+    z-index:999;
+
+}
+
+
+/*======================================================
+HUD LEFT
+======================================================*/
+
+.hud-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+
+/*======================================================
+HUD CENTER
+======================================================*/
+
+.hud-center{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+/*======================================================
+HUD RIGHT
+======================================================*/
+
+.hud-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+
+/*======================================================
+HUD BUTTONS
+======================================================*/
+
+.hud-btn{
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:12px 22px;
+
+    background:#89A8D8;
+
+    color:white;
+
+    font-family:var(--title-font);
+
+    cursor:pointer;
+
+    transition:var(--transition);
+
+}
+
+.hud-btn:hover{
+
+    transform:translateY(-3px);
+
+    background:#6F94CF;
+
+}
+
+
+/*======================================================
+PLAYER
+======================================================*/
+
+.hud-player{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.hud-player img{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    border:3px solid white;
+
+    object-fit:cover;
+
+    background:white;
+
+}
+
+
+/*======================================================
+PLAYER NAME
+======================================================*/
+
+#playerDisplayName{
+
+    font-size:1rem;
+
+    margin-bottom:4px;
+
+}
+
+#playerRank{
+
+    font-size:.8rem;
+
+    opacity:.75;
+
+}
+
+
+/*======================================================
+HUD ITEMS
+======================================================*/
+
+.hud-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    font-weight:700;
+
+    font-size:.95rem;
+
+}
+
+
+/*======================================================
+LOGO
+======================================================*/
+
+.hud-logo{
+
+    width:70px;
+
+}
+
+
+/*======================================================
+MAP
+======================================================*/
+
+#journeyMap{
+
+    overflow:auto;
+
+}
+
+.journey-background{
+
+    display:block;
+
+    width:1900px;
+
+    height:auto;
+
+    margin:auto;
+
+}
+
+
+/*======================================================
+BACKGROUND
+======================================================*/
+
+.journey-background{
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    user-select:none;
+
+    pointer-events:none;
+
+}
+
+
+/*======================================================
+LESSON MAP
+======================================================*/
+
+#lessonMap{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+}
+
+
+/*======================================================
+START GATE
+======================================================*/
+
+#startGate{
+
+    position:absolute;
+
+    left:4%;
+
+    bottom:6%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    z-index:100;
+
+}
+
+#startGate img{
+
+    width:95px;
+
+}
+
+#startGate span{
+
+    margin-top:8px;
+
+    font-family:var(--title-font);
+
+    font-size:.7rem;
+
+    color:white;
+
+    text-shadow:
+
+        2px 2px 4px rgba(0,0,0,.55);
+
+}
+
+
+/*======================================================
+MAP DECORATION
+======================================================*/
+
+#journeyMap::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+
+            rgba(255,255,255,.02),
+
+            rgba(0,0,0,.05)
+
+        );
+
+    pointer-events:none;
+
+}
+
+
+/*======================================================
+SCROLLBAR
+======================================================*/
+
+::-webkit-scrollbar{
+
+    width:12px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#89A8D8;
+
+    border-radius:999px;
+
+}
+
+/*======================================================
+PLAYER CHARACTER
+======================================================*/
+
+#playerCharacter{
+
+    position:absolute;
+
+    width:72px;
+
+    height:72px;
+
+    left:8%;
+
+    bottom:8%;
+
+    z-index:300;
+
+    transition:
+
+        left .5s ease,
+
+        top .5s ease,
+
+        transform .25s ease;
+
+}
+
+#playerCharacter img{
+
+    width:100%;
+
+    image-rendering:pixelated;
+
+    user-select:none;
+
+    pointer-events:none;
+
+}
+
+#playerCharacter.walking{
+
+    animation:playerBounce .45s infinite alternate;
+
+}
+
+
+/*======================================================
+LESSON NODE
+======================================================*/
+
+.lesson-node{
+
+    position:absolute;
+
+    width:30px;
+
+    height:30px;
+
+    border:none;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    background:#4BA3FF;
+
+    box-shadow:
+
+        0 0 8px #4BA3FF,
+
+        0 0 18px rgba(75,163,255,.9);
+
+    transition:.25s ease;
+
+    z-index:220;
+
+}
+
+.lesson-node:hover{
+
+    transform:scale(1.25);
+
+    box-shadow:
+
+        0 0 18px #58C4FF,
+
+        0 0 35px #58C4FF;
+
+}
+
+.lesson-node.completed{
+
+    background:#61D96C;
+
+    box-shadow:
+
+        0 0 12px #61D96C,
+
+        0 0 30px #61D96C;
+
+}
+
+.lesson-node.locked{
+
+    background:#A9A9A9;
+
+    box-shadow:none;
+
+    cursor:not-allowed;
+
+}
+
+
+/*======================================================
+NODE GLOW
+======================================================*/
+
+.node-glow{
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    animation:nodeGlow 2s infinite;
+
+}
+
+
+/*======================================================
+REVIEW NODE
+======================================================*/
+
+.review-node{
+
+    background:#F5C14C;
+
+    box-shadow:
+
+        0 0 10px #F5C14C,
+
+        0 0 26px #F5C14C;
+
+}
+
+.review-glow{
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:50%;
+
+    animation:reviewGlow 2s infinite;
+
+}
+
+
+/*======================================================
+FINAL REVIEW
+======================================================*/
+
+.final-review{
+
+    background:#FF6B6B;
+
+    box-shadow:
+
+        0 0 12px #FF6B6B,
+
+        0 0 30px #FF6B6B;
+
+}
+
+
+/*======================================================
+WOODEN SIGN
+======================================================*/
+
+.lesson-sign{
+
+    position:absolute;
+
+    min-width:170px;
+
+    padding:10px 18px;
+
+    background:#8B5A2B;
+
+    color:#FFF9E8;
+
+    border:3px solid #C9A05A;
+
+    border-radius:16px;
+
+    font-size:.72rem;
+
+    font-weight:700;
+
+    text-align:center;
+
+    box-shadow:
+
+        0 8px 18px rgba(0,0,0,.18);
+
+    user-select:none;
+
+    z-index:210;
+
+}
+
+.lesson-sign:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+/*======================================================
+TREASURE
+======================================================*/
+
+.treasure-node{
+
+    position:absolute;
+
+    width:70px;
+
+    height:70px;
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    transition:.3s ease;
+
+    z-index:250;
+
+}
+
+.treasure-node img{
+
+    width:100%;
+
+    image-rendering:pixelated;
+
+}
+
+.treasure-node:hover{
+
+    transform:
+
+        scale(1.15)
+
+        rotate(-4deg);
+
+}
+
+
+/*======================================================
+GOAL CASTLE
+======================================================*/
+
+#goalCastle{
+
+    position:absolute;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    z-index:300;
+
+}
+
+#goalCastle img{
+
+    width:150px;
+
+    image-rendering:pixelated;
+
+}
+
+#goalCastle span{
+
+    margin-top:8px;
+
+    font-family:var(--title-font);
+
+    color:white;
+
+    text-shadow:
+
+        2px 2px 6px rgba(0,0,0,.6);
+
+}
+
+
+/*======================================================
+POSITIONS
+======================================================*/
+
+/* Bottom Row */
+
+.lesson-1{
+
+    left:13%;
+
+    bottom:10%;
+
+}
+
+.lesson-sign-1{
+
+    left:9%;
+
+    bottom:15%;
+
+}
+
+.lesson-2{
+
+    left:33%;
+
+    bottom:10%;
+
+}
+
+.lesson-sign-2{
+
+    left:28%;
+
+    bottom:15%;
+
+}
+
+.lesson-3{
+
+    left:53%;
+
+    bottom:10%;
+
+}
+
+.lesson-sign-3{
+
+    left:49%;
+
+    bottom:15%;
+
+}
+
+/* Row 2 */
+
+.lesson-4{
+
+    right:13%;
+
+    bottom:28%;
+
+}
+
+.lesson-sign-4{
+
+    right:8%;
+
+    bottom:33%;
+
+}
+
+.lesson-5{
+
+    right:33%;
+
+    bottom:28%;
+
+}
+
+.lesson-sign-5{
+
+    right:28%;
+
+    bottom:33%;
+
+}
+
+.lesson-6{
+
+    right:53%;
+
+    bottom:28%;
+
+}
+
+.lesson-sign-6{
+
+    right:48%;
+
+    bottom:33%;
+
+}
+
+/* Row 3 */
+
+.lesson-7{
+
+    left:13%;
+
+    bottom:46%;
+
+}
+
+.lesson-sign-7{
+
+    left:7%;
+
+    bottom:51%;
+
+}
+
+.review-node{
+
+    left:33%;
+
+    bottom:46%;
+
+}
+
+.lesson-sign-review{
+
+    left:26%;
+
+    bottom:51%;
+
+}
+
+.lesson-9{
+
+    left:53%;
+
+    bottom:46%;
+
+}
+
+.lesson-sign-9{
+
+    left:47%;
+
+    bottom:51%;
+
+}
+
+/* Row 4 */
+
+.lesson-10{
+
+    right:13%;
+
+    bottom:64%;
+
+}
+
+.lesson-sign-10{
+
+    right:8%;
+
+    bottom:69%;
+
+}
+
+.lesson-11{
+
+    right:33%;
+
+    bottom:64%;
+
+}
+
+.lesson-sign-11{
+
+    right:26%;
+
+    bottom:69%;
+
+}
+
+.lesson-12{
+
+    right:53%;
+
+    bottom:64%;
+
+}
+
+.lesson-sign-12{
+
+    right:47%;
+
+    bottom:69%;
+
+}
+
+/* Row 5 */
+
+.lesson-13{
+
+    left:13%;
+
+    bottom:82%;
+
+}
+
+.lesson-sign-13{
+
+    left:7%;
+
+    bottom:87%;
+
+}
+
+.lesson-14{
+
+    left:33%;
+
+    bottom:82%;
+
+}
+
+.lesson-sign-14{
+
+    left:27%;
+
+    bottom:87%;
+
+}
+
+.lesson-15{
+
+    left:53%;
+
+    bottom:82%;
+
+}
+
+.lesson-sign-15{
+
+    left:46%;
+
+    bottom:87%;
+
+}
+
+/* Goal */
+
+#goalCastle{
+
+    left:80%;
+
+    top:5%;
+
+}
+
+/* Treasure */
+
+.treasure-1{
+
+    left:22%;
+
+    bottom:37%;
+
+}
+
+.treasure-2{
+
+    right:22%;
+
+    bottom:55%;
+
+}
+
+.treasure-3{
+
+    left:66%;
+
+    bottom:72%;
+
+}
+/*======================================================
+LESSON POPUP
+======================================================*/
+
+.lesson-popup{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.45);
+
+    backdrop-filter:blur(6px);
+
+    -webkit-backdrop-filter:blur(6px);
+
+    z-index:9999;
+
+}
+
+.lesson-popup.active{
+
+    display:flex;
+
+}
+
+.popup-window{
+
+    width:min(520px,90vw);
+
+    background:#FFFDF6;
+
+    border:4px solid #C7A35D;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:
+
+        0 25px 60px rgba(0,0,0,.35);
+
+    animation:popupOpen .35s ease;
+
+}
+
+
+/*======================================================
+POPUP HEADER
+======================================================*/
+
+.popup-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 24px;
+
+    background:#7F5A30;
+
+    color:white;
+
+}
+
+.popup-header h2{
+
+    font-family:var(--title-font);
+
+    font-size:.9rem;
+
+}
+
+#closePopup{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:#C53A3A;
+
+    color:white;
+
+    font-size:1rem;
+
+    transition:.25s;
+
+}
+
+#closePopup:hover{
+
+    transform:scale(1.08);
+
+}
+
+
+/*======================================================
+POPUP BODY
+======================================================*/
+
+.popup-body{
+
+    padding:30px;
+
+    text-align:center;
+
+}
+
+.popup-body img{
+
+    width:90px;
+
+    margin-bottom:20px;
+
+}
+
+.popup-body h3{
+
+    margin-bottom:12px;
+
+    font-size:1.35rem;
+
+}
+
+.popup-body p{
+
+    line-height:1.8;
+
+    margin-bottom:25px;
+
+}
+
+
+/*======================================================
+REWARD BOX
+======================================================*/
+
+.lesson-rewards{
+
+    display:inline-flex;
+
+    gap:10px;
+
+    align-items:center;
+
+    padding:12px 18px;
+
+    margin-bottom:30px;
+
+    border-radius:12px;
+
+    background:#EEF8FF;
+
+    border:2px solid #89A8D8;
+
+    font-weight:bold;
+
+}
+
+
+/*======================================================
+START BUTTON
+======================================================*/
+
+#startLessonButton{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:1rem;
+
+    transition:.3s;
+
+}
+
+#startLessonButton:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+/*======================================================
+FOOTER
+======================================================*/
+
+#dashboardFooter{
+
+    position:fixed;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    height:42px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 30px;
+
+    background:rgba(255,255,255,.92);
+
+    backdrop-filter:blur(10px);
+
+    border-top:2px solid #C7A35D;
+
+    z-index:900;
+
+    font-size:.82rem;
+
+}
+
+.footer-left,
+.footer-center,
+.footer-right{
+
+    white-space:nowrap;
+
+}
+
+
+/*======================================================
+TELEPORT EFFECT
+======================================================*/
+
+#teleport-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    pointer-events:none;
+
+    z-index:99999;
+
+}
+
+#teleport-overlay.active{
+
+    display:flex;
+
+}
+
+.teleport-flash{
+
+    position:absolute;
+
+    inset:0;
+
+    background:white;
+
+    opacity:0;
+
+    animation:teleportFlash .6s ease;
+
+}
+
+.teleport-beam{
+
+    width:180px;
+
+    height:100vh;
+
+    background:
+
+        linear-gradient(
+
+            transparent,
+
+            rgba(90,220,255,.95),
+
+            transparent
+
+        );
+
+}
+
+
+/*======================================================
+ACHIEVEMENT
+======================================================*/
+
+#achievement-container{
+
+    position:fixed;
+
+    top:110px;
+
+    right:25px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+    z-index:9999;
+
+}
+
+
+/*======================================================
+SAKURA
+======================================================*/
+
+#sakura-container{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    overflow:hidden;
+
+    z-index:80;
+
+}
+
+
+/*======================================================
+ANIMATIONS
+======================================================*/
+
+@keyframes popupOpen{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(35px) scale(.85);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+@keyframes nodeGlow{
+
+    0%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        transform:scale(1.4);
+
+        opacity:.35;
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+}
+
+@keyframes reviewGlow{
+
+    0%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        transform:scale(1.5);
+
+        opacity:.25;
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+}
+
+@keyframes playerBounce{
+
+    from{
+
+        transform:translateY(0);
+
+    }
+
+    to{
+
+        transform:translateY(-8px);
+
+    }
+
+}
+
+@keyframes teleportFlash{
+
+    0%{
+
+        opacity:0;
+
+    }
+
+    50%{
+
+        opacity:.95;
+
+    }
+
+    100%{
+
+        opacity:0;
+
+    }
+
+}
+
+
+/*======================================================
+RESPONSIVE
+======================================================*/
+
+@media (max-width:1200px){
+
+    #gameHUD{
+
+        padding:0 20px;
+
+    }
+
+    .hud-right{
+
+        gap:12px;
+
+    }
+
+}
+
+@media (max-width:992px){
+
+    #gameHUD{
+
+        height:auto;
+
+        flex-wrap:wrap;
+
+        gap:15px;
+
+        padding:15px;
+
+    }
+
+    .hud-center{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .hud-right{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .lesson-sign{
+
+        display:none;
+
+    }
+
+    #playerCharacter{
+
+        width:58px;
+
+        height:58px;
+
+    }
+
+    #goalCastle img{
+
+        width:110px;
+
+    }
+
+    .popup-window{
+
+        width:94vw;
+
+    }
+
+}
+
+@media (max-width:576px){
+
+    .hud-item{
+
+        font-size:.8rem;
+
+    }
+
+    .hud-logo{
+
+        width:52px;
+
+    }
+
+    #dashboardFooter{
+
+        display:none;
+
+    }
+
+}

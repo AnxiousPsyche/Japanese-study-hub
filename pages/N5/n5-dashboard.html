@@ -9,13 +9,15 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <meta name="description"
-          content="JP Library OS - Learn Japanese through interactive lessons and adventures.">
+    <meta
+        name="description"
+        content="JP Library OS - JLPT N5 Journey">
 
-    <title>JP Library OS | JLPT N5 Dashboard</title>
+    <title>JLPT N5 Journey</title>
 
     <!-- =========================================
          GOOGLE FONTS
@@ -28,369 +30,722 @@
           href="https://fonts.gstatic.com"
           crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Press+Start+2P&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=swap"
           rel="stylesheet">
 
     <!-- =========================================
          BOOTSTRAP
     ========================================== -->
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
     <!-- =========================================
          BOOTSTRAP ICONS
     ========================================== -->
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- =========================================
          CSS
     ========================================== -->
 
-    <link rel="stylesheet" href="../../assets/css/reset.css">
-
     <link rel="stylesheet" href="../../assets/css/variables.css">
-
+    <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/components.css">
-
-    <link rel="stylesheet" href="../../assets/css/os.css">
-
-    <link rel="stylesheet" href="../../assets/css/n5-map.css">
-
-    <link rel="stylesheet" href="../../assets/css/teleport.css">
-
+    <link rel="stylesheet" href="../../assets/css/animations.css">
     <link rel="stylesheet" href="../../assets/css/responsive.css">
+
+    <!-- Dashboard CSS -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/n5-dashboard.css">
 
 </head>
 
 <body>
 
-<!-- =========================================
-     GAME WORLD
-========================================== -->
+    <div class="hud-left">
 
-<div class="game-world">
+    <button class="hud-btn">
 
-    <!-- =========================================
-         PLAYER WINDOW
-    ========================================== -->
-
-    <aside class="retro-window player-window">
-
-        <div class="window-title">
-
-            <span>👤 PLAYER</span>
-
-        </div>
-
-        <div class="window-content">
-
-            <img src="../../assets/images/hero/smeagol.png"
-                 class="player-avatar"
-                 alt="Player">
-
-            <h2>Rei</h2>
-
-            <p>Grammar Explorer</p>
-
-            <hr>
-
-            <p>⭐ Level 5</p>
-
-            <p>🔥 12 Day Streak</p>
-
-            <p>💰 350 XP</p>
-
-        </div>
-
-    </aside>
-
-
-
-    <!-- =========================================
-         QUEST WINDOW
-    ========================================== -->
-
-    <aside class="retro-window quest-window">
-
-        <div class="window-title">
-
-            <span>🏆 TODAY</span>
-
-        </div>
-
-        <div class="window-content">
-
-            <h3>Daily Quest</h3>
-
-            <p>Complete Greetings.</p>
-
-            <div class="quest-reward">
-
-                ⭐ +50 XP
-
-            </div>
-
-            <hr>
-
-            <h3>Latest Achievement</h3>
-
-            <p>🏆 Grammar Explorer</p>
-
-            <hr>
-
-            <button class="retro-btn">
-
-                🎁 Claim Reward
-
-            </button>
-
-        </div>
-
-    </aside>
-
-
-
-    <!-- =========================================
-         WORLD MAP
-    ========================================== -->
-
-    <main class="map-window">
-
-        <div class="map-background">
-
-            <div class="sky"></div>
-
-            <div class="mountains"></div>
-
-            <div class="grass"></div>
-
-            <div class="river"></div>
-
-            <!-- Trees -->
-
-            <div class="tree tree1">🌸</div>
-            <div class="tree tree2">🌸</div>
-            <div class="tree tree3">🌸</div>
-            <div class="tree tree4">🌸</div>
-
-            <!-- Roads -->
-
-            <div class="road road1"></div>
-            <div class="road road2"></div>
-            <div class="road road3"></div>
-            <div class="road road4"></div>
-
-            <!-- Buildings -->
-
-            <button class="building intro unlocked">
-
-                🏡
-
-                <span>Self Introduction</span>
-
-            </button>
-
-            <button class="building greetings active">
-
-                🏡
-
-                <span>Greetings</span>
-
-            </button>
-
-            <button class="building numbers locked">
-
-                🏪
-
-                <span>Numbers</span>
-
-            </button>
-
-            <button class="building shrine locked">
-
-                ⛩
-
-                <span>Time Shrine</span>
-
-            </button>
-
-            <button class="building castle locked">
-
-                🏰
-
-                <span>Boss Castle</span>
-
-            </button>
-
-        </div>
-
-    </main>
-
-</div>
-
-
-
-<!-- =========================================
-     START MENU
-========================================== -->
-
-<div
-    class="start-menu"
-    id="startMenu">
-
-    <div class="start-profile">
-
-        <img src="../../assets/images/hero/smeagol.png"
-             alt="Player">
-
-        <div>
-
-            <strong>Rei</strong>
-
-            <br>
-
-            Grammar Explorer
-
-        </div>
-
-    </div>
-
-    <button>📚 Lessons</button>
-
-    <button>📝 Flashcards</button>
-
-    <button>🏆 Achievements</button>
-
-    <button>⚙ Settings</button>
-
-    <button>🚪 Logout</button>
-
-</div>
-
-
-
-<!-- =========================================
-     TASKBAR
-========================================== -->
-
-<footer class="taskbar">
-
-    <button
-        class="start-btn"
-        id="startMenuButton">
-
-        <img
-            src="../../assets/images/icons/pixels/picture-window-Original.png"
-            alt="JP">
-
-        <span>
-
-            Menu
-
-        </span>
+        🏠 Home
 
     </button>
 
-    <button>N5</button>
+    <button class="hud-btn">
 
-    <button>Flashcards</button>
+        🗺 Journey
 
-    <button>Achievements</button>
+    </button>
 
-    <button>Settings</button>
+    <button class="hud-btn">
 
-    <button>Quests</button>
+        📚 Lessons
 
-<!--====================================
-SYSTEM TRAY
-=====================================-->
-
-   <div class="system-tray">
-
-    <div class="tray-icons">
-
-        <button id="languageButton">ENG</button>
-
-        <button id="displayButton">
-            <img src="../../assets/images/icons/pixels/monitor.png">
-        </button>
-
-        <button id="speakerButton">
-            <img src="../../assets/images/icons/pixels/headphones.png">
-        </button>
-
-        <button id="notificationButton">
-            <img src="../../assets/images/icons/pixels/mail.png">
-        </button>
-
-    </div>
-
-    <div class="tray-clock">
-
-        <span id="taskbarClock"></span>
-
-        <span id="taskbarDate"></span>
-
-    </div>
+    </button>
 
 </div>
 
-<!--====================================
-MUSIC PLAYER
-=====================================-->
+<!-- =========================================
+     RPG HUD
+========================================== -->
+
+<header id="gameHUD">
+
+    <!-- Left -->
+
+    <div class="hud-left">
+
+        <button
+            class="hud-btn"
+            id="backDesktop">
+
+            <i class="bi bi-house-door-fill"></i>
+
+            Desktop
+
+        </button>
+
+    </div>
+
+    <!-- Center -->
+
+    <div class="hud-center">
+
+        <img
+            src="../../assets/images/logo/JPLnewlogo.png"
+            alt="JP Library"
+            class="hud-logo">
+
+        <div class="hud-player">
+
+            <img
+                src="../../assets/images/avatars/default-avatar.png"
+                id="playerAvatar"
+                alt="Player">
+
+            <div>
+
+                <h3 id="playerDisplayName">
+
+                    Explorer
+
+                </h3>
+
+                <span id="playerRank">
+
+                    Grammar Adventurer
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Right -->
+
+    <div class="hud-right">
+
+        <div class="hud-item">
+
+            ⭐
+
+            <span id="playerXP">
+
+                0 XP
+
+            </span>
+
+        </div>
+
+        <div class="hud-item">
+
+            ❤️
+
+            <span id="playerLives">
+
+                5
+
+            </span>
+
+        </div>
+
+        <div class="hud-item">
+
+            💰
+
+            <span id="playerCoins">
+
+                0
+
+            </span>
+
+        </div>
+
+        <button
+            id="musicButton"
+            class="hud-btn">
+
+            <i class="bi bi-volume-up-fill"></i>
+
+        </button>
+
+    </div>
+
+</header>
+
+<!-- =========================================
+     JOURNEY MAP
+========================================== -->
+
+<main id="journeyMap">
+
+    <!-- Background Image -->
+
+    <img
+        src="../../assets/images/backgrounds/n5-journey-map.png"
+        alt="JLPT N5 Journey"
+        class="journey-background">
+
+    <!-- =====================================
+         PLAYER CHARACTER
+    ====================================== -->
+
+    <div id="playerCharacter">
+
+        <img
+            src="../../assets/images/avatars/player.png"
+            alt="Player">
+
+    </div>
+
+    <!-- =====================================
+         START GATE
+    ====================================== -->
+
+    <div id="startGate">
+
+        <img
+            src="../../assets/images/map/torii.png"
+            alt="Start Gate">
+
+        <span>
+
+            START
+
+        </span>
+
+    </div>
+
+    <!-- =====================================
+         MAP CONTAINER
+         Lesson Nodes begin in Part 2
+    ====================================== -->
+
+    <div id="lessonMap">
+
+            <!-- =====================================
+         LESSON 1
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-1"
+        data-lesson="1">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-1">
+
+        👋 Basic Greetings
+
+    </div>
+
+    <!-- =====================================
+         LESSON 2
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-2"
+        data-lesson="2">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-2">
+
+        💬 Everyday Expressions
+
+    </div>
+
+    <!-- =====================================
+         LESSON 3
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-3"
+        data-lesson="3">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-3">
+
+        🙋 Self Introduction
+
+    </div>
+
+    <!-- =====================================
+         LESSON 4
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-4"
+        data-lesson="4">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-4">
+
+        📘 A は B です
+
+    </div>
+
+    <!-- =====================================
+         LESSON 5
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-5"
+        data-lesson="5">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-5">
+
+        📦 Demonstratives
+
+    </div>
+
+    <!-- =====================================
+         LESSON 6
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-6"
+        data-lesson="6">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-6">
+
+        ❓ Questions (か)
+
+    </div>
+
+    <!-- =====================================
+         LESSON 7
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-7"
+        data-lesson="7">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-7">
+
+        🧭 Places and Directions
+
+    </div>
+
+    <!-- =====================================
+         REVIEW CHECKPOINT
+    ====================================== -->
+
+    <button
+        class="lesson-node review-node"
+        data-lesson="review1">
+
+        <span class="review-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-review">
+
+        📋 Foundations Review
+
+    </div>
+
+    <!-- =====================================
+         LESSON 9
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-9"
+        data-lesson="9">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-9">
+
+        👥 Nouns & Pronouns
+
+    </div>
+
+        <!-- =====================================
+         LESSON 10
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-10"
+        data-lesson="10">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-10">
+
+        🌸 Adjectives
+
+    </div>
+
+    <!-- =====================================
+         LESSON 11
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-11"
+        data-lesson="11">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-11">
+
+        ⚡ Adverbs and Verbs
+
+    </div>
+
+    <!-- =====================================
+         LESSON 12
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-12"
+        data-lesson="12">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-12">
+
+        🔄 Conjugations
+
+    </div>
+
+    <!-- =====================================
+         REVIEW CHECKPOINT 2
+    ====================================== -->
+
+    <button
+        class="lesson-node review-node review-node-2"
+        data-lesson="review2">
+
+        <span class="review-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-review2">
+
+        📋 Sentence Builder Review
+
+    </div>
+
+    <!-- =====================================
+         LESSON 13
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-13"
+        data-lesson="13">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-13">
+
+        🧱 Sentence Construction
+
+    </div>
+
+    <!-- =====================================
+         LESSON 14
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-14"
+        data-lesson="14">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-14">
+
+        🧩 Particle Mastery
+
+    </div>
+
+    <!-- =====================================
+         LESSON 15
+    ====================================== -->
+
+    <button
+        class="lesson-node lesson-15"
+        data-lesson="15">
+
+        <span class="node-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-15">
+
+        👥 Existence (あります・います)
+
+    </div>
+
+    <!-- =====================================
+         FINAL EXAM
+    ====================================== -->
+
+    <button
+        class="lesson-node final-review"
+        data-lesson="final">
+
+        <span class="final-glow"></span>
+
+    </button>
+
+    <div class="lesson-sign lesson-sign-final">
+
+        🏆 Final N5 Review
+
+    </div>
+
+    <!-- =====================================
+         TREASURE CHEST 1
+    ====================================== -->
+
+    <button
+        class="treasure-node treasure-1">
+
+        <img
+            src="../../assets/images/map/treasure.png"
+            alt="Treasure">
+
+    </button>
+
+    <!-- =====================================
+         TREASURE CHEST 2
+    ====================================== -->
+
+    <button
+        class="treasure-node treasure-2">
+
+        <img
+            src="../../assets/images/map/treasure.png"
+            alt="Treasure">
+
+    </button>
+
+    <!-- =====================================
+         TREASURE CHEST 3
+    ====================================== -->
+
+    <button
+        class="treasure-node treasure-3">
+
+        <img
+            src="../../assets/images/map/treasure.png"
+            alt="Treasure">
+
+    </button>
+
+    <!-- =====================================
+         GOAL CASTLE
+    ====================================== -->
+
+    <div
+        id="goalCastle">
+
+        <img
+            src="../../assets/images/map/goal-castle.png"
+            alt="Goal Castle">
+
+        <span>
+
+            GOAL
+
+        </span>
+
+    </div>
+
+    <!-- =====================================
+         END OF MAP
+    ====================================== -->
+
+    </div>
+
+</main>
+
+<!-- =========================================
+     LESSON POPUP
+========================================== -->
 
 <div
-    class="music-player"
-    id="musicPlayer">
+    id="lessonPopup"
+    class="lesson-popup">
 
-    <h3>
+    <div class="popup-window">
 
-        🎵 JP Library Music
+        <div class="popup-header">
 
-    </h3>
+            <h2 id="popupTitle">
 
-    <p id="currentSong">
+                Lesson
 
-        Kyoto
+            </h2>
 
-    </p>
+            <button
+                id="closePopup">
 
-    <input
-        type="range"
-        id="volumeSlider"
-        min="0"
-        max="100"
-        value="35">
+                ✕
 
-    <div class="player-controls">
+            </button>
 
-        <button id="prevSong">
+        </div>
 
-            ⏮
+        <div class="popup-body">
 
-        </button>
+            <img
+                id="popupImage"
+                src="../../assets/images/icons/book.png"
+                alt="Lesson">
 
-        <button id="playPause">
+            <h3 id="popupLessonTitle">
 
-            ⏸
+                Lesson Title
 
-        </button>
+            </h3>
 
-        <button id="nextSong">
+            <p id="popupLessonDescription">
 
-            ⏭
+                Lesson description...
 
-        </button>
+            </p>
+
+            <div
+                class="lesson-rewards">
+
+                ⭐ XP:
+                <span id="popupXP">
+
+                    +50
+
+                </span>
+
+            </div>
+
+            <button
+                id="startLessonButton"
+                class="retro-btn">
+
+                ▶ Start Lesson
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
 <!-- =========================================
-     AUDIO
+     FOOTER
+========================================== -->
+
+<footer id="dashboardFooter">
+
+    <div class="footer-left">
+
+        🌸 JP Library OS • JLPT N5 Journey
+
+    </div>
+
+    <div class="footer-center">
+
+        Continue your adventure one lesson at a time.
+
+    </div>
+
+    <div class="footer-right">
+
+        Version 1.0
+
+    </div>
+
+</footer>
+
+<!-- =========================================
+     TELEPORT EFFECT
+========================================== -->
+
+<div id="teleport-overlay">
+
+    <div class="teleport-beam"></div>
+
+    <div class="teleport-flash"></div>
+
+</div>
+
+<!-- =========================================
+     ACHIEVEMENT NOTIFICATIONS
+========================================== -->
+
+<div id="achievement-container"></div>
+
+<!-- =========================================
+     SAKURA PARTICLES
+========================================== -->
+
+<div id="sakura-container"></div>
+
+<!-- =========================================
+     BACKGROUND MUSIC
 ========================================== -->
 
 <audio
@@ -403,6 +758,9 @@ MUSIC PLAYER
 
 </audio>
 
+<!-- =========================================
+     TELEPORT SOUND
+========================================== -->
 
 <audio
     id="teleportSound">
@@ -413,46 +771,40 @@ MUSIC PLAYER
 
 </audio>
 
-
-
-<!-- =========================================
-     TELEPORT
-========================================== -->
-
-<div id="teleport-overlay">
-
-    <div class="teleport-glow"></div>
-
-    <div class="teleport-beam"></div>
-
-    <div class="teleport-flash"></div>
-
-</div>
-
-
-
-<!-- =========================================
-     EFFECTS
-========================================== -->
-
-<div id="achievement-container"></div>
-
-<div id="sakura-container"></div>
-
-
-
 <!-- =========================================
      JAVASCRIPT
 ========================================== -->
 
-<script src="../../assets/js/os.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="../../assets/js/n5-map.js"></script>
+<!-- Core -->
+
+<script src="../../assets/js/player.js"></script>
+
+<script src="../../assets/js/sakura.js"></script>
 
 <script src="../../assets/js/teleport.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/achievement.js"></script>
+
+<script src="../../assets/js/music-player.js"></script>
+
+<!-- Dashboard -->
+
+<script src="../../assets/js/n5-dashboard.js"></script>
+
+<script src="../../assets/js/n5-lessons.js"></script>
+
+<script src="../../assets/js/n5-player.js"></script>
+
+<script src="../../assets/js/n5-popup.js"></script>
+
+<script src="../../assets/js/n5-save.js"></script>
+
+<script src="../../assets/js/n5-map.js"></script>
 
 </body>
 
 </html>
+
+        
