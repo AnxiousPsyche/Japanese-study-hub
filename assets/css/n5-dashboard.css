@@ -1495,3 +1495,263 @@ RESPONSIVE
     }
 
 }
+
+/*======================================================
+CAT COMPONENT
+Reusable recolorable pixel-cat: body/head/ears/tail/legs
+as plain shapes, fur color driven by --fur/--fur-dark
+custom properties per .cat--<color> class. .cat__stripe
+only renders for tabby colors (orange, gray); .cat__patch
+only renders for calico. Toggling .walking on the outer
+.cat element runs the leg-alternation keyframes.
+======================================================*/
+
+.cat{
+
+    position:relative;
+
+    width:40px;
+
+    height:40px;
+
+}
+
+.cat__body{
+
+    position:absolute;
+
+    left:7px;
+
+    top:16px;
+
+    width:26px;
+
+    height:18px;
+
+    background:var(--fur);
+
+    border-radius:10px 10px 6px 6px;
+
+    z-index:2;
+
+}
+
+.cat__head{
+
+    position:absolute;
+
+    left:11px;
+
+    top:4px;
+
+    width:18px;
+
+    height:16px;
+
+    background:var(--fur);
+
+    border-radius:8px 8px 6px 6px;
+
+    z-index:3;
+
+}
+
+.cat__ear{
+
+    position:absolute;
+
+    top:-2px;
+
+    width:0;
+
+    height:0;
+
+    border-left:5px solid transparent;
+
+    border-right:5px solid transparent;
+
+    border-bottom:8px solid var(--fur);
+
+    z-index:3;
+
+}
+
+.cat__ear--l{
+
+    left:10px;
+
+    transform:rotate(-15deg);
+
+}
+
+.cat__ear--r{
+
+    left:22px;
+
+    transform:rotate(15deg);
+
+}
+
+.cat__tail{
+
+    position:absolute;
+
+    left:29px;
+
+    top:14px;
+
+    width:6px;
+
+    height:20px;
+
+    background:var(--fur);
+
+    border-radius:4px;
+
+    transform-origin:top center;
+
+    animation:catTailSway 1.2s ease-in-out infinite alternate;
+
+    z-index:1;
+
+}
+
+.cat__leg{
+
+    position:absolute;
+
+    bottom:0;
+
+    width:5px;
+
+    height:10px;
+
+    background:var(--fur-dark);
+
+    border-radius:2px;
+
+    transform-origin:top center;
+
+    z-index:1;
+
+}
+
+.cat__leg--fl{ left:9px; }
+
+.cat__leg--fr{ left:16px; }
+
+.cat__leg--bl{ left:23px; }
+
+.cat__leg--br{ left:30px; }
+
+.cat__stripe,
+.cat__patch{
+
+    display:none;
+
+}
+
+.cat--orange .cat__stripe,
+.cat--gray .cat__stripe{
+
+    display:block;
+
+    position:absolute;
+
+    background:var(--fur-dark);
+
+    border-radius:2px;
+
+}
+
+.cat__stripe--1{ left:12px; top:8px; width:12px; height:3px; }
+
+.cat__stripe--2{ left:10px; top:20px; width:16px; height:3px; }
+
+.cat--calico .cat__patch{
+
+    display:block;
+
+    position:absolute;
+
+    border-radius:50%;
+
+}
+
+.cat--calico .cat__patch--a{
+
+    left:10px;
+
+    top:6px;
+
+    width:10px;
+
+    height:8px;
+
+    background:#E8935A;
+
+}
+
+.cat--calico .cat__patch--b{
+
+    left:16px;
+
+    top:18px;
+
+    width:9px;
+
+    height:9px;
+
+    background:#2B2B2E;
+
+}
+
+@keyframes catTailSway{
+
+    from{ transform:rotate(-10deg); }
+
+    to{ transform:rotate(10deg); }
+
+}
+
+@keyframes catWalkA{
+
+    0%, 100%{ transform:rotate(-18deg); }
+
+    50%{ transform:rotate(18deg); }
+
+}
+
+@keyframes catWalkB{
+
+    0%, 100%{ transform:rotate(18deg); }
+
+    50%{ transform:rotate(-18deg); }
+
+}
+
+.cat.walking .cat__leg--fl,
+.cat.walking .cat__leg--br{
+
+    animation:catWalkA .4s linear infinite;
+
+}
+
+.cat.walking .cat__leg--fr,
+.cat.walking .cat__leg--bl{
+
+    animation:catWalkB .4s linear infinite;
+
+}
+
+.cat--orange{ --fur:#E8935A; --fur-dark:#C97A44; }
+
+.cat--black{ --fur:#2B2B2E; --fur-dark:#1A1A1C; }
+
+.cat--gray{ --fur:#9AA0A6; --fur-dark:#7D8388; }
+
+.cat--brown{ --fur:#8B5E3C; --fur-dark:#6E4A2E; }
+
+.cat--white{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
+
+.cat--calico{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
