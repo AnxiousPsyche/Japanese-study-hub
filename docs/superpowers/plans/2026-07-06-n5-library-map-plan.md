@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the N5 dashboard's mountain/forest/river journey map with a code-drawn library scene, keeping the existing HUD/popup/favorites shell and the same 18 lesson stops (now furniture), and add a recolorable cat sprite system: a first-visit avatar picker (6 colors) for the player's own cat, plus 3 ambient NPC cats wandering the room.
+**Goal:** Replace the N5 dashboard's mountain/forest/river journey map with a code-drawn library scene, keeping the existing HUD/popup/favorites shell and the same 18 lesson stops (now furniture), and add a recolorable cat sprite system: a first-visit avatar picker (7 colors as of the 2026-07-07 amendment — orange/black/calico/gray/brown/white/tuxedo) for the player's own cat, plus 3 ambient NPC cats wandering the room.
 
 **Architecture:** Pure static HTML/CSS/vanilla JS, no build step, no new dependency — matches every other script in `assets/js/`. The map layer stays wrapped in an aspect-ratio-locked frame (the fix already proven on the old journey map) so furniture/node positions never drift from the art, but the "art" is now CSS shapes authored at a fixed 16:10 design ratio instead of a measured photo. The existing movement/proximity/popup engine (`n5-map.js`, `n5-popup.js`) is reused almost unchanged — only its node styling and initial-position anchor change.
 
@@ -726,6 +726,70 @@ git commit -m "Add reusable recolorable cat sprite component with walk-cycle"
 
 ---
 
+### Task 2 Addendum: Add a `tuxedo` variant (2026-07-07 amendment)
+
+**Context:** real hand-drawn idle-animation sprite sheets were added to the project after Task 2 was originally planned (see the spec's 2026-07-07 amendment). This grows the color roster from 6 to 7 by adding **tuxedo** (black base, one white patch) to the CSS component built in Task 2 above. Every other task in this plan that references "6 colors" or lists `orange, black, calico, gray, brown, white` should be read as 7, with `tuxedo` included, from this point in the plan onward (Tasks 5 and 6 below are already written with 7).
+
+**Files:**
+- Modify: `assets/css/n5-dashboard.css` (extend the `CAT COMPONENT` section from Task 2)
+
+**Interfaces:**
+- Produces: `.cat--tuxedo` — a new color variant, same interface as every other `.cat--<color>` class (works with `.walking`, works in the picker/NPC/player markup unchanged).
+
+- [ ] **Step 1: Add the tuxedo variant CSS**
+
+In `assets/css/n5-dashboard.css`, in the `CAT COMPONENT` section, find the block that starts `.cat--calico .cat__patch{` and reuses the same patch mechanism. Add a tuxedo counterpart right after the existing `.cat--calico .cat__patch--b{...}` rule:
+
+```css
+.cat--tuxedo .cat__patch{
+
+    display:block;
+
+    position:absolute;
+
+    border-radius:50%;
+
+}
+
+.cat--tuxedo .cat__patch--a{
+
+    left:11px;
+
+    top:16px;
+
+    width:14px;
+
+    height:14px;
+
+    background:#F5F1E8;
+
+}
+```
+
+(Only `.cat__patch--a` is used for tuxedo — one white chest/belly patch, not two. `.cat__patch--b` stays hidden for this variant since it's not referenced by any `.cat--tuxedo` rule, and the shared `.cat__patch{ display:none; }` base rule already covers it.)
+
+Then add the color-variable line alongside the other `.cat--<color>` lines near the bottom of the section:
+
+```css
+.cat--tuxedo{ --fur:#2B2B2E; --fur-dark:#1A1A1C; }
+```
+
+(Same dark fur values as `.cat--black` — tuxedo cats are black-based with a white patch, not a different base fur tone.)
+
+- [ ] **Step 2: Verify in the same scratchpad harness**
+
+Re-run the Step 3 harness script from Task 2 above, adding `'tuxedo'` to the `colors` array (`['orange','black','calico','gray','brown','white','tuxedo']`). Read the resulting screenshot and confirm: the tuxedo cat shows a black body/head with one visible white patch (distinct from both the solid black cat and the calico cat).
+
+- [ ] **Step 3: Commit**
+
+```bash
+cd "C:\Users\almaz\Downloads\Japanese Web Dev"
+git add assets/css/n5-dashboard.css
+git commit -m "Add tuxedo cat color variant"
+```
+
+---
+
 ### Task 3: Wire the 18 lesson stops as library furniture
 
 **Files:**
@@ -1192,11 +1256,64 @@ git commit -m "Replace player sprite image with the recolorable cat component"
 
 ### Task 5: Avatar persistence + first-visit picker
 
+**Amendment (2026-07-07):** this task now targets **7** colors, not 6 —
+`tuxedo` was added (Task 2 Addendum) alongside real sprite-sheet art for
+5 of the 7 colors. Per the spec's 2026-07-07 amendment, picker *preview*
+swatches for orange/black/calico/white/tuxedo show the real animated
+sprite sheet (`assets/images/icons/pixels/OrangeCatIdle.png`,
+`blackCatIdle.png`, `CalicoCatIdle.png`, `whitecatIdle.png`,
+`tuxedoIdle.png` — exact filenames, mixed case, use verbatim); gray/brown
+still preview as the CSS `.cat` shape (no real art for those two). Once
+any swatch is clicked, the *applied* result is always the CSS `.cat`
+component in that color — the sprite sheets are picker-preview-only,
+never used for the actual roaming player/NPC cats (no walk-cycle frames
+exist in them).
+
+Each sprite sheet is a horizontal strip of 300×300px frames at a fixed
+height of 300px; frame counts differ per sheet (verified against each
+file's natural pixel width ÷ 300): orange 12, black 20, calico 19, white
+18, tuxedo 25. Before writing the CSS in Step 5 below, confirm these
+counts still hold against the actual files on disk (they may have
+changed since this plan was written) — this is Step 0.
+
 **Files:**
 - Modify: `assets/js/n5-save.js`
 - Create: `assets/js/n5-avatar-picker.js`
 - Modify: `pages/N5/n5-dashboard.html` (add picker overlay markup + new `<script>` tag)
 - Modify: `assets/css/n5-dashboard.css` (append `AVATAR PICKER` styles)
+
+- [ ] **Step 0: Confirm sprite frame counts against the actual files**
+
+```bash
+cd "C:\Users\almaz\AppData\Local\Temp\claude\C--Users-almaz-Downloads-Japanese-Web-Dev\1654f77f-f109-4d3a-951c-1152d31cb30b\scratchpad"
+node -e "
+const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  const files = {
+    orange: 'OrangeCatIdle.png',
+    black: 'blackCatIdle.png',
+    calico: 'CalicoCatIdle.png',
+    white: 'whitecatIdle.png',
+    tuxedo: 'tuxedoIdle.png'
+  };
+  const results = {};
+  for (const [color, file] of Object.entries(files)) {
+    await page.goto('file:///C:/Users/almaz/Downloads/Japanese Web Dev/assets/images/icons/pixels/' + file);
+    const dims = await page.evaluate(() => {
+      const img = document.querySelector('img');
+      return { w: img.naturalWidth, h: img.naturalHeight, frames: img.naturalWidth / img.naturalHeight };
+    });
+    results[color] = dims;
+  }
+  console.log(JSON.stringify(results, null, 2));
+  await browser.close();
+})();
+"
+```
+
+Expected (each `frames` value should be a whole number, since height is the frame size and width is frames × height): `orange.frames: 12`, `black.frames: 20`, `calico.frames: 19`, `white.frames: 18`, `tuxedo.frames: 25`, each with `h: 300`. If any value differs from what's shown here, use the actual measured numbers in Steps 3 and 5 below instead of the ones written in this plan — the measured truth wins over the plan text.
 
 **Interfaces:**
 - Produces: `window.N5Save.getAvatarColor(): string|null`, `window.N5Save.setAvatarColor(color: string): void` (added to the existing `window.N5Save` object). `n5-avatar-picker.js` has no exports — it self-initializes on `DOMContentLoaded` and applies a `cat--<color>` class directly to `#playerCharacter`.
@@ -1296,60 +1413,28 @@ In `pages/N5/n5-dashboard.html`, add this block immediately before the closing `
         <div class="avatar-swatches">
 
             <button class="avatar-swatch" data-color="orange">
-                <div class="cat cat--orange">
-                    <span class="cat__tail"></span>
-                    <span class="cat__ear cat__ear--l"></span>
-                    <span class="cat__ear cat__ear--r"></span>
-                    <span class="cat__head"></span>
-                    <span class="cat__body"></span>
-                    <span class="cat__stripe cat__stripe--1"></span>
-                    <span class="cat__stripe cat__stripe--2"></span>
-                    <span class="cat__patch cat__patch--a"></span>
-                    <span class="cat__patch cat__patch--b"></span>
-                    <span class="cat__leg cat__leg--fl"></span>
-                    <span class="cat__leg cat__leg--fr"></span>
-                    <span class="cat__leg cat__leg--bl"></span>
-                    <span class="cat__leg cat__leg--br"></span>
-                </div>
+                <div class="avatar-sprite avatar-sprite--orange"></div>
                 <span>Orange</span>
             </button>
 
             <button class="avatar-swatch" data-color="black">
-                <div class="cat cat--black">
-                    <span class="cat__tail"></span>
-                    <span class="cat__ear cat__ear--l"></span>
-                    <span class="cat__ear cat__ear--r"></span>
-                    <span class="cat__head"></span>
-                    <span class="cat__body"></span>
-                    <span class="cat__stripe cat__stripe--1"></span>
-                    <span class="cat__stripe cat__stripe--2"></span>
-                    <span class="cat__patch cat__patch--a"></span>
-                    <span class="cat__patch cat__patch--b"></span>
-                    <span class="cat__leg cat__leg--fl"></span>
-                    <span class="cat__leg cat__leg--fr"></span>
-                    <span class="cat__leg cat__leg--bl"></span>
-                    <span class="cat__leg cat__leg--br"></span>
-                </div>
+                <div class="avatar-sprite avatar-sprite--black"></div>
                 <span>Black</span>
             </button>
 
             <button class="avatar-swatch" data-color="calico">
-                <div class="cat cat--calico">
-                    <span class="cat__tail"></span>
-                    <span class="cat__ear cat__ear--l"></span>
-                    <span class="cat__ear cat__ear--r"></span>
-                    <span class="cat__head"></span>
-                    <span class="cat__body"></span>
-                    <span class="cat__stripe cat__stripe--1"></span>
-                    <span class="cat__stripe cat__stripe--2"></span>
-                    <span class="cat__patch cat__patch--a"></span>
-                    <span class="cat__patch cat__patch--b"></span>
-                    <span class="cat__leg cat__leg--fl"></span>
-                    <span class="cat__leg cat__leg--fr"></span>
-                    <span class="cat__leg cat__leg--bl"></span>
-                    <span class="cat__leg cat__leg--br"></span>
-                </div>
+                <div class="avatar-sprite avatar-sprite--calico"></div>
                 <span>Calico</span>
+            </button>
+
+            <button class="avatar-swatch" data-color="white">
+                <div class="avatar-sprite avatar-sprite--white"></div>
+                <span>White</span>
+            </button>
+
+            <button class="avatar-swatch" data-color="tuxedo">
+                <div class="avatar-sprite avatar-sprite--tuxedo"></div>
+                <span>Tuxedo</span>
             </button>
 
             <button class="avatar-swatch" data-color="gray">
@@ -1390,31 +1475,17 @@ In `pages/N5/n5-dashboard.html`, add this block immediately before the closing `
                 <span>Brown</span>
             </button>
 
-            <button class="avatar-swatch" data-color="white">
-                <div class="cat cat--white">
-                    <span class="cat__tail"></span>
-                    <span class="cat__ear cat__ear--l"></span>
-                    <span class="cat__ear cat__ear--r"></span>
-                    <span class="cat__head"></span>
-                    <span class="cat__body"></span>
-                    <span class="cat__stripe cat__stripe--1"></span>
-                    <span class="cat__stripe cat__stripe--2"></span>
-                    <span class="cat__patch cat__patch--a"></span>
-                    <span class="cat__patch cat__patch--b"></span>
-                    <span class="cat__leg cat__leg--fl"></span>
-                    <span class="cat__leg cat__leg--fr"></span>
-                    <span class="cat__leg cat__leg--bl"></span>
-                    <span class="cat__leg cat__leg--br"></span>
-                </div>
-                <span>White</span>
-            </button>
-
         </div>
 
     </div>
 
 </div>
 ```
+
+(`.avatar-sprite--<color>` divs are empty — their content is a CSS
+`background-image` sprite sheet, not inner markup. `.cat cat--<color>`
+swatches (gray, brown) keep the full 13-span markup from Task 2, since
+they have no real art to preview instead.)
 
 Then find the existing `<script src="../../assets/js/n5-save.js"></script>` tag and add a new script tag immediately after it:
 
@@ -1437,7 +1508,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(!picker || !player || !window.N5Save) return;
 
-    const CAT_COLORS = ["orange", "black", "calico", "gray", "brown", "white"];
+    const CAT_COLORS = ["orange", "black", "calico", "gray", "brown", "white", "tuxedo"];
 
     function applyColor(color){
 
@@ -1573,6 +1644,121 @@ AVATAR PICKER
     transform:translateY(-3px);
 
 }
+
+
+/*======================================================
+AVATAR SPRITE PREVIEWS
+Real hand-drawn idle-animation sprite sheets for the 5
+colors with real art (picker previews only — the actual
+roaming player/NPC cats always use the .cat CSS component,
+never these sheets, since there's no walk-cycle art here).
+Each sheet is a horizontal strip of 300x300px frames; the
+frame counts below (12/20/19/18/25) must match Step 0's
+measured values — update them here if Step 0 found
+different numbers.
+======================================================*/
+
+.avatar-sprite{
+
+    width:48px;
+
+    height:48px;
+
+    image-rendering:pixelated;
+
+    background-repeat:no-repeat;
+
+}
+
+.avatar-sprite--orange{
+
+    background-image:url("../images/icons/pixels/OrangeCatIdle.png");
+
+    background-size:576px 48px;
+
+    animation:avatarSpriteOrange 1s steps(12) infinite;
+
+}
+
+.avatar-sprite--black{
+
+    background-image:url("../images/icons/pixels/blackCatIdle.png");
+
+    background-size:960px 48px;
+
+    animation:avatarSpriteBlack 1s steps(20) infinite;
+
+}
+
+.avatar-sprite--calico{
+
+    background-image:url("../images/icons/pixels/CalicoCatIdle.png");
+
+    background-size:912px 48px;
+
+    animation:avatarSpriteCalico 1s steps(19) infinite;
+
+}
+
+.avatar-sprite--white{
+
+    background-image:url("../images/icons/pixels/whitecatIdle.png");
+
+    background-size:864px 48px;
+
+    animation:avatarSpriteWhite 1s steps(18) infinite;
+
+}
+
+.avatar-sprite--tuxedo{
+
+    background-image:url("../images/icons/pixels/tuxedoIdle.png");
+
+    background-size:1200px 48px;
+
+    animation:avatarSpriteTuxedo 1s steps(25) infinite;
+
+}
+
+@keyframes avatarSpriteOrange{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-576px 0; }
+
+}
+
+@keyframes avatarSpriteBlack{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-960px 0; }
+
+}
+
+@keyframes avatarSpriteCalico{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-912px 0; }
+
+}
+
+@keyframes avatarSpriteWhite{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-864px 0; }
+
+}
+
+@keyframes avatarSpriteTuxedo{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-1200px 0; }
+
+}
 ```
 
 - [ ] **Step 6: Verify picker flow + persistence with Playwright**
@@ -1587,15 +1773,23 @@ const { chromium } = require('playwright');
   const page = await context.newPage();
   await page.goto('http://localhost:8123/pages/N5/n5-dashboard.html', { waitUntil: 'load' });
 
-  const firstVisit = await page.evaluate(() => ({
-    pickerShown: document.getElementById('avatarPicker').classList.contains('show')
-  }));
+  const firstVisit = await page.evaluate(() => {
+    const swatches = document.querySelectorAll('.avatar-swatch');
+    const spriteSwatches = document.querySelectorAll('.avatar-sprite');
+    const orangeBg = getComputedStyle(document.querySelector('.avatar-sprite--orange')).backgroundImage;
+    return {
+      pickerShown: document.getElementById('avatarPicker').classList.contains('show'),
+      swatchCount: swatches.length,
+      spriteSwatchCount: spriteSwatches.length,
+      orangeBgSet: orangeBg !== 'none'
+    };
+  });
 
-  await page.click('.avatar-swatch[data-color=\"black\"]');
+  await page.click('.avatar-swatch[data-color=\"tuxedo\"]');
 
   const afterPick = await page.evaluate(() => ({
     pickerShown: document.getElementById('avatarPicker').classList.contains('show'),
-    playerHasBlack: document.getElementById('playerCharacter').classList.contains('cat--black'),
+    playerHasTuxedo: document.getElementById('playerCharacter').classList.contains('cat--tuxedo'),
     savedColor: window.N5Save.getAvatarColor()
   }));
 
@@ -1603,7 +1797,7 @@ const { chromium } = require('playwright');
 
   const afterReload = await page.evaluate(() => ({
     pickerShown: document.getElementById('avatarPicker').classList.contains('show'),
-    playerHasBlack: document.getElementById('playerCharacter').classList.contains('cat--black')
+    playerHasTuxedo: document.getElementById('playerCharacter').classList.contains('cat--tuxedo')
   }));
 
   console.log(JSON.stringify({ firstVisit, afterPick, afterReload }, null, 2));
@@ -1612,7 +1806,7 @@ const { chromium } = require('playwright');
 "
 ```
 
-Expected: `firstVisit.pickerShown: true`; `afterPick.pickerShown: false`, `afterPick.playerHasBlack: true`, `afterPick.savedColor: "black"`; `afterReload.pickerShown: false`, `afterReload.playerHasBlack: true` (confirms the picker only shows once and the choice survives a real reload).
+Expected: `firstVisit.pickerShown: true`, `firstVisit.swatchCount: 7`, `firstVisit.spriteSwatchCount: 5` (orange/black/calico/white/tuxedo — gray/brown use `.cat`, not `.avatar-sprite`), `firstVisit.orangeBgSet: true` (confirms the sprite sheet actually loaded as a background-image, not a broken/missing reference); `afterPick.pickerShown: false`, `afterPick.playerHasTuxedo: true`, `afterPick.savedColor: "tuxedo"`; `afterReload.pickerShown: false`, `afterReload.playerHasTuxedo: true` (confirms the picker only shows once, the choice survives a real reload, and picking a sprite-previewed color still applies the CSS `.cat--tuxedo` class to the player, not the sprite sheet itself).
 
 - [ ] **Step 7: Commit**
 
@@ -1769,7 +1963,7 @@ Append this to the end of `assets/js/n5-map.js` (after the existing player `docu
 // AMBIENT NPC CATS — autonomous wander, decorative only
 //======================================================
 
-const NPC_PALETTE = ["orange", "black", "calico", "gray", "brown", "white"];
+const NPC_PALETTE = ["orange", "black", "calico", "gray", "brown", "white", "tuxedo"];
 
 document.addEventListener("DOMContentLoaded", () => {
 
