@@ -1710,6 +1710,30 @@ only renders for calico. Toggling .walking on the outer
 
 }
 
+.cat--tuxedo .cat__patch{
+
+    display:block;
+
+    position:absolute;
+
+    border-radius:50%;
+
+}
+
+.cat--tuxedo .cat__patch--a{
+
+    left:11px;
+
+    top:16px;
+
+    width:14px;
+
+    height:14px;
+
+    background:#F5F1E8;
+
+}
+
 @keyframes catTailSway{
 
     from{ transform:rotate(-10deg); }
@@ -1759,3 +1783,5 @@ only renders for calico. Toggling .walking on the outer
 .cat--white{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
 
 .cat--calico{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
+
+.cat--tuxedo{ --fur:#2B2B2E; --fur-dark:#1A1A1C; }
