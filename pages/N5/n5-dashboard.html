@@ -208,42 +208,37 @@
 
     <div id="mapFrame">
 
-    <!-- Background Image -->
+    <!-- =====================================
+         LIBRARY SCENE (code-drawn, no image file)
+    ====================================== -->
 
-    <img
-        src="../../assets/images/backgrounds/n5-journey-map.png"
-        alt="JLPT N5 Journey"
-        class="journey-background">
+    <div class="library-room">
+
+        <div class="library-wall library-wall--back"></div>
+
+        <div class="library-window library-window--1"></div>
+
+        <div class="library-window library-window--2"></div>
+
+        <div class="library-floor"></div>
+
+        <div class="library-rug"></div>
+
+    </div>
+
+    <!-- =====================================
+         ENTRANCE (player spawn anchor, no art)
+    ====================================== -->
+
+    <div id="libraryEntrance"></div>
 
     <!-- =====================================
          PLAYER CHARACTER
+         (cat markup replaced in Task 4 — placeholder
+         div kept here so Task 2/3 have a stable anchor)
     ====================================== -->
 
-    <div id="playerCharacter">
-
-        <img
-            src="../../assets/images/icons/pixels/fortunecat-Original.png"
-            alt="Player">
-
-    </div>
-
-    <!-- =====================================
-         START GATE
-    ====================================== -->
-
-    <div id="startGate">
-
-        <img
-            src="../../assets/images/map/torii.png"
-            alt="Start Gate">
-
-        <span>
-
-            START
-
-        </span>
-
-    </div>
+    <div id="playerCharacter"></div>
 
     <!-- =====================================
          MAP CONTAINER

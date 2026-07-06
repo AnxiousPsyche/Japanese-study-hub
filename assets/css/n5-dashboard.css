@@ -277,11 +277,11 @@ MAP
 
 /*======================================================
 MAP FRAME
-Locks the map layer to the art's native aspect ratio
-(1672:941) so painted landmarks and %-positioned nodes
-always share the same coordinate space, at any window
-size, instead of drifting apart when object-fit letterboxes
-the image inside a differently-shaped box.
+Locks the map layer to a fixed 16:10 design ratio so
+furniture and %-positioned nodes always share the same
+coordinate space, at any window size. The library scene
+is code-drawn (no source image), so this ratio is an
+authored design choice, not a measured value.
 ======================================================*/
 
 #mapFrame{
@@ -292,38 +292,124 @@ the image inside a differently-shaped box.
 
     margin:auto;
 
-    aspect-ratio:1672/941;
+    aspect-ratio:16/10;
 
     max-width:100%;
 
     max-height:100%;
 
+    overflow:hidden;
+
 }
 
 
 /*======================================================
-BACKGROUND
+LIBRARY ROOM SHELL
 ======================================================*/
 
-.journey-background{
+.library-room{
 
     position:absolute;
 
-    top:0;
+    inset:0;
+
+    background:linear-gradient(#3B2A1E, #4A3520 60%, #5C4028);
+
+}
+
+.library-wall{
+
+    position:absolute;
 
     left:0;
 
-    width:100%;
+    right:0;
 
-    height:100%;
+    top:0;
 
-    object-fit:contain;
+    height:45%;
 
-    object-position:center;
+    background:#4A3520;
 
-    user-select:none;
+}
 
-    pointer-events:none;
+.library-window{
+
+    position:absolute;
+
+    top:8%;
+
+    width:14%;
+
+    height:22%;
+
+    background:linear-gradient(#FFE9B0, #FFB870);
+
+    border:6px solid #6E4A2E;
+
+    border-radius:6px;
+
+}
+
+.library-window--1{
+
+    left:12%;
+
+}
+
+.library-window--2{
+
+    right:12%;
+
+}
+
+.library-floor{
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    height:55%;
+
+    background:
+
+        repeating-linear-gradient(
+
+            90deg,
+
+            #7A5330,
+
+            #7A5330 40px,
+
+            #6E4A2A 40px,
+
+            #6E4A2A 80px
+
+        );
+
+}
+
+.library-rug{
+
+    position:absolute;
+
+    left:20%;
+
+    right:20%;
+
+    bottom:6%;
+
+    height:30%;
+
+    background:#8B2E2E;
+
+    border:10px solid #6E2323;
+
+    border-radius:8px;
 
 }
 
@@ -346,10 +432,10 @@ LESSON MAP
 
 
 /*======================================================
-START GATE
+LIBRARY ENTRANCE (spawn anchor, no visible art)
 ======================================================*/
 
-#startGate{
+#libraryEntrance{
 
     position:absolute;
 
@@ -357,62 +443,9 @@ START GATE
 
     bottom:6%;
 
-    display:flex;
+    width:1px;
 
-    flex-direction:column;
-
-    align-items:center;
-
-    z-index:100;
-
-}
-
-#startGate img{
-
-    width:95px;
-
-}
-
-#startGate span{
-
-    margin-top:8px;
-
-    font-family:var(--title-font);
-
-    font-size:.7rem;
-
-    color:white;
-
-    text-shadow:
-
-        2px 2px 4px rgba(0,0,0,.55);
-
-}
-
-
-/*======================================================
-MAP DECORATION
-======================================================*/
-
-#journeyMap::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-
-        linear-gradient(
-
-            rgba(255,255,255,.02),
-
-            rgba(0,0,0,.05)
-
-        );
-
-    pointer-events:none;
+    height:1px;
 
 }
 
