@@ -1718,6 +1718,8 @@ only renders for calico. Toggling .walking on the outer
 
     border-radius:50%;
 
+    z-index:4;
+
 }
 
 .cat--tuxedo .cat__patch--a{

@@ -749,6 +749,8 @@ In `assets/css/n5-dashboard.css`, in the `CAT COMPONENT` section, find the block
 
     border-radius:50%;
 
+    z-index:4;
+
 }
 
 .cat--tuxedo .cat__patch--a{
@@ -766,7 +768,7 @@ In `assets/css/n5-dashboard.css`, in the `CAT COMPONENT` section, find the block
 }
 ```
 
-(Only `.cat__patch--a` is used for tuxedo — one white chest/belly patch, not two. `.cat__patch--b` stays hidden for this variant since it's not referenced by any `.cat--tuxedo` rule, and the shared `.cat__patch{ display:none; }` base rule already covers it.)
+(Only `.cat__patch--a` is used for tuxedo — one white chest/belly patch, not two. `.cat__patch--b` stays hidden for this variant since it's not referenced by any `.cat--tuxedo` rule, and the shared `.cat__patch{ display:none; }` base rule already covers it. The `z-index:4;` above is required, not optional — `.cat__head`/`.cat__body` have their own explicit positive z-index, and without it this patch paints underneath them and becomes invisible, the same bug Task 2's original z-index fix addressed for calico/stripes.)
 
 Then add the color-variable line alongside the other `.cat--<color>` lines near the bottom of the section:
 
