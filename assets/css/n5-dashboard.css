@@ -1155,7 +1155,7 @@ LESSON POPUP
 
 }
 
-.lesson-popup.active{
+.lesson-popup.show{
 
     display:flex;
 
