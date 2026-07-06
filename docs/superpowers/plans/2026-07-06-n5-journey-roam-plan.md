@@ -141,9 +141,9 @@ Write the full table into this plan's Task 2 (replacing the placeholder table th
 | `.lesson-15` | 73 | 71 | "Existence (あります・います)" |
 | `.final-review` | 32 | 82 | No painted circle — manually placed on the path curve near the castle gate. |
 | `#goalCastle` | 17 | top:3 | **Uses `left`/`top`, not `bottom`**, in existing CSS — use `top:3%`, not a bottom value. |
-| `.treasure-1` | 9 | 44 | Off-road, near Bridge of Particles. |
-| `.treasure-2` | 86 | 74 | Off-road, near Mountains of Vocabulary. |
-| `.treasure-3` | 78 | 50 | Off-road, near the right-side waterfall. |
+| `.treasure-1` | 9 | 44 | No painted chest exists — manually placed off-road, near Bridge of Particles. |
+| `.treasure-2` | 86 | 74 | No painted chest exists — manually placed off-road, near Mountains of Vocabulary. |
+| `.treasure-3` | 78 | 50 | No painted chest exists — manually placed off-road, near the right-side waterfall. |
 | `.scenery-sign-bridge` ("Bridge of Particles") | 5 | 49 | Anchored at painted "Bridge of Particles" text. |
 | `.scenery-sign-forest` ("Grammar Forest") | 93 | 38 | Anchored at painted "Rivers of Grammar" text. |
 | `.scenery-sign-towns` ("Towns of Conjugations") | 93 | 59 | Anchored at painted "Towers of Conjugations" text. |
