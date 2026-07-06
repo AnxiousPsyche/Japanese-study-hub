@@ -1662,6 +1662,8 @@ only renders for calico. Toggling .walking on the outer
 
     border-radius:2px;
 
+    z-index:4;
+
 }
 
 .cat__stripe--1{ left:12px; top:8px; width:12px; height:3px; }
@@ -1675,6 +1677,8 @@ only renders for calico. Toggling .walking on the outer
     position:absolute;
 
     border-radius:50%;
+
+    z-index:4;
 
 }
 
