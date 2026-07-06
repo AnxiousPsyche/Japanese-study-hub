@@ -53,7 +53,7 @@ body{
 
     font-family:var(--body-font);
 
-    background:#E7F5FF;
+    background:#00328E;
 
     color:#2F2F2F;
 
@@ -298,7 +298,9 @@ BACKGROUND
 
     height:100%;
 
-    object-fit:cover;
+    object-fit:contain;
+
+    object-position:center;
 
     user-select:none;
 
