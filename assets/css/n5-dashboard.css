@@ -332,7 +332,7 @@ START GATE
 
     position:absolute;
 
-    left:4%;
+    left:83%;
 
     bottom:6%;
 
@@ -726,49 +726,49 @@ POSITIONS
 
 .lesson-1{
 
-    left:13%;
+    left:30%;
 
-    bottom:10%;
+    bottom:5%;
 
 }
 
 .lesson-sign-1{
 
-    left:9%;
+    left:24%;
 
-    bottom:15%;
+    bottom:10%;
 
 }
 
 .lesson-2{
 
-    left:33%;
+    left:45%;
 
-    bottom:10%;
+    bottom:5%;
 
 }
 
 .lesson-sign-2{
 
-    left:28%;
-
-    bottom:15%;
-
-}
-
-.lesson-3{
-
-    left:53%;
+    left:39%;
 
     bottom:10%;
 
 }
 
+.lesson-3{
+
+    left:61%;
+
+    bottom:5%;
+
+}
+
 .lesson-sign-3{
 
-    left:49%;
+    left:55%;
 
-    bottom:15%;
+    bottom:10%;
 
 }
 
@@ -776,49 +776,49 @@ POSITIONS
 
 .lesson-4{
 
-    right:13%;
+    right:69%;
 
-    bottom:28%;
+    bottom:22%;
 
 }
 
 .lesson-sign-4{
 
-    right:8%;
+    right:63%;
 
-    bottom:33%;
+    bottom:27%;
 
 }
 
 .lesson-5{
 
-    right:33%;
+    right:53%;
 
-    bottom:28%;
+    bottom:22%;
 
 }
 
 .lesson-sign-5{
 
-    right:28%;
+    right:47%;
 
-    bottom:33%;
+    bottom:27%;
 
 }
 
 .lesson-6{
 
-    right:53%;
+    right:38%;
 
-    bottom:28%;
+    bottom:22%;
 
 }
 
 .lesson-sign-6{
 
-    right:48%;
+    right:32%;
 
-    bottom:33%;
+    bottom:27%;
 
 }
 
@@ -826,49 +826,49 @@ POSITIONS
 
 .lesson-7{
 
-    left:13%;
+    left:37%;
 
-    bottom:46%;
+    bottom:36%;
 
 }
 
 .lesson-sign-7{
 
-    left:7%;
+    left:31%;
 
-    bottom:51%;
+    bottom:41%;
 
 }
 
 .review-node{
 
-    left:33%;
+    left:52%;
 
-    bottom:46%;
+    bottom:36%;
 
 }
 
 .lesson-sign-review{
 
-    left:26%;
+    left:46%;
 
-    bottom:51%;
+    bottom:41%;
 
 }
 
 .lesson-9{
 
-    left:53%;
+    left:67%;
 
-    bottom:46%;
+    bottom:36%;
 
 }
 
 .lesson-sign-9{
 
-    left:47%;
+    left:61%;
 
-    bottom:51%;
+    bottom:41%;
 
 }
 
@@ -876,49 +876,67 @@ POSITIONS
 
 .lesson-10{
 
-    right:13%;
+    right:56%;
 
-    bottom:64%;
+    bottom:57%;
 
 }
 
 .lesson-sign-10{
 
-    right:8%;
+    right:50%;
 
-    bottom:69%;
+    bottom:62%;
 
 }
 
 .lesson-11{
 
-    right:33%;
+    right:41%;
 
-    bottom:64%;
+    bottom:57%;
 
 }
 
 .lesson-sign-11{
 
-    right:26%;
+    right:35%;
 
-    bottom:69%;
+    bottom:62%;
 
 }
 
 .lesson-12{
 
-    right:53%;
+    right:27%;
 
-    bottom:64%;
+    bottom:57%;
 
 }
 
 .lesson-sign-12{
 
-    right:47%;
+    right:21%;
 
-    bottom:69%;
+    bottom:62%;
+
+}
+
+/* Review Checkpoint 2 */
+
+.review-node-2{
+
+    left:22%;
+
+    bottom:66%;
+
+}
+
+.lesson-sign-review2{
+
+    left:16%;
+
+    bottom:71%;
 
 }
 
@@ -926,47 +944,65 @@ POSITIONS
 
 .lesson-13{
 
-    left:13%;
+    left:44%;
 
-    bottom:82%;
+    bottom:71%;
 
 }
 
 .lesson-sign-13{
 
-    left:7%;
+    left:38%;
 
-    bottom:87%;
+    bottom:76%;
 
 }
 
 .lesson-14{
 
-    left:33%;
+    left:59%;
 
-    bottom:82%;
+    bottom:71%;
 
 }
 
 .lesson-sign-14{
 
-    left:27%;
+    left:53%;
 
-    bottom:87%;
+    bottom:76%;
 
 }
 
 .lesson-15{
 
-    left:53%;
+    left:73%;
 
-    bottom:82%;
+    bottom:71%;
 
 }
 
 .lesson-sign-15{
 
-    left:46%;
+    left:67%;
+
+    bottom:76%;
+
+}
+
+/* Final Review */
+
+.final-review{
+
+    left:32%;
+
+    bottom:82%;
+
+}
+
+.lesson-sign-final{
+
+    left:26%;
 
     bottom:87%;
 
@@ -976,9 +1012,9 @@ POSITIONS
 
 #goalCastle{
 
-    left:80%;
+    left:17%;
 
-    top:5%;
+    top:3%;
 
 }
 
@@ -986,25 +1022,25 @@ POSITIONS
 
 .treasure-1{
 
-    left:22%;
+    left:9%;
 
-    bottom:37%;
+    bottom:44%;
 
 }
 
 .treasure-2{
 
-    right:22%;
+    right:14%;
 
-    bottom:55%;
+    bottom:74%;
 
 }
 
 .treasure-3{
 
-    left:66%;
+    left:78%;
 
-    bottom:72%;
+    bottom:50%;
 
 }
 /*======================================================
