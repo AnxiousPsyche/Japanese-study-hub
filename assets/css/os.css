@@ -709,6 +709,28 @@ PLAYER BODY
 
 }
 
+#currentTrack{
+
+    text-align:center;
+
+    font-size:.9rem;
+
+    font-weight:700;
+
+}
+
+.track-artist{
+
+    margin-top:2px;
+
+    text-align:center;
+
+    font-size:.7rem;
+
+    color:#7A8494;
+
+}
+
 .volume-slider{
 
     width:100%;
@@ -743,9 +765,11 @@ PLAYLIST
 
     display:flex;
 
-    align-items:center;
+    flex-direction:column;
 
-    gap:10px;
+    align-items:flex-start;
+
+    gap:2px;
 
     width:100%;
 
@@ -763,11 +787,77 @@ PLAYLIST
 
     text-align:left;
 
+    font-size:.82rem;
+
 }
 
 .playlist button:hover{
 
     background:#EAF3FF;
+
+}
+
+.playlist button.active{
+
+    background:#DCE9FF;
+
+    box-shadow:inset 0 0 0 2px #6A88BC;
+
+    font-weight:700;
+
+}
+
+.playlist-artist{
+
+    font-size:.65rem;
+
+    font-weight:400;
+
+    color:#7A8494;
+
+}
+
+.playlist button.active .playlist-artist{
+
+    font-weight:400;
+
+}
+
+/*======================================================
+MUSIC CREDITS
+======================================================*/
+
+.volume-credits{
+
+    margin-top:20px;
+
+    padding-top:14px;
+
+    border-top:1px solid #E5E9F2;
+
+    font-size:.68rem;
+
+    color:#7A8494;
+
+    line-height:1.5;
+
+}
+
+.volume-credits p{
+
+    margin-bottom:4px;
+
+    font-weight:700;
+
+}
+
+.volume-credits ul{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
 
 }
 

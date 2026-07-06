@@ -1616,6 +1616,12 @@ VOLUME PANEL / MUSIC PLAYER
 
         </p>
 
+        <p id="currentTrackArtist" class="track-artist">
+
+            Nebulite
+
+        </p>
+
         <!-- =========================
              VOLUME
         ========================== -->
@@ -1680,36 +1686,76 @@ VOLUME PANEL / MUSIC PLAYER
                 data-track="kyoto"
                 type="button">
 
-                🌸 Kyoto
+                <span class="playlist-title">🌸 Kyoto</span>
+                <span class="playlist-artist">Nebulite</span>
 
             </button>
 
             <button
                 class="playlist-item"
-                data-track="spring"
+                data-track="coming-of-age"
                 type="button">
 
-                🍃 Spring Wind
+                <span class="playlist-title">🍁 Coming Of Age</span>
+                <span class="playlist-artist">Hazelwood</span>
 
             </button>
 
             <button
                 class="playlist-item"
-                data-track="evening"
+                data-track="daydreams"
                 type="button">
 
-                🌙 Evening Shrine
+                <span class="playlist-title">☁️ Daydreams</span>
+                <span class="playlist-artist">Pufino</span>
 
             </button>
 
             <button
                 class="playlist-item"
-                data-track="rain"
+                data-track="dreaming"
                 type="button">
 
-                ☔ Rainy Study
+                <span class="playlist-title">🌙 Dreaming</span>
+                <span class="playlist-artist">Pufino</span>
 
             </button>
+
+            <button
+                class="playlist-item"
+                data-track="andorra"
+                type="button">
+
+                <span class="playlist-title">🏔️ Andorra</span>
+                <span class="playlist-artist">Zambolino</span>
+
+            </button>
+
+        </div>
+
+        <!-- =========================
+             MUSIC CREDITS
+
+             freetouse.com shows the exact required
+             attribution text individually per-track at
+             download time (see download page / email
+             confirmation for each). Verify the wording
+             below matches what was shown for each track;
+             this is a best-effort default, not a
+             guaranteed-exact license quote.
+        ========================== -->
+
+        <div class="volume-credits">
+
+            <p>Music via freetouse.com:</p>
+
+            <ul>
+                <li>"Kyoto" by Nebulite</li>
+                <li>"Coming Of Age" by Hazelwood</li>
+                <li>"Daydreams" by Pufino</li>
+                <li>"Dreaming" by Pufino</li>
+                <li>"Andorra" by Zambolino</li>
+            </ul>
 
         </div>
 
@@ -1723,8 +1769,7 @@ AUDIO
 
 <audio
     id="bgMusic"
-    preload="auto"
-    loop>
+    preload="auto">
 
     <source
         src="assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
