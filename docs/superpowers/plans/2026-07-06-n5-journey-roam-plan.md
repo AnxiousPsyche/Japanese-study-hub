@@ -118,6 +118,40 @@ Read `calibration-grid.png`. For each of the following, read off its `left %` an
 
 Write the full table into this plan's Task 2 (replacing the placeholder table there) before moving on — Task 2 cannot start until every row has real numbers.
 
+**Recorded coordinate table (measured against `calibration-grid.png`, see full report at `.superpowers/sdd/task-1-report.md`):**
+
+| Selector | left% | bottom% | Notes |
+|---|---|---|---|
+| `#startGate` | 83 | 6 | Uses `left`/`bottom` (matches existing CSS). Box-left estimate centered on painted torii (~85%). |
+| `.lesson-1` | 30 | 5 | "Basic Greetings" |
+| `.lesson-2` | 45 | 5 | "Everyday Expressions" |
+| `.lesson-3` | 61 | 5 | "Self Introduction" |
+| `.lesson-4` | 31 | 22 | "A は B です" |
+| `.lesson-5` | 47 | 22 | "Demonstratives" |
+| `.lesson-6` | 62 | 22 | "Questions (か)" |
+| `.lesson-7` | 37 | 36 | "Places and Directions" |
+| `.review-node` (review1) | 52 | 36 | "Foundations Review" (gold circle) |
+| `.lesson-9` | 67 | 36 | "Nouns & Pronouns" |
+| `.lesson-10` | 44 | 57 | "Adjectives" |
+| `.lesson-11` | 59 | 57 | "Adverbs and Verbs" |
+| `.lesson-12` | 73 | 57 | "Conjugations" |
+| `.review-node-2` (review2) | 22 | 66 | No painted circle — manually placed on the road curve between Conjugations and Sentence Construction rows. |
+| `.lesson-13` | 44 | 71 | "Sentence Construction" |
+| `.lesson-14` | 59 | 71 | "Particle Mastery" |
+| `.lesson-15` | 73 | 71 | "Existence (あります・います)" |
+| `.final-review` | 32 | 82 | No painted circle — manually placed on the path curve near the castle gate. |
+| `#goalCastle` | 17 | top:3 | **Uses `left`/`top`, not `bottom`**, in existing CSS — use `top:3%`, not a bottom value. |
+| `.treasure-1` | 9 | 44 | Off-road, near Bridge of Particles. |
+| `.treasure-2` | 86 | 74 | Off-road, near Mountains of Vocabulary. |
+| `.treasure-3` | 78 | 50 | Off-road, near the right-side waterfall. |
+| `.scenery-sign-bridge` ("Bridge of Particles") | 5 | 49 | Anchored at painted "Bridge of Particles" text. |
+| `.scenery-sign-forest` ("Grammar Forest") | 93 | 38 | Anchored at painted "Rivers of Grammar" text. |
+| `.scenery-sign-towns` ("Towns of Conjugations") | 93 | 59 | Anchored at painted "Towers of Conjugations" text. |
+| `.scenery-sign-mountains` ("Mountains of Kanji and Vocab") | 91 | 80 | Anchored at painted "Mountains of Vocabulary" text. |
+| `.scenery-sign-falls` ("Listening Falls") | 82 | 54 | No painted text — placed directly on the waterfall art. |
+
+See `.superpowers/sdd/task-1-report.md` for full measurement methodology, consistency checks, and flagged uncertainties (review-node-2, final-review, and goalCastle/startGate box-vs-icon-center caveats).
+
 - [ ] **Step 4: Commit the calibration harness for reference**
 
 The harness lives in the scratchpad, not the project repo, so there is nothing to commit here — skip. (No project files were touched in this task.)
