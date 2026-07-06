@@ -434,11 +434,7 @@ PLAYER CHARACTER
 
     transition:
 
-        left .5s ease,
-
-        top .5s ease,
-
-        transform .25s ease;
+        transform .15s ease;
 
 }
 
@@ -524,6 +520,16 @@ LESSON NODE
     box-shadow:none;
 
     cursor:not-allowed;
+
+}
+
+.lesson-node.in-range{
+
+    transform:scale(1.4);
+
+    box-shadow:
+        0 0 22px #FFD84D,
+        0 0 45px #FFD84D;
 
 }
 
@@ -1043,6 +1049,86 @@ POSITIONS
     bottom:50%;
 
 }
+
+
+/*======================================================
+SCENERY SIGN
+======================================================*/
+
+.scenery-sign{
+
+    position:absolute;
+
+    min-width:150px;
+
+    padding:8px 14px;
+
+    background:#8B5A2B;
+
+    color:#FFF9E8;
+
+    border:3px solid #C9A05A;
+
+    border-radius:14px;
+
+    font-size:.68rem;
+
+    font-weight:700;
+
+    text-align:center;
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.18);
+
+    user-select:none;
+
+    pointer-events:none;
+
+    z-index:150;
+
+}
+
+.scenery-sign-bridge{
+
+    left:5%;
+
+    bottom:49%;
+
+}
+
+.scenery-sign-forest{
+
+    left:93%;
+
+    bottom:38%;
+
+}
+
+.scenery-sign-towns{
+
+    left:93%;
+
+    bottom:59%;
+
+}
+
+.scenery-sign-mountains{
+
+    left:91%;
+
+    bottom:80%;
+
+}
+
+.scenery-sign-falls{
+
+    left:82%;
+
+    bottom:54%;
+
+}
+
+
 /*======================================================
 LESSON POPUP
 ======================================================*/
