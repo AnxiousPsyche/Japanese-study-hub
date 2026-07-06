@@ -18,12 +18,36 @@ epic scale fits the "final stretch" of the learner's journey better. N5,
 being the learner's starting point, moves to a smaller, cozier setting:
 the library itself (matching the "JP Library OS" branding already used
 throughout the app), with multiple colored cats — matching an earlier
-discussion about wanting several cat avatar colors (orange, black,
-calico, gray, brown, white) — living in and roaming that space.
+discussion about wanting several cat avatar colors — living in and
+roaming that space.
 
-No image-generation tool is available in this environment, so both the
-library scene and every cat are built from code (CSS/SVG shapes), not
-painted/rendered art.
+No image-generation tool is available in this environment, so the
+library scene is built from code (CSS shapes), not painted/rendered art.
+
+**Amendment (2026-07-07):** partway through implementation, real
+hand-drawn pixel sprite sheets were added to the project for 5 idle-cat
+animations (`assets/images/icons/pixels/OrangeCatIdle.png`,
+`blackCatIdle.png`, `CalicoCatIdle.png`, `whitecatIdle.png`,
+`tuxedoIdle.png` — each a horizontal strip of 300×300px frames, an
+idle bob/look-around loop, no walk-cycle frames). This changes the
+color roster from 6 to **7** (orange, black, calico, gray, brown,
+white, tuxedo) and splits cat rendering into two mechanisms used for
+two different purposes:
+
+- **Avatar-picker preview swatches** for the 5 colors with real art
+  (orange, black, calico, white, tuxedo) show the actual sprite sheet,
+  animated continuously via CSS `steps()` stepping through frames, so
+  the learner sees a lively preview while browsing. Gray and brown
+  (no real art) show the code-drawn CSS cat shape as their preview
+  instead.
+- **The actual roaming cat** (player and every ambient NPC) is, for
+  *all 7 colors without exception*, the code-drawn CSS `.cat`
+  component with its walk-cycle animation — never the sprite sheets.
+  There is no walk-cycle art for any color, so using the code-drawn
+  component uniformly for movement avoids an inconsistent mix of real
+  vs. fake walking motion. Picking a color in the picker always ends
+  up applying a `.cat--<color>` class to the player, regardless of
+  which mechanism that color's picker swatch used to preview it.
 
 ## Goals
 
@@ -34,11 +58,15 @@ painted/rendered art.
   `N5_LESSONS`, re-themed as library furniture instead of glowing road
   circles, keeping the existing walk-up-to-interact popup model.
 - A reusable, recolorable cat sprite component (one shared shape +
-  walk-cycle animation, parameterized fur color) covering 6 colors:
+  walk-cycle animation, parameterized fur color) covering 7 colors:
   orange (tabby stripes), black, calico (patched), gray (tabby stripes),
-  brown, white.
+  brown, white, tuxedo (patched, added per the 2026-07-07 amendment
+  above). This component is what actually roams the library — see the
+  amendment above for why it's used for all 7 colors, not just gray/brown.
 - A first-visit avatar picker: the learner picks their cat's color once;
   the choice persists via `localStorage` and is reused on later visits.
+  Preview swatches use real animated sprite art where available (5 of
+  the 7 colors) and the CSS component otherwise (gray, brown).
 - 3 ambient NPC cats, each a different color from the player's own,
   wandering the room independently and continuously (pick a random point,
   walk to it, pause, repeat) — decorative only, no interaction.
@@ -126,30 +154,40 @@ shapes) with fur color(s) driven by a CSS class per variant:
 - **Calico**: not a simple recolor — a distinct variant with actual
   patch shapes (white base, orange and black/gray patches positioned on
   top), since calico coloring is inherently multi-region.
+- **Tuxedo** (added per the 2026-07-07 amendment): also not a simple
+  recolor — black base fur with a single white patch shape over the
+  chest/belly area, reusing the same patch mechanism calico uses (just
+  one patch color instead of two).
 
 A single shared `@keyframes` walk-cycle (legs alternating angle/position)
 applies identically to every color variant, replacing the current
 bounce-only `.walking` animation with a real walk-cycle for the player's
-cat. The existing `#playerCharacter` element gets one of the 6 color
+cat. The existing `#playerCharacter` element gets one of the 7 color
 classes based on the saved/picked avatar; ambient NPC cats each get their
 own independently-assigned color class.
 
 ### Avatar picker
 
 On first load of the library map, if no color is saved yet
-(`n5-save.js`'s new color key), an overlay presents all 6 swatches (using
-the same recolorable cat component, shown standing still, one per
-option). Picking one applies that class to `#playerCharacter`, persists
-the choice, and dismisses the overlay. On every subsequent visit, the
-saved color is applied immediately and the picker never shows again
-unless `localStorage` is cleared.
+(`n5-save.js`'s new color key), an overlay presents all 7 swatches, one
+per option. Per the 2026-07-07 amendment, swatch *previews* are not
+uniform: orange/black/calico/white/tuxedo show their real animated
+sprite sheet (continuously looping while the picker is open); gray/brown
+show the code-drawn CSS cat component instead (no real art for those
+two). Picking any swatch applies that color's `.cat--<color>` class to
+`#playerCharacter` (always the CSS component, regardless of which
+preview mechanism was shown), persists the choice, and dismisses the
+overlay. On every subsequent visit, the saved color is applied
+immediately and the picker never shows again unless `localStorage` is
+cleared.
 
 ### Ambient NPC cats
 
 3 `<div>` elements using the same recolorable cat component. Colors are
-assigned by taking the 5 palette colors other than the player's chosen
-one and picking 3 (e.g. randomly, or a fixed rotation — decided at
-planning time), guaranteeing no NPC ever matches the player's own color.
+assigned by taking the 6 palette colors other than the player's chosen
+one (of 7 total) and picking 3 (e.g. randomly, or a fixed rotation —
+decided at planning time), guaranteeing no NPC ever matches the
+player's own color.
 Each runs its own independent wander loop: pick a random point within the library frame's
 bounds, walk toward it at a modest speed (visually distinct from the
 player's faster, key-driven movement is not required — same speed is
@@ -174,7 +212,8 @@ Using Playwright, matching the verification style from the previous
 journey-roam pass:
 
 1. Load the N5 dashboard fresh (no saved avatar color) — confirm the
-   picker overlay appears with all 6 options rendered.
+   picker overlay appears with all 7 options rendered (5 with animated
+   sprite previews, 2 with CSS-cat previews).
 2. Pick a color, confirm `#playerCharacter` gets the right class and the
    picker closes; reload and confirm the same color persists without the
    picker re-appearing.
