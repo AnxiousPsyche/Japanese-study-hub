@@ -375,21 +375,13 @@ LIBRARY ROOM SHELL
 
     height:55%;
 
-    background:
+    background-image:url("../images/library-tiles/floor-wood-plank.png");
 
-        repeating-linear-gradient(
+    background-repeat:repeat;
 
-            90deg,
+    background-size:128px 128px;
 
-            #7A5330,
-
-            #7A5330 40px,
-
-            #6E4A2A 40px,
-
-            #6E4A2A 80px
-
-        );
+    image-rendering:pixelated;
 
 }
 
@@ -720,153 +712,147 @@ GOAL CASTLE
 POSITIONS
 ======================================================*/
 
-/* Bottom Row */
+/* Starting shelf, bottom-center */
 
 .lesson-1{
 
-    left:30%;
+    left:43%;
 
-    bottom:5%;
+    bottom:4%;
 
 }
+
+/* Left column (going up) */
 
 .lesson-2{
 
-    left:45%;
+    left:8%;
 
-    bottom:5%;
-
-}
-
-.lesson-3{
-
-    left:61%;
-
-    bottom:5%;
+    bottom:8%;
 
 }
-
-/* Row 2 */
 
 .lesson-4{
 
-    right:69%;
+    left:8%;
 
-    bottom:22%;
-
-}
-
-.lesson-5{
-
-    right:53%;
-
-    bottom:22%;
+    bottom:17%;
 
 }
 
 .lesson-6{
 
-    right:38%;
+    left:8%;
 
-    bottom:22%;
-
-}
-
-/* Row 3 */
-
-.lesson-7{
-
-    left:37%;
-
-    bottom:36%;
+    bottom:26%;
 
 }
 
 .review-node{
 
-    left:52%;
+    left:8%;
 
-    bottom:36%;
-
-}
-
-.lesson-9{
-
-    left:67%;
-
-    bottom:36%;
+    bottom:35%;
 
 }
-
-/* Row 4 */
 
 .lesson-10{
 
-    right:58%;
+    left:8%;
 
-    bottom:57%;
-
-}
-
-.lesson-11{
-
-    right:40%;
-
-    bottom:57%;
+    bottom:44%;
 
 }
 
 .lesson-12{
 
-    right:22%;
+    left:8%;
 
-    bottom:57%;
-
-}
-
-/* Review Checkpoint 2 */
-
-.review-node-2{
-
-    left:22%;
-
-    bottom:66%;
+    bottom:53%;
 
 }
-
-/* Row 5 */
 
 .lesson-13{
 
-    left:42%;
+    left:8%;
 
-    bottom:71%;
-
-}
-
-.lesson-14{
-
-    left:60%;
-
-    bottom:71%;
+    bottom:62%;
 
 }
 
 .lesson-15{
 
-    left:78%;
+    left:8%;
 
-    bottom:71%;
+    bottom:70%;
 
 }
 
-/* Final Review */
+/* Right column (going up) */
+
+.lesson-3{
+
+    right:8%;
+
+    bottom:8%;
+
+}
+
+.lesson-5{
+
+    right:8%;
+
+    bottom:17%;
+
+}
+
+.lesson-7{
+
+    right:8%;
+
+    bottom:26%;
+
+}
+
+.lesson-9{
+
+    right:8%;
+
+    bottom:35%;
+
+}
+
+.lesson-11{
+
+    right:8%;
+
+    bottom:44%;
+
+}
+
+.review-node-2{
+
+    left:auto;
+
+    right:8%;
+
+    bottom:53%;
+
+}
+
+.lesson-14{
+
+    right:8%;
+
+    bottom:62%;
+
+}
 
 .final-review{
 
-    left:32%;
+    right:8%;
 
-    bottom:82%;
+    bottom:70%;
 
 }
 
@@ -884,25 +870,25 @@ POSITIONS
 
 .treasure-1{
 
-    left:9%;
+    left:30%;
 
-    bottom:44%;
+    bottom:46%;
 
 }
 
 .treasure-2{
 
-    right:14%;
+    right:30%;
 
-    bottom:74%;
+    bottom:64%;
 
 }
 
 .treasure-3{
 
-    left:78%;
+    left:30%;
 
-    bottom:50%;
+    bottom:16%;
 
 }
 
@@ -1773,33 +1759,31 @@ n5-map.js already drives — only the look changes.
 
     display:flex;
 
-    flex-direction:column;
+    align-items:flex-end;
 
-    align-items:center;
+    justify-content:center;
 
-    gap:6px;
+    width:150px;
 
-    min-width:150px;
+    height:44px;
 
-    padding:14px 18px;
+    padding:0;
 
-    background:#8B5A2B;
+    background-image:url("../images/library-tiles/bookshelf.png");
 
-    color:#FFF9E8;
+    background-size:100% 100%;
 
-    border:3px solid #C9A05A;
+    background-repeat:no-repeat;
 
-    border-radius:14px;
+    image-rendering:pixelated;
 
-    font-size:.68rem;
+    border:none;
 
-    font-weight:700;
-
-    text-align:center;
+    border-radius:10px;
 
     cursor:pointer;
 
-    box-shadow:0 8px 18px rgba(0,0,0,.25);
+    box-shadow:0 8px 18px rgba(0,0,0,.35);
 
     transition:.25s ease;
 
@@ -1807,15 +1791,61 @@ n5-map.js already drives — only the look changes.
 
 }
 
+.shelf-glass{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:4px;
+
+    width:100%;
+
+    padding:8px 10px 10px;
+
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(6px) saturate(140%);
+
+    -webkit-backdrop-filter:blur(6px) saturate(140%);
+
+    border-top:1px solid rgba(255,255,255,.55);
+
+    border-radius:0 0 8px 8px;
+
+    color:#FFF9E8;
+
+    font-size:.65rem;
+
+    font-weight:700;
+
+    text-align:center;
+
+    text-shadow:0 1px 3px rgba(0,0,0,.8);
+
+    transition:.25s ease;
+
+}
+
 .furniture-icon{
 
-    font-size:1.4rem;
+    font-size:1.3rem;
+
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));
 
 }
 
 .furniture-node:hover{
 
     transform:translateY(-4px);
+
+}
+
+.furniture-node:hover .shelf-glass{
+
+    background:rgba(255,255,255,.28);
 
 }
 
@@ -1827,17 +1857,45 @@ n5-map.js already drives — only the look changes.
 
 }
 
-.furniture-node.review-node{
+.furniture-node.in-range .shelf-glass{
 
-    border-color:#F5C14C;
+    background:rgba(255,216,77,.28);
+
+    border-top-color:#FFD84D;
 
 }
 
-.furniture-node.final-review{
+.furniture-node.completed .shelf-glass{
 
-    border-color:#FF6B6B;
+    background:rgba(97,217,108,.30);
 
-    background:#6E3A2B;
+    border-top-color:#61D96C;
+
+}
+
+.furniture-node.locked{
+
+    cursor:not-allowed;
+
+    filter:grayscale(.85) brightness(.65);
+
+}
+
+.furniture-node.locked .shelf-glass{
+
+    background:rgba(0,0,0,.35);
+
+}
+
+.furniture-node.review-node .shelf-glass{
+
+    border-top-color:#F5C14C;
+
+}
+
+.furniture-node.final-review .shelf-glass{
+
+    border-top-color:#FF6B6B;
 
 }
 
