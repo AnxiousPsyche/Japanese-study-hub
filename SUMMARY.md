@@ -1,4 +1,4 @@
-# Session Summary — N5 Dashboard Work (last updated 2026-07-07)
+# Session Summary — N5 Dashboard Work (last updated 2026-07-07, Task 7 done)
 
 ## 1. Shipped and merged to `main`: N5 Journey Roam
 
@@ -75,7 +75,23 @@ amendment" markers in each.
      all four Task 2-related commits and dispatch one clean task
      review before touching Task 3.** (Commits: `6ebad8c`, `a1a20a8`,
      `2cadf7a`, `1bcdaea` — see `git log` on this branch.)
-- **Tasks 3–7 not started.**
+- **Tasks 3-7: all complete as of this update.** Tasks 3-6 (furniture
+  re-theme, recolorable cat controller wiring, avatar picker, 3 ambient
+  NPC cats) were done and reviewed in the time since section 4 above was
+  first written — see commits `93c93fb..aed7b7f`.
+- **Task 7 (end-to-end verification): complete.** Full walkthrough across
+  three viewports passed (aspect locked at exactly 1.6000, zero JS errors,
+  full-scene screenshot confirmed). Found and fixed one real bug in the
+  process: furniture-node overlap at 1366x768 between lesson rows 4/5
+  (fixed by widening their %-gaps — see `.superpowers/sdd/progress.md`
+  for exact values). **Known follow-up, deliberately deferred**: the same
+  overlap class also affects rows 1-3 below ~1000px map-frame width (e.g.
+  a 992px-wide window) — needs a real narrow/mobile furniture-node
+  strategy, not just another percentage nudge. Not fixed this session,
+  logged for a future task.
+- The **7-task n5-library-map plan is now complete.** Next step is
+  deciding what to do with the branch (open the PR, keep building, etc.)
+  — see `.claude/skills` finishing-a-development-branch if that's next.
 - Progress ledger with exact commit ranges: `.superpowers/sdd/progress.md`
   (git-ignored, local-only, not on GitHub — this file is the more
   precise machine-readable resume point).
