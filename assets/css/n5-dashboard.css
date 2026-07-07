@@ -470,43 +470,24 @@ SCROLLBAR
 
 /*======================================================
 PLAYER CHARACTER
+#playerCharacter IS a .cat instance (Task 4 puts both
+classes on the same element) — its 40x40 size comes from
+.cat itself (CAT COMPONENT section), so this rule only
+adds positioning, not a conflicting width/height. Do not
+add width/height here: overriding .cat's 40x40 without
+also rescaling every internal .cat__* child's fixed px
+coordinates would leave the shapes not filling the box.
 ======================================================*/
 
 #playerCharacter{
 
     position:absolute;
 
-    width:72px;
-
-    height:72px;
-
     left:8%;
 
     bottom:8%;
 
     z-index:300;
-
-    transition:
-
-        transform .15s ease;
-
-}
-
-#playerCharacter img{
-
-    width:100%;
-
-    image-rendering:pixelated;
-
-    user-select:none;
-
-    pointer-events:none;
-
-}
-
-#playerCharacter.walking{
-
-    animation:playerBounce .45s infinite alternate;
 
 }
 
@@ -1359,22 +1340,6 @@ ANIMATIONS
 
 }
 
-@keyframes playerBounce{
-
-    from{
-
-        transform:translateY(0);
-
-    }
-
-    to{
-
-        transform:translateY(-8px);
-
-    }
-
-}
-
 @keyframes teleportFlash{
 
     0%{
@@ -1454,9 +1419,9 @@ RESPONSIVE
 
     #playerCharacter{
 
-        width:58px;
+        transform:scale(1.45);
 
-        height:58px;
+        transform-origin:bottom left;
 
     }
 

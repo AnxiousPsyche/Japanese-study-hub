@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initialPosition(){
 
-        const startGate = document.getElementById("startGate");
+        const startGate = document.getElementById("libraryEntrance");
         const mapRect = map.getBoundingClientRect();
 
         if(startGate){
