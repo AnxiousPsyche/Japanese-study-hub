@@ -2049,3 +2049,22 @@ plan's numbers exactly.
     to{ background-position:-1200px 0; }
 
 }
+
+/*======================================================
+NPC CAT
+Each .npc-cat element is also a .cat instance, so — same
+reasoning as #playerCharacter above — this rule only adds
+positioning/z-index, not a conflicting width/height.
+======================================================*/
+
+.npc-cat{
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    z-index:280;
+
+}

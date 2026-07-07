@@ -41,6 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
             applyColor(color);
             picker.classList.remove("show");
 
+            document.dispatchEvent(new CustomEvent("n5AvatarColorPicked", { detail: { color } }));
+
         });
 
     });

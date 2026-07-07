@@ -230,3 +230,120 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(step);
 
 });
+
+//======================================================
+// AMBIENT NPC CATS — autonomous wander, decorative only
+//======================================================
+
+const NPC_PALETTE = ["orange", "black", "calico", "gray", "brown", "white", "tuxedo"];
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const map     = document.getElementById("mapFrame");
+    const npcCats = Array.from(document.querySelectorAll(".npc-cat"));
+
+    if(!map || npcCats.length === 0) return;
+
+    function assignNpcColors(playerColor){
+
+        const npcColors = NPC_PALETTE
+            .filter((color) => color !== playerColor)
+            .slice(0, npcCats.length);
+
+        npcCats.forEach((cat, index) => {
+
+            NPC_PALETTE.forEach((c) => cat.classList.remove("cat--" + c));
+            cat.classList.add("cat--" + (npcColors[index] || NPC_PALETTE[index]));
+
+        });
+
+    }
+
+    assignNpcColors((window.N5Save && window.N5Save.getAvatarColor()) || "orange");
+
+    document.addEventListener("n5AvatarColorPicked", (event) => {
+
+        assignNpcColors(event.detail.color);
+
+    });
+
+    const NPC_SPEED = 70; // px per second — slower than the player's 220
+
+    function randomTarget(mapRect, cat){
+
+        return {
+            x: Math.random() * Math.max(mapRect.width - cat.offsetWidth, 0),
+            y: Math.random() * Math.max(mapRect.height - cat.offsetHeight, 0),
+        };
+
+    }
+
+    function startWander(cat){
+
+        let x = 0;
+        let y = 0;
+        let target = null;
+        let pauseUntil = 0;
+        let lastFrameTime = null;
+
+        cat.style.left = x + "px";
+        cat.style.top = y + "px";
+
+        function step(timestamp){
+
+            requestAnimationFrame(step);
+
+            if(lastFrameTime === null){
+
+                lastFrameTime = timestamp;
+                return;
+
+            }
+
+            const deltaSeconds = (timestamp - lastFrameTime) / 1000;
+            lastFrameTime = timestamp;
+
+            const mapRect = map.getBoundingClientRect();
+
+            if(timestamp < pauseUntil){
+
+                cat.classList.remove("walking");
+                return;
+
+            }
+
+            if(!target){
+
+                target = randomTarget(mapRect, cat);
+
+            }
+
+            const dx = target.x - x;
+            const dy = target.y - y;
+            const distance = Math.hypot(dx, dy);
+
+            if(distance < 4){
+
+                target = null;
+                pauseUntil = timestamp + 1500 + Math.random() * 1500;
+                cat.classList.remove("walking");
+                return;
+
+            }
+
+            x += (dx / distance) * NPC_SPEED * deltaSeconds;
+            y += (dy / distance) * NPC_SPEED * deltaSeconds;
+
+            cat.style.left = x + "px";
+            cat.style.top = y + "px";
+            cat.classList.add("walking");
+
+        }
+
+        requestAnimationFrame(step);
+
+    }
+
+    npcCats.forEach(startWander);
+
+});
