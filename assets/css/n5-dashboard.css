@@ -1736,6 +1736,12 @@ only renders for calico. Toggling .walking on the outer
 
 }
 
+.cat--tuxedo .cat__patch--b{
+
+    display:none;
+
+}
+
 @keyframes catTailSway{
 
     from{ transform:rotate(-10deg); }
