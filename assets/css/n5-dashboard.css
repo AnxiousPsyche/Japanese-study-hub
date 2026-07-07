@@ -1840,3 +1840,212 @@ n5-map.js already drives — only the look changes.
     background:#6E3A2B;
 
 }
+
+/*======================================================
+AVATAR PICKER
+======================================================*/
+
+.avatar-picker{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.55);
+
+    z-index:10000;
+
+}
+
+.avatar-picker.show{
+
+    display:flex;
+
+}
+
+.avatar-picker-window{
+
+    background:#FFFDF6;
+
+    border:4px solid #C7A35D;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+}
+
+.avatar-picker-window h2{
+
+    font-family:var(--title-font);
+
+    font-size:1rem;
+
+    margin-bottom:20px;
+
+}
+
+.avatar-swatches{
+
+    display:grid;
+
+    grid-template-columns:repeat(3, 1fr);
+
+    gap:20px;
+
+}
+
+.avatar-swatch{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#F7F9FD;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.avatar-swatch:hover{
+
+    background:#EAF3FF;
+
+    transform:translateY(-3px);
+
+}
+
+
+/*======================================================
+AVATAR SPRITE PREVIEWS
+Real hand-drawn idle-animation sprite sheets for the 5
+colors with real art (picker previews only — the actual
+roaming player/NPC cats always use the .cat CSS component,
+never these sheets, since there's no walk-cycle art here).
+Each sheet is a horizontal strip of 300x300px frames; the
+frame counts below (12/20/19/18/25) were re-confirmed
+against the actual files on disk (Step 0) and matched the
+plan's numbers exactly.
+======================================================*/
+
+.avatar-sprite{
+
+    width:48px;
+
+    height:48px;
+
+    image-rendering:pixelated;
+
+    background-repeat:no-repeat;
+
+}
+
+.avatar-sprite--orange{
+
+    background-image:url("../images/icons/pixels/OrangeCatIdle.png");
+
+    background-size:576px 48px;
+
+    animation:avatarSpriteOrange 1s steps(12) infinite;
+
+}
+
+.avatar-sprite--black{
+
+    background-image:url("../images/icons/pixels/blackCatIdle.png");
+
+    background-size:960px 48px;
+
+    animation:avatarSpriteBlack 1s steps(20) infinite;
+
+}
+
+.avatar-sprite--calico{
+
+    background-image:url("../images/icons/pixels/CalicoCatIdle.png");
+
+    background-size:912px 48px;
+
+    animation:avatarSpriteCalico 1s steps(19) infinite;
+
+}
+
+.avatar-sprite--white{
+
+    background-image:url("../images/icons/pixels/whitecatIdle.png");
+
+    background-size:864px 48px;
+
+    animation:avatarSpriteWhite 1s steps(18) infinite;
+
+}
+
+.avatar-sprite--tuxedo{
+
+    background-image:url("../images/icons/pixels/tuxedoIdle.png");
+
+    background-size:1200px 48px;
+
+    animation:avatarSpriteTuxedo 1s steps(25) infinite;
+
+}
+
+@keyframes avatarSpriteOrange{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-576px 0; }
+
+}
+
+@keyframes avatarSpriteBlack{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-960px 0; }
+
+}
+
+@keyframes avatarSpriteCalico{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-912px 0; }
+
+}
+
+@keyframes avatarSpriteWhite{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-864px 0; }
+
+}
+
+@keyframes avatarSpriteTuxedo{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-1200px 0; }
+
+}
