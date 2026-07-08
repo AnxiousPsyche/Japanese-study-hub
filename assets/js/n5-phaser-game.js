@@ -43,6 +43,10 @@ function buildFloorTileData() {
   }
   // Improvised staircase step-lines (rows 4-11 band) — no dedicated stair
   // art exists in the source sheets, per the design spec's explicit fallback.
+  // NOTE: currently fully covered by the wall/balcony backdrop image (which
+  // scales to ~361px tall starting at y=0), so this pattern isn't visible
+  // in the current render. Kept for when a future sub-project resizes or
+  // repositions that backdrop.
   for (let x = 14; x <= 33; x++) data[6][x] = 1;
   for (let x = 10; x <= 37; x++) data[9][x] = 1;
   return data;
@@ -60,6 +64,11 @@ class LibraryScene extends Phaser.Scene {
   }
 
   create() {
+    // Not using cropToTexture here: the floor/brick tileset needs both
+    // crops combined side-by-side into one 32x16 two-cell texture (so
+    // Phaser's tilemap API can index them as tile 0 / tile 1), which the
+    // single-rect cropToTexture helper can't produce. Every other texture
+    // in this file is a single independent crop and uses cropToTexture.
     const floorSrc = this.textures.get('floorsWalls').getSourceImage();
     const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE * 2, TILE_SIZE);
     const tileCtx = tileTex.getContext();
@@ -103,7 +112,7 @@ class LibraryScene extends Phaser.Scene {
       .image(618, 260, bookshelfKey)
       .setOrigin(0, 0)
       .setFlipX(true);
-    this.furnitureSprites.globe = this.add.image(334, 280, globeKey).setOrigin(0, 0);
+    this.furnitureSprites.globe = this.add.image(334, 280, globeKey).setOrigin(0, 0).setDepth(1);
     this.furnitureSprites.balconyBenchLeft = this.add
       .image(170, 310, balconyBenchKey)
       .setOrigin(0, 0)
