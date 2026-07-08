@@ -93,6 +93,26 @@ class LibraryScene extends Phaser.Scene {
       .image(0, 0, wallKey)
       .setOrigin(0, 0)
       .setDisplaySize(768, wallRect.h * wallScale);
+
+    const bookshelfKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookshelf, 'bookshelfTex');
+    const globeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'globeTex');
+    const balconyBenchKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.balconyBench, 'balconyBenchTex');
+
+    this.furnitureSprites.bookshelfLeft = this.add.image(50, 260, bookshelfKey).setOrigin(0, 0);
+    this.furnitureSprites.bookshelfRight = this.add
+      .image(618, 260, bookshelfKey)
+      .setOrigin(0, 0)
+      .setFlipX(true);
+    this.furnitureSprites.globe = this.add.image(334, 280, globeKey).setOrigin(0, 0);
+    this.furnitureSprites.balconyBenchLeft = this.add
+      .image(170, 310, balconyBenchKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(112, 83);
+    this.furnitureSprites.balconyBenchRight = this.add
+      .image(486, 310, balconyBenchKey)
+      .setOrigin(0, 0)
+      .setFlipX(true)
+      .setDisplaySize(112, 83);
   }
 }
 
