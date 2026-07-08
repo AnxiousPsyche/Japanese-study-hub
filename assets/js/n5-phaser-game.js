@@ -113,6 +113,40 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setFlipX(true)
       .setDisplaySize(112, 83);
+
+    const rugKey = cropToTexture(this, 'furniture03', ASSET_RECTS.rug, 'rugTex');
+    const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.table, 'tableTex');
+    const floorBenchKey = cropToTexture(this, 'furniture03', ASSET_RECTS.floorBench, 'floorBenchTex');
+    const lampKey = cropToTexture(this, 'furniture03', ASSET_RECTS.lamp, 'lampTex');
+    const plantKey = cropToTexture(this, 'furniture03', ASSET_RECTS.plant, 'plantTex');
+
+    let rugIndex = 0;
+    for (let y = 192; y + ASSET_RECTS.rug.h <= 432; y += 30) {
+      this.furnitureSprites[`rug${rugIndex}`] = this.add.image(361, y, rugKey).setOrigin(0, 0);
+      rugIndex += 1;
+    }
+
+    const placeCluster = (name, cx, cy, outerSide) => {
+      this.furnitureSprites[`${name}Table`] = this.add
+        .image(cx - 32, cy - 16, tableKey)
+        .setOrigin(0, 0);
+      this.furnitureSprites[`${name}Bench`] = this.add
+        .image(cx - 24, cy + 20, floorBenchKey)
+        .setOrigin(0, 0);
+      const outerX = outerSide === 'left' ? cx - 72 : cx + 38;
+      const innerX = outerSide === 'left' ? cx + 38 : cx - 73;
+      this.furnitureSprites[`${name}Lamp`] = this.add
+        .image(outerX, cy - 24, lampKey)
+        .setOrigin(0, 0);
+      this.furnitureSprites[`${name}Plant`] = this.add
+        .image(innerX, cy - 31, plantKey)
+        .setOrigin(0, 0);
+    };
+
+    placeCluster('clusterLeft1', 150, 240, 'left');
+    placeCluster('clusterLeft2', 150, 360, 'left');
+    placeCluster('clusterRight1', 618, 240, 'right');
+    placeCluster('clusterRight2', 618, 360, 'right');
   }
 }
 
