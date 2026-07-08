@@ -147,6 +147,16 @@ class LibraryScene extends Phaser.Scene {
     placeCluster('clusterLeft2', 150, 360, 'left');
     placeCluster('clusterRight1', 618, 240, 'right');
     placeCluster('clusterRight2', 618, 360, 'right');
+
+    this.furnitureSprites.gateBenchLeft = this.add
+      .image(216, 393, balconyBenchKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(112, 83);
+    this.furnitureSprites.gateBenchRight = this.add
+      .image(440, 393, balconyBenchKey)
+      .setOrigin(0, 0)
+      .setFlipX(true)
+      .setDisplaySize(112, 83);
   }
 }
 
