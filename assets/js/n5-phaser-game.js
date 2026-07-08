@@ -83,6 +83,16 @@ class LibraryScene extends Phaser.Scene {
 
     this.floorTilemap = map;
     this.floorLayer = layer;
+
+    this.furnitureSprites = {};
+
+    const wallRect = ASSET_RECTS.wallBalcony;
+    const wallKey = cropToTexture(this, 'libAssetPack', wallRect, 'wallBalconyTex');
+    const wallScale = 768 / wallRect.w;
+    this.furnitureSprites.wallBalcony = this.add
+      .image(0, 0, wallKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(768, wallRect.h * wallScale);
   }
 }
 
