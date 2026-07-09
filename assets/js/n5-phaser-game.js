@@ -37,6 +37,8 @@ const ASSET_RECTS = {
   // (kept re-finding the already-used globe instead of new items) —
   // scoped B4 down to items found with real confidence.
   bookStack: { x: 358, y: 25, w: 26, h: 50 },
+  // Blue armchair for review-nook seating (Round 1 feedback B5).
+  armchair: { x: 673, y: 43, w: 45, h: 52 },
   // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
   entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
   wallWindow: { x: 130, y: 45, w: 26, h: 55 },
@@ -328,6 +330,36 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setFlipX(true)
       .setDisplaySize(112, 83);
+
+    // Review nooks (Round 1 feedback B5): armchair + rug swatch marking
+    // the two checkpoint spots (Foundations Review after L8, Sentence
+    // Builder Review after L12), between the shelf wings and the central
+    // path. Not wired to lesson data/progression yet — visual marker only,
+    // matching this whole sub-project's decorative-pass scope.
+    const armchairKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.armchair, 'armchairTex');
+    const placeReviewNook = (name, x, y, flip) => {
+      this.furnitureSprites[`${name}Rug`] = this.add
+        .image(x - 6, y + 30, rugKey)
+        .setOrigin(0, 0)
+        .setDisplaySize(ASSET_RECTS.rug.w * 1.3, ASSET_RECTS.rug.h * 1.3);
+      this.furnitureSprites[`${name}Chair`] = this.add
+        .image(x, y, armchairKey)
+        .setOrigin(0, 0)
+        .setFlipX(!!flip)
+        .setDepth(1);
+    };
+    placeReviewNook('reviewNookLeft', 262, 280, false);
+    placeReviewNook('reviewNookRight', 462, 280, true);
+
+    // Final Quiz altar (Round 1 feedback B5): the most gold/blue-trimmed
+    // shelf variant, scaled up and centered above the south gate to read
+    // as a distinct, grander focal point vs. the regular lesson shelves.
+    const finalQuizScale = 1.3;
+    this.furnitureSprites.finalQuizAltar = this.add
+      .image(384 - (ASSET_RECTS.shelfFilled3.w * finalQuizScale) / 2, 350, 'shelfFilled3Tex')
+      .setOrigin(0, 0)
+      .setDisplaySize(ASSET_RECTS.shelfFilled3.w * finalQuizScale, ASSET_RECTS.shelfFilled3.h * finalQuizScale)
+      .setDepth(1);
   }
 }
 
