@@ -1078,3 +1078,23 @@ const n5PhaserGame = new Phaser.Game({
 });
 
 window.__n5Game = n5PhaserGame;
+
+document.getElementById('changeCharBtn')?.addEventListener('click', () => {
+  if (!n5PhaserGame.scene.isActive('LibraryScene')) return;
+  const libraryScene = n5PhaserGame.scene.getScene('LibraryScene');
+  if (libraryScene.panelOpen) return; // don't stack over an open lesson/review panel
+  n5PhaserGame.scene.pause('LibraryScene');
+  // The global SceneManager (game.scene) has no .launch() - that's a
+  // per-scene ScenePlugin convenience method, not present here (confirmed
+  // by enumerating game.scene's prototype: add/start/run/sleep/wake/
+  // pause/resume/stop/switch, no launch). run() is the right global
+  // equivalent: starts the scene fresh if stopped (which CatSelectScene
+  // is, from its earlier boot-time this.scene.start('LibraryScene')
+  // call), or resumes/wakes it if already paused/sleeping.
+  n5PhaserGame.scene.run('CatSelectScene', { overlay: true });
+  // run() reactivates the scene but doesn't change its render order -
+  // CatSelectScene was registered before LibraryScene in the game config
+  // and stays at that lower draw position, so without this it renders
+  // BEHIND the (still-visible-while-paused) map instead of over it.
+  n5PhaserGame.scene.bringToTop('CatSelectScene');
+});
