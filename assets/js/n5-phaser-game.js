@@ -2,46 +2,28 @@ const ASSET_RECTS = {
   // floors-walls02.png (288x160px)
   floorTile: { x: 220, y: 25, w: 16, h: 16 },
   brickTile: { x: 30, y: 90, w: 16, h: 16 },
-  // Darker plank variant, same sheet — same relative offset (4,25) within
-  // its own grid cell as floorTile has within its cell, one row down.
-  // Used under furniture clusters (Round 1 feedback B3) to break up the
-  // single uniform floor tile without introducing a clashing pattern.
   floorTileVariant: { x: 220, y: 105, w: 16, h: 16 },
-  // libassetpack-tiled.png (1488x528px)
-  // wallBalcony/staircase were split from one crop (x:850,w:638) into two:
-  // the staircase chunk (measured via grid-overlay harness) sits at
-  // x:935-1035, with the curtain/balcony wall picking up cleanly at
-  // x:1040. Splitting them lets the staircase be positioned independently
-  // against the left wall instead of wherever it happened to fall inside
-  // a single wide crop (Round 1 feedback item A).
+  // libassetpack-tiled.png (1488x528px) — all found via alpha-channel
+  // pixel scanning (getImageData row/column opaque-run detection), the
+  // only reliable measurement method found this project (see SUMMARY.md).
   wallBalcony: { x: 1040, y: 0, w: 448, h: 300 },
   staircase: { x: 935, y: 0, w: 100, h: 300 },
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
-  // Shelf-state progression (Round 1 feedback B2): the pack already
-  // supplies an empty/red shelf plus 3 increasingly-full variants, so we
-  // reuse those directly as locked/available/completed states instead of
-  // tinting or inventing new art. Measured via the canvas-grid method.
-  // Coordinates found via alpha-channel pixel scanning (getImageData row/
-  // column scans for opaque-pixel runs), not visual grid reading — two
-  // prior visual-reading attempts on this same row were each off by a
-  // large, inconsistent margin (likely downscaling when viewing large
-  // rendered grid overlays), so this row was re-derived programmatically.
   shelfLocked: { x: 28, y: 385, w: 87, h: 118 },
   shelfFilled1: { x: 148, y: 385, w: 87, h: 118 },
   shelfFilled2: { x: 268, y: 385, w: 87, h: 118 },
   shelfFilled3: { x: 388, y: 385, w: 87, h: 118 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
-  // Small book stack for tables (Round 1 feedback B4), found via alpha
-  // scan after the clock/chest hunt in this region proved unreliable
-  // (kept re-finding the already-used globe instead of new items) —
-  // scoped B4 down to items found with real confidence.
   bookStack: { x: 358, y: 25, w: 26, h: 50 },
-  // Blue armchair for review-nook seating (Round 1 feedback B5).
   armchair: { x: 673, y: 43, w: 45, h: 52 },
-  // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
+  // TopDownHouse_DoorsAndWindows.png
   entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
-  wallWindow: { x: 130, y: 45, w: 26, h: 55 },
+  // Round 2 feedback item 3: previous h:55 crop bled into the door tiles
+  // immediately above (y:40-47) and below (y:82+) this window in the
+  // sheet. Alpha-scan found the clean window (frame+2 panes+sill, no
+  // neighbors) is only y:49-80.
+  wallWindow: { x: 130, y: 49, w: 26, h: 31 },
   // furniture03.png (256x256px)
   rug: { x: 49, y: 146, w: 46, h: 28 },
   table: { x: 64, y: 32, w: 64, h: 32 },
@@ -50,10 +32,100 @@ const ASSET_RECTS = {
   plant: { x: 190, y: 108, w: 35, h: 62 },
 };
 
-const GRID_COLS = 48;
-const GRID_ROWS = 30;
+// Round 2 feedback item 1 (Option A — extend the map). World is much
+// bigger than the 768x480 viewport now; the camera follows the player
+// and is clamped to these bounds. Viewport itself (Phaser.Game
+// width/height below) is unchanged — still matches #mapFrame's
+// aspect-ratio:16/10 in n5-dashboard.css, per that file's explicit
+// "no CSS changes" constraint from the real-layout spec.
+const GRID_COLS = 56;
+const GRID_ROWS = 75;
 const TILE_SIZE = 16;
-const GATE_COLS = [21, 22, 23, 24, 25, 26];
+const WORLD_W = GRID_COLS * TILE_SIZE;
+const WORLD_H = GRID_ROWS * TILE_SIZE;
+const GATE_COLS = [25, 26, 27, 28, 29, 30];
+
+// Round 2 feedback item 4: exactly 15 lesson shelves, stable ids,
+// walk-order layout (4 upper-left / 4 upper-right / 4 lower-left /
+// 3 lower-right, matching the feedback's suggested layout exactly).
+const LESSON_DATA = [
+  { id: 'shelf-01', title: 'Basic Greetings' },
+  { id: 'shelf-02', title: 'Everyday Expressions' },
+  { id: 'shelf-03', title: 'Self Introduction' },
+  { id: 'shelf-04', title: 'A は B です' },
+  { id: 'shelf-05', title: 'Demonstratives' },
+  { id: 'shelf-06', title: 'Questions (か)' },
+  { id: 'shelf-07', title: 'Numbers & Counters' },
+  { id: 'shelf-08', title: 'Places and Directions' },
+  { id: 'shelf-09', title: 'Nouns & Pronouns' },
+  { id: 'shelf-10', title: 'Adjectives' },
+  { id: 'shelf-11', title: 'Adverbs and Verbs' },
+  { id: 'shelf-12', title: 'Conjugations' },
+  { id: 'shelf-13', title: 'Sentence Construction' },
+  { id: 'shelf-14', title: 'Particle Mastery' },
+  { id: 'shelf-15', title: 'Existence (あります・います)' },
+];
+
+// Prerequisite for each shelf to become "available": null = always
+// available (first lesson); otherwise the id of the shelf/pile that
+// must be completed first. Matches Neko-Bunko-Cat-Library-Spec.md's
+// progression rules: lessons unlock strictly in order, and passing a
+// review nook unlocks the next section (shelf-09 gates on review-1,
+// shelf-13 gates on review-2), not just the previous shelf.
+const SHELF_PREREQ = {
+  'shelf-01': null,
+  'shelf-02': 'shelf-01', 'shelf-03': 'shelf-02', 'shelf-04': 'shelf-03',
+  'shelf-05': 'shelf-04', 'shelf-06': 'shelf-05', 'shelf-07': 'shelf-06',
+  'shelf-08': 'shelf-07',
+  'shelf-09': 'review-1',
+  'shelf-10': 'shelf-09', 'shelf-11': 'shelf-10', 'shelf-12': 'shelf-11',
+  'shelf-13': 'review-2',
+  'shelf-14': 'shelf-13', 'shelf-15': 'shelf-14',
+};
+
+// Round 2 feedback item 5: exactly 3 book piles (2 reviews + final quiz).
+const BOOK_PILE_DATA = [
+  { id: 'review-1', title: 'Foundations Review', requires: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04', 'shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'] },
+  { id: 'review-2', title: 'Sentence Builder Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12'] },
+  { id: 'final-quiz', title: 'Final Quiz', requires: ['shelf-13', 'shelf-14', 'shelf-15'] },
+];
+
+const SAVE_KEY = 'nekoBunko.n5.progress';
+// Both thresholds must exceed the realistic minimum approach distance:
+// every shelf/pile has a solid collision body (addSolid), so the player
+// can never physically reach an interactive's exact center (entry.x/y)
+// — collision stops them at roughly half the object's height/width away
+// first. Worst case here is a shelf's half-height (59) + the player's
+// half-body (~7.5) + a small buffer ≈ 72px. Values below that make
+// auto-walk-arrival and click/E-range checks impossible to satisfy —
+// this was a real bug caught by testing the full flow end-to-end, not
+// just checking the code compiles.
+const TRIGGER_RANGE = 80; // px — click-in-range / E-to-interact radius
+const ARRIVE_THRESHOLD = 74; // px — how close auto-walk needs to get before stopping
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveProgress(progress) {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(progress));
+  } catch (e) {
+    // localStorage unavailable (privacy mode, quota, etc.) — degrade to
+    // session-only, never throw.
+  }
+}
+
+function getState(id, prereq, progress) {
+  if (progress[id]) return 'completed';
+  if (prereq === null || prereq === undefined || progress[prereq]) return 'available';
+  return 'locked';
+}
 
 function cropToTexture(scene, sourceKey, rect, destKey) {
   const srcImage = scene.textures.get(sourceKey).getSourceImage();
@@ -65,45 +137,58 @@ function cropToTexture(scene, sourceKey, rect, destKey) {
   return destKey;
 }
 
-// Tile-cell ranges (col-start, col-end, row-start, row-end, inclusive)
-// under each furniture cluster's table+bench footprint, converted from
-// the clusters' pixel bounds (see placeCluster calls) at TILE_SIZE=16.
-// Round 1 feedback B3: "a slightly different tile under furniture
-// clusters" — tile index 2 (floorTileVariant) is placed here instead of
-// the uniform floor tile (index 0).
-const CLUSTER_TILE_RANGES = [
-  [5, 13, 13, 17],  // clusterLeft1
-  [5, 13, 20, 25],  // clusterLeft2
-  [34, 43, 13, 17], // clusterRight1
-  [34, 43, 20, 25], // clusterRight2
-];
+// ---------------------------------------------------------------------
+// DOM lesson/review panel (HTML overlay over the canvas, per
+// Neko-Bunko-Cat-Library-Spec.md section 8: "HTML overlay is fine for
+// lesson panels — easier to style text than in-canvas UI").
+// ---------------------------------------------------------------------
 
-function buildFloorTileData() {
-  const data = [];
-  for (let y = 0; y < GRID_ROWS; y++) {
-    const row = [];
-    for (let x = 0; x < GRID_COLS; x++) {
-      const isBorder = x === 0 || y === 0 || x === GRID_COLS - 1 || y === GRID_ROWS - 1;
-      const isGate = y === GRID_ROWS - 1 && GATE_COLS.includes(x);
-      if (isBorder && !isGate) {
-        row.push(1);
-        continue;
-      }
-      const underCluster = CLUSTER_TILE_RANGES.some(
-        ([cxs, cxe, cys, cye]) => x >= cxs && x <= cxe && y >= cys && y <= cye
-      );
-      row.push(underCluster ? 2 : 0);
-    }
-    data.push(row);
-  }
-  // The improvised floor step-lines this used to draw at columns 10-37
-  // were positioned under the OLD single-crop staircase (which sat in the
-  // 850-1488 crop's left portion, roughly mid-canvas). Now that the real
-  // staircase art is a separate piece anchored to the far-left wall
-  // (Round 1 feedback item A), that mid-canvas striping no longer lines
-  // up with anything and was removed rather than repositioned — the real
-  // staircase art carries the visual on its own.
-  return data;
+function ensurePanel() {
+  let panel = document.getElementById('nekoLessonPanel');
+  if (panel) return panel;
+
+  panel = document.createElement('div');
+  panel.id = 'nekoLessonPanel';
+  panel.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;'
+    + 'justify-content:center;background:rgba(0,0,0,.55);z-index:20000;';
+  panel.innerHTML = ''
+    + '<div style="background:#FFFDF6;border:4px solid #C9BFA5;border-radius:16px;'
+    + 'padding:30px;max-width:420px;text-align:center;">'
+    + '<h2 id="nekoPanelTitle" style="font-family:\'Press Start 2P\',cursive;'
+    + 'font-size:.85rem;margin-bottom:16px;color:#5A4A3A;line-height:1.6;"></h2>'
+    + '<p id="nekoPanelBody" style="margin-bottom:22px;color:#5A4A3A;'
+    + 'font-family:Nunito,sans-serif;"></p>'
+    + '<button id="nekoPanelComplete" style="padding:10px 20px;border:none;'
+    + 'border-radius:10px;background:#87A8D8;color:white;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
+    + 'margin-right:10px;">Complete</button>'
+    + '<button id="nekoPanelClose" style="padding:10px 20px;border:none;'
+    + 'border-radius:10px;background:#C9BFA5;color:#5A4A3A;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;">'
+    + 'Close</button></div>';
+  document.body.appendChild(panel);
+  return panel;
+}
+
+function ensureToast() {
+  let toast = document.getElementById('nekoToast');
+  if (toast) return toast;
+  toast = document.createElement('div');
+  toast.id = 'nekoToast';
+  toast.style.cssText = 'position:fixed;top:110px;left:50%;transform:translateX(-50%);'
+    + 'background:#5A4A3A;color:#FFFDF6;padding:10px 18px;border-radius:10px;'
+    + 'font-family:Nunito,sans-serif;font-size:.85rem;z-index:20001;'
+    + 'opacity:0;transition:opacity .25s;pointer-events:none;';
+  document.body.appendChild(toast);
+  return toast;
+}
+
+function showToast(text) {
+  const toast = ensureToast();
+  toast.textContent = text;
+  toast.style.opacity = '1';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { toast.style.opacity = '0'; }, 1400);
 }
 
 class LibraryScene extends Phaser.Scene {
@@ -116,271 +201,506 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
+    this.load.image('catPlayer', '../../assets/images/icons/pixels/fortunecat-Original.png');
   }
 
   create() {
-    // Not using cropToTexture here: the floor/brick tileset needs both
-    // crops combined side-by-side into one 32x16 two-cell texture (so
-    // Phaser's tilemap API can index them as tile 0 / tile 1), which the
-    // single-rect cropToTexture helper can't produce. Every other texture
-    // in this file is a single independent crop and uses cropToTexture.
+    this.interactives = []; // { id, kind, sprite, glow, stamp, x, y, prereq/requires }
+    this.progress = loadProgress();
+    this.furnitureSprites = {};
+
+    this.buildFloor();
+    this.buildWalls();
+    this.buildTopBand();
+    this.buildFurniture();
+    this.buildShelves();
+    this.buildBookPiles();
+    this.buildPlayer();
+    this.wireInput();
+    this.refreshAllStates();
+
+    ensurePanel();
+    ensureToast();
+  }
+
+  // -- Floor + border tilemap -------------------------------------------
+
+  buildFloor() {
     const floorSrc = this.textures.get('floorsWalls').getSourceImage();
     const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE * 3, TILE_SIZE);
     const tileCtx = tileTex.getContext();
     tileCtx.imageSmoothingEnabled = false;
     tileCtx.drawImage(
-      floorSrc,
-      ASSET_RECTS.floorTile.x, ASSET_RECTS.floorTile.y, TILE_SIZE, TILE_SIZE,
+      floorSrc, ASSET_RECTS.floorTile.x, ASSET_RECTS.floorTile.y, TILE_SIZE, TILE_SIZE,
       0, 0, TILE_SIZE, TILE_SIZE
     );
     tileCtx.drawImage(
-      floorSrc,
-      ASSET_RECTS.brickTile.x, ASSET_RECTS.brickTile.y, TILE_SIZE, TILE_SIZE,
+      floorSrc, ASSET_RECTS.brickTile.x, ASSET_RECTS.brickTile.y, TILE_SIZE, TILE_SIZE,
       TILE_SIZE, 0, TILE_SIZE, TILE_SIZE
     );
     tileCtx.drawImage(
-      floorSrc,
-      ASSET_RECTS.floorTileVariant.x, ASSET_RECTS.floorTileVariant.y, TILE_SIZE, TILE_SIZE,
+      floorSrc, ASSET_RECTS.floorTileVariant.x, ASSET_RECTS.floorTileVariant.y, TILE_SIZE, TILE_SIZE,
       TILE_SIZE * 2, 0, TILE_SIZE, TILE_SIZE
     );
     tileTex.refresh();
 
-    const data = buildFloorTileData();
+    // Round 2 feedback item 2: floor covers 100% of the interior, full
+    // brick border on all 4 sides (was already true structurally, but
+    // re-verified at the new grid size), gate opening at the bottom only.
+    const data = [];
+    for (let y = 0; y < GRID_ROWS; y++) {
+      const row = [];
+      for (let x = 0; x < GRID_COLS; x++) {
+        const isBorder = x === 0 || y === 0 || x === GRID_COLS - 1 || y === GRID_ROWS - 1;
+        const isGate = y === GRID_ROWS - 1 && GATE_COLS.includes(x);
+        row.push(isBorder && !isGate ? 1 : 0);
+      }
+      data.push(row);
+    }
     const map = this.make.tilemap({ data, tileWidth: TILE_SIZE, tileHeight: TILE_SIZE });
     const tileset = map.addTilesetImage('libraryTiles', null, TILE_SIZE, TILE_SIZE);
-    const layer = map.createLayer(0, tileset, 0, 0);
-
+    map.createLayer(0, tileset, 0, 0);
     this.floorTilemap = map;
-    this.floorLayer = layer;
 
-    this.furnitureSprites = {};
+    // Round 2 feedback item 2: solid dark backdrop outside the room
+    // instead of transparency (visible at the world's edges / before the
+    // camera settles), set on both the scene camera and the canvas.
+    this.cameras.main.setBackgroundColor('#2A2320');
+  }
 
-    // Staircase + wall/balcony share one scale factor (computed from their
-    // combined natural width filling the full 768px canvas width) so their
-    // bricks/curtains read at the same zoom level and the seam between them
-    // — stairs flush against the left edge, wall picking up immediately to
-    // its right — looks like one continuous piece of architecture, not two
-    // mismatched crops. Round 1 feedback item A: staircase anchored to the
-    // left wall instead of stranded mid-canvas.
+  // -- Perimeter wall strips (Round 2 feedback item 2) -------------------
+
+  buildWalls() {
+    // The brick tile border above already fully encloses the room (no
+    // gaps) — this adds a visually thicker wall STRIP just inside that
+    // border using the same brick tile, stacked 2 tiles deep, so the
+    // perimeter reads as a real wall rather than a single thin line.
+    const floorSrc = this.textures.get('floorsWalls').getSourceImage();
+    const brickKey = cropToTexture(this, 'floorsWalls', ASSET_RECTS.brickTile, 'brickWallTex');
+    const wallGroup = this.physics.add.staticGroup();
+    for (let x = 0; x < GRID_COLS; x++) {
+      this.add.image(x * TILE_SIZE, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      this.add.image(x * TILE_SIZE, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+    }
+    for (let y = 0; y < GRID_ROWS; y++) {
+      this.add.image(TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      this.add.image((GRID_COLS - 2) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+    }
+    void floorSrc;
+    this.wallGroup = wallGroup;
+  }
+
+  // -- Top wall/balcony/staircase band ------------------------------------
+
+  buildTopBand() {
+    // Round 2 feedback item 1: kept at a fixed, proportionate scale
+    // (not stretched to the new, much wider world) and centered — the
+    // rest of the top wall is covered by the brick perimeter from
+    // buildWalls(). Round 1's approach of stretching this art to fill
+    // the whole canvas width doesn't hold once the world is wider than
+    // the art's native aspect ratio without looking distorted.
+    const topBandScale = 1.4;
     const wallRect = ASSET_RECTS.wallBalcony;
     const staircaseRect = ASSET_RECTS.staircase;
-    const topBandScale = 768 / (staircaseRect.w + wallRect.w);
+    const staircaseDisplayWidth = staircaseRect.w * topBandScale;
+    const wallDisplayWidth = wallRect.w * topBandScale;
+    const bandTotalWidth = staircaseDisplayWidth + wallDisplayWidth;
+    const bandX = (WORLD_W - bandTotalWidth) / 2;
 
     const staircaseKey = cropToTexture(this, 'libAssetPack', staircaseRect, 'staircaseTex');
-    const staircaseDisplayWidth = staircaseRect.w * topBandScale;
     this.furnitureSprites.staircase = this.add
-      .image(0, 0, staircaseKey)
+      .image(bandX, 0, staircaseKey)
       .setOrigin(0, 0)
       .setDisplaySize(staircaseDisplayWidth, staircaseRect.h * topBandScale)
       .setDepth(2);
 
     const wallKey = cropToTexture(this, 'libAssetPack', wallRect, 'wallBalconyTex');
     this.furnitureSprites.wallBalcony = this.add
-      .image(staircaseDisplayWidth, 0, wallKey)
+      .image(bandX + staircaseDisplayWidth, 0, wallKey)
       .setOrigin(0, 0)
-      .setDisplaySize(wallRect.w * topBandScale, wallRect.h * topBandScale);
+      .setDisplaySize(wallDisplayWidth, wallRect.h * topBandScale);
 
-    // Entrance door in the balcony art's recessed center gap (Round 1
-    // feedback B1). Gap measured at source x:1150-1300 (within the
-    // pre-split 1488-wide sheet) = x:110-260 relative to wallRect's own
-    // x:1040 origin, floor (where the recess curtain meets its own trim
-    // strip) at source y:130 — all re-verified with a self-contained
-    // canvas grid overlay (see commit note: the CSS-<img>-scaling harness
-    // used for TopDownHouse_DoorsAndWindows.png gave wrong Y readings for
-    // that file; this libassetpack-tiled.png measurement was re-checked
-    // against the same canvas method and confirmed accurate).
+    // Block the player from walking into the painted wall art.
+    const wallBlock = this.add.rectangle(bandX, 0, bandTotalWidth, wallRect.h * topBandScale * 0.6, 0x000000, 0)
+      .setOrigin(0, 0);
+    this.physics.add.existing(wallBlock, true);
+    this.wallGroup.add(wallBlock);
+
+    const gapCenterX = bandX + staircaseDisplayWidth + ((110 + 260) / 2) * topBandScale;
+    const gapFloorY = 130 * topBandScale;
+
     const doorRect = ASSET_RECTS.entranceDoor;
     const doorKey = cropToTexture(this, 'doorsWindows', doorRect, 'entranceDoorTex');
     const doorScale = 1.8;
     const doorDisplayWidth = doorRect.w * doorScale;
     const doorDisplayHeight = doorRect.h * doorScale;
-    const gapCenterX = staircaseDisplayWidth + ((110 + 260) / 2) * topBandScale;
-    const gapFloorY = 130 * topBandScale;
     this.furnitureSprites.entranceDoor = this.add
       .image(gapCenterX - doorDisplayWidth / 2, gapFloorY - doorDisplayHeight, doorKey)
       .setOrigin(0, 0)
       .setDisplaySize(doorDisplayWidth, doorDisplayHeight)
       .setDepth(3);
 
-    // Wall windows flanking the door (Round 1 feedback B3). This scene
-    // only has one vertical wall surface (the north/balcony band) — a
-    // true top-down room has no side-wall geometry to cut window
-    // openings into — so these are placed as accents within that same
-    // band rather than on the (nonexistent) left/right walls literally.
+    // Round 2 feedback item 3: re-sliced window (frame+glass+sill only,
+    // no neighboring door tiles) and positioned higher on the wall band
+    // — vertically centered in the band between the wainscot trim
+    // (~y:20) and the ceiling curtain top — rather than floor-aligned
+    // with the door.
     const windowRect = ASSET_RECTS.wallWindow;
     const windowKey = cropToTexture(this, 'doorsWindows', windowRect, 'wallWindowTex');
     const windowScale = 1.8;
     const windowDisplayWidth = windowRect.w * windowScale;
     const windowDisplayHeight = windowRect.h * windowScale;
-    const windowY = gapFloorY - windowDisplayHeight;
+    const windowY = 42;
     this.furnitureSprites.wallWindowLeft = this.add
-      .image(gapCenterX - doorDisplayWidth / 2 - windowDisplayWidth - 30, windowY, windowKey)
+      .image(gapCenterX - doorDisplayWidth / 2 - windowDisplayWidth - 34, windowY, windowKey)
       .setOrigin(0, 0)
       .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
       .setDepth(3);
     this.furnitureSprites.wallWindowRight = this.add
-      .image(gapCenterX + doorDisplayWidth / 2 + 30, windowY, windowKey)
+      .image(gapCenterX + doorDisplayWidth / 2 + 34, windowY, windowKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
+      .setDepth(3);
+    // Second pair, further out, per "2 per side of the top wall".
+    this.furnitureSprites.wallWindowLeft2 = this.add
+      .image(bandX + 30, windowY, windowKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
+      .setDepth(3);
+    this.furnitureSprites.wallWindowRight2 = this.add
+      .image(bandX + bandTotalWidth - 30 - windowDisplayWidth, windowY, windowKey)
       .setOrigin(0, 0)
       .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
       .setDepth(3);
 
-    const bookshelfKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookshelf, 'bookshelfTex');
+    this.entranceX = gapCenterX;
+    this.entranceY = gapFloorY + 30;
+  }
+
+  // -- Central decor: globe, reading tables, review-nook seating ---------
+
+  buildFurniture() {
     const globeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'globeTex');
-    const balconyBenchKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.balconyBench, 'balconyBenchTex');
-
-    this.furnitureSprites.bookshelfLeft = this.add.image(50, 260, bookshelfKey).setOrigin(0, 0);
-    this.furnitureSprites.bookshelfRight = this.add
-      .image(618, 260, bookshelfKey)
+    this.furnitureSprites.globe = this.add
+      .image(WORLD_W / 2 - ASSET_RECTS.globe.w / 2, 470, globeKey)
       .setOrigin(0, 0)
-      .setFlipX(true);
-    this.furnitureSprites.globe = this.add.image(334, 280, globeKey).setOrigin(0, 0).setDepth(1);
-
-    // Additional lesson shelves using the pack's locked/filled state art
-    // (Round 1 feedback B2 — "the core feature"). This pass adds visible
-    // shelf variety across the wings; it does not map individual shelves
-    // to specific N5_LESSONS entries yet — per the real-layout spec's own
-    // Non-goals, that precise 1:1 binding is later interaction/lesson-data
-    // work, not this decorative pass.
-    const shelfScale = 1;
-    const placeShelf = (name, rectKey, x, y, flip) => {
-      const rect = ASSET_RECTS[rectKey];
-      const key = cropToTexture(this, 'libAssetPack', rect, rectKey + 'Tex');
-      this.furnitureSprites[name] = this.add
-        .image(x, y, key)
-        .setOrigin(0, 0)
-        .setDisplaySize(rect.w * shelfScale, rect.h * shelfScale)
-        .setFlipX(!!flip);
-    };
-
-    placeShelf('shelfLeftUpperA', 'shelfLocked', 4, 205, false);
-    placeShelf('shelfLeftUpperB', 'shelfFilled1', 4, 333, false);
-    placeShelf('shelfRightUpperA', 'shelfFilled2', 677, 205, false);
-    placeShelf('shelfRightUpperB', 'shelfFilled3', 677, 333, false);
-    this.furnitureSprites.balconyBenchLeft = this.add
-      .image(170, 310, balconyBenchKey)
-      .setOrigin(0, 0)
-      .setDisplaySize(112, 83);
-    this.furnitureSprites.balconyBenchRight = this.add
-      .image(486, 310, balconyBenchKey)
-      .setOrigin(0, 0)
-      .setFlipX(true)
-      .setDisplaySize(112, 83);
+      .setDepth(1);
+    this.addSolid(WORLD_W / 2 - ASSET_RECTS.globe.w / 2, 470, ASSET_RECTS.globe.w, ASSET_RECTS.globe.h);
 
     const rugKey = cropToTexture(this, 'furniture03', ASSET_RECTS.rug, 'rugTex');
     const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.table, 'tableTex');
-    const floorBenchKey = cropToTexture(this, 'furniture03', ASSET_RECTS.floorBench, 'floorBenchTex');
     const lampKey = cropToTexture(this, 'furniture03', ASSET_RECTS.lamp, 'lampTex');
     const plantKey = cropToTexture(this, 'furniture03', ASSET_RECTS.plant, 'plantTex');
+    const armchairKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.armchair, 'armchairTex');
+    this.rugKey = rugKey;
 
-    // Extended south to actually reach the gate opening instead of
-    // stopping short at the globe (Round 1 feedback B6 — "the path
-    // is the player's what's-next guide," so it should visibly connect
-    // entrance -> globe -> exit, not trail off mid-room).
+    // Round 2 feedback item 1: the rug path is centered at WORLD_W/2 and
+    // is now the one thing NOTHING is placed on top of — every other
+    // object below is placed either left of pathLeft or right of
+    // pathRight, with >2 tiles of clearance from the path itself.
+    const pathCenter = WORLD_W / 2;
+    const pathHalfWidth = ASSET_RECTS.rug.w / 2;
+    this.pathLeft = pathCenter - pathHalfWidth;
+    this.pathRight = pathCenter + pathHalfWidth;
+
     let rugIndex = 0;
-    for (let y = 192; y + ASSET_RECTS.rug.h <= 468; y += 30) {
-      this.furnitureSprites[`rug${rugIndex}`] = this.add.image(361, y, rugKey).setOrigin(0, 0);
+    for (let y = 200; y + ASSET_RECTS.rug.h <= WORLD_H - 60; y += 30) {
+      this.add.image(this.pathLeft, y, rugKey).setOrigin(0, 0);
       rugIndex += 1;
     }
+    void rugIndex;
 
-    // Short spur toward the left shelf wing (Round 1 feedback B6),
-    // branching off the main path at globe height. Kept unrotated
-    // (axis-aligned like the main path tiles) rather than rotated 90
-    // degrees — rotating a Phaser image with origin (0,0) pivots around
-    // that corner instead of its center, which throws off positioning
-    // (the same class of bug the bookshelfRight flip hit earlier), so
-    // this reads as a row of small connector patches, not a literal
-    // perpendicular rug strip.
-    this.furnitureSprites.rugSpurLeft0 = this.add
-      .image(300, 296, rugKey)
-      .setOrigin(0, 0)
-      .setDisplaySize(ASSET_RECTS.rug.w * 0.7, ASSET_RECTS.rug.h);
-    this.furnitureSprites.rugSpurLeft1 = this.add
-      .image(258, 296, rugKey)
-      .setOrigin(0, 0)
-      .setDisplaySize(ASSET_RECTS.rug.w * 0.7, ASSET_RECTS.rug.h);
-
-    const bookStackKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'bookStackTex');
-
-    const placeCluster = (name, cx, cy, outerSide) => {
-      this.furnitureSprites[`${name}Table`] = this.add
-        .image(cx - 32, cy - 16, tableKey)
-        .setOrigin(0, 0);
-      this.furnitureSprites[`${name}Bench`] = this.add
-        .image(cx - 24, cy + 20, floorBenchKey)
-        .setOrigin(0, 0);
-      const outerX = outerSide === 'left' ? cx - 72 : cx + 38;
-      const innerX = outerSide === 'left' ? cx + 38 : cx - 73;
-      this.furnitureSprites[`${name}Lamp`] = this.add
-        .image(outerX, cy - 24, lampKey)
-        .setOrigin(0, 0);
-      this.furnitureSprites[`${name}Plant`] = this.add
-        .image(innerX, cy - 31, plantKey)
-        .setOrigin(0, 0);
-      // Small book stack on the table itself (Round 1 feedback B4 — "so
-      // they read as study tables, not empty slabs"), scaled down to sit
-      // naturally on the 64x32 tabletop instead of towering over it.
-      this.furnitureSprites[`${name}Books`] = this.add
-        .image(cx - 6, cy - 30, bookStackKey)
-        .setOrigin(0, 0)
-        .setDisplaySize(ASSET_RECTS.bookStack.w * 0.5, ASSET_RECTS.bookStack.h * 0.5)
-        .setDepth(1);
+    // Two reading tables, clear of the path on both sides.
+    const placeTable = (name, x, y) => {
+      this.furnitureSprites[`${name}Table`] = this.add.image(x, y, tableKey).setOrigin(0, 0);
+      this.addSolid(x, y, ASSET_RECTS.table.w, ASSET_RECTS.table.h);
+      this.furnitureSprites[`${name}Lamp`] = this.add.image(x + 70, y - 8, lampKey).setOrigin(0, 0);
+      this.furnitureSprites[`${name}Plant`] = this.add.image(x - 40, y - 20, plantKey).setOrigin(0, 0);
     };
+    placeTable('readingLeft', this.pathLeft - 150, 520);
+    placeTable('readingRight', this.pathRight + 90, 520);
 
-    placeCluster('clusterLeft1', 150, 240, 'left');
-    placeCluster('clusterLeft2', 150, 360, 'left');
-    placeCluster('clusterRight1', 618, 240, 'right');
-    placeCluster('clusterRight2', 618, 360, 'right');
-
-    // Extra potted plants beside the new shelf columns (Round 1 feedback
-    // B4 — "currently exist but are sparse"), reusing the same plant crop
-    // already proven to work elsewhere rather than hunting for new art.
-    this.furnitureSprites.shelfLeftPlant = this.add
-      .image(168, 380, plantKey)
-      .setOrigin(0, 0);
-    this.furnitureSprites.shelfRightPlant = this.add
-      .image(566, 380, plantKey)
-      .setOrigin(0, 0)
-      .setFlipX(true);
-
-    this.furnitureSprites.gateBenchLeft = this.add
-      .image(216, 393, balconyBenchKey)
-      .setOrigin(0, 0)
-      .setDisplaySize(112, 83);
-    this.furnitureSprites.gateBenchRight = this.add
-      .image(440, 393, balconyBenchKey)
-      .setOrigin(0, 0)
-      .setFlipX(true)
-      .setDisplaySize(112, 83);
-
-    // Review nooks (Round 1 feedback B5): armchair + rug swatch marking
-    // the two checkpoint spots (Foundations Review after L8, Sentence
-    // Builder Review after L12), between the shelf wings and the central
-    // path. Not wired to lesson data/progression yet — visual marker only,
-    // matching this whole sub-project's decorative-pass scope.
-    const armchairKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.armchair, 'armchairTex');
-    const placeReviewNook = (name, x, y, flip) => {
+    // Review-nook seating (armchair + rug swatch) flanking the globe,
+    // clear of the path.
+    const placeNook = (name, x, y, flip) => {
       this.furnitureSprites[`${name}Rug`] = this.add
-        .image(x - 6, y + 30, rugKey)
-        .setOrigin(0, 0)
-        .setDisplaySize(ASSET_RECTS.rug.w * 1.3, ASSET_RECTS.rug.h * 1.3);
+        .image(x - 6, y + 30, rugKey).setOrigin(0, 0)
+        .setDisplaySize(ASSET_RECTS.rug.w * 1.2, ASSET_RECTS.rug.h * 1.2);
       this.furnitureSprites[`${name}Chair`] = this.add
-        .image(x, y, armchairKey)
-        .setOrigin(0, 0)
-        .setFlipX(!!flip)
-        .setDepth(1);
+        .image(x, y, armchairKey).setOrigin(0, 0).setFlipX(!!flip).setDepth(1);
+      this.addSolid(x, y, ASSET_RECTS.armchair.w, ASSET_RECTS.armchair.h);
     };
-    placeReviewNook('reviewNookLeft', 262, 280, false);
-    placeReviewNook('reviewNookRight', 462, 280, true);
+    placeNook('nookLeft', this.pathLeft - 100, 440, false);
+    placeNook('nookRight', this.pathRight + 55, 440, true);
+  }
 
-    // Final Quiz altar (Round 1 feedback B5): the most gold/blue-trimmed
-    // shelf variant, scaled up and centered above the south gate to read
-    // as a distinct, grander focal point vs. the regular lesson shelves.
-    const finalQuizScale = 1.3;
-    this.furnitureSprites.finalQuizAltar = this.add
-      .image(384 - (ASSET_RECTS.shelfFilled3.w * finalQuizScale) / 2, 350, 'shelfFilled3Tex')
-      .setOrigin(0, 0)
-      .setDisplaySize(ASSET_RECTS.shelfFilled3.w * finalQuizScale, ASSET_RECTS.shelfFilled3.h * finalQuizScale)
-      .setDepth(1);
+  // -- 15 lesson shelves (Round 2 feedback item 4) ------------------------
+
+  buildShelves() {
+    const shelfW = ASSET_RECTS.shelfLocked.w;
+    const shelfH = ASSET_RECTS.shelfLocked.h;
+    const colGap = 20;
+    const rowGap = 14;
+
+    const leftColX = [40, 40 + shelfW + colGap];
+    const rightColX = [WORLD_W - 40 - shelfW - shelfW - colGap, WORLD_W - 40 - shelfW];
+    const upperRowY = [460, 460 + shelfH + rowGap];
+    const lowerRowY = [780, 780 + shelfH + rowGap];
+
+    // 4 upper-left (L1-4), 4 upper-right (L5-8), 4 lower-left (L9-12),
+    // 3 lower-right (L13-15) — matches the feedback's suggested layout
+    // and walk order exactly.
+    const positions = [
+      [leftColX[0], upperRowY[0]], [leftColX[1], upperRowY[0]],
+      [leftColX[0], upperRowY[1]], [leftColX[1], upperRowY[1]],
+      [rightColX[0], upperRowY[0]], [rightColX[1], upperRowY[0]],
+      [rightColX[0], upperRowY[1]], [rightColX[1], upperRowY[1]],
+      [leftColX[0], lowerRowY[0]], [leftColX[1], lowerRowY[0]],
+      [leftColX[0], lowerRowY[1]], [leftColX[1], lowerRowY[1]],
+      [rightColX[0], lowerRowY[0]], [rightColX[1], lowerRowY[0]],
+      [rightColX[0], lowerRowY[1]],
+    ];
+
+    const filledVariants = ['shelfFilled1', 'shelfFilled2', 'shelfFilled3'];
+    const lockedKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.shelfLocked, 'shelfLockedTex');
+    const filledKeys = filledVariants.map(
+      (v) => cropToTexture(this, 'libAssetPack', ASSET_RECTS[v], v + 'Tex')
+    );
+
+    LESSON_DATA.forEach((lesson, i) => {
+      const [x, y] = positions[i];
+      const sprite = this.add.image(x, y, lockedKey).setOrigin(0, 0).setDepth(1);
+      const glow = this.add.text(x + shelfW - 14, y - 6, '⭐', { fontSize: '16px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      const stamp = this.add.text(x + shelfW - 14, y - 6, '✅', { fontSize: '16px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+
+      this.addSolid(x, y, shelfW, shelfH);
+      sprite.setInteractive({ useHandCursor: true });
+      sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+
+      const entry = {
+        id: lesson.id, kind: 'shelf', title: lesson.title,
+        sprite, glow, stamp, lockedKey, filledKey: filledKeys[i % filledKeys.length],
+        x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
+      };
+      this.interactives.push(entry);
+    });
+  }
+
+  // -- 3 book piles: 2 reviews + final quiz (Round 2 feedback item 5) ----
+
+  buildBookPiles() {
+    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'bookPileTex');
+    const y1 = 730; // between upper cluster (ends ~592) and lower cluster (starts 780)
+    const y2 = WORLD_H - 130; // between lower cluster and the south end
+    const positions = {
+      'review-1': { x: this.pathLeft - 60, y: y1, scale: 1.6 },
+      'review-2': { x: this.pathRight + 20, y: y2, scale: 1.6 },
+      // Final quiz reads as bigger/grander, centered on the path near
+      // the south gate, per "so it reads as the finale."
+      'final-quiz': { x: WORLD_W / 2 - 20, y: WORLD_H - 90, scale: 2.4 },
+    };
+
+    BOOK_PILE_DATA.forEach((pile) => {
+      const pos = positions[pile.id];
+      const w = ASSET_RECTS.bookStack.w * pos.scale;
+      const h = ASSET_RECTS.bookStack.h * pos.scale;
+      const sprite = this.add.image(pos.x, pos.y, bookKey).setOrigin(0, 0)
+        .setDisplaySize(w, h).setDepth(1);
+      const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', { fontSize: '18px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      const stamp = this.add.text(pos.x + w - 8, pos.y - 6, '✅', { fontSize: '18px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+
+      this.addSolid(pos.x, pos.y, w, h);
+      sprite.setInteractive({ useHandCursor: true });
+      sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+
+      const entry = {
+        id: pile.id, kind: 'pile', title: pile.title,
+        sprite, glow, stamp, requires: pile.requires,
+        x: pos.x + w / 2, y: pos.y + h / 2,
+      };
+      this.interactives.push(entry);
+    });
+  }
+
+  // -- Player + camera -----------------------------------------------------
+
+  buildPlayer() {
+    this.player = this.physics.add.sprite(this.entranceX, this.entranceY, 'catPlayer');
+    this.player.setDisplaySize(30, 30);
+    this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.5);
+    this.player.setCollideWorldBounds(true);
+    this.player.setDepth(5);
+
+    this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
+    this.physics.add.collider(this.player, this.solidGroup || (this.solidGroup = this.physics.add.staticGroup()));
+    this.physics.add.collider(this.player, this.wallGroup);
+
+    this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
+    this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+
+    this.moveTarget = null;
+    this.pendingInteract = null;
+  }
+
+  addSolid(x, y, w, h) {
+    if (!this.solidGroup) this.solidGroup = this.physics.add.staticGroup();
+    const block = this.add.rectangle(x, y, w, h, 0x000000, 0).setOrigin(0, 0);
+    this.physics.add.existing(block, true);
+    this.solidGroup.add(block);
+  }
+
+  wireInput() {
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({ up: 'W', down: 'S', left: 'A', right: 'D' });
+    this.interactKey = this.input.keyboard.addKey('E');
+    this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    const tryInteract = () => {
+      const near = this.nearestInRange();
+      if (near) this.openPanel(near);
+    };
+    this.interactKey.on('down', tryInteract);
+    this.enterKey.on('down', tryInteract);
+    this.spaceKey.on('down', tryInteract);
+  }
+
+  handleInteractiveClick(entry) {
+    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
+    if (dist <= TRIGGER_RANGE) {
+      this.openPanel(entry);
+    } else {
+      this.moveTarget = { x: entry.x, y: entry.y };
+      this.pendingInteract = entry;
+    }
+  }
+
+  nearestInRange() {
+    let closest = null;
+    let closestDist = Infinity;
+    this.interactives.forEach((entry) => {
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
+      if (dist <= TRIGGER_RANGE && dist < closestDist) {
+        closest = entry;
+        closestDist = dist;
+      }
+    });
+    return closest;
+  }
+
+  // -- Lesson/review panel --------------------------------------------------
+
+  openPanel(entry) {
+    const state = entry.kind === 'shelf'
+      ? getState(entry.id, entry.prereq, this.progress)
+      : (this.progress[entry.id] ? 'completed'
+        : (entry.requires.every((r) => this.progress[r]) ? 'available' : 'locked'));
+
+    if (state === 'locked') {
+      showToast('Not yet…');
+      return;
+    }
+
+    const panel = ensurePanel();
+    document.getElementById('nekoPanelTitle').textContent = entry.title;
+    document.getElementById('nekoPanelBody').textContent = state === 'completed'
+      ? 'Already completed. Review anytime.'
+      : (entry.kind === 'shelf' ? 'Lesson content coming soon.' : 'Checkpoint content coming soon.');
+    panel.style.display = 'flex';
+
+    const completeBtn = document.getElementById('nekoPanelComplete');
+    const closeBtn = document.getElementById('nekoPanelClose');
+    const onComplete = () => {
+      this.progress[entry.id] = true;
+      saveProgress(this.progress);
+      this.refreshAllStates();
+      this.closePanel();
+    };
+    const onClose = () => this.closePanel();
+    completeBtn.onclick = onComplete;
+    closeBtn.onclick = onClose;
+
+    this.panelOpen = true;
+  }
+
+  closePanel() {
+    const panel = document.getElementById('nekoLessonPanel');
+    if (panel) panel.style.display = 'none';
+    this.panelOpen = false;
+  }
+
+  refreshAllStates() {
+    this.interactives.forEach((entry) => {
+      const state = entry.kind === 'shelf'
+        ? getState(entry.id, entry.prereq, this.progress)
+        : (this.progress[entry.id] ? 'completed'
+          : (entry.requires.every((r) => this.progress[r]) ? 'available' : 'locked'));
+
+      if (entry.kind === 'shelf') {
+        entry.sprite.setTexture(state === 'locked' ? entry.lockedKey : entry.filledKey);
+      }
+      entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
+      entry.glow.setVisible(state === 'available');
+      entry.stamp.setVisible(state === 'completed');
+    });
+  }
+
+  // -- Per-frame update: movement, auto-walk, proximity glow -------------
+
+  update() {
+    if (this.panelOpen) {
+      this.player.setVelocity(0, 0);
+      return;
+    }
+
+    const SPEED = 140;
+    let vx = 0;
+    let vy = 0;
+
+    if (this.moveTarget) {
+      const dx = this.moveTarget.x - this.player.x;
+      const dy = this.moveTarget.y - this.player.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= ARRIVE_THRESHOLD) {
+        this.player.setVelocity(0, 0);
+        this.moveTarget = null;
+        if (this.pendingInteract) {
+          const toOpen = this.pendingInteract;
+          this.pendingInteract = null;
+          this.openPanel(toOpen);
+        }
+        return;
+      }
+      vx = (dx / dist) * SPEED;
+      vy = (dy / dist) * SPEED;
+      this.player.setVelocity(vx, vy);
+      return;
+    }
+
+    if (this.cursors.left.isDown || this.wasd.left.isDown) vx -= 1;
+    if (this.cursors.right.isDown || this.wasd.right.isDown) vx += 1;
+    if (this.cursors.up.isDown || this.wasd.up.isDown) vy -= 1;
+    if (this.cursors.down.isDown || this.wasd.down.isDown) vy += 1;
+
+    if (vx !== 0 || vy !== 0) {
+      const len = Math.hypot(vx, vy);
+      this.player.setVelocity((vx / len) * SPEED, (vy / len) * SPEED);
+    } else {
+      this.player.setVelocity(0, 0);
+    }
+
+    // Proximity highlight: scale up whichever interactive is nearest
+    // and in range (visual "you can interact here" cue), reset others.
+    const near = this.nearestInRange();
+    this.interactives.forEach((entry) => {
+      entry.sprite.setScale(entry === near ? 1.08 : 1);
+    });
   }
 }
 
@@ -389,6 +709,10 @@ const n5PhaserGame = new Phaser.Game({
   parent: 'phaserGame',
   width: 768,
   height: 480,
+  physics: {
+    default: 'arcade',
+    arcade: { debug: false },
+  },
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
