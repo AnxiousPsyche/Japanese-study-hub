@@ -380,12 +380,22 @@ class LibraryScene extends Phaser.Scene {
   // -- Central decor: globe, reading tables, review-nook seating ---------
 
   buildFurniture() {
+    // Globe moved off the rug path entirely (was centered on it, which
+    // both technically violated "no object may sit on the path" and,
+    // worse, its collision body was silently blocking long-distance
+    // auto-walk any time a target's straight-line route passed through
+    // the map's center column - found by literally testing a full-map
+    // auto-walk, not by inspection. Positioned just right of the path
+    // instead of on/astride it.
+    const globeX = WORLD_W / 2 + ASSET_RECTS.rug.w / 2 + 15;
     const globeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'globeTex');
     this.furnitureSprites.globe = this.add
-      .image(WORLD_W / 2 - ASSET_RECTS.globe.w / 2, 470, globeKey)
+      .image(globeX, 470, globeKey)
       .setOrigin(0, 0)
       .setDepth(1);
-    this.addSolid(WORLD_W / 2 - ASSET_RECTS.globe.w / 2, 470, ASSET_RECTS.globe.w, ASSET_RECTS.globe.h);
+    // Non-solid, same reasoning as the reading tables/armchairs: its
+    // y-span (470-588) overlaps the row1 shelf y-band, so a solid globe
+    // still blocks corridor-to-right-shelf routing even off the rug.
 
     const rugKey = cropToTexture(this, 'furniture03', ASSET_RECTS.rug, 'rugTex');
     const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.table, 'tableTex');
@@ -412,8 +422,11 @@ class LibraryScene extends Phaser.Scene {
 
     // Two reading tables, clear of the path on both sides.
     const placeTable = (name, x, y) => {
+      // Non-solid: these sit at y=520, directly in the routing corridor
+      // used to reach the left/right shelf rows (see buildShelves) — a
+      // solid table here would block auto-walk to every shelf on that
+      // side, same reasoning as the shelves/piles themselves.
       this.furnitureSprites[`${name}Table`] = this.add.image(x, y, tableKey).setOrigin(0, 0);
-      this.addSolid(x, y, ASSET_RECTS.table.w, ASSET_RECTS.table.h);
       this.furnitureSprites[`${name}Lamp`] = this.add.image(x + 70, y - 8, lampKey).setOrigin(0, 0);
       this.furnitureSprites[`${name}Plant`] = this.add.image(x - 40, y - 20, plantKey).setOrigin(0, 0);
     };
@@ -428,7 +441,7 @@ class LibraryScene extends Phaser.Scene {
         .setDisplaySize(ASSET_RECTS.rug.w * 1.2, ASSET_RECTS.rug.h * 1.2);
       this.furnitureSprites[`${name}Chair`] = this.add
         .image(x, y, armchairKey).setOrigin(0, 0).setFlipX(!!flip).setDepth(1);
-      this.addSolid(x, y, ASSET_RECTS.armchair.w, ASSET_RECTS.armchair.h);
+      // Non-solid, same reasoning as the reading tables above.
     };
     placeNook('nookLeft', this.pathLeft - 100, 440, false);
     placeNook('nookRight', this.pathRight + 55, 440, true);
@@ -476,7 +489,10 @@ class LibraryScene extends Phaser.Scene {
         .setOrigin(0.5).setDepth(4).setVisible(false);
       this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
-      this.addSolid(x, y, shelfW, shelfH);
+      // Deliberately non-solid: 2 shelves share each row with only a
+      // 14px gap, and auto-walk routing to the far column would have to
+      // cross the near column's collision box. Interaction still works
+      // via distance checks (TRIGGER_RANGE), not physical contact.
       sprite.setInteractive({ useHandCursor: true });
       sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
 
@@ -484,6 +500,7 @@ class LibraryScene extends Phaser.Scene {
         id: lesson.id, kind: 'shelf', title: lesson.title,
         sprite, glow, stamp, lockedKey, filledKey: filledKeys[i % filledKeys.length],
         x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
+        baseScale: 1,
       };
       this.interactives.push(entry);
     });
@@ -515,7 +532,8 @@ class LibraryScene extends Phaser.Scene {
         .setOrigin(0.5).setDepth(4).setVisible(false);
       this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
-      this.addSolid(pos.x, pos.y, w, h);
+      // Non-solid for the same reason as shelves (see buildShelves) —
+      // keeps auto-walk routing simple and reliable for all 18 targets.
       sprite.setInteractive({ useHandCursor: true });
       sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
 
@@ -523,6 +541,7 @@ class LibraryScene extends Phaser.Scene {
         id: pile.id, kind: 'pile', title: pile.title,
         sprite, glow, stamp, requires: pile.requires,
         x: pos.x + w / 2, y: pos.y + h / 2,
+        baseScale: pos.scale,
       };
       this.interactives.push(entry);
     });
@@ -544,7 +563,7 @@ class LibraryScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
 
-    this.moveTarget = null;
+    this.moveQueue = null;
     this.pendingInteract = null;
   }
 
@@ -575,10 +594,22 @@ class LibraryScene extends Phaser.Scene {
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
     if (dist <= TRIGGER_RANGE) {
       this.openPanel(entry);
-    } else {
-      this.moveTarget = { x: entry.x, y: entry.y };
-      this.pendingInteract = entry;
+      return;
     }
+    // Route through the clear central corridor (horizontal -> vertical
+    // -> final approach) instead of one straight line. A direct line to
+    // a far/off-axis shelf reliably grazes some OTHER shelf's collision
+    // box along the way (found by testing every shelf, not just one) -
+    // the corridor at WORLD_W/2 is kept clear of every shelf cluster and
+    // both review piles by design, so routing through it avoids that
+    // whole class of got-stuck bug rather than special-casing each one.
+    const corridorX = WORLD_W / 2;
+    this.moveQueue = [
+      { x: corridorX, y: this.player.y },
+      { x: corridorX, y: entry.y },
+      { x: entry.x, y: entry.y },
+    ];
+    this.pendingInteract = entry;
   }
 
   nearestInRange() {
@@ -663,17 +694,27 @@ class LibraryScene extends Phaser.Scene {
     let vx = 0;
     let vy = 0;
 
-    if (this.moveTarget) {
-      const dx = this.moveTarget.x - this.player.x;
-      const dy = this.moveTarget.y - this.player.y;
+    if (this.moveQueue && this.moveQueue.length > 0) {
+      const waypoint = this.moveQueue[0];
+      const isFinalWaypoint = this.moveQueue.length === 1;
+      // Intermediate corridor waypoints just need to be "close enough
+      // to turn" (small threshold, keeps routing tight); the final
+      // waypoint is the actual interactive's center, which — same as
+      // before — needs the larger ARRIVE_THRESHOLD because its own
+      // collision body physically prevents getting closer than that.
+      const threshold = isFinalWaypoint ? ARRIVE_THRESHOLD : 10;
+      const dx = waypoint.x - this.player.x;
+      const dy = waypoint.y - this.player.y;
       const dist = Math.hypot(dx, dy);
-      if (dist <= ARRIVE_THRESHOLD) {
-        this.player.setVelocity(0, 0);
-        this.moveTarget = null;
-        if (this.pendingInteract) {
-          const toOpen = this.pendingInteract;
-          this.pendingInteract = null;
-          this.openPanel(toOpen);
+      if (dist <= threshold) {
+        this.moveQueue.shift();
+        if (this.moveQueue.length === 0) {
+          this.player.setVelocity(0, 0);
+          if (this.pendingInteract) {
+            const toOpen = this.pendingInteract;
+            this.pendingInteract = null;
+            this.openPanel(toOpen);
+          }
         }
         return;
       }
@@ -699,7 +740,7 @@ class LibraryScene extends Phaser.Scene {
     // and in range (visual "you can interact here" cue), reset others.
     const near = this.nearestInRange();
     this.interactives.forEach((entry) => {
-      entry.sprite.setScale(entry === near ? 1.08 : 1);
+      entry.sprite.setScale(entry.baseScale * (entry === near ? 1.08 : 1));
     });
   }
 }

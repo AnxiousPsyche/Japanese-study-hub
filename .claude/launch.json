@@ -12,6 +12,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8123"],
       "port": 8123
+    },
+    {
+      "name": "jp-library-static-r2fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8199"],
+      "port": 8199
     }
   ],
   "autoVerify": true
