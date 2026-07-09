@@ -32,6 +32,11 @@ const ASSET_RECTS = {
   shelfFilled3: { x: 388, y: 385, w: 87, h: 118 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
+  // Small book stack for tables (Round 1 feedback B4), found via alpha
+  // scan after the clock/chest hunt in this region proved unreliable
+  // (kept re-finding the already-used globe instead of new items) —
+  // scoped B4 down to items found with real confidence.
+  bookStack: { x: 358, y: 25, w: 26, h: 50 },
   // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
   entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
   wallWindow: { x: 130, y: 45, w: 26, h: 55 },
@@ -271,6 +276,8 @@ class LibraryScene extends Phaser.Scene {
       rugIndex += 1;
     }
 
+    const bookStackKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'bookStackTex');
+
     const placeCluster = (name, cx, cy, outerSide) => {
       this.furnitureSprites[`${name}Table`] = this.add
         .image(cx - 32, cy - 16, tableKey)
@@ -286,12 +293,31 @@ class LibraryScene extends Phaser.Scene {
       this.furnitureSprites[`${name}Plant`] = this.add
         .image(innerX, cy - 31, plantKey)
         .setOrigin(0, 0);
+      // Small book stack on the table itself (Round 1 feedback B4 — "so
+      // they read as study tables, not empty slabs"), scaled down to sit
+      // naturally on the 64x32 tabletop instead of towering over it.
+      this.furnitureSprites[`${name}Books`] = this.add
+        .image(cx - 6, cy - 30, bookStackKey)
+        .setOrigin(0, 0)
+        .setDisplaySize(ASSET_RECTS.bookStack.w * 0.5, ASSET_RECTS.bookStack.h * 0.5)
+        .setDepth(1);
     };
 
     placeCluster('clusterLeft1', 150, 240, 'left');
     placeCluster('clusterLeft2', 150, 360, 'left');
     placeCluster('clusterRight1', 618, 240, 'right');
     placeCluster('clusterRight2', 618, 360, 'right');
+
+    // Extra potted plants beside the new shelf columns (Round 1 feedback
+    // B4 — "currently exist but are sparse"), reusing the same plant crop
+    // already proven to work elsewhere rather than hunting for new art.
+    this.furnitureSprites.shelfLeftPlant = this.add
+      .image(168, 380, plantKey)
+      .setOrigin(0, 0);
+    this.furnitureSprites.shelfRightPlant = this.add
+      .image(566, 380, plantKey)
+      .setOrigin(0, 0)
+      .setFlipX(true);
 
     this.furnitureSprites.gateBenchLeft = this.add
       .image(216, 393, balconyBenchKey)
