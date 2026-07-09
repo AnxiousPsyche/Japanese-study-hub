@@ -113,6 +113,17 @@ const BOOK_PILE_DATA = [
 ];
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
+const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
+// Idle-only spritesheets confirmed present for exactly these 3 colors
+// (see design spec) — CalicoCatIdle.png/tuxedoIdle.png also exist but are
+// explicitly out of scope ("exactly 3 entries... no more, no fewer").
+// All three sheets are 300x300px/frame; frame counts differ per sheet.
+const CAT_COLORS = {
+  orange: { key: 'orangeCatIdle', path: '../../assets/images/icons/pixels/OrangeCatIdle.png', frames: 12, label: 'Orange' },
+  black: { key: 'blackCatIdle', path: '../../assets/images/icons/pixels/blackCatIdle.png', frames: 20, label: 'Black' },
+  white: { key: 'whiteCatIdle', path: '../../assets/images/icons/pixels/whitecatIdle.png', frames: 18, label: 'White' },
+};
+const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
 // Both thresholds must exceed the realistic minimum approach distance:
 // every shelf/pile has a solid collision body (addSolid), so the player
 // can never physically reach an interactive's exact center (entry.x/y)
@@ -147,6 +158,47 @@ function getState(id, prereq, progress) {
   if (progress[id]) return 'completed';
   if (prereq === null || prereq === undefined || progress[prereq]) return 'available';
   return 'locked';
+}
+
+function loadCatSpritesheets(scene) {
+  CAT_COLOR_ORDER.forEach((id) => {
+    const c = CAT_COLORS[id];
+    scene.load.spritesheet(c.key, c.path, { frameWidth: 300, frameHeight: 300 });
+  });
+}
+
+// Idempotent: both CatSelectScene and LibraryScene call this, and Phaser
+// throws if you register the same animation key twice.
+function registerCatAnimations(scene) {
+  CAT_COLOR_ORDER.forEach((id) => {
+    const c = CAT_COLORS[id];
+    const animKey = id + '-idle';
+    if (scene.anims.exists(animKey)) return;
+    scene.anims.create({
+      key: animKey,
+      frames: scene.anims.generateFrameNumbers(c.key, { start: 0, end: c.frames - 1 }),
+      frameRate: 8,
+      repeat: -1,
+    });
+  });
+}
+
+function getSavedCatColor() {
+  try {
+    const v = localStorage.getItem(CAT_COLOR_KEY);
+    return CAT_COLORS[v] ? v : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveCatColor(id) {
+  try {
+    localStorage.setItem(CAT_COLOR_KEY, id);
+  } catch (e) {
+    // localStorage unavailable — degrade to session-only, same pattern
+    // as saveProgress().
+  }
 }
 
 function cropToTexture(scene, sourceKey, rect, destKey) {
@@ -234,13 +286,14 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
     this.load.image('pixellabLibrary', '../../assets/images/ui/pixellab-2d-pixel-library-assets-1783435154845.png');
-    this.load.image('catPlayer', '../../assets/images/icons/pixels/fortunecat-Original.png');
+    loadCatSpritesheets(this);
   }
 
   create() {
     this.interactives = []; // { id, kind, sprite, glow, stamp, x, y, prereq/requires }
     this.progress = loadProgress();
     this.furnitureSprites = {};
+    registerCatAnimations(this);
 
     this.buildFloor();
     this.buildWalls();
