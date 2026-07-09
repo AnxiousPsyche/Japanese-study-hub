@@ -3,7 +3,14 @@ const ASSET_RECTS = {
   floorTile: { x: 220, y: 25, w: 16, h: 16 },
   brickTile: { x: 30, y: 90, w: 16, h: 16 },
   // libassetpack-tiled.png (1488x528px)
-  wallBalcony: { x: 850, y: 0, w: 638, h: 300 },
+  // wallBalcony/staircase were split from one crop (x:850,w:638) into two:
+  // the staircase chunk (measured via grid-overlay harness) sits at
+  // x:935-1035, with the curtain/balcony wall picking up cleanly at
+  // x:1040. Splitting them lets the staircase be positioned independently
+  // against the left wall instead of wherever it happened to fall inside
+  // a single wide crop (Round 1 feedback item A).
+  wallBalcony: { x: 1040, y: 0, w: 448, h: 300 },
+  staircase: { x: 935, y: 0, w: 100, h: 300 },
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
@@ -41,14 +48,13 @@ function buildFloorTileData() {
     }
     data.push(row);
   }
-  // Improvised staircase step-lines (rows 4-11 band) — no dedicated stair
-  // art exists in the source sheets, per the design spec's explicit fallback.
-  // NOTE: currently fully covered by the wall/balcony backdrop image (which
-  // scales to ~361px tall starting at y=0), so this pattern isn't visible
-  // in the current render. Kept for when a future sub-project resizes or
-  // repositions that backdrop.
-  for (let x = 14; x <= 33; x++) data[6][x] = 1;
-  for (let x = 10; x <= 37; x++) data[9][x] = 1;
+  // The improvised floor step-lines this used to draw at columns 10-37
+  // were positioned under the OLD single-crop staircase (which sat in the
+  // 850-1488 crop's left portion, roughly mid-canvas). Now that the real
+  // staircase art is a separate piece anchored to the far-left wall
+  // (Round 1 feedback item A), that mid-canvas striping no longer lines
+  // up with anything and was removed rather than repositioned — the real
+  // staircase art carries the visual on its own.
   return data;
 }
 
@@ -95,13 +101,30 @@ class LibraryScene extends Phaser.Scene {
 
     this.furnitureSprites = {};
 
+    // Staircase + wall/balcony share one scale factor (computed from their
+    // combined natural width filling the full 768px canvas width) so their
+    // bricks/curtains read at the same zoom level and the seam between them
+    // — stairs flush against the left edge, wall picking up immediately to
+    // its right — looks like one continuous piece of architecture, not two
+    // mismatched crops. Round 1 feedback item A: staircase anchored to the
+    // left wall instead of stranded mid-canvas.
     const wallRect = ASSET_RECTS.wallBalcony;
-    const wallKey = cropToTexture(this, 'libAssetPack', wallRect, 'wallBalconyTex');
-    const wallScale = 768 / wallRect.w;
-    this.furnitureSprites.wallBalcony = this.add
-      .image(0, 0, wallKey)
+    const staircaseRect = ASSET_RECTS.staircase;
+    const topBandScale = 768 / (staircaseRect.w + wallRect.w);
+
+    const staircaseKey = cropToTexture(this, 'libAssetPack', staircaseRect, 'staircaseTex');
+    const staircaseDisplayWidth = staircaseRect.w * topBandScale;
+    this.furnitureSprites.staircase = this.add
+      .image(0, 0, staircaseKey)
       .setOrigin(0, 0)
-      .setDisplaySize(768, wallRect.h * wallScale);
+      .setDisplaySize(staircaseDisplayWidth, staircaseRect.h * topBandScale)
+      .setDepth(2);
+
+    const wallKey = cropToTexture(this, 'libAssetPack', wallRect, 'wallBalconyTex');
+    this.furnitureSprites.wallBalcony = this.add
+      .image(staircaseDisplayWidth, 0, wallKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(wallRect.w * topBandScale, wallRect.h * topBandScale);
 
     const bookshelfKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookshelf, 'bookshelfTex');
     const globeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'globeTex');
