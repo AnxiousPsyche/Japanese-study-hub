@@ -272,11 +272,32 @@ class LibraryScene extends Phaser.Scene {
     const lampKey = cropToTexture(this, 'furniture03', ASSET_RECTS.lamp, 'lampTex');
     const plantKey = cropToTexture(this, 'furniture03', ASSET_RECTS.plant, 'plantTex');
 
+    // Extended south to actually reach the gate opening instead of
+    // stopping short at the globe (Round 1 feedback B6 — "the path
+    // is the player's what's-next guide," so it should visibly connect
+    // entrance -> globe -> exit, not trail off mid-room).
     let rugIndex = 0;
-    for (let y = 192; y + ASSET_RECTS.rug.h <= 432; y += 30) {
+    for (let y = 192; y + ASSET_RECTS.rug.h <= 468; y += 30) {
       this.furnitureSprites[`rug${rugIndex}`] = this.add.image(361, y, rugKey).setOrigin(0, 0);
       rugIndex += 1;
     }
+
+    // Short spur toward the left shelf wing (Round 1 feedback B6),
+    // branching off the main path at globe height. Kept unrotated
+    // (axis-aligned like the main path tiles) rather than rotated 90
+    // degrees — rotating a Phaser image with origin (0,0) pivots around
+    // that corner instead of its center, which throws off positioning
+    // (the same class of bug the bookshelfRight flip hit earlier), so
+    // this reads as a row of small connector patches, not a literal
+    // perpendicular rug strip.
+    this.furnitureSprites.rugSpurLeft0 = this.add
+      .image(300, 296, rugKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(ASSET_RECTS.rug.w * 0.7, ASSET_RECTS.rug.h);
+    this.furnitureSprites.rugSpurLeft1 = this.add
+      .image(258, 296, rugKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(ASSET_RECTS.rug.w * 0.7, ASSET_RECTS.rug.h);
 
     const bookStackKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'bookStackTex');
 
