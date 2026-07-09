@@ -12,6 +12,19 @@ const ASSET_RECTS = {
   wallBalcony: { x: 1040, y: 0, w: 448, h: 300 },
   staircase: { x: 935, y: 0, w: 100, h: 300 },
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
+  // Shelf-state progression (Round 1 feedback B2): the pack already
+  // supplies an empty/red shelf plus 3 increasingly-full variants, so we
+  // reuse those directly as locked/available/completed states instead of
+  // tinting or inventing new art. Measured via the canvas-grid method.
+  // Coordinates found via alpha-channel pixel scanning (getImageData row/
+  // column scans for opaque-pixel runs), not visual grid reading — two
+  // prior visual-reading attempts on this same row were each off by a
+  // large, inconsistent margin (likely downscaling when viewing large
+  // rendered grid overlays), so this row was re-derived programmatically.
+  shelfLocked: { x: 28, y: 385, w: 87, h: 118 },
+  shelfFilled1: { x: 148, y: 385, w: 87, h: 118 },
+  shelfFilled2: { x: 268, y: 385, w: 87, h: 118 },
+  shelfFilled3: { x: 388, y: 385, w: 87, h: 118 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
   // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
@@ -161,6 +174,28 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setFlipX(true);
     this.furnitureSprites.globe = this.add.image(334, 280, globeKey).setOrigin(0, 0).setDepth(1);
+
+    // Additional lesson shelves using the pack's locked/filled state art
+    // (Round 1 feedback B2 — "the core feature"). This pass adds visible
+    // shelf variety across the wings; it does not map individual shelves
+    // to specific N5_LESSONS entries yet — per the real-layout spec's own
+    // Non-goals, that precise 1:1 binding is later interaction/lesson-data
+    // work, not this decorative pass.
+    const shelfScale = 1;
+    const placeShelf = (name, rectKey, x, y, flip) => {
+      const rect = ASSET_RECTS[rectKey];
+      const key = cropToTexture(this, 'libAssetPack', rect, rectKey + 'Tex');
+      this.furnitureSprites[name] = this.add
+        .image(x, y, key)
+        .setOrigin(0, 0)
+        .setDisplaySize(rect.w * shelfScale, rect.h * shelfScale)
+        .setFlipX(!!flip);
+    };
+
+    placeShelf('shelfLeftUpperA', 'shelfLocked', 4, 205, false);
+    placeShelf('shelfLeftUpperB', 'shelfFilled1', 4, 333, false);
+    placeShelf('shelfRightUpperA', 'shelfFilled2', 677, 205, false);
+    placeShelf('shelfRightUpperB', 'shelfFilled3', 677, 333, false);
     this.furnitureSprites.balconyBenchLeft = this.add
       .image(170, 310, balconyBenchKey)
       .setOrigin(0, 0)
