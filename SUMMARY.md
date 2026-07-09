@@ -1,128 +1,90 @@
-# Session Summary — N5 Dashboard Work (last updated 2026-07-07, Task 7 done)
+# Session Summary — N5 Dashboard Work (last updated 2026-07-08)
 
-## 1. Shipped and merged to `main`: N5 Journey Roam
+## 1. Where things stand right now (read this first)
 
-The old N5 dashboard was an unwired placeholder. This pass made it a real
-free-roam overworld and merged it to `main`:
+- **Current build:** a Phaser 3 top-down library scene, on branch
+  `n5-phaser-real-layout`. This is the **active, current approach** —
+  superseding two earlier ones (see History below).
+- **Master vision doc:** `Neko-Bunko-Cat-Library-Spec.md` (project root) —
+  "Neko Bunko (猫文庫)": the player IS a cat, no separate dashboard, the
+  whole app is the library, bookshelves are lessons, sage/lavender/cream
+  pastel palette (world art stays native pack colors; pastel expressed
+  through UI chrome per B8 below).
+- **The game code:** `assets/js/n5-phaser-game.js` — a single `LibraryScene`,
+  hand-built 48×30 tile floor + individually-placed furniture sprites
+  cropped at runtime from 3 real asset sheets in `assets/images/ui/`
+  (`libassetpack-tiled.png`, `furniture03.png`, `floors-walls02.png`,
+  plus `TopDownHouse_DoorsAndWindows.png` added this pass).
+- **No player/movement/collision/interaction system exists yet.** This
+  whole build is still a decorative-scene pass — walking, lesson-shelf
+  interaction, and the cat avatar are explicitly future sub-projects (see
+  `docs/superpowers/specs/2026-07-08-n5-phaser-real-layout-design.md`'s
+  Non-goals). Don't be surprised the scene looks static.
+- **Just completed: a full "Round 1 Feedback" correction pass** (9
+  commits, all on `n5-phaser-real-layout`, not yet merged to `main`):
+  staircase moved to the true left wall, entrance door + 2 windows added,
+  4 more lesson shelves using the pack's built-in locked/filled state art,
+  a floor-tile variant under furniture clusters, book stacks on tables +
+  extra plants, 2 review nooks + a final-quiz altar, the rug path
+  extended to the gate, and exact HUD pastel colors (#F6F2EA/#C9BFA5).
+  Screenshot-verified after every change.
 
-- Arrow-key/WASD-driven pixel cat, walk-up-to-interact lesson popup
-  (Start Lesson / Save-Favorite / Exit), `localStorage`-backed favorites.
-- Node positions calibrated against the painted mountain/forest/river map
-  art (`n5-journey-map.png`).
-- Follow-up fixes after merge, all on `main`: matched the page background
-  to the art's sky-blue, fixed the wallpaper showing fully instead of
-  cropped, root-caused and fixed a real node/art alignment-drift bug with
-  an aspect-ratio-locked `#mapFrame`, removed redundant on-map text labels
-  that duplicated text already painted into the map art.
+## 2. A real methodology lesson from this pass
 
-## 2. Pivot: N5 becomes a library, not a mountain journey
+Pixel-coordinate measurement via a visual grid-overlay screenshot (render
+a grid, eyeball where an object's edges line up with the labels) turned
+out **unreliable** — it silently misread real coordinates by 2-4x on two
+separate items (a door's height, then an entire shelf row's width),
+each time confidently and wrong, only caught by testing the crop
+directly rather than trusting the visual read.
 
-The vast mountain/forest/river theming is **retired from N5**, saved
-untouched for a future **N1** build. N5 moves to a library setting
-(matching "JP Library OS" branding), keeping the HUD/popup/favorites
-shell, with the same 18 lesson stops re-themed as furniture, a
-recolorable cat avatar system, and 3 ambient decorative NPC cats.
+**What actually works: alpha-channel pixel scanning.** Draw the source
+image into a canvas, then use `getImageData` to scan a row or column for
+runs of opaque pixels (`alpha > 10`) — this finds real object boundaries
+programmatically instead of eyeballing a screenshot. Every coordinate in
+this pass found this way turned out correct on the first try. **Use this
+method for any future asset-coordinate work in this codebase**, not
+visual grid reading. (Some items — the grandfather clock, treasure chest,
+chalkboard — were hunted for and not found efficiently even with this
+method, since the source sheet is densely packed and this technique
+still requires scanning the right region; those were skipped this pass
+rather than guessing.)
 
-Full design: `docs/superpowers/specs/2026-07-06-n5-library-map-design.md`
-Full plan (7 tasks + 1 addendum, complete code per step):
-`docs/superpowers/plans/2026-07-06-n5-library-map-plan.md`
+## 3. History — how we got to the Phaser build
 
-## 3. Mid-implementation pivot (2026-07-07): real sprite art arrived
+1. **N5 Journey Roam** (merged to `main`): a CSS-drawn mountain/forest map
+   with a free-roam cat, walk-up lesson popups, favorites. Later retired.
+2. **N5 Library Map** (branch `n5-library-map`, not merged, superseded):
+   pivoted the mountain map to a code-drawn (CSS shapes) library scene
+   with a 7-color recolorable cat avatar system. This branch's work is
+   **not part of the current build** — abandoned in favor of the Phaser
+   approach below once real tileset assets were sourced. Still exists on
+   its branch if anything from it is worth revisiting later.
+3. **N5 Phaser migration** (current, branch `n5-phaser-real-layout`):
+   scaffold sub-project (Phaser 3 mounts, placeholder tilemap) → real
+   tileset + layout sub-project (real art, current decorative scene) →
+   **this session's Round 1 feedback correction pass**. Specs/plans:
+   `docs/superpowers/specs/2026-07-08-n5-phaser-scaffold-design.md`,
+   `docs/superpowers/specs/2026-07-08-n5-phaser-real-layout-design.md`.
 
-Partway through implementation, real hand-drawn pixel sprite sheets were
-added to `assets/images/icons/pixels/`: `OrangeCatIdle.png`,
-`blackCatIdle.png`, `CalicoCatIdle.png`, `whitecatIdle.png`,
-`tuxedoIdle.png` — each a horizontal strip of 300×300px frames, an idle
-bob/look-around loop (no walk-cycle frames). This changed the plan:
+## 4. What's next (not started)
 
-- **Cat color roster grew from 6 to 7**: orange, black, calico, gray,
-  brown, white, tuxedo (tuxedo is new; gray/brown have no real art).
-- **Two rendering mechanisms, split by purpose** (both documented in the
-  spec/plan's 2026-07-07 amendments):
-  - **Avatar-picker preview swatches**: the 5 colors with real art show
-    the actual sprite sheet, animated via CSS `steps()`. Gray/brown show
-    the code-drawn CSS `.cat` shape instead.
-  - **The actual roaming cat** (player + every NPC), for all 7 colors,
-    is always the code-drawn CSS `.cat` component with its walk-cycle —
-    never the sprite sheets, since none of them have walk-cycle frames.
+Per the real-layout spec's own roadmap: player movement + collision,
+interaction system (walk-up triggers, "[E] Read" prompt), lesson data
+model + modal panel, lock/glow/complete shelf states + progression logic
+(the shelf art added this pass is decorative only, not yet bound to
+`N5_LESSONS` or any progression state), review-nook/final-quiz
+interactivity, cat avatar integration, ambient NPC wandering, polish.
 
-Both `docs/superpowers/specs/2026-07-06-n5-library-map-design.md` and
-`docs/superpowers/plans/2026-07-06-n5-library-map-plan.md` were amended
-in place (not rewritten) to reflect this — look for the "2026-07-07
-amendment" markers in each.
-
-## 4. Where things stand right now
-
-- **Branch:** `n5-library-map`, pushed to GitHub
-  (`origin/n5-library-map` — a PR can be opened at
-  https://github.com/AnxiousPsyche/Japanese-study-hub/pull/new/n5-library-map
-  whenever you want one; not opened yet, just pushed for safekeeping).
-- **Working tree:** clean for everything tracked; see the untracked-files
-  note below before doing anything destructive like `git clean`.
-- **Task 1 (library scene shell + aspect-locked frame): done, reviewed,
-  approved.**
-- **Task 2 (recolorable cat component): code written for all 7 colors,
-  but not yet cleanly re-reviewed** — worth knowing the exact state:
-  1. Original 6-color component built and reviewed → reviewer found a
-     real bug (stripes/calico patches invisible, missing `z-index`) →
-     fixed → re-review was about to be re-dispatched when the sprite
-     files showed up and paused everything.
-  2. `tuxedo` variant added (Task 2 Addendum) → same bug recurred (a
-     plan-authoring mistake on my part: I copied the pre-fix CSS pattern
-     into the addendum) → found via my own spot-check, not review →
-     fixed directly, plan text corrected too.
-  3. **Next step when resuming: regenerate the review package covering
-     all four Task 2-related commits and dispatch one clean task
-     review before touching Task 3.** (Commits: `6ebad8c`, `a1a20a8`,
-     `2cadf7a`, `1bcdaea` — see `git log` on this branch.)
-- **Tasks 3-7: all complete as of this update.** Tasks 3-6 (furniture
-  re-theme, recolorable cat controller wiring, avatar picker, 3 ambient
-  NPC cats) were done and reviewed in the time since section 4 above was
-  first written — see commits `93c93fb..aed7b7f`.
-- **Task 7 (end-to-end verification): complete.** Full walkthrough across
-  three viewports passed (aspect locked at exactly 1.6000, zero JS errors,
-  full-scene screenshot confirmed). Found and fixed one real bug in the
-  process: furniture-node overlap at 1366x768 between lesson rows 4/5
-  (fixed by widening their %-gaps — see `.superpowers/sdd/progress.md`
-  for exact values). **Known follow-up, deliberately deferred**: the same
-  overlap class also affects rows 1-3 below ~1000px map-frame width (e.g.
-  a 992px-wide window) — needs a real narrow/mobile furniture-node
-  strategy, not just another percentage nudge. Not fixed this session,
-  logged for a future task.
-- The **7-task n5-library-map plan is now complete.** Next step is
-  deciding what to do with the branch (open the PR, keep building, etc.)
-  — see `.claude/skills` finishing-a-development-branch if that's next.
-- Progress ledger with exact commit ranges: `.superpowers/sdd/progress.md`
-  (git-ignored, local-only, not on GitHub — this file is the more
-  precise machine-readable resume point).
-
-### Untracked files sitting in the repo — not yet reviewed or committed
-
-A large batch of new files showed up as untracked (`git status`) that
-this session did not touch or commit, and hasn't looked at closely:
-
-- **Possibly directly useful for the library scene:**
-  `assets/images/icons/pixels/bookshelf-Original.png`,
-  `bookwyrm-Original.png`, `catshelf-Original.png`,
-  `couch-pixel-1-Original.png` — real furniture/decor art that could
-  replace some of the code-drawn CSS shapes in Task 1's library room
-  (bookshelves, a couch, a cat perch) if you want a richer scene later.
-  Worth a look before Task 3 (furniture nodes) if you'd rather use real
-  art there too.
-- **A large generic UI asset pack** extracted into `assets/images/ui/`
-  (Kenney/Craftpix-style tileset — `PNG/`, `PSD/`, `Vector/`,
-  `Tilemap/`, `Tiles/`, `Tilesheet.txt`, `License.txt`, preview images,
-  `.url` shortcuts to Patreon/Kenney, a `COUPON.pdf`, a `__MACOSX/`
-  metadata folder). This looks like a raw zip extraction, not yet
-  organized or reviewed for what (if anything) in it applies to this
-  project. **Deliberately not committed** — some of these are
-  license/shortcut/metadata files that don't belong in version control
-  as-is, and it's a big enough dump that it deserves your own look
-  before anything in it gets used or committed.
+Also worth a look, not yet done: the grandfather clock, treasure chest,
+chalkboard, teapot, and armchair-pack items requested in Round 1 feedback
+B4 but not found efficiently this pass; a real "border tile row along
+walls" (currently just relying on the pre-existing brick perimeter).
 
 ## 5. How to resume
 
-Say something like **"continue the n5-library-map plan"** or
-**"re-review Task 2 and continue"**. Everything needed is already in the
-repo/ledger — no re-deriving context needed. If you want to deal with the
-untracked asset files first instead, just say so.
+Say **"apply Round 2 feedback"** (if you have more corrections) or
+**"continue the Phaser build — add interaction/movement"** to move to the
+next roadmap item. Everything needed is in git history (`git log` on
+`n5-phaser-real-layout`) and the two spec docs above — no re-deriving
+context needed.
