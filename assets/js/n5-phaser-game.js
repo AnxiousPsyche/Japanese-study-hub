@@ -716,11 +716,30 @@ class LibraryScene extends Phaser.Scene {
     // point), on the rug just above the gate opening.
     const spawnX = WORLD_W / 2;
     const spawnY = WORLD_H - 70;
-    this.player = this.physics.add.sprite(spawnX, spawnY, 'catPlayer');
+    // LibraryScene is only ever reached after CatSelectScene has run (or
+    // skipped itself because a color was already saved), so a saved
+    // color always exists here — 'orange' is a defensive fallback only,
+    // not an expected runtime path.
+    this.catColorId = getSavedCatColor() || 'orange';
+    this.player = this.physics.add.sprite(spawnX, spawnY, CAT_COLORS[this.catColorId].key);
     this.player.setDisplaySize(30, 30);
+    // Deliberately left as `this.player.width` (frame-native size, NOT
+    // displaySize) — investigated during planning and confirmed this
+    // already produces an oversized/off-center Arcade body relative to
+    // the 30x30 visual (512x512 with the old 1024px-native image; empty
+    // solidGroup + walls-only collision since Round 2 means it's never
+    // been visibly exercised). Switching to 300x300-native spritesheets
+    // here SHRINKS that same pre-existing body to 150x150 — proportionally
+    // identical misalignment, strictly smaller in absolute terms — so
+    // this line is intentionally NOT "fixed" as part of this task to
+    // avoid scope creep into an unrelated, seemingly-harmless bug whose
+    // proper fix (Arcade body offset for non-1:1-scaled sprites) turned
+    // out to be non-trivial when spiked. Leave for a future pass if it
+    // ever causes a visible symptom.
     this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.5);
     this.player.setCollideWorldBounds(true);
     this.player.setDepth(5);
+    this.player.play(this.catColorId + '-idle');
 
     this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
     this.physics.add.collider(this.player, this.solidGroup || (this.solidGroup = this.physics.add.staticGroup()));
@@ -731,6 +750,33 @@ class LibraryScene extends Phaser.Scene {
 
     this.moveQueue = null;
     this.pendingInteract = null;
+  }
+
+  // Called by CatSelectScene when reopened mid-game via the HUD "Change"
+  // button (Task 4) — swaps the live player's sprite without resetting
+  // position, camera, or progress. The next updatePlayerAnimation() tick
+  // corrects play/freeze state based on actual velocity regardless of
+  // whether the player happened to be moving when this was called.
+  setPlayerCatColor(colorId) {
+    this.catColorId = colorId;
+    this.player.setTexture(CAT_COLORS[colorId].key);
+    this.player.play(colorId + '-idle');
+  }
+
+  // Idle plays while stationary; freezes on the current frame while
+  // moving (no walk-cycle art exists for any color — see design spec).
+  // Reads this.player.body.velocity, which Phaser only updates when
+  // setVelocity() is called — so this runs at the TOP of update(), before
+  // this frame's movement branches set a new velocity, meaning it reacts
+  // to last frame's velocity. One frame of lag at 60fps is imperceptible.
+  updatePlayerAnimation() {
+    const vel = this.player.body.velocity;
+    const moving = Math.abs(vel.x) > 0.5 || Math.abs(vel.y) > 0.5;
+    if (moving) {
+      if (this.player.anims.isPlaying) this.player.anims.stop();
+    } else if (!this.player.anims.isPlaying) {
+      this.player.play(this.catColorId + '-idle');
+    }
   }
 
   addSolid(x, y, w, h) {
@@ -851,6 +897,7 @@ class LibraryScene extends Phaser.Scene {
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
 
   update() {
+    this.updatePlayerAnimation();
     if (this.panelOpen) {
       this.player.setVelocity(0, 0);
       return;
