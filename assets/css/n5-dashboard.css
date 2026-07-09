@@ -12,9 +12,11 @@ ROOT
 
     --hud-height:90px;
 
-    --hud-bg:var(--bg-card);
+    /* Round 1 feedback B7: exact retro-pastel treatment (#C9BFA5 border
+       on #F6F2EA background), not the earlier gold/cream approximation. */
+    --hud-bg:#F6F2EA;
 
-    --hud-border:#CBAE74;
+    --hud-border:#C9BFA5;
 
     --hud-shadow:var(--shadow-window);
 
@@ -158,7 +160,7 @@ HUD BUTTONS
 
 .hud-btn{
 
-    border:2px solid var(--border-dark);
+    border:2px solid var(--hud-border);
 
     border-radius:var(--radius);
 
