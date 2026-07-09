@@ -173,19 +173,29 @@ function ensurePanel() {
   panel.id = 'nekoLessonPanel';
   panel.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;'
     + 'justify-content:center;background:rgba(0,0,0,.55);z-index:20000;';
+  // Retro-RPG dialog box treatment (chunkier border, pixel-ish corners,
+  // hard offset shadow instead of a soft blur) rather than the site's
+  // general soft-rounded card style — this panel pops up over the
+  // pixel-art game canvas specifically, so its shape language matches
+  // the game, not the surrounding dashboard chrome. Palette (cream
+  // background, tan border/close button) is unchanged from Round 1's
+  // exact HUD color match. #87A8D8 -> #4E74A8 on the Complete button:
+  // the old blue was only 2.44:1 contrast against white text (fails
+  // WCAG AA 4.5:1) - same fix as the HUD buttons in n5-dashboard.css.
   panel.innerHTML = ''
-    + '<div style="background:#FFFDF6;border:4px solid #C9BFA5;border-radius:16px;'
+    + '<div style="background:#FFFDF6;border:5px solid #C9BFA5;border-radius:4px;'
+    + 'box-shadow:6px 6px 0 rgba(90,74,58,.28);'
     + 'padding:30px;max-width:420px;text-align:center;">'
     + '<h2 id="nekoPanelTitle" style="font-family:\'Press Start 2P\',cursive;'
     + 'font-size:.85rem;margin-bottom:16px;color:#5A4A3A;line-height:1.6;"></h2>'
     + '<p id="nekoPanelBody" style="margin-bottom:22px;color:#5A4A3A;'
     + 'font-family:Nunito,sans-serif;"></p>'
     + '<button id="nekoPanelComplete" style="padding:10px 20px;border:none;'
-    + 'border-radius:10px;background:#87A8D8;color:white;'
+    + 'border-radius:4px;background:#4E74A8;color:white;'
     + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
     + 'margin-right:10px;">Complete</button>'
     + '<button id="nekoPanelClose" style="padding:10px 20px;border:none;'
-    + 'border-radius:10px;background:#C9BFA5;color:#5A4A3A;'
+    + 'border-radius:4px;background:#C9BFA5;color:#5A4A3A;'
     + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;">'
     + 'Close</button></div>';
   document.body.appendChild(panel);
@@ -198,7 +208,7 @@ function ensureToast() {
   toast = document.createElement('div');
   toast.id = 'nekoToast';
   toast.style.cssText = 'position:fixed;top:110px;left:50%;transform:translateX(-50%);'
-    + 'background:#5A4A3A;color:#FFFDF6;padding:10px 18px;border-radius:10px;'
+    + 'background:#5A4A3A;color:#FFFDF6;padding:10px 18px;border-radius:4px;'
     + 'font-family:Nunito,sans-serif;font-size:.85rem;z-index:20001;'
     + 'opacity:0;transition:opacity .25s;pointer-events:none;';
   document.body.appendChild(toast);

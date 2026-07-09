@@ -24,6 +24,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8210"],
       "port": 8210
+    },
+    {
+      "name": "jp-library-static-taste",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8221"],
+      "port": 8221
     }
   ],
   "autoVerify": true

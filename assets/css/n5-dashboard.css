@@ -166,7 +166,12 @@ HUD BUTTONS
 
     padding:12px 22px;
 
-    background:var(--title-bar);
+    /* Scoped override of --title-bar (#87A8D8): that value is only
+       2.44:1 contrast against white text, failing WCAG AA (4.5:1) -
+       confirmed site-wide since --title-bar is shared across
+       components.css/mission.css/reset.css, so darkened locally here
+       rather than touching the global variable. */
+    background:#4E74A8;
 
     color:white;
 
@@ -188,7 +193,7 @@ HUD BUTTONS
 
     transform:translateY(-3px);
 
-    background:var(--title-bar-dark);
+    background:#44689C;
 
 }
 
