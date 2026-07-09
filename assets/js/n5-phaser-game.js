@@ -29,6 +29,7 @@ const ASSET_RECTS = {
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
   // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
   entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
+  wallWindow: { x: 130, y: 45, w: 26, h: 55 },
   // furniture03.png (256x256px)
   rug: { x: 49, y: 146, w: 46, h: 28 },
   table: { x: 64, y: 32, w: 64, h: 32 },
@@ -162,6 +163,28 @@ class LibraryScene extends Phaser.Scene {
       .image(gapCenterX - doorDisplayWidth / 2, gapFloorY - doorDisplayHeight, doorKey)
       .setOrigin(0, 0)
       .setDisplaySize(doorDisplayWidth, doorDisplayHeight)
+      .setDepth(3);
+
+    // Wall windows flanking the door (Round 1 feedback B3). This scene
+    // only has one vertical wall surface (the north/balcony band) — a
+    // true top-down room has no side-wall geometry to cut window
+    // openings into — so these are placed as accents within that same
+    // band rather than on the (nonexistent) left/right walls literally.
+    const windowRect = ASSET_RECTS.wallWindow;
+    const windowKey = cropToTexture(this, 'doorsWindows', windowRect, 'wallWindowTex');
+    const windowScale = 1.8;
+    const windowDisplayWidth = windowRect.w * windowScale;
+    const windowDisplayHeight = windowRect.h * windowScale;
+    const windowY = gapFloorY - windowDisplayHeight;
+    this.furnitureSprites.wallWindowLeft = this.add
+      .image(gapCenterX - doorDisplayWidth / 2 - windowDisplayWidth - 30, windowY, windowKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
+      .setDepth(3);
+    this.furnitureSprites.wallWindowRight = this.add
+      .image(gapCenterX + doorDisplayWidth / 2 + 30, windowY, windowKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
       .setDepth(3);
 
     const bookshelfKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookshelf, 'bookshelfTex');
