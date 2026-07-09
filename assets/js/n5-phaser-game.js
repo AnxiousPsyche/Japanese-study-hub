@@ -30,7 +30,9 @@ const ASSET_RECTS = {
   // neighbors) is only y:49-80.
   wallWindow: { x: 130, y: 49, w: 26, h: 31 },
   // furniture03.png (256x256px)
-  plant: { x: 190, y: 108, w: 35, h: 62 },
+  // Alpha-scan corrected: the old {190,108,35,62} cut ~14px off the
+  // bottom of the pot and a few px off the right leaf tip.
+  plant: { x: 186, y: 114, w: 44, h: 78 },
   // pixellab-2d-pixel-library-assets...png — a proper 3-book pile
   // (green/red/blue), used for review checkpoints instead of the old
   // 2-book bookStack crop above. Different source sheet than the rest
@@ -39,21 +41,26 @@ const ASSET_RECTS = {
   bookPileTall: { x: 21, y: 190, w: 33, h: 37 },
   // furniture03.png — checkered-basket-top cubby shelf, reused as the
   // "shoe cabinet" placed near the start entrance per an explicit
-  // reference image.
-  shoeCabinet: { x: 128, y: 132, w: 48, h: 32 },
+  // reference image. Alpha-scan corrected: the old h:32 bled ~4px into
+  // the bench sitting directly below it in the sheet.
+  shoeCabinet: { x: 128, y: 132, w: 48, h: 28 },
   // furniture03.png — 3 curio items ("display in the library" per the
   // user's reference image 2): a trunk stack with an open book on top
-  // (covers both "books" and "chest"), a telescope on a tripod (stands
-  // in for "rack"), and a map pinned to an easel.
-  displayTrunkBooks: { x: 0, y: 178, w: 32, h: 32 },
-  displayTelescope: { x: 32, y: 170, w: 16, h: 38 },
-  displayMapEasel: { x: 44, y: 178, w: 32, h: 36 },
+  // (covers both "books" and "chest"), a decorative post/rack with a
+  // framed picture (stands in for "rack"), and a map pinned to an
+  // easel. Alpha-scan corrected: the old rects cut off the top of the
+  // book and were built from mis-measured coordinates for the rack.
+  displayTrunkBooks: { x: 0, y: 175, w: 32, h: 31 },
+  displayTelescope: { x: 34, y: 174, w: 22, h: 34 },
+  displayMapEasel: { x: 44, y: 178, w: 29, h: 42 },
   // TopDownHouse_FurnitureState1.png — plain table + chair (replaces
   // furniture03's table/floorBench in the decor rows) and the 4-sofa
   // family (2-seat couch, 3-seat w/ pillows, armchair w/ pillow, plain
   // armchair — replaces the single libassetpack balconyBench), all per
   // explicit reference images naming this file and picture number.
-  libTable: { x: 0, y: 28, w: 44, h: 36 },
+  // Alpha-scan corrected: the old {0,28,44,36} clipped ~4px off the
+  // table's right leg.
+  libTable: { x: 0, y: 32, w: 48, h: 32 },
   libChair: { x: 156, y: 2, w: 24, h: 30 },
   sofaCouch2: { x: 24, y: 162, w: 44, h: 34 },
   sofaCouch3: { x: 88, y: 158, w: 48, h: 38 },
@@ -466,9 +473,16 @@ class LibraryScene extends Phaser.Scene {
       this.add.image(x * TILE_SIZE, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
       this.add.image(x * TILE_SIZE, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
     }
+    // Left/right walls, 3 tiles deep (was 1, giving only a thin 32px
+    // band total with the floor tilemap's own border tile) — widened to
+    // close the gap with the shelf columns (leftColX[0] starts at x=40,
+    // tile-index 2.5) so the shelves read as sitting flush against a
+    // real wall instead of floating a few px off a thin border line.
     for (let y = 0; y < GRID_ROWS; y++) {
-      this.add.image(TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      this.add.image((GRID_COLS - 2) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      for (let col = 1; col <= 3; col++) {
+        this.add.image(col * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+        this.add.image((GRID_COLS - 1 - col) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      }
     }
     void floorSrc;
     this.wallGroup = wallGroup;
@@ -571,17 +585,6 @@ class LibraryScene extends Phaser.Scene {
         .setDepth(3);
     }
 
-    // Board/sign, per the requested "|___BOARD___|" element — a simple
-    // text-on-panel piece (no dedicated crop found in the source sheets
-    // for this), matching the retro dialog-panel palette already used
-    // for the lesson panel.
-    const boardX = wallX + wallDisplayWidth / 2;
-    const boardY = staircaseDisplayHeight + 24;
-    this.add.rectangle(boardX, boardY, 200, 36, 0x5A4A3A).setOrigin(0.5).setDepth(3)
-      .setStrokeStyle(3, 0xC9BFA5);
-    this.add.text(boardX, boardY, 'NEKO BUNKO', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '11px', color: '#F6F2EA',
-    }).setOrigin(0.5).setDepth(4);
   }
 
   // -- Central decor: globe, reading tables, review-nook seating ---------
@@ -614,6 +617,8 @@ class LibraryScene extends Phaser.Scene {
     // "Replace the green carpet with green CSS covering the whole mid
     // top bottom": one solid-color strip down the center corridor for
     // its entire vertical run, instead of the old tiled-rug-image loop.
+    // Styled like a woven runner rug (darker border + a lighter center
+    // band + periodic cross-ties) rather than a flat, undecorated block.
     // Non-solid (same as every other decor piece — see buildShelves'
     // header comment on the project's non-solid-furniture convention),
     // depth 0 so it sits at floor level under every sprite placed here.
@@ -621,9 +626,18 @@ class LibraryScene extends Phaser.Scene {
     const corridorX = WORLD_W / 2;
     const corridorTop = LAYOUT.decorRow1Y;
     const corridorBottom = LAYOUT.receptionY;
+    const corridorHeight = corridorBottom - corridorTop;
+    const corridorMidY = (corridorTop + corridorBottom) / 2;
     this.add
-      .rectangle(corridorX, (corridorTop + corridorBottom) / 2, corridorWidth, corridorBottom - corridorTop, 0x83b692)
+      .rectangle(corridorX, corridorMidY, corridorWidth, corridorHeight, 0x6ea67e)
+      .setDepth(0).setStrokeStyle(3, 0x4c7a5a);
+    this.add
+      .rectangle(corridorX, corridorMidY, corridorWidth - 16, corridorHeight - 6, 0x8fc49b)
       .setDepth(0);
+    const tieSpacing = 32;
+    for (let ty = corridorTop + tieSpacing / 2; ty < corridorBottom; ty += tieSpacing) {
+      this.add.rectangle(corridorX, ty, corridorWidth - 10, 4, 0x4c7a5a).setDepth(0);
+    }
 
     // One P-T&C-[R]-T&C-P decor row helper, reused for all three rows
     // between/around the shelf zones. `reviewPile`, when given, is the
@@ -644,7 +658,9 @@ class LibraryScene extends Phaser.Scene {
       this.add.image(decorSpanRight - 80 - ASSET_RECTS.libTable.w, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
       this.add.image(decorSpanRight - 90 - ASSET_RECTS.libChair.w, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
       if (reviewPile) {
-        this.reviewPilePositions[reviewPile] = { x: WORLD_W / 2 - 20, y: y - 14 };
+        // Sits beside the right shelf column (just left of it) instead
+        // of centered in the corridor.
+        this.reviewPilePositions[reviewPile] = { x: decorSpanRight - 56, y: y - 14 };
       }
     };
     // decorRow1 (nearest stairs) hosts review-2 (final review before the
@@ -698,22 +714,45 @@ class LibraryScene extends Phaser.Scene {
 
     // Shoe cabinet, placed near the start entrance (spawn), per an
     // explicit reference image — offset left of the corridor so it
-    // doesn't sit on the auto-walk waypoint path.
+    // doesn't sit on the auto-walk waypoint path. Displayed at 1.6x its
+    // native crop (was rendered at native size, which read as too small
+    // next to the sofas/reception furniture around it).
+    const shoeCabinetScale = 1.6;
+    const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
+    const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     this.furnitureSprites.shoeCabinet = this.add
-      .image(WORLD_W / 2 - 120, LAYOUT.spawnY - 20, shoeCabinetKey)
-      .setOrigin(0, 0).setDepth(1);
+      .image(WORLD_W / 2 - 120, LAYOUT.spawnY - shoeCabinetH, shoeCabinetKey)
+      .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
 
-    // 3 curio items ("display in the library") clustered near the
-    // reception nook — the natural "welcome" spot for decorative pieces.
+    // 3 curio items ("display in the library" per the reference image).
+    // Sized to the same visual scale as the lesson shelves/globe (the
+    // globe's 94x118 footprint is the reference point) instead of their
+    // tiny native crop sizes, and spread out instead of crammed into one
+    // small cluster: the trunk+books sits against the left wall and the
+    // map/painting against the right wall, both at the carpet/globe row
+    // (open wall space there, clear of the sofa stacks below); the
+    // display rack/stand stays near the reception desk.
+    const curioTargetSpan = 100;
+    const trunkScale = curioTargetSpan / Math.max(ASSET_RECTS.displayTrunkBooks.w, ASSET_RECTS.displayTrunkBooks.h);
+    const trunkW = ASSET_RECTS.displayTrunkBooks.w * trunkScale;
+    const trunkH = ASSET_RECTS.displayTrunkBooks.h * trunkScale;
     this.furnitureSprites.displayTrunkBooks = this.add
-      .image(WORLD_W / 2 + 90, LAYOUT.receptionY - 10, displayTrunkBooksKey)
-      .setOrigin(0, 0).setDepth(1);
-    this.furnitureSprites.displayTelescope = this.add
-      .image(WORLD_W / 2 + 128, LAYOUT.receptionY - 18, displayTelescopeKey)
-      .setOrigin(0, 0).setDepth(1);
+      .image(70, LAYOUT.carpetGlobeY - trunkH / 2, displayTrunkBooksKey)
+      .setOrigin(0, 0).setDepth(1).setDisplaySize(trunkW, trunkH);
+
+    const easelScale = curioTargetSpan / Math.max(ASSET_RECTS.displayMapEasel.w, ASSET_RECTS.displayMapEasel.h);
+    const easelW = ASSET_RECTS.displayMapEasel.w * easelScale;
+    const easelH = ASSET_RECTS.displayMapEasel.h * easelScale;
     this.furnitureSprites.displayMapEasel = this.add
-      .image(WORLD_W / 2 + 150, LAYOUT.receptionY - 10, displayMapEaselKey)
-      .setOrigin(0, 0).setDepth(1);
+      .image(WORLD_W - 70 - easelW, LAYOUT.carpetGlobeY - easelH / 2, displayMapEaselKey)
+      .setOrigin(0, 0).setDepth(1).setDisplaySize(easelW, easelH);
+
+    const telescopeScale = curioTargetSpan / Math.max(ASSET_RECTS.displayTelescope.w, ASSET_RECTS.displayTelescope.h);
+    const telescopeW = ASSET_RECTS.displayTelescope.w * telescopeScale;
+    const telescopeH = ASSET_RECTS.displayTelescope.h * telescopeScale;
+    this.furnitureSprites.displayTelescope = this.add
+      .image(540, LAYOUT.receptionY - telescopeH + 20, displayTelescopeKey)
+      .setOrigin(0, 0).setDepth(1).setDisplaySize(telescopeW, telescopeH);
   }
 
   // -- 17 lesson shelves, two zones (Round 4 relayout) --------------------
