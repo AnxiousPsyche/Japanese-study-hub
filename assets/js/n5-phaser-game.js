@@ -911,6 +911,109 @@ class LibraryScene extends Phaser.Scene {
   }
 }
 
+class CatSelectScene extends Phaser.Scene {
+  constructor() {
+    super('CatSelectScene');
+  }
+
+  init(data) {
+    this.isOverlay = !!(data && data.overlay);
+  }
+
+  preload() {
+    loadCatSpritesheets(this);
+  }
+
+  create() {
+    registerCatAnimations(this);
+
+    // First-boot path only: if a color is already saved, skip the select
+    // UI entirely and go straight to the map. The overlay path (reopened
+    // via the HUD "Change" button, see Task 4) always shows the UI.
+    if (!this.isOverlay) {
+      const saved = getSavedCatColor();
+      if (saved) {
+        this.scene.start('LibraryScene');
+        return;
+      }
+    }
+
+    this.selectedIndex = 0;
+    this.buildUI();
+  }
+
+  buildUI() {
+    this.add.rectangle(384, 240, 688, 400, 0x1a1410).setStrokeStyle(3, 0x8a6a3a);
+
+    this.add.text(384, 70, 'Choose Your Cat', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '16px', color: '#F0C674',
+    }).setOrigin(0.5);
+
+    this.entryTexts = CAT_COLOR_ORDER.map((id, i) => {
+      const c = CAT_COLORS[id];
+      return this.add.text(110, 150 + i * 50, c.label, {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '14px', color: '#B08D57',
+      }).setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => this.highlight(i))
+        .on('pointerup', () => { if (this.selectedIndex === i) this.confirm(); });
+    });
+
+    this.previewSprite = this.add.sprite(560, 260, CAT_COLORS[CAT_COLOR_ORDER[0]].key)
+      .setDisplaySize(120, 120);
+
+    this.selectButton = this.add.text(110, 350, '[ Select ]', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '13px', color: '#F0C674',
+    }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.confirm());
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.upKeyWasDown = false;
+    this.downKeyWasDown = false;
+
+    this.highlight(0);
+  }
+
+  highlight(index) {
+    this.selectedIndex = index;
+    CAT_COLOR_ORDER.forEach((id, i) => {
+      this.entryTexts[i].setColor(i === index ? '#FFDD88' : '#B08D57');
+      this.entryTexts[i].setText((i === index ? '▶ ' : '') + CAT_COLORS[id].label);
+    });
+    const colorId = CAT_COLOR_ORDER[index];
+    this.previewSprite.setTexture(CAT_COLORS[colorId].key);
+    this.previewSprite.play(colorId + '-idle');
+  }
+
+  confirm() {
+    const colorId = CAT_COLOR_ORDER[this.selectedIndex];
+    saveCatColor(colorId);
+    if (this.isOverlay) {
+      const libraryScene = this.scene.get('LibraryScene');
+      libraryScene.setPlayerCatColor(colorId);
+      this.scene.stop('CatSelectScene');
+      this.scene.resume('LibraryScene');
+    } else {
+      this.scene.start('LibraryScene');
+    }
+  }
+
+  update() {
+    const upDown = this.cursors.up.isDown;
+    const downDown = this.cursors.down.isDown;
+    if (upDown && !this.upKeyWasDown) {
+      this.highlight(Math.max(0, this.selectedIndex - 1));
+    }
+    if (downDown && !this.downKeyWasDown) {
+      this.highlight(Math.min(CAT_COLOR_ORDER.length - 1, this.selectedIndex + 1));
+    }
+    this.upKeyWasDown = upDown;
+    this.downKeyWasDown = downDown;
+    if (Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+      this.confirm();
+    }
+  }
+}
+
 const n5PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'phaserGame',
@@ -924,7 +1027,7 @@ const n5PhaserGame = new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: LibraryScene,
+  scene: [CatSelectScene, LibraryScene],
 });
 
 window.__n5Game = n5PhaserGame;
