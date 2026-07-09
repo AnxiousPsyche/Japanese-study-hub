@@ -1050,6 +1050,31 @@ class LibraryScene extends Phaser.Scene {
     });
   }
 
+  // One-time celebratory flourish on passing the quiz gate — same
+  // lightweight emoji+tween approach as the glow/checkmark icons above,
+  // not a new particle-emitter system. Purely visual, no state.
+  spawnPassSparkle(x, y) {
+    const sparkCount = 6;
+    for (let i = 0; i < sparkCount; i++) {
+      const angle = (Math.PI * 2 * i) / sparkCount;
+      const dist = 40;
+      const targetX = x + Math.cos(angle) * dist;
+      const targetY = y + Math.sin(angle) * dist;
+      const spark = this.add.text(x, y, '✨', { fontSize: '18px' })
+        .setOrigin(0.5).setDepth(10);
+      this.tweens.add({
+        targets: spark,
+        x: targetX,
+        y: targetY,
+        scale: { from: 1, to: 1.4 },
+        alpha: { from: 1, to: 0 },
+        duration: 700,
+        ease: 'Cubic.Out',
+        onComplete: () => spark.destroy(),
+      });
+    }
+  }
+
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
 
   update() {
