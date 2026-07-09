@@ -2,6 +2,11 @@ const ASSET_RECTS = {
   // floors-walls02.png (288x160px)
   floorTile: { x: 220, y: 25, w: 16, h: 16 },
   brickTile: { x: 30, y: 90, w: 16, h: 16 },
+  // Darker plank variant, same sheet — same relative offset (4,25) within
+  // its own grid cell as floorTile has within its cell, one row down.
+  // Used under furniture clusters (Round 1 feedback B3) to break up the
+  // single uniform floor tile without introducing a clashing pattern.
+  floorTileVariant: { x: 220, y: 105, w: 16, h: 16 },
   // libassetpack-tiled.png (1488x528px)
   // wallBalcony/staircase were split from one crop (x:850,w:638) into two:
   // the staircase chunk (measured via grid-overlay harness) sits at
@@ -53,6 +58,19 @@ function cropToTexture(scene, sourceKey, rect, destKey) {
   return destKey;
 }
 
+// Tile-cell ranges (col-start, col-end, row-start, row-end, inclusive)
+// under each furniture cluster's table+bench footprint, converted from
+// the clusters' pixel bounds (see placeCluster calls) at TILE_SIZE=16.
+// Round 1 feedback B3: "a slightly different tile under furniture
+// clusters" — tile index 2 (floorTileVariant) is placed here instead of
+// the uniform floor tile (index 0).
+const CLUSTER_TILE_RANGES = [
+  [5, 13, 13, 17],  // clusterLeft1
+  [5, 13, 20, 25],  // clusterLeft2
+  [34, 43, 13, 17], // clusterRight1
+  [34, 43, 20, 25], // clusterRight2
+];
+
 function buildFloorTileData() {
   const data = [];
   for (let y = 0; y < GRID_ROWS; y++) {
@@ -60,7 +78,14 @@ function buildFloorTileData() {
     for (let x = 0; x < GRID_COLS; x++) {
       const isBorder = x === 0 || y === 0 || x === GRID_COLS - 1 || y === GRID_ROWS - 1;
       const isGate = y === GRID_ROWS - 1 && GATE_COLS.includes(x);
-      row.push(isBorder && !isGate ? 1 : 0);
+      if (isBorder && !isGate) {
+        row.push(1);
+        continue;
+      }
+      const underCluster = CLUSTER_TILE_RANGES.some(
+        ([cxs, cxe, cys, cye]) => x >= cxs && x <= cxe && y >= cys && y <= cye
+      );
+      row.push(underCluster ? 2 : 0);
     }
     data.push(row);
   }
@@ -93,7 +118,7 @@ class LibraryScene extends Phaser.Scene {
     // single-rect cropToTexture helper can't produce. Every other texture
     // in this file is a single independent crop and uses cropToTexture.
     const floorSrc = this.textures.get('floorsWalls').getSourceImage();
-    const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE * 2, TILE_SIZE);
+    const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE * 3, TILE_SIZE);
     const tileCtx = tileTex.getContext();
     tileCtx.imageSmoothingEnabled = false;
     tileCtx.drawImage(
@@ -105,6 +130,11 @@ class LibraryScene extends Phaser.Scene {
       floorSrc,
       ASSET_RECTS.brickTile.x, ASSET_RECTS.brickTile.y, TILE_SIZE, TILE_SIZE,
       TILE_SIZE, 0, TILE_SIZE, TILE_SIZE
+    );
+    tileCtx.drawImage(
+      floorSrc,
+      ASSET_RECTS.floorTileVariant.x, ASSET_RECTS.floorTileVariant.y, TILE_SIZE, TILE_SIZE,
+      TILE_SIZE * 2, 0, TILE_SIZE, TILE_SIZE
     );
     tileTex.refresh();
 
