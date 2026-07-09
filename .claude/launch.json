@@ -4,38 +4,92 @@
     {
       "name": "jp-library-static",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8080"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8080"
+      ],
       "port": 8080
     },
     {
       "name": "jp-library-static-fresh",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8123"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8123"
+      ],
       "port": 8123
     },
     {
       "name": "jp-library-static-r2fix",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8199"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8199"
+      ],
       "port": 8199
     },
     {
       "name": "jp-library-static-r3",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8210"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8210"
+      ],
       "port": 8210
     },
     {
       "name": "jp-library-static-taste",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8221"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8221"
+      ],
       "port": 8221
     },
     {
       "name": "jp-library-static-catselect",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8233"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8233"
+      ],
       "port": 8233
+    },
+    {
+      "name": "jp-library-static-quiz-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8555"
+      ],
+      "port": 8555
+    },
+    {
+      "name": "jp-library-static-panel-dom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8777"
+      ],
+      "port": 8777
+    },
+    {
+      "name": "jp-library-static-round4-relayout",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8890"
+      ],
+      "port": 8890
     }
   ],
   "autoVerify": true

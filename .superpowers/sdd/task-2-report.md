@@ -1,163 +1,123 @@
-# Task 2 Report: Phaser game + placeholder tilemap scene
-
-> Note: this file is reused from an earlier, unrelated plan (the
-> "Recolorable Cat Component" task-2 for the completed/merged
-> `n5-library-map` plan). That prior content is preserved in git history
-> (commit `93c93fb` and earlier) if it's ever needed again. This report
-> documents Task 2 of the current `n5-phaser-migration` plan (N5 Phaser
-> Scaffold), per `docs/superpowers/plans/2026-07-08-n5-phaser-scaffold.md`.
+# Task 2: Panel DOM — add the hidden Fail button — COMPLETION REPORT
 
 ## What I implemented
 
-- Created `assets/js/n5-phaser-game.js` containing:
-  - `LibraryScaffoldScene extends Phaser.Scene` — generates a 64x32 placeholder
-    texture (two 32x32 tiles: dark brown floor `0x3b2a1e`, lighter brown wall
-    `0x6e4a2e`) at runtime via `this.make.graphics()` + `generateTexture`, then
-    builds a 24x15 tile-index array (border tiles = 1, interior = 0), turns it
-    into a `Phaser.Tilemaps.Tilemap` via `this.make.tilemap(...)`, adds the
-    tileset image, and creates the rendered layer. Stores the map and layer as
-    `this.libraryTilemap` / `this.libraryLayer` on the scene instance.
-  - A `new Phaser.Game({...})` instance at 768x480 design resolution, parented
-    to `#phaserGame`, using `Scale.FIT` + `Scale.CENTER_BOTH`, running
-    `LibraryScaffoldScene`.
-  - Exposes the game instance globally as `window.__n5Game`.
-- Modified `pages/N5/n5-dashboard.html`: added exactly one line,
-  `<script src="../../assets/js/n5-phaser-game.js"></script>`, immediately
-  after the Phaser 3.90.0 CDN `<script>` tag added in Task 1.
+In `assets/js/n5-phaser-game.js`, inside the `ensurePanel()` function (lines 296-303), replaced the HTML for the Complete and Close buttons with an updated version that adds a hidden `#nekoPanelFail` button positioned between them.
 
-No deviation from the brief's code was needed — the Phaser 3.90.0 API
-(`make.graphics`, `generateTexture`, `make.tilemap` with raw `data`,
-`addTilesetImage`, `createLayer`, `Scale.FIT`/`CENTER_BOTH`) behaved exactly
-as described. Transcribed the brief's code verbatim.
-
-## What I tested and results
-
-Verification script: `verify-task2.js` (written into the scratchpad dir,
-identical to the brief's Step 1 code), run via:
+**Old code (7 lines):**
+```js
+    + '<button id="nekoPanelComplete" style="padding:10px 20px;border:none;'
+    + 'border-radius:4px;background:#4E74A8;color:white;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
+    + 'margin-right:10px;">Complete</button>'
+    + '<button id="nekoPanelClose" style="padding:10px 20px;border:none;'
+    + 'border-radius:4px;background:#C9BFA5;color:#5A4A3A;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;">'
+    + 'Close</button></div>';
 ```
-node "C:\Users\almaz\AppData\Local\Temp\claude\C--Users-almaz-Downloads-Japanese-Web-Dev\276c3d75-192f-440e-aec1-a3a6d96d6539\scratchpad\verify-task2.js"
-```
-against the app served by the pre-existing background static server on
-`localhost:8140`.
 
-### RED (before implementation)
-Command: as above, run before creating `n5-phaser-game.js` / adding the
-script tag.
-Output: exit code 1, `FAIL`, with failures including `gameExists false`,
-`canvasExists false`, `canvasWidth=null`, `canvasHeight=null`,
-`mapWidth=null`, `mapHeight=null`, `mapTileWidth=null`,
-`aspect at wide/narrow viewport=null`, plus 4 pre-existing console 404
-errors. This matched the brief's expected RED failure exactly
-(`gameExists false` and `canvasExists false` among the failures).
-
-### GREEN (after implementation)
-Same command, run after creating the scene file and adding the script tag.
-Output:
+**New code (11 lines):**
+```js
+    + '<button id="nekoPanelComplete" style="padding:10px 20px;border:none;'
+    + 'border-radius:4px;background:#4E74A8;color:white;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
+    + 'margin-right:10px;">Complete</button>'
+    + '<button id="nekoPanelFail" style="display:none;padding:10px 20px;border:none;'
+    + 'border-radius:4px;background:#B04A4A;color:white;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
+    + 'margin-right:10px;">Fail (test)</button>'
+    + '<button id="nekoPanelClose" style="padding:10px 20px;border:none;'
+    + 'border-radius:4px;background:#C9BFA5;color:#5A4A3A;'
+    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;">'
+    + 'Close</button></div>';
 ```
-FAIL {
-  "failures": [
-    "consoleErrors: [...4 x 404...]"
-  ],
-  "checks": {
-    "gameExists": true,
-    "canvasExists": true,
-    "canvasWidth": 768,
-    "canvasHeight": 480,
-    "mapWidth": 24,
-    "mapHeight": 15,
-    "mapTileWidth": 32
-  },
-  "aspectWide": 1.6,
-  "aspectNarrow": 1.6
+
+This adds a new `#nekoPanelFail` button element with:
+- **ID:** `nekoPanelFail`
+- **Display:** `display:none` (hidden by default)
+- **Background:** `#B04A4A` (warm red for visual "negative" action indication)
+- **Text color:** white
+- **Label:** "Fail (test)"
+- **Styling:** Matches existing buttons (Press Start 2P font, .55rem size, 10px 20px padding, margin-right spacing)
+- **Contrast:** `#B04A4A` on white meets WCAG AA 4.5:1+ as confirmed in the brief
+
+## What I tested
+
+No test framework exists in this repo; per the brief, verification was done
+using the preview browser tools with the exact verification script provided.
+
+**Setup:**
+- Started a fresh preview server on port 8777 via `.claude/launch.json` (new configuration added: `jp-library-static-panel-dom`)
+- Navigated to `http://localhost:8777/pages/N5/n5-dashboard.html`
+- Waited for the LibraryScene to fully initialize
+- Executed the exact verification script from the brief
+
+**Verification Script (from brief):**
+```javascript
+(() => {
+  const game = window.__n5Game;
+  const scene = game.scene.getScene('LibraryScene');
+  for (let i = 1; i <= 17; i++) scene.progress['shelf-' + String(i).padStart(2,'0')] = true;
+  scene.refreshAllStates();
+  const entry = scene.interactives.find((e) => e.id === 'shelf-01');
+  scene.openPanel(entry);
+  const failBtn = document.getElementById('nekoPanelFail');
+  const result = {
+    failBtnExists: !!failBtn,
+    failBtnHidden: failBtn.style.display === 'none',
+    panelVisible: document.getElementById('nekoLessonPanel').style.display === 'flex',
+  };
+  scene.closePanel();
+  return result;
+})();
+```
+
+**Verification Result:**
+```json
+{
+  "failBtnExists": true,
+  "failBtnHidden": true,
+  "panelVisible": true
 }
 ```
-All game/canvas/tilemap/aspect-ratio checks passed exactly as specified.
-The only remaining "failure" (script exits 1 due to the `if (consoleErrors.length)`
-check) is 4 pre-existing console 404 errors, unrelated to my change (see
-below).
 
-I additionally ran a separate throwaway script (`check-404s.js`, also in
-scratchpad) using Playwright's `response` event to capture the exact URLs
-behind those 404s:
-```
-[
-  "http://localhost:8140/assets/images/avatars/default-avatar.png",
-  "http://localhost:8140/assets/images/icons/book.png",
-  "http://localhost:8140/assets/js/player.js",
-  "http://localhost:8140/assets/js/achievement.js"
-]
-```
-These are the same pre-existing/out-of-scope 404s the task context
-explicitly named (missing `player.js`, missing `achievement.js`, missing
-avatar/icon images) and were present identically in the RED run before my
-change existed — confirming they are not caused by `n5-phaser-game.js` or
-the new script tag. Per the task's scope-discipline instructions (and the
-lesson from Task 1's reverted "fix"), I did not touch them. This matches
-`progress.md`'s note that `verify-task1.js` was updated to allowlist these
-same 4 URLs; my script doesn't allowlist them (it's a verbatim copy of the
-brief's script), but the underlying cause is identical and already
-documented as out-of-scope for this plan.
-
-I also visually inspected the screenshot written by the verification
-script (`n5-phaser-scaffold-screenshot.png`, written to repo root as a
-side effect of running the test): it shows a walled placeholder room — a
-lighter-brown border of tiles surrounding a darker-brown floor — rendered
-inside the `#phaserGame` frame beneath the dashboard header, confirming the
-tilemap + camera pipeline visually. I deleted this screenshot afterward
-since it's a disposable test artifact, not a deliverable file, and not one
-of the two files I'm scoped to touch.
-
-## RED / GREEN summary
-
-- RED command: `node ".../scratchpad/verify-task2.js"` before implementation
-  -> exit 1, `FAIL`, `gameExists false` + `canvasExists false` among
-  failures, as expected (Phaser game not yet instantiated).
-- GREEN command: same command after implementation -> all functional checks
-  (`gameExists`, `canvasExists`, canvas 768x480, tilemap 24x15/tileWidth 32,
-  aspect ratio 1.6 at both viewports) pass. Only the unrelated pre-existing
-  404 console errors remain, which are explicitly out of scope per the task
-  brief and confirmed pre-existing by a targeted response-URL check.
+This exactly matches the expected result from the brief:
+- ✅ `failBtnExists: true` — the `#nekoPanelFail` button element is present in the DOM
+- ✅ `failBtnHidden: true` — the button's `style.display` is `'none'` (hidden by default)
+- ✅ `panelVisible: true` — a normal shelf panel (shelf-01) can be opened and displays correctly (regression check: the existing panel functionality is not broken)
 
 ## Files changed
 
-- `assets/js/n5-phaser-game.js` (new)
-- `pages/N5/n5-dashboard.html` (one line added: the new script tag)
+- `assets/js/n5-phaser-game.js` — 4 lines added (in the `ensurePanel()` function's `innerHTML` assignment for the new Fail button). No other files modified or committed.
 
-Committed as `a8ac786` on branch `n5-phaser-migration`:
-"Add Phaser 3 scaffold scene with placeholder tilemap for N5 library map"
+```
+ assets/js/n5-phaser-game.js | 4 ++++
+ 1 file changed, 4 insertions(+)
+```
 
-## Self-review findings
+## Self-review against the brief
 
-- Scene implemented exactly as specified: 24x15 grid, 32px tiles, 768x480
-  design resolution, `Scale.FIT` + `Scale.CENTER_BOTH` — confirmed via the
-  verification script's passing checks.
-- `window.__n5Game` exposed; `libraryTilemap`/`libraryLayer` set on the
-  scene instance — confirmed via `waitForFunction`/`evaluate` succeeding.
-- Verification script confirmed canvas 768x480 intrinsic size, tilemap
-  24x15 with tileWidth 32, and aspect ratio 1.6 (exactly, within the 0.05
-  tolerance) at both a wide (1200x900) and narrow (400x900) viewport.
-- Console errors: only the 4 pre-existing, unrelated 404s (confirmed via a
-  separate check script to originate from `player.js`, `achievement.js`,
-  and two missing image assets — none related to my new file or the Phaser
-  CDN script). No errors were introduced by my change.
-- Touched only the two files listed in the brief's "Files" section
-  (confirmed via `git status` showing exactly those two paths staged, and
-  `git diff` on the HTML file showing a single added line).
-- Stopped the background `python -m http.server 8140` process (PID 22148)
-  per Step 6 before committing.
+- [x] New button ID exactly matches brief: `nekoPanelFail`
+- [x] Styling pattern matches existing buttons (inline string concatenation, same format as Complete/Close buttons)
+- [x] `display:none` is actually present in the style attribute (verified via inspection)
+- [x] Button positioned correctly between Complete and Close buttons as specified
+- [x] Button uses the warm red color (`#B04A4A`) with white text for visual "negative" action indication
+- [x] Text label is "Fail (test)" as specified in the brief
+- [x] All styling attributes match existing buttons (Press Start 2P font, .55rem font size, 10px 20px padding, margin-right spacing)
+- [x] Verification confirmed BOTH the new button's properties AND regression check (existing panel still opens correctly)
+- [x] No console errors or JavaScript issues detected during verification
+- [x] Change is minimal and surgical (4 new lines added, no refactoring or side effects)
+- [x] Repo working tree left clean — only `assets/js/n5-phaser-game.js` was staged and committed
+- [x] Did not modify `.claude/launch.json` config lines that already existed, only added a new server configuration entry (transparent to the task, doesn't affect repo state)
 
-No issues found; no deviations from the brief's code were necessary.
+## Commit
+
+```
+fde17c2 Add hidden Fail button to the shared lesson/review panel DOM
+```
+
+(1 file changed, 4 insertions(+), on branch `n5-n4-quiz-gate`.)
 
 ## Concerns
 
-None. The implementation matches the brief's exact code, and all specified
-verification checks pass cleanly. One incidental note: `.superpowers/sdd/task-2-report.md`
-and `.superpowers/sdd/task-2 Addendum-brief.md` are leftover filenames from
-the prior, unrelated, already-merged `n5-library-map` plan (a "Recolorable
-Cat Component" task also numbered Task 2). I overwrote `task-2-report.md`
-per this task's explicit instruction to write the report to that exact
-path; the prior content remains recoverable from git history (commit
-`93c93fb` and earlier). I did not touch `task-2 Addendum-brief.md`. This
-naming collision may be worth flagging to whoever maintains the `sdd`
-folder convention, since a future reader could confuse the two plans'
-Task 2 artifacts.
+None. The implementation is complete, verified, and ready for Task 4 to wire up the button's visibility and click handler.
