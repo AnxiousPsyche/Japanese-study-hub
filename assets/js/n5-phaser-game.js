@@ -17,8 +17,12 @@ const ASSET_RECTS = {
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
   bookStack: { x: 358, y: 25, w: 26, h: 50 },
   armchair: { x: 673, y: 43, w: 45, h: 52 },
+  // Reception furniture (found via alpha-scan against the user's
+  // reference images — desk/chair/rug/lamp are all confirmed matches).
+  receptionDesk: { x: 541, y: 229, w: 191, h: 107 },
+  receptionRug: { x: 456, y: 24, w: 168, h: 72 },
+  deskLamp: { x: 624, y: 125, w: 24, h: 43 },
   // TopDownHouse_DoorsAndWindows.png
-  entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
   // Round 2 feedback item 3: previous h:55 crop bled into the door tiles
   // immediately above (y:40-47) and below (y:82+) this window in the
   // sheet. Alpha-scan found the clean window (frame+2 panes+sill, no
@@ -28,8 +32,13 @@ const ASSET_RECTS = {
   rug: { x: 49, y: 146, w: 46, h: 28 },
   table: { x: 64, y: 32, w: 64, h: 32 },
   floorBench: { x: 160, y: 0, w: 48, h: 18 },
-  lamp: { x: 212, y: 122, w: 34, h: 48 },
   plant: { x: 190, y: 108, w: 35, h: 62 },
+  // pixellab-2d-pixel-library-assets...png — a proper 3-book pile
+  // (green/red/blue), used for review checkpoints instead of the old
+  // 2-book bookStack crop above. Different source sheet than the rest
+  // of this list; kept in its own ASSET_RECTS entry since it loads
+  // under a separate texture key (see preload()).
+  bookPileTall: { x: 21, y: 190, w: 33, h: 37 },
 };
 
 // Round 2 feedback item 1 (Option A — extend the map). World is much
@@ -39,15 +48,24 @@ const ASSET_RECTS = {
 // aspect-ratio:16/10 in n5-dashboard.css, per that file's explicit
 // "no CSS changes" constraint from the real-layout spec.
 const GRID_COLS = 56;
-const GRID_ROWS = 75;
+// +9 rows (144px, one shelf-row-unit: shelfH 118 + rowGap 14, rounded up
+// to whole tiles) vs. the Round 2 baseline of 75 — makes room for the
+// lower-left cluster's 3rd shelf row (17-lesson roster expansion, see
+// LESSON_DATA). review-2/final-quiz/the south gate are all positioned
+// relative to WORLD_H already, so they shift down automatically.
+const GRID_ROWS = 84;
 const TILE_SIZE = 16;
 const WORLD_W = GRID_COLS * TILE_SIZE;
 const WORLD_H = GRID_ROWS * TILE_SIZE;
 const GATE_COLS = [25, 26, 27, 28, 29, 30];
 
-// Round 2 feedback item 4: exactly 15 lesson shelves, stable ids,
-// walk-order layout (4 upper-left / 4 upper-right / 4 lower-left /
-// 3 lower-right, matching the feedback's suggested layout exactly).
+// 17-lesson roster (expanded from Round 2's 15, reconciling with
+// N5_Library_Map_Spec.md): Foundations (8) unchanged, Sentence Builder
+// grows from 4 to 6 lessons (adds "Volitional & Invitations" after
+// "Adverbs and Verbs" and "Past & Negative Tense" after "Conjugations"),
+// Final stretch (3) unchanged in content, renumbered 15-17. Walk-order
+// layout is now 4 upper-left / 4 upper-right / 6 lower-left /
+// 3 lower-right — see buildShelves().
 const LESSON_DATA = [
   { id: 'shelf-01', title: 'Basic Greetings' },
   { id: 'shelf-02', title: 'Everyday Expressions' },
@@ -60,10 +78,12 @@ const LESSON_DATA = [
   { id: 'shelf-09', title: 'Nouns & Pronouns' },
   { id: 'shelf-10', title: 'Adjectives' },
   { id: 'shelf-11', title: 'Adverbs and Verbs' },
-  { id: 'shelf-12', title: 'Conjugations' },
-  { id: 'shelf-13', title: 'Sentence Construction' },
-  { id: 'shelf-14', title: 'Particle Mastery' },
-  { id: 'shelf-15', title: 'Existence (あります・います)' },
+  { id: 'shelf-12', title: 'Volitional & Invitations (〜ましょう・〜ませんか)' },
+  { id: 'shelf-13', title: 'Conjugations' },
+  { id: 'shelf-14', title: 'Past & Negative Tense' },
+  { id: 'shelf-15', title: 'Sentence Construction' },
+  { id: 'shelf-16', title: 'Particle Mastery' },
+  { id: 'shelf-17', title: 'Existence (あります・います)' },
 ];
 
 // Prerequisite for each shelf to become "available": null = always
@@ -71,7 +91,7 @@ const LESSON_DATA = [
 // must be completed first. Matches Neko-Bunko-Cat-Library-Spec.md's
 // progression rules: lessons unlock strictly in order, and passing a
 // review nook unlocks the next section (shelf-09 gates on review-1,
-// shelf-13 gates on review-2), not just the previous shelf.
+// shelf-15 gates on review-2), not just the previous shelf.
 const SHELF_PREREQ = {
   'shelf-01': null,
   'shelf-02': 'shelf-01', 'shelf-03': 'shelf-02', 'shelf-04': 'shelf-03',
@@ -79,15 +99,17 @@ const SHELF_PREREQ = {
   'shelf-08': 'shelf-07',
   'shelf-09': 'review-1',
   'shelf-10': 'shelf-09', 'shelf-11': 'shelf-10', 'shelf-12': 'shelf-11',
-  'shelf-13': 'review-2',
-  'shelf-14': 'shelf-13', 'shelf-15': 'shelf-14',
+  'shelf-13': 'shelf-12', 'shelf-14': 'shelf-13',
+  'shelf-15': 'review-2',
+  'shelf-16': 'shelf-15', 'shelf-17': 'shelf-16',
 };
 
-// Round 2 feedback item 5: exactly 3 book piles (2 reviews + final quiz).
+// 2 review book piles. The 3rd checkpoint ("final-quiz") is no longer a
+// book pile — it's the staircase up at the north wall (see
+// buildTopBand()), which is the gate to N4 ("second floor").
 const BOOK_PILE_DATA = [
   { id: 'review-1', title: 'Foundations Review', requires: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04', 'shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'] },
-  { id: 'review-2', title: 'Sentence Builder Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12'] },
-  { id: 'final-quiz', title: 'Final Quiz', requires: ['shelf-13', 'shelf-14', 'shelf-15'] },
+  { id: 'review-2', title: 'Sentence Builder Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12', 'shelf-13', 'shelf-14'] },
 ];
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
@@ -201,6 +223,7 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
+    this.load.image('pixellabLibrary', '../../assets/images/ui/pixellab-2d-pixel-library-assets-1783435154845.png');
     this.load.image('catPlayer', '../../assets/images/icons/pixels/fortunecat-Original.png');
   }
 
@@ -215,6 +238,7 @@ class LibraryScene extends Phaser.Scene {
     this.buildFurniture();
     this.buildShelves();
     this.buildBookPiles();
+    this.buildReception();
     this.buildPlayer();
     this.wireInput();
     this.refreshAllStates();
@@ -308,11 +332,44 @@ class LibraryScene extends Phaser.Scene {
     const bandX = (WORLD_W - bandTotalWidth) / 2;
 
     const staircaseKey = cropToTexture(this, 'libAssetPack', staircaseRect, 'staircaseTex');
-    this.furnitureSprites.staircase = this.add
+    const staircaseSprite = this.add
       .image(bandX, 0, staircaseKey)
       .setOrigin(0, 0)
       .setDisplaySize(staircaseDisplayWidth, staircaseRect.h * topBandScale)
       .setDepth(2);
+    this.furnitureSprites.staircase = staircaseSprite;
+
+    // The staircase IS the final-quiz/N4 gate (per "remove the door,
+    // just make the stairs the final exam/quiz and gate-lock to N4,
+    // which will be second floor") — no separate book pile or door
+    // sprite. Same interaction pattern as every other interactive:
+    // click-in-range/E-to-interact/auto-walk, locked until L15-17 are
+    // done, dim+padlock-style alpha while locked (no separate
+    // locked/unlocked art for the staircase itself).
+    const stairGlow = this.add
+      .text(bandX + staircaseDisplayWidth - 14, staircaseRect.h * topBandScale - 10, '⭐', { fontSize: '16px' })
+      .setOrigin(0.5).setDepth(4).setVisible(false);
+    const stairStamp = this.add
+      .text(bandX + staircaseDisplayWidth - 14, staircaseRect.h * topBandScale - 10, '✅', { fontSize: '16px' })
+      .setOrigin(0.5).setDepth(4).setVisible(false);
+    this.tweens.add({ targets: stairGlow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+
+    // Trigger point deliberately sits near the BASE of the staircase
+    // (not its vertical center) — the wallBlock rectangle below covers
+    // y:0-252 to keep players out of the painted wall art, and the
+    // staircase's own center (y~210) falls inside that solid zone,
+    // making it unreachable via corridor auto-walk. y:390 is below the
+    // block, at the foot of the stairs, so the routed approach clears it.
+    const stairEntry = {
+      id: 'final-quiz', kind: 'pile', title: 'Final Quiz',
+      sprite: staircaseSprite, glow: stairGlow, stamp: stairStamp,
+      requires: ['shelf-15', 'shelf-16', 'shelf-17'],
+      x: bandX + staircaseDisplayWidth / 2, y: 390,
+      baseScale: topBandScale,
+    };
+    staircaseSprite.setInteractive({ useHandCursor: true });
+    staircaseSprite.on('pointerdown', () => this.handleInteractiveClick(stairEntry));
+    this.interactives.push(stairEntry);
 
     const wallKey = cropToTexture(this, 'libAssetPack', wallRect, 'wallBalconyTex');
     this.furnitureSprites.wallBalcony = this.add
@@ -326,19 +383,12 @@ class LibraryScene extends Phaser.Scene {
     this.physics.add.existing(wallBlock, true);
     this.wallGroup.add(wallBlock);
 
+    // No door (removed per "remove the door" — the staircase above is
+    // now the sole gate to N4). doorDisplayWidth is kept as a pure
+    // layout constant (the old door crop's width) purely so the window
+    // spacing below doesn't need re-deriving — no door sprite is drawn.
     const gapCenterX = bandX + staircaseDisplayWidth + ((110 + 260) / 2) * topBandScale;
-    const gapFloorY = 130 * topBandScale;
-
-    const doorRect = ASSET_RECTS.entranceDoor;
-    const doorKey = cropToTexture(this, 'doorsWindows', doorRect, 'entranceDoorTex');
-    const doorScale = 1.8;
-    const doorDisplayWidth = doorRect.w * doorScale;
-    const doorDisplayHeight = doorRect.h * doorScale;
-    this.furnitureSprites.entranceDoor = this.add
-      .image(gapCenterX - doorDisplayWidth / 2, gapFloorY - doorDisplayHeight, doorKey)
-      .setOrigin(0, 0)
-      .setDisplaySize(doorDisplayWidth, doorDisplayHeight)
-      .setDepth(3);
+    const doorDisplayWidth = 25 * 1.8;
 
     // Round 2 feedback item 3: re-sliced window (frame+glass+sill only,
     // no neighboring door tiles) and positioned higher on the wall band
@@ -372,9 +422,6 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
       .setDepth(3);
-
-    this.entranceX = gapCenterX;
-    this.entranceY = gapFloorY + 30;
   }
 
   // -- Central decor: globe, reading tables, review-nook seating ---------
@@ -399,10 +446,12 @@ class LibraryScene extends Phaser.Scene {
 
     const rugKey = cropToTexture(this, 'furniture03', ASSET_RECTS.rug, 'rugTex');
     const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.table, 'tableTex');
-    const lampKey = cropToTexture(this, 'furniture03', ASSET_RECTS.lamp, 'lampTex');
     const plantKey = cropToTexture(this, 'furniture03', ASSET_RECTS.plant, 'plantTex');
     const armchairKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.armchair, 'armchairTex');
+    const deskLampKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.deskLamp, 'deskLampTex');
+    const tableBookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'tableBookTex');
     this.rugKey = rugKey;
+    this.armchairKey = armchairKey; // reused by buildReception's chair
 
     // Round 2 feedback item 1: the rug path is centered at WORLD_W/2 and
     // is now the one thing NOTHING is placed on top of — every other
@@ -427,7 +476,14 @@ class LibraryScene extends Phaser.Scene {
       // solid table here would block auto-walk to every shelf on that
       // side, same reasoning as the shelves/piles themselves.
       this.furnitureSprites[`${name}Table`] = this.add.image(x, y, tableKey).setOrigin(0, 0);
-      this.furnitureSprites[`${name}Lamp`] = this.add.image(x + 70, y - 8, lampKey).setOrigin(0, 0);
+      // A couple of small items sitting on the table surface itself
+      // (lamp + book stack), so it reads as lived-in rather than bare —
+      // both depth 2 so they draw in front of the table (depth default).
+      this.furnitureSprites[`${name}Lamp`] = this.add
+        .image(x + 38, y - 20, deskLampKey).setOrigin(0, 0).setDepth(2);
+      this.furnitureSprites[`${name}Book`] = this.add
+        .image(x + 10, y - 4, tableBookKey).setOrigin(0, 0).setDepth(2)
+        .setDisplaySize(ASSET_RECTS.bookStack.w * 0.7, ASSET_RECTS.bookStack.h * 0.7);
       this.furnitureSprites[`${name}Plant`] = this.add.image(x - 40, y - 20, plantKey).setOrigin(0, 0);
     };
     placeTable('readingLeft', this.pathLeft - 150, 520);
@@ -447,7 +503,7 @@ class LibraryScene extends Phaser.Scene {
     placeNook('nookRight', this.pathRight + 55, 440, true);
   }
 
-  // -- 15 lesson shelves (Round 2 feedback item 4) ------------------------
+  // -- 17 lesson shelves (17-lesson roster expansion) --------------------
 
   buildShelves() {
     const shelfW = ASSET_RECTS.shelfLocked.w;
@@ -458,11 +514,14 @@ class LibraryScene extends Phaser.Scene {
     const leftColX = [40, 40 + shelfW + colGap];
     const rightColX = [WORLD_W - 40 - shelfW - shelfW - colGap, WORLD_W - 40 - shelfW];
     const upperRowY = [460, 460 + shelfH + rowGap];
-    const lowerRowY = [780, 780 + shelfH + rowGap];
+    const lowerRowY = [780, 780 + shelfH + rowGap, 780 + 2 * (shelfH + rowGap)];
 
-    // 4 upper-left (L1-4), 4 upper-right (L5-8), 4 lower-left (L9-12),
-    // 3 lower-right (L13-15) — matches the feedback's suggested layout
-    // and walk order exactly.
+    // 4 upper-left (L1-4), 4 upper-right (L5-8), 6 lower-left (L9-14,
+    // Sentence Builder — grown from 4 to 6, adds a 3rd row), 3
+    // lower-right (L15-17, Final stretch — unchanged, stays 2 rows with
+    // the 2nd row half-empty, left deliberately asymmetric against the
+    // now-taller left wall rather than re-spreading 3 shelves into 3
+    // rows). Matches LESSON_DATA's order and walk order exactly.
     const positions = [
       [leftColX[0], upperRowY[0]], [leftColX[1], upperRowY[0]],
       [leftColX[0], upperRowY[1]], [leftColX[1], upperRowY[1]],
@@ -470,6 +529,7 @@ class LibraryScene extends Phaser.Scene {
       [rightColX[0], upperRowY[1]], [rightColX[1], upperRowY[1]],
       [leftColX[0], lowerRowY[0]], [leftColX[1], lowerRowY[0]],
       [leftColX[0], lowerRowY[1]], [leftColX[1], lowerRowY[1]],
+      [leftColX[0], lowerRowY[2]], [leftColX[1], lowerRowY[2]],
       [rightColX[0], lowerRowY[0]], [rightColX[1], lowerRowY[0]],
       [rightColX[0], lowerRowY[1]],
     ];
@@ -489,6 +549,13 @@ class LibraryScene extends Phaser.Scene {
         .setOrigin(0.5).setDepth(4).setVisible(false);
       this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
+      // Label placement (spec section 4): the lesson number engraved on
+      // the empty plinth strip at the shelf's base — small, low-contrast
+      // (a shade darker than the maroon plinth wood), not a bold badge.
+      this.add.text(x + shelfW / 2, y + shelfH - 12, String(i + 1), {
+        fontSize: '10px', fontFamily: 'Georgia, serif', color: '#4a1f1f',
+      }).setOrigin(0.5).setDepth(2);
+
       // Deliberately non-solid: 2 shelves share each row with only a
       // 14px gap, and auto-walk routing to the far column would have to
       // cross the near column's collision box. Interaction still works
@@ -506,24 +573,21 @@ class LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- 3 book piles: 2 reviews + final quiz (Round 2 feedback item 5) ----
+  // -- 2 review book piles (final quiz is the staircase — see buildTopBand) --
 
   buildBookPiles() {
-    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookStack, 'bookPileTex');
+    const bookKey = cropToTexture(this, 'pixellabLibrary', ASSET_RECTS.bookPileTall, 'bookPileTex');
     const y1 = 730; // between upper cluster (ends ~592) and lower cluster (starts 780)
     const y2 = WORLD_H - 130; // between lower cluster and the south end
     const positions = {
       'review-1': { x: this.pathLeft - 60, y: y1, scale: 1.6 },
       'review-2': { x: this.pathRight + 20, y: y2, scale: 1.6 },
-      // Final quiz reads as bigger/grander, centered on the path near
-      // the south gate, per "so it reads as the finale."
-      'final-quiz': { x: WORLD_W / 2 - 20, y: WORLD_H - 90, scale: 2.4 },
     };
 
     BOOK_PILE_DATA.forEach((pile) => {
       const pos = positions[pile.id];
-      const w = ASSET_RECTS.bookStack.w * pos.scale;
-      const h = ASSET_RECTS.bookStack.h * pos.scale;
+      const w = ASSET_RECTS.bookPileTall.w * pos.scale;
+      const h = ASSET_RECTS.bookPileTall.h * pos.scale;
       const sprite = this.add.image(pos.x, pos.y, bookKey).setOrigin(0, 0)
         .setDisplaySize(w, h).setDepth(1);
       const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', { fontSize: '18px' })
@@ -547,10 +611,49 @@ class LibraryScene extends Phaser.Scene {
     });
   }
 
+  // -- Reception nook: desk + chair + rug, purely decorative --------------
+  // Spec section 7 puts this "right after spawn." Spawn is now the south
+  // gate (see buildPlayer), so the nook sits there instead of near the
+  // (removed) north door — offset left of the path, matching every other
+  // piece of decor's "never touch the rug" rule from Round 2.
+
+  buildReception() {
+    const deskKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.receptionDesk, 'receptionDeskTex');
+    const rugKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.receptionRug, 'receptionRugTex');
+    // Reuses buildFurniture's armchairTex crop rather than re-cropping
+    // the same source rect under the same key (which Phaser rejects).
+    const chairKey = this.armchairKey;
+
+    const rugScale = 0.9;
+    const deskScale = 0.85;
+    const rugW = ASSET_RECTS.receptionRug.w * rugScale;
+    const rugH = ASSET_RECTS.receptionRug.h * rugScale;
+    const deskW = ASSET_RECTS.receptionDesk.w * deskScale;
+    const deskH = ASSET_RECTS.receptionDesk.h * deskScale;
+
+    const originX = this.pathLeft - 210;
+    const originY = WORLD_H - 165;
+
+    this.furnitureSprites.receptionRug = this.add
+      .image(originX - 10, originY, rugKey).setOrigin(0, 0)
+      .setDisplaySize(rugW, rugH).setDepth(0);
+    this.furnitureSprites.receptionDesk = this.add
+      .image(originX, originY + 18, deskKey).setOrigin(0, 0)
+      .setDisplaySize(deskW, deskH).setDepth(1);
+    this.furnitureSprites.receptionChair = this.add
+      .image(originX + 58, originY - 44, chairKey).setOrigin(0, 0).setDepth(1);
+    // Non-solid, same reasoning as every other decor piece this round.
+  }
+
   // -- Player + camera -----------------------------------------------------
 
   buildPlayer() {
-    this.player = this.physics.add.sprite(this.entranceX, this.entranceY, 'catPlayer');
+    // Spawns at the south gate now (the door/north entrance is gone —
+    // the staircase at the north end is the N4 exit, not an entry
+    // point), on the rug just above the gate opening.
+    const spawnX = WORLD_W / 2;
+    const spawnY = WORLD_H - 70;
+    this.player = this.physics.add.sprite(spawnX, spawnY, 'catPlayer');
     this.player.setDisplaySize(30, 30);
     this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.5);
     this.player.setCollideWorldBounds(true);

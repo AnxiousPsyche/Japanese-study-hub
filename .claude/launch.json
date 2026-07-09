@@ -18,6 +18,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8199"],
       "port": 8199
+    },
+    {
+      "name": "jp-library-static-r3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8210"],
+      "port": 8210
     }
   ],
   "autoVerify": true
