@@ -14,6 +14,8 @@ const ASSET_RECTS = {
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   balconyBench: { x: 360, y: 215, w: 160, h: 118 },
+  // TopDownHouse_DoorsAndWindows.png (measured via grid-overlay harness)
+  entranceDoor: { x: 130, y: 0, w: 25, h: 45 },
   // furniture03.png (256x256px)
   rug: { x: 49, y: 146, w: 46, h: 28 },
   table: { x: 64, y: 32, w: 64, h: 32 },
@@ -67,6 +69,7 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('floorsWalls', '../../assets/images/ui/floors-walls02.png');
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
+    this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
   }
 
   create() {
@@ -125,6 +128,28 @@ class LibraryScene extends Phaser.Scene {
       .image(staircaseDisplayWidth, 0, wallKey)
       .setOrigin(0, 0)
       .setDisplaySize(wallRect.w * topBandScale, wallRect.h * topBandScale);
+
+    // Entrance door in the balcony art's recessed center gap (Round 1
+    // feedback B1). Gap measured at source x:1150-1300 (within the
+    // pre-split 1488-wide sheet) = x:110-260 relative to wallRect's own
+    // x:1040 origin, floor (where the recess curtain meets its own trim
+    // strip) at source y:130 — all re-verified with a self-contained
+    // canvas grid overlay (see commit note: the CSS-<img>-scaling harness
+    // used for TopDownHouse_DoorsAndWindows.png gave wrong Y readings for
+    // that file; this libassetpack-tiled.png measurement was re-checked
+    // against the same canvas method and confirmed accurate).
+    const doorRect = ASSET_RECTS.entranceDoor;
+    const doorKey = cropToTexture(this, 'doorsWindows', doorRect, 'entranceDoorTex');
+    const doorScale = 1.8;
+    const doorDisplayWidth = doorRect.w * doorScale;
+    const doorDisplayHeight = doorRect.h * doorScale;
+    const gapCenterX = staircaseDisplayWidth + ((110 + 260) / 2) * topBandScale;
+    const gapFloorY = 130 * topBandScale;
+    this.furnitureSprites.entranceDoor = this.add
+      .image(gapCenterX - doorDisplayWidth / 2, gapFloorY - doorDisplayHeight, doorKey)
+      .setOrigin(0, 0)
+      .setDisplaySize(doorDisplayWidth, doorDisplayHeight)
+      .setDepth(3);
 
     const bookshelfKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookshelf, 'bookshelfTex');
     const globeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'globeTex');
