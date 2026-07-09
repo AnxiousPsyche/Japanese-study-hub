@@ -843,24 +843,33 @@ class LibraryScene extends Phaser.Scene {
     // the same source rect under the same key (which Phaser rejects).
     const chairKey = this.armchairKey;
 
-    const rugScale = 0.9;
-    const deskScale = 0.85;
-    const rugW = ASSET_RECTS.receptionRug.w * rugScale;
-    const rugH = ASSET_RECTS.receptionRug.h * rugScale;
-    const deskW = ASSET_RECTS.receptionDesk.w * deskScale;
-    const deskH = ASSET_RECTS.receptionDesk.h * deskScale;
+    // libAssetPack's furniture (desk/rug/armchair) is drawn at a much
+    // higher pixel density than the sofa/cabinet/curio sheets used
+    // elsewhere in this cluster — at native size the desk (191x107) and
+    // rug (168x72) dwarfed the 48px-wide sofas next to them. Scaled down
+    // so the whole reception nook sits in the same visual scale as its
+    // neighbors: desk width lands near the shelf sprite's 87px (the
+    // project's existing "big furniture" reference), chair matches the
+    // ~32-38px single-seat scale the sofa armchair variants use.
+    const deskW = 76;
+    const deskH = ASSET_RECTS.receptionDesk.h * (deskW / ASSET_RECTS.receptionDesk.w);
+    const rugW = 92;
+    const rugH = ASSET_RECTS.receptionRug.h * (rugW / ASSET_RECTS.receptionRug.w);
+    const chairW = 32;
+    const chairH = ASSET_RECTS.armchair.h * (chairW / ASSET_RECTS.armchair.w);
 
     const originX = WORLD_W / 2 - deskW / 2;
     const originY = LAYOUT.receptionY;
 
     this.furnitureSprites.receptionRug = this.add
-      .image(originX - 10, originY, rugKey).setOrigin(0, 0)
+      .image(originX - 8, originY, rugKey).setOrigin(0, 0)
       .setDisplaySize(rugW, rugH).setDepth(0);
     this.furnitureSprites.receptionDesk = this.add
-      .image(originX, originY + 18, deskKey).setOrigin(0, 0)
+      .image(originX, originY + 10, deskKey).setOrigin(0, 0)
       .setDisplaySize(deskW, deskH).setDepth(1);
     this.furnitureSprites.receptionChair = this.add
-      .image(originX + 58, originY - 44, chairKey).setOrigin(0, 0).setDepth(1);
+      .image(originX + deskW / 2 - chairW / 2, originY - 22, chairKey).setOrigin(0, 0)
+      .setDisplaySize(chairW, chairH).setDepth(1);
     // Non-solid, same reasoning as every other decor piece this round.
   }
 
