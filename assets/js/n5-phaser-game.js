@@ -676,16 +676,23 @@ class LibraryScene extends Phaser.Scene {
     // One distinct variant per slot (2-seat couch, 3-seat w/ pillows,
     // armchair w/ pillow, plain armchair), matching the 4-sofa family
     // shown in the reference image, rather than repeating one sprite.
+    // Their native crops differ in size (28-48px wide), which read as
+    // mismatched scale side-by-side — displayed at one shared size
+    // (the largest native footprint, so nothing gets downscaled) so
+    // all 4 look uniform.
     const sofaRects = [ASSET_RECTS.sofaCouch2, ASSET_RECTS.sofaCouch3, ASSET_RECTS.sofaArmchairPillow, ASSET_RECTS.sofaArmchairPlain];
+    const sofaDisplayW = Math.max(...sofaRects.map((r) => r.w));
+    const sofaDisplayH = Math.max(...sofaRects.map((r) => r.h));
     const sofaRowGap = 14;
     const leftSofaX = 60;
-    const rightSofaX = WORLD_W - 60 - Math.max(...sofaRects.map((r) => r.w));
+    const rightSofaX = WORLD_W - 60 - sofaDisplayW;
     [leftSofaX, rightSofaX].forEach((x, side) => {
       [0, 1].forEach((row) => {
         const slot = side * 2 + row;
-        const y = LAYOUT.sofaRowY + row * (sofaRects[slot].h + sofaRowGap);
+        const y = LAYOUT.sofaRowY + row * (sofaDisplayH + sofaRowGap);
         this.furnitureSprites[`sofa${slot + 1}`] = this.add
-          .image(x, y, sofaKeys[slot]).setOrigin(0, 0).setDepth(1);
+          .image(x, y, sofaKeys[slot]).setOrigin(0, 0).setDepth(1)
+          .setDisplaySize(sofaDisplayW, sofaDisplayH);
       });
     });
 
