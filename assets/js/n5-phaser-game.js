@@ -124,6 +124,9 @@ const CAT_COLORS = {
   white: { key: 'whiteCatIdle', path: '../../assets/images/icons/pixels/whitecatIdle.png', frames: 18, label: 'White' },
 };
 const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
+const QUIZ_GATE_KEY = 'nekoBunko.n5.quizGate';
+const QUIZ_MAX_ATTEMPTS = 3;
+const QUIZ_LOCKOUT_MS = 24 * 60 * 60 * 1000;
 // Both thresholds must exceed the realistic minimum approach distance:
 // every shelf/pile has a solid collision body (addSolid), so the player
 // can never physically reach an interactive's exact center (entry.x/y)
@@ -152,6 +155,54 @@ function saveProgress(progress) {
     // localStorage unavailable (privacy mode, quota, etc.) — degrade to
     // session-only, never throw.
   }
+}
+
+function loadQuizGateState() {
+  try {
+    const raw = localStorage.getItem(QUIZ_GATE_KEY);
+    if (!raw) return { attemptsUsed: 0, lockedUntil: null };
+    const parsed = JSON.parse(raw);
+    return {
+      attemptsUsed: typeof parsed.attemptsUsed === 'number' ? parsed.attemptsUsed : 0,
+      lockedUntil: typeof parsed.lockedUntil === 'number' ? parsed.lockedUntil : null,
+    };
+  } catch (e) {
+    return { attemptsUsed: 0, lockedUntil: null };
+  }
+}
+
+function saveQuizGateState(state) {
+  try {
+    localStorage.setItem(QUIZ_GATE_KEY, JSON.stringify(state));
+  } catch (e) {
+    // localStorage unavailable — degrade to session-only, same pattern
+    // as saveProgress()/saveCatColor().
+  }
+}
+
+function formatLockMessage(msRemaining) {
+  const totalMinutes = Math.max(1, Math.ceil(msRemaining / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `Locked - try again in ${hours}h ${minutes}m`;
+}
+
+// Applies lazy cooldown-expiry reset (spec: "attempts reset to 3... no
+// re-review required" once 24h has passed), then returns what the UI needs.
+function getQuizGateStatus() {
+  const state = loadQuizGateState();
+  if (state.lockedUntil !== null && Date.now() >= state.lockedUntil) {
+    state.attemptsUsed = 0;
+    state.lockedUntil = null;
+    saveQuizGateState(state);
+  }
+  const locked = state.lockedUntil !== null && Date.now() < state.lockedUntil;
+  return {
+    state,
+    locked,
+    attemptsLeft: Math.max(0, QUIZ_MAX_ATTEMPTS - state.attemptsUsed),
+    lockMessage: locked ? formatLockMessage(state.lockedUntil - Date.now()) : null,
+  };
 }
 
 function getState(id, prereq, progress) {
