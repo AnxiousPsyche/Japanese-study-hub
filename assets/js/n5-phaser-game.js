@@ -111,10 +111,15 @@ const LAYOUT = {
   // band above/below each zone).
   shelfW: ASSET_RECTS.shelfLocked.w,
   shelfH: ASSET_RECTS.shelfLocked.h,
-  leftColX: [40, 40 + ASSET_RECTS.shelfLocked.w + 20],
+  // Margin was 40 — inside the 3-tile (48px) side-wall brick strip
+  // buildWalls() draws at x=16..64 (and its mirror at the right edge),
+  // so the inner shelf column's left 24px sat on top of the brick
+  // instead of the floor. 64 is exactly where that strip ends, so the
+  // shelf's edge sits flush against the wall with no overlap.
+  leftColX: [64, 64 + ASSET_RECTS.shelfLocked.w + 20],
   rightColX: [
-    WORLD_W - 40 - ASSET_RECTS.shelfLocked.w * 2 - 20,
-    WORLD_W - 40 - ASSET_RECTS.shelfLocked.w,
+    WORLD_W - 64 - ASSET_RECTS.shelfLocked.w * 2 - 20,
+    WORLD_W - 64 - ASSET_RECTS.shelfLocked.w,
   ],
   zone1RowY: [560, 692, 824], // shelves 9-17 (nearest stairs -> nearest zone 2)
   zone2RowY: [1082, 1214], // shelves 1-8 (nearest zone 1 -> nearest spawn)
