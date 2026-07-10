@@ -339,53 +339,6 @@ function cropToTexture(scene, sourceKey, rect, destKey) {
   return destKey;
 }
 
-// ---------------------------------------------------------------------
-// DOM lesson/review panel (HTML overlay over the canvas, per
-// Neko-Bunko-Cat-Library-Spec.md section 8: "HTML overlay is fine for
-// lesson panels — easier to style text than in-canvas UI").
-// ---------------------------------------------------------------------
-
-function ensurePanel() {
-  let panel = document.getElementById('nekoLessonPanel');
-  if (panel) return panel;
-
-  panel = document.createElement('div');
-  panel.id = 'nekoLessonPanel';
-  panel.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;'
-    + 'justify-content:center;background:rgba(0,0,0,.55);z-index:20000;';
-  // Retro-RPG dialog box treatment (chunkier border, pixel-ish corners,
-  // hard offset shadow instead of a soft blur) rather than the site's
-  // general soft-rounded card style — this panel pops up over the
-  // pixel-art game canvas specifically, so its shape language matches
-  // the game, not the surrounding dashboard chrome. Palette (cream
-  // background, tan border/close button) is unchanged from Round 1's
-  // exact HUD color match. #87A8D8 -> #4E74A8 on the Complete button:
-  // the old blue was only 2.44:1 contrast against white text (fails
-  // WCAG AA 4.5:1) - same fix as the HUD buttons in n5-dashboard.css.
-  panel.innerHTML = ''
-    + '<div style="background:#FFFDF6;border:5px solid #C9BFA5;border-radius:4px;'
-    + 'box-shadow:6px 6px 0 rgba(90,74,58,.28);'
-    + 'padding:30px;max-width:420px;text-align:center;">'
-    + '<h2 id="nekoPanelTitle" style="font-family:\'Press Start 2P\',cursive;'
-    + 'font-size:.85rem;margin-bottom:16px;color:#5A4A3A;line-height:1.6;"></h2>'
-    + '<p id="nekoPanelBody" style="margin-bottom:22px;color:#5A4A3A;'
-    + 'font-family:Nunito,sans-serif;"></p>'
-    + '<button id="nekoPanelComplete" style="padding:10px 20px;border:none;'
-    + 'border-radius:4px;background:#4E74A8;color:white;'
-    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
-    + 'margin-right:10px;">Complete</button>'
-    + '<button id="nekoPanelFail" style="display:none;padding:10px 20px;border:none;'
-    + 'border-radius:4px;background:#B04A4A;color:white;'
-    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;'
-    + 'margin-right:10px;">Fail (test)</button>'
-    + '<button id="nekoPanelClose" style="padding:10px 20px;border:none;'
-    + 'border-radius:4px;background:#C9BFA5;color:#5A4A3A;'
-    + 'font-family:\'Press Start 2P\',cursive;font-size:.55rem;cursor:pointer;">'
-    + 'Close</button></div>';
-  document.body.appendChild(panel);
-  return panel;
-}
-
 function ensureToast() {
   let toast = document.getElementById('nekoToast');
   if (toast) return toast;
@@ -441,7 +394,6 @@ class LibraryScene extends Phaser.Scene {
     this.wireInput();
     this.refreshAllStates();
 
-    ensurePanel();
     ensureToast();
   }
 
@@ -1122,10 +1074,8 @@ class LibraryScene extends Phaser.Scene {
   }
 
   // -- Lesson/review interaction ---------------------------------------------
-  // Shelves and the 2 review piles use the retro in-canvas menu (below);
-  // the staircase/quiz gate keeps the older DOM panel for now — that
-  // flow (attempts/cooldown/sparkle) is mid-implementation on a separate
-  // task and isn't being redesigned in the same pass as this menu.
+  // Shelves, the 2 review piles, and the staircase/quiz gate all share the
+  // same retro in-canvas menu engine (below).
 
   openInteraction(entry) {
     const state = entry.kind === 'shelf'
@@ -1139,39 +1089,17 @@ class LibraryScene extends Phaser.Scene {
     }
 
     if (entry.id === 'final-quiz') {
-      this.openPanel(entry, state);
+      if (state !== 'completed') {
+        const gate = getQuizGateStatus();
+        if (gate.locked) {
+          showToast(gate.lockMessage);
+          return;
+        }
+      }
+      this.openQuizGateMenu(entry, state);
       return;
     }
     this.openRetroMenu(entry, state);
-  }
-
-  openPanel(entry, state) {
-    const panel = ensurePanel();
-    document.getElementById('nekoPanelTitle').textContent = entry.title;
-    document.getElementById('nekoPanelBody').textContent = state === 'completed'
-      ? 'Already completed. Review anytime.'
-      : (entry.kind === 'shelf' ? 'Lesson content coming soon.' : 'Checkpoint content coming soon.');
-    panel.style.display = 'flex';
-
-    const completeBtn = document.getElementById('nekoPanelComplete');
-    const closeBtn = document.getElementById('nekoPanelClose');
-    const onComplete = () => {
-      this.progress[entry.id] = true;
-      saveProgress(this.progress);
-      this.refreshAllStates();
-      this.closePanel();
-    };
-    const onClose = () => this.closePanel();
-    completeBtn.onclick = onComplete;
-    closeBtn.onclick = onClose;
-
-    this.panelOpen = true;
-  }
-
-  closePanel() {
-    const panel = document.getElementById('nekoLessonPanel');
-    if (panel) panel.style.display = 'none';
-    this.panelOpen = false;
   }
 
   // -- Retro in-canvas selection menu (shelves + review piles) -----------
@@ -1206,6 +1134,58 @@ class LibraryScene extends Phaser.Scene {
     saveFavorites(this.favorites);
     this.refreshAllStates();
     this.closeRetroMenu();
+  }
+
+  // -- Quiz gate (staircase) retro menu -----------------------------------
+  // Same buildRetroMenu engine as shelves/review piles, two levels deep:
+  // a top-level menu whose options depend on pass state, and — for "Retry
+  // exam" — a nested Pass/Fail test menu that exercises the attempts/
+  // cooldown mechanic from getQuizGateStatus()/saveQuizGateState().
+
+  openQuizGateMenu(entry, state) {
+    const options = state === 'completed'
+      ? [
+        { label: 'Proceed to N4', onSelect: () => { showToast('N4 is coming soon.'); this.closeRetroMenu(); } },
+        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
+      ]
+      : [
+        { label: 'Retry exam', onSelect: () => this.openQuizAttemptMenu(entry) },
+        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
+      ];
+    this.buildRetroMenu(entry.title, options);
+  }
+
+  openQuizAttemptMenu(entry) {
+    const { attemptsLeft } = getQuizGateStatus();
+    const options = [
+      { label: 'Pass (test)', onSelect: () => this.resolveQuizAttempt(entry, true) },
+      { label: 'Fail (test)', onSelect: () => this.resolveQuizAttempt(entry, false) },
+      { label: 'Back', onSelect: () => this.openQuizGateMenu(entry, 'available') },
+    ];
+    this.buildRetroMenu(`${entry.title} (${attemptsLeft} left)`, options);
+  }
+
+  resolveQuizAttempt(entry, passed) {
+    if (passed) {
+      this.progress[entry.id] = true;
+      saveProgress(this.progress);
+      this.refreshAllStates();
+      this.closeRetroMenu();
+      this.spawnPassSparkle(entry.x, entry.y);
+      return;
+    }
+    const gateState = loadQuizGateState();
+    gateState.attemptsUsed += 1;
+    if (gateState.attemptsUsed >= QUIZ_MAX_ATTEMPTS) {
+      gateState.lockedUntil = Date.now() + QUIZ_LOCKOUT_MS;
+      saveQuizGateState(gateState);
+      this.closeRetroMenu();
+      showToast('Locked for 24 hours.');
+    } else {
+      saveQuizGateState(gateState);
+      this.closeRetroMenu();
+      showToast(`Try again (${QUIZ_MAX_ATTEMPTS - gateState.attemptsUsed} left)`);
+    }
   }
 
   buildRetroMenu(title, options) {
@@ -1288,7 +1268,7 @@ class LibraryScene extends Phaser.Scene {
       // The staircase is exempt from the locked-state dim — see
       // buildTopBand's comment: fading a large architectural piece to
       // 55% opacity reads as broken, not "locked". It still gates
-      // correctly (openPanel's "Not yet…" toast is unaffected), it just
+      // correctly (openInteraction's "Not yet…" toast is unaffected), it just
       // always renders at full visibility.
       if (entry.id !== 'final-quiz') {
         entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);

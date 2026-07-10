@@ -120,6 +120,16 @@
         "9123"
       ],
       "port": 9123
+    },
+    {
+      "name": "jp-library-static-quizgate-menu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9234"
+      ],
+      "port": 9234
     }
   ],
   "autoVerify": true
