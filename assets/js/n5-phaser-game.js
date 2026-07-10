@@ -900,10 +900,13 @@ class LibraryScene extends Phaser.Scene {
     const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'bookPileTex');
     // Positions come from buildFurniture()'s decor rows — review-1 and
     // review-2 each sit as the "R" in one of the P-T&C-R-T&C-P rows (see
-    // LAYOUT's comment for which row hosts which).
+    // LAYOUT's comment for which row hosts which). Scale dropped from
+    // 1.6 (52x83 displayed — towered over the neighboring plants/tables)
+    // to 0.7, small enough to read as sitting "in" the shelf-row scale
+    // instead of dominating it.
     const positions = {
-      'review-1': { ...this.reviewPilePositions['review-1'], scale: 1.6 },
-      'review-2': { ...this.reviewPilePositions['review-2'], scale: 1.6 },
+      'review-1': { ...this.reviewPilePositions['review-1'], scale: 0.7 },
+      'review-2': { ...this.reviewPilePositions['review-2'], scale: 0.7 },
     };
 
     BOOK_PILE_DATA.forEach((pile) => {
