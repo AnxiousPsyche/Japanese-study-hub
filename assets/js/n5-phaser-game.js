@@ -373,6 +373,7 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState1.png');
     this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
     this.load.image('favoriteIcon', '../../assets/images/icons/pixels/gay.png');
+    this.load.image('finishFlagIcon', '../../assets/images/ui/finish-line-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -493,7 +494,13 @@ class LibraryScene extends Phaser.Scene {
     const staircaseRect = ASSET_RECTS.staircase;
     const staircaseDisplayWidth = staircaseRect.w * stairScale;
     const staircaseDisplayHeight = staircaseRect.h * stairScale;
-    const stairX = 40;
+    // Was 40 — alpha-scanned per-row against the live crop and found the
+    // staircase's real (opaque) content starts as late as world x≈65 at
+    // some rows, leaving a wide strip of bare floor between it and the
+    // true left wall (x=16, just past the 1-tile brick border). Shifting
+    // the sprite's origin left closes that gap; the small sliver of the
+    // sprite this pushes past x=0 is off-world and simply never rendered.
+    const stairX = -5;
 
     const staircaseKey = cropToTexture(this, 'libAssetPack', staircaseRect, 'staircaseTex');
     const staircaseSprite = this.add
@@ -513,14 +520,29 @@ class LibraryScene extends Phaser.Scene {
     const stairGlow = this.add
       .text(stairX + staircaseDisplayWidth - 14, staircaseDisplayHeight - 10, '⭐', { fontSize: '16px' })
       .setOrigin(0.5).setDepth(4).setVisible(false);
+    // The staircase's real (opaque) art only occupies the top ~53% of its
+    // 300px-tall source crop (alpha-scanned: rows 0-160 of 300) — the rest
+    // is transparent padding. "Bottom of the stairs" means the bottom of
+    // that real art (staircaseDisplayHeight * 160/300), not the padded
+    // bounding box, and uses the finish-line flag image instead of a
+    // checkmark emoji per the explicit reference image.
+    const stairContentBottom = staircaseDisplayHeight * (160 / 300);
     const stairStamp = this.add
-      .text(stairX + staircaseDisplayWidth - 14, staircaseDisplayHeight - 10, '✅', { fontSize: '16px' })
-      .setOrigin(0.5).setDepth(4).setVisible(false);
+      .image(stairX + staircaseDisplayWidth / 2, stairContentBottom, 'finishFlagIcon')
+      .setOrigin(0.5).setDepth(4).setDisplaySize(28, 20).setVisible(false);
     this.tweens.add({ targets: stairGlow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
     const wallRect = ASSET_RECTS.wallBalcony;
     const wallX = stairX + staircaseDisplayWidth;
-    const wallTargetWidth = WORLD_W - 40 - wallX;
+    // Was WORLD_W - 40 - wallX — same issue as stairX above: alpha-scanning
+    // found the wall art's real right edge lands ~26px short of its own
+    // bounding box consistently (world x≈830 vs bbox edge 856), which on
+    // top of this deliberate margin left a ~50px bare-floor gap before the
+    // brick border at 880. Widening the target (effectively a small
+    // negative margin — the bbox is allowed to extend a few px past the
+    // world edge, which is simply never rendered) pushes the real content
+    // edge to ≈877, flush against the floor/brick boundary.
+    const wallTargetWidth = WORLD_W - wallX + 10;
     const wallScale = wallTargetWidth / wallRect.w;
     const wallDisplayWidth = wallRect.w * wallScale;
     const wallDisplayHeight = wallRect.h * wallScale;
@@ -531,10 +553,24 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setDisplaySize(wallDisplayWidth, wallDisplayHeight);
 
-    // Block the player from walking into the painted wall art across the
-    // whole top band (staircase included).
-    const wallBlockHeight = Math.max(staircaseDisplayHeight, wallDisplayHeight) * 0.6;
-    const wallBlock = this.add.rectangle(0, 0, WORLD_W, wallBlockHeight, 0x000000, 0)
+    // Block the player from walking into the painted wall art. Split into
+    // a staircase-specific block and a wall-specific block (was one
+    // uniform-height rectangle sized off the taller of the two) — alpha-
+    // scanning found the staircase's real content ends far higher (~53%
+    // of its height) than the wall's (whose lower "trim/railing" sections
+    // reach much further down), so sharing one height meant the staircase
+    // was blocked well past where anything is actually drawn. Each block
+    // now uses a tight-but-safe height for its own art (small buffer
+    // above the alpha-scanned real content edge), letting the player walk
+    // noticeably closer to both.
+    const stairBlockHeight = stairContentBottom + 15;
+    const stairBlock = this.add.rectangle(0, 0, wallX, stairBlockHeight, 0x000000, 0)
+      .setOrigin(0, 0);
+    this.physics.add.existing(stairBlock, true);
+    this.wallGroup.add(stairBlock);
+
+    const wallBlockHeight = 260;
+    const wallBlock = this.add.rectangle(wallX, 0, WORLD_W - wallX, wallBlockHeight, 0x000000, 0)
       .setOrigin(0, 0);
     this.physics.add.existing(wallBlock, true);
     this.wallGroup.add(wallBlock);
@@ -555,24 +591,30 @@ class LibraryScene extends Phaser.Scene {
     staircaseSprite.on('pointerdown', () => this.handleInteractiveClick(stairEntry));
     this.interactives.push(stairEntry);
 
-    // Windows: 4 total, evenly spaced across the now-wider wall band (no
-    // door to flank anymore — Round 3 removed it).
+    // Windows: 4 total. 3 keep their original evenly-spaced slots (of 5
+    // possible slots across the wall); the slot-2 window — which landed
+    // squarely on the central architectural tower/dormer peak and read as
+    // misplaced against that taller silhouette — is relocated into the
+    // gap between the staircase and the first remaining window instead.
     const windowRect = ASSET_RECTS.wallWindow;
     const windowKey = cropToTexture(this, 'doorsWindows', windowRect, 'wallWindowTex');
     const windowScale = 1.8;
     const windowDisplayWidth = windowRect.w * windowScale;
     const windowDisplayHeight = windowRect.h * windowScale;
     const windowY = 42;
-    const windowCount = 4;
-    const windowSpacing = wallDisplayWidth / (windowCount + 1);
-    for (let i = 0; i < windowCount; i++) {
-      const wx = wallX + windowSpacing * (i + 1) - windowDisplayWidth / 2;
+    const windowSpacing = wallDisplayWidth / 5;
+    const firstKeptSlotX = wallX + windowSpacing * 1 - windowDisplayWidth / 2;
+    const relocatedX = wallX + (firstKeptSlotX - wallX) / 2;
+    const windowXs = [relocatedX, 1, 3, 4].map((slot, i) => (i === 0
+      ? slot
+      : wallX + windowSpacing * slot - windowDisplayWidth / 2));
+    windowXs.forEach((wx, i) => {
       this.furnitureSprites[`wallWindow${i}`] = this.add
         .image(wx, windowY, windowKey)
         .setOrigin(0, 0)
         .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
         .setDepth(3);
-    }
+    });
 
   }
 

@@ -130,6 +130,16 @@
         "9234"
       ],
       "port": 9234
+    },
+    {
+      "name": "jp-library-static-wallgap-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9345"
+      ],
+      "port": 9345
     }
   ],
   "autoVerify": true
