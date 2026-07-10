@@ -739,9 +739,13 @@ class LibraryScene extends Phaser.Scene {
       this.add.image(rightTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
       this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
     };
+    // Beside the RIGHT wall specifically — this row only has a shelf
+    // (shelf-17) on the right side (see the zone-1 call below), so that's
+    // the only side with an actual wall to sit against. Was dead-centered
+    // in the open gap, the one instance the "beside the wall" fix missed.
     const buildSoloPlantRow = (y) => {
       const plantY = y - ASSET_RECTS.plant.h / 2;
-      this.add.image(gapCenter - ASSET_RECTS.plant.w / 2, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
     };
 
     // Zone 1 (nearest stairs -> nearest zone 2): row[0] is shelf-17's
