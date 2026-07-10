@@ -615,33 +615,45 @@ class LibraryScene extends Phaser.Scene {
     staircaseSprite.on('pointerdown', () => this.handleInteractiveClick(stairEntry));
     this.interactives.push(stairEntry);
 
-    // Windows: 4 total, evenly spaced across the wall (5 equal slots,
-    // windows in the inner 4) — trivially symmetric about the wall's
-    // center. A previous pass relocated one window sideways trying to
-    // dodge what looked like a collision with the art's central
-    // decorative peak; alpha-scanning the crop found the real cause was
-    // vertical, not horizontal — one ~170px-wide column range has its
-    // real (opaque) content starting ~35 source rows (60 world px) lower
-    // than the rest of the wall, so a window fixed at windowY=42 was
-    // sitting partly above where the art actually begins there, reading
-    // as "floating"/misplaced. Moving windowY below that threshold fixes
-    // it at every x position, so the even (symmetric) spacing can stay.
+    // Windows: 4 total, as 2 mirrored pairs straddling the "veranda" — the
+    // raised balcony/pillar feature alpha-scanned earlier at wallBalconyTex
+    // columns ~123-224 (its real content starts far lower than the rest of
+    // the wall there, see the windowY note below). Simple even 5-slot
+    // spacing put one window directly on top of that pillared veranda,
+    // which reads as structurally wrong regardless of vertical alignment —
+    // windows shouldn't sit on a balcony rail. Each pair's offset is
+    // measured from the veranda's own center, not the wall's, so the left
+    // pair mirrors the right pair around the veranda exactly (left window
+    // "moved left, symmetrical to the right one" per feedback), even
+    // though the veranda itself isn't centered on the wall as a whole.
     const windowRect = ASSET_RECTS.wallWindow;
     const windowKey = cropToTexture(this, 'doorsWindows', windowRect, 'wallWindowTex');
     const windowScale = 1.8;
     const windowDisplayWidth = windowRect.w * windowScale;
     const windowDisplayHeight = windowRect.h * windowScale;
+    // Real (opaque) content in this column range starts ~35 source rows
+    // (60 world px) lower than the rest of the wall — a window fixed at
+    // the old windowY=42 sat partly above where the art begins there,
+    // reading as "floating". 68 clears that threshold everywhere.
     const windowY = 68;
-    const windowCount = 4;
-    const windowSpacing = wallDisplayWidth / (windowCount + 1);
-    for (let i = 0; i < windowCount; i++) {
-      const wx = wallX + windowSpacing * (i + 1) - windowDisplayWidth / 2;
+    const verandaStartCol = 123;
+    const verandaEndCol = 224;
+    const verandaCenterX = wallX + ((verandaStartCol + verandaEndCol) / 2) * wallScale;
+    const innerOffset = 125; // clears the veranda's own edges with margin
+    const outerOffset = 229; // roomy, symmetric gap from the inner pair
+    const windowCenterXs = [
+      verandaCenterX - outerOffset,
+      verandaCenterX - innerOffset,
+      verandaCenterX + innerOffset,
+      verandaCenterX + outerOffset,
+    ];
+    windowCenterXs.forEach((cx, i) => {
       this.furnitureSprites[`wallWindow${i}`] = this.add
-        .image(wx, windowY, windowKey)
+        .image(cx - windowDisplayWidth / 2, windowY, windowKey)
         .setOrigin(0, 0)
         .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
         .setDepth(3);
-    }
+    });
 
   }
 
@@ -764,12 +776,18 @@ class LibraryScene extends Phaser.Scene {
     const globeY = LAYOUT.carpetGlobeY - ASSET_RECTS.globe.h / 2;
     this.furnitureSprites.globe = this.add.image(globeX, globeY, globeKey).setOrigin(0, 0).setDepth(1);
 
-    // Two red carpet accents flanking the globe (simple color swatches —
-    // no dedicated "red carpet" crop exists in the source sheets).
+    // Two carpet accents flanking the globe — same 3-shade nested-rug
+    // treatment (dark maroon border / mid-red body / light pink center
+    // stripe) as the corridor rug, per explicit feedback that these flat
+    // single-color swatches should match that retro palette too instead
+    // of being a plain block.
     const carpetW = 90;
     const carpetH = 50;
-    this.add.rectangle(WORLD_W / 2 - 170, LAYOUT.carpetGlobeY, carpetW, carpetH, 0xd57c7c).setDepth(0);
-    this.add.rectangle(WORLD_W / 2 + 170, LAYOUT.carpetGlobeY, carpetW, carpetH, 0xd57c7c).setDepth(0);
+    [WORLD_W / 2 - 170, WORLD_W / 2 + 170].forEach((cx) => {
+      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW, carpetH, corridorBorder).setDepth(0);
+      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW - 12, carpetH - 12, corridorBody).setDepth(0);
+      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW - 12, 10, corridorCenter).setDepth(0);
+    });
 
     // 4 sofas, 2 per side, stacked vertically hugging each wall (not
     // side-by-side — there isn't enough width between a wall and the
