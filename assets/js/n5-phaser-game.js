@@ -44,11 +44,6 @@ const ASSET_RECTS = {
   // reference image. Alpha-scan corrected: the old h:32 bled ~4px into
   // the bench sitting directly below it in the sheet.
   shoeCabinet: { x: 128, y: 132, w: 48, h: 28 },
-  // furniture03.png — map pinned to an easel, the one "display in the
-  // library" curio that's staying (the trunk+books and rack items were
-  // dropped — kept reading as cropped/incomplete no matter how the crop
-  // bounds were adjusted).
-  displayMapEasel: { x: 44, y: 178, w: 29, h: 42 },
   // TopDownHouse_FurnitureState1.png — plain table + chair (replaces
   // furniture03's table/floorBench in the decor rows) and the 4-sofa
   // family (2-seat couch, 3-seat w/ pillows, armchair w/ pillow, plain
@@ -92,9 +87,19 @@ const GATE_COLS = [25, 26, 27, 28, 29, 30];
 // all read from here instead of duplicating these numbers or deriving
 // them from WORLD_H, so the whole layout can be re-tuned in one place.
 const LAYOUT = {
-  decorRow1Y: 460, // P / T&C / R(review-2) / T&C / P — nearest the stairs
+  // Shelf column geometry — shared by buildShelves() (shelf positions)
+  // and buildFurniture() (the P/T&C/RV decor sitting in the gap between
+  // the two shelf columns at each row, per an explicit reference
+  // diagram showing those items beside the shelves, not in a separate
+  // band above/below each zone).
+  shelfW: ASSET_RECTS.shelfLocked.w,
+  shelfH: ASSET_RECTS.shelfLocked.h,
+  leftColX: [40, 40 + ASSET_RECTS.shelfLocked.w + 20],
+  rightColX: [
+    WORLD_W - 40 - ASSET_RECTS.shelfLocked.w * 2 - 20,
+    WORLD_W - 40 - ASSET_RECTS.shelfLocked.w,
+  ],
   zone1RowY: [560, 692, 824], // shelves 9-17 (nearest stairs -> nearest zone 2)
-  decorRow2Y: 982, // P / T&C / R(review-1) / T&C / P — between the zones
   zone2RowY: [1082, 1214], // shelves 1-8 (nearest zone 1 -> nearest spawn)
   decorRow3Y: 1372, // P / T&C / P — pure decor, nearest the carpet/globe
   carpetGlobeY: 1472, // red carpet / globe / red carpet
@@ -603,10 +608,8 @@ class LibraryScene extends Phaser.Scene {
       cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaArmchairPillow, 'sofaArmchairPillowTex'),
       cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaArmchairPlain, 'sofaArmchairPlainTex'),
     ];
-    // Shoe cabinet + the one surviving library display curio (map on an
-    // easel), from furniture03.png per explicit reference images.
+    // Shoe cabinet, from furniture03.png per an explicit reference image.
     const shoeCabinetKey = cropToTexture(this, 'furniture03', ASSET_RECTS.shoeCabinet, 'shoeCabinetTex');
-    const displayMapEaselKey = cropToTexture(this, 'furniture03', ASSET_RECTS.displayMapEasel, 'displayMapEaselTex');
 
     // Center corridor rug — red instead of green, matching the existing
     // 0xd57c7c "CARPET RED" accents elsewhere in this room (reused
@@ -619,7 +622,7 @@ class LibraryScene extends Phaser.Scene {
     // depth 0 so it sits at floor level under every sprite placed here.
     const corridorWidth = 56;
     const corridorX = WORLD_W / 2;
-    const corridorTop = LAYOUT.decorRow1Y;
+    const corridorTop = 460; // just below the top wall block, unrelated to any shelf row now
     const corridorBottom = LAYOUT.receptionY;
     const corridorHeight = corridorBottom - corridorTop;
     const corridorMidY = (corridorTop + corridorBottom) / 2;
@@ -636,36 +639,64 @@ class LibraryScene extends Phaser.Scene {
       this.add.rectangle(corridorX, ty, corridorWidth - 10, 4, corridorBorder).setDepth(0);
     }
 
-    // One P-T&C-[R]-T&C-P decor row helper, reused for all three rows
-    // between/around the shelf zones. `reviewPile`, when given, is the
-    // BOOK_PILE_DATA entry this row hosts as its "R" — only 2 of the 3
-    // rows get a functional review checkpoint (matches the existing
-    // 2-review-pile mechanic); the third is pure decor.
-    const decorSpanLeft = 234; // clears the left shelf column (leftColX[1] + shelfW)
-    const decorSpanRight = 662; // clears the right shelf column (rightColX[0])
+    // Per-shelf-row decor: P/T&C/RV sit in the gap between the left and
+    // right shelf columns AT THE SAME ROW HEIGHT as the shelves next to
+    // them, per an explicit reference diagram — not in a separate band
+    // above/below each zone (the earlier layout).
+    const gapLeft = LAYOUT.leftColX[1] + LAYOUT.shelfW; // inner edge of the left shelf column
+    const gapRight = LAYOUT.rightColX[0]; // inner edge of the right shelf column
+    const gapCenter = (gapLeft + gapRight) / 2;
     this.reviewPilePositions = {};
-    const buildDecorRow = (y, reviewPile) => {
+
+    const buildReviewRow = (y, reviewPile) => {
       const plantY = y - ASSET_RECTS.plant.h / 2;
+      this.add.image(gapLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+      // Centered in the gap, at shelf-row height.
+      this.reviewPilePositions[reviewPile] = { x: gapCenter - 23, y: y - 8 };
+    };
+    const buildTableRow = (y) => {
       const tableY = y - ASSET_RECTS.libTable.h / 2;
       const chairY = y + ASSET_RECTS.libTable.h / 2 - 6;
-      this.add.image(decorSpanLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(decorSpanLeft + 80, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(decorSpanLeft + 90, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
-      this.add.image(decorSpanRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(decorSpanRight - 80 - ASSET_RECTS.libTable.w, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(decorSpanRight - 90 - ASSET_RECTS.libChair.w, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
-      if (reviewPile) {
-        // Sits beside the right shelf column (just left of it) instead
-        // of centered in the corridor.
-        this.reviewPilePositions[reviewPile] = { x: decorSpanRight - 56, y: y - 14 };
-      }
+      const leftTableX = gapCenter - 40 - ASSET_RECTS.libTable.w;
+      const rightTableX = gapCenter + 40;
+      this.add.image(leftTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
+      this.add.image(leftTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
+      this.add.image(rightTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
+      this.add.image(rightTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
     };
-    // decorRow1 (nearest stairs) hosts review-2 (final review before the
-    // quiz gate); decorRow2 (between the zones) hosts review-1; decorRow3
-    // (nearest the carpet/spawn) is pure decor — see LAYOUT's comment.
-    buildDecorRow(LAYOUT.decorRow1Y, 'review-2');
-    buildDecorRow(LAYOUT.decorRow2Y, 'review-1');
-    buildDecorRow(LAYOUT.decorRow3Y, null);
+    const buildSoloPlantRow = (y) => {
+      const plantY = y - ASSET_RECTS.plant.h / 2;
+      this.add.image(gapCenter - ASSET_RECTS.plant.w / 2, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+    };
+
+    // Zone 1 (nearest stairs -> nearest zone 2): row[0] is shelf-17's
+    // solo row (no left shelf, so just a plant), row[1] hosts review-2
+    // (gates shelf-15, which sits in this same row), row[2] gets a
+    // table+chair pair as the transition into zone 2.
+    buildSoloPlantRow(LAYOUT.zone1RowY[0]);
+    buildReviewRow(LAYOUT.zone1RowY[1], 'review-2');
+    buildTableRow(LAYOUT.zone1RowY[2]);
+    // Zone 2 (nearest zone 1 -> nearest spawn): row[0] gets a table+chair
+    // pair (transition from zone 1); row[1] hosts review-1 (gates
+    // shelf-09... reached via zone 1, but placed here since it requires
+    // all of zone 2's shelves, which finish in this row).
+    buildTableRow(LAYOUT.zone2RowY[0]);
+    buildReviewRow(LAYOUT.zone2RowY[1], 'review-1');
+
+    // One more pure-decor P-T&C-P row, nearest the carpet/globe — not
+    // shelf-adjacent, so it keeps its own small band.
+    const decorSpanLeft = gapLeft;
+    const decorSpanRight = gapRight;
+    const plantY3 = LAYOUT.decorRow3Y - ASSET_RECTS.plant.h / 2;
+    const tableY3 = LAYOUT.decorRow3Y - ASSET_RECTS.libTable.h / 2;
+    const chairY3 = LAYOUT.decorRow3Y + ASSET_RECTS.libTable.h / 2 - 6;
+    this.add.image(decorSpanLeft + 16, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
+    this.add.image(decorSpanLeft + 80, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
+    this.add.image(decorSpanLeft + 90, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
+    this.add.image(decorSpanRight - 16 - ASSET_RECTS.plant.w, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
+    this.add.image(decorSpanRight - 80 - ASSET_RECTS.libTable.w, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
+    this.add.image(decorSpanRight - 90 - ASSET_RECTS.libChair.w, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
 
     // Globe, centered on the corridor per the requested layout — non-
     // solid like every other decor piece, so centering it doesn't block
@@ -709,32 +740,20 @@ class LibraryScene extends Phaser.Scene {
       });
     });
 
-    // Shoe cabinet, placed near the start entrance (spawn), per an
-    // explicit reference image — offset left of the corridor so it
-    // doesn't sit on the auto-walk waypoint path. Displayed at 1.6x its
-    // native crop (was rendered at native size, which read as too small
-    // next to the sofas/reception furniture around it).
+    // 2 shoe cabinets, symmetric, flanking the corridor between
+    // reception and spawn — per the reference diagram's "CAB CAB".
+    // Displayed at 1.6x their native crop (was rendered at native size,
+    // which read as too small next to the sofas/reception furniture).
     const shoeCabinetScale = 1.6;
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
-    this.furnitureSprites.shoeCabinet = this.add
-      .image(WORLD_W / 2 - 120, LAYOUT.spawnY - shoeCabinetH, shoeCabinetKey)
+    const cabinetY = LAYOUT.spawnY - shoeCabinetH;
+    this.furnitureSprites.shoeCabinetLeft = this.add
+      .image(WORLD_W / 2 - 120 - shoeCabinetW, cabinetY, shoeCabinetKey)
       .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
-
-    // Map/painting curio ("display in the library" per the reference
-    // image) — the trunk+books and rack curios that used to flank it
-    // were dropped (kept reading as cropped/incomplete regardless of
-    // crop-bounds adjustment). Sized to the same visual scale as the
-    // lesson shelves/globe (the globe's 94x118 footprint is the
-    // reference point) instead of its tiny native crop size, mounted
-    // against the right wall at the carpet/globe row.
-    const curioTargetSpan = 100;
-    const easelScale = curioTargetSpan / Math.max(ASSET_RECTS.displayMapEasel.w, ASSET_RECTS.displayMapEasel.h);
-    const easelW = ASSET_RECTS.displayMapEasel.w * easelScale;
-    const easelH = ASSET_RECTS.displayMapEasel.h * easelScale;
-    this.furnitureSprites.displayMapEasel = this.add
-      .image(WORLD_W - 70 - easelW, LAYOUT.carpetGlobeY - easelH / 2, displayMapEaselKey)
-      .setOrigin(0, 0).setDepth(1).setDisplaySize(easelW, easelH);
+    this.furnitureSprites.shoeCabinetRight = this.add
+      .image(WORLD_W / 2 + 120, cabinetY, shoeCabinetKey)
+      .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
   }
 
   // -- 17 lesson shelves, two zones (Round 4 relayout) --------------------
@@ -747,12 +766,10 @@ class LibraryScene extends Phaser.Scene {
   // *_ROW_Y constants below rather than duplicating these numbers.
 
   buildShelves() {
-    const shelfW = ASSET_RECTS.shelfLocked.w;
-    const shelfH = ASSET_RECTS.shelfLocked.h;
-    const colGap = 20;
-
-    const leftColX = [40, 40 + shelfW + colGap];
-    const rightColX = [WORLD_W - 40 - shelfW - shelfW - colGap, WORLD_W - 40 - shelfW];
+    const shelfW = LAYOUT.shelfW;
+    const shelfH = LAYOUT.shelfH;
+    const leftColX = LAYOUT.leftColX;
+    const rightColX = LAYOUT.rightColX;
 
     // Zone 1 (9-17, near stairs): [0]=nearest stairs (shelf-17 solo),
     // [1]=mid (11,12/15,16), [2]=nearest zone 2 (9,10/13,14).
@@ -760,6 +777,25 @@ class LibraryScene extends Phaser.Scene {
     // Zone 2 (1-8, near spawn): [0]=far/nearest zone 1 (3,4/7,8),
     // [1]=near/nearest spawn (1,2/5,6).
     const zone2RowY = LAYOUT.zone2RowY;
+
+    // Wall header above each shelf column block ("WALLS" directly above
+    // each S/S group in the reference diagram) — a dark wood-panel bar
+    // so the shelves visibly read as built into a wall, not floating in
+    // open floor. One per column per zone, sized to that column's
+    // topmost shelf row (zone1's left column starts one row lower than
+    // its right column, since row[0] is shelf-17's solo row).
+    const colWidth = shelfW * 2 + 20;
+    const headerH = 14;
+    const headerColor = 0x5a4a3a;
+    const headerTrim = 0xc9bfa5;
+    const buildWallHeader = (x, topY) => {
+      this.add.rectangle(x + colWidth / 2, topY - headerH / 2 - 4, colWidth, headerH, headerColor)
+        .setDepth(0).setStrokeStyle(2, headerTrim);
+    };
+    buildWallHeader(leftColX[0], zone1RowY[1]);
+    buildWallHeader(rightColX[0], zone1RowY[0]);
+    buildWallHeader(leftColX[0], zone2RowY[0]);
+    buildWallHeader(rightColX[0], zone2RowY[0]);
 
     // Matches LESSON_DATA's order (shelf-01..17) exactly.
     const positions = [
