@@ -140,6 +140,26 @@
         "9345"
       ],
       "port": 9345
+    },
+    {
+      "name": "jp-library-static-trigger-symmetry",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9456"
+      ],
+      "port": 9456
+    },
+    {
+      "name": "jp-library-static-verify2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9567"
+      ],
+      "port": 9567
     }
   ],
   "autoVerify": true

@@ -535,9 +535,16 @@ class LibraryScene extends Phaser.Scene {
     // bounding box, and uses the finish-line flag image instead of a
     // checkmark emoji per the explicit reference image.
     const stairContentBottom = staircaseDisplayHeight * (160 / 300);
+    // Spans the staircase's own width (with a small margin on each side)
+    // instead of a small fixed-size icon — "spans between the end of
+    // each stairs right and left" per feedback. Height keeps the
+    // checkered pattern reasonably readable rather than matching the
+    // source image's native (near-square) aspect ratio, which at this
+    // width would make it far taller than a finish-line banner should be.
+    const stairStampWidth = staircaseDisplayWidth - 16;
     const stairStamp = this.add
       .image(stairX + staircaseDisplayWidth / 2, stairContentBottom, 'finishFlagIcon')
-      .setOrigin(0.5).setDepth(4).setDisplaySize(28, 20).setVisible(false);
+      .setOrigin(0.5).setDepth(4).setDisplaySize(stairStampWidth, 50).setVisible(false);
     this.tweens.add({ targets: stairGlow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
     const wallRect = ASSET_RECTS.wallBalcony;
@@ -594,35 +601,47 @@ class LibraryScene extends Phaser.Scene {
       requires: ['shelf-15', 'shelf-16', 'shelf-17'],
       x: stairX + staircaseDisplayWidth / 2, y: staircaseDisplayHeight - 30,
       baseScale: stairScale,
+      // Smaller than the default TRIGGER_RANGE (80): the staircase is a
+      // much bigger sprite than a shelf, so the same 80px radius from its
+      // base point read as "still visibly far from the stairs" — the
+      // hover-highlight (scale-up) and keyboard-interact were both firing
+      // well before the player looked anywhere near it. Only affects the
+      // proximity checks (nearestInRange/handleInteractiveClick's already-
+      // close case); auto-walk-then-arrive uses its own ARRIVE_THRESHOLD
+      // and is unaffected, so click-to-walk-there still works normally.
+      triggerRange: 45,
     };
     staircaseSprite.setInteractive({ useHandCursor: true });
     staircaseSprite.on('pointerdown', () => this.handleInteractiveClick(stairEntry));
     this.interactives.push(stairEntry);
 
-    // Windows: 4 total. 3 keep their original evenly-spaced slots (of 5
-    // possible slots across the wall); the slot-2 window — which landed
-    // squarely on the central architectural tower/dormer peak and read as
-    // misplaced against that taller silhouette — is relocated into the
-    // gap between the staircase and the first remaining window instead.
+    // Windows: 4 total, evenly spaced across the wall (5 equal slots,
+    // windows in the inner 4) — trivially symmetric about the wall's
+    // center. A previous pass relocated one window sideways trying to
+    // dodge what looked like a collision with the art's central
+    // decorative peak; alpha-scanning the crop found the real cause was
+    // vertical, not horizontal — one ~170px-wide column range has its
+    // real (opaque) content starting ~35 source rows (60 world px) lower
+    // than the rest of the wall, so a window fixed at windowY=42 was
+    // sitting partly above where the art actually begins there, reading
+    // as "floating"/misplaced. Moving windowY below that threshold fixes
+    // it at every x position, so the even (symmetric) spacing can stay.
     const windowRect = ASSET_RECTS.wallWindow;
     const windowKey = cropToTexture(this, 'doorsWindows', windowRect, 'wallWindowTex');
     const windowScale = 1.8;
     const windowDisplayWidth = windowRect.w * windowScale;
     const windowDisplayHeight = windowRect.h * windowScale;
-    const windowY = 42;
-    const windowSpacing = wallDisplayWidth / 5;
-    const firstKeptSlotX = wallX + windowSpacing * 1 - windowDisplayWidth / 2;
-    const relocatedX = wallX + (firstKeptSlotX - wallX) / 2;
-    const windowXs = [relocatedX, 1, 3, 4].map((slot, i) => (i === 0
-      ? slot
-      : wallX + windowSpacing * slot - windowDisplayWidth / 2));
-    windowXs.forEach((wx, i) => {
+    const windowY = 68;
+    const windowCount = 4;
+    const windowSpacing = wallDisplayWidth / (windowCount + 1);
+    for (let i = 0; i < windowCount; i++) {
+      const wx = wallX + windowSpacing * (i + 1) - windowDisplayWidth / 2;
       this.furnitureSprites[`wallWindow${i}`] = this.add
         .image(wx, windowY, windowKey)
         .setOrigin(0, 0)
         .setDisplaySize(windowDisplayWidth, windowDisplayHeight)
         .setDepth(3);
-    });
+    }
 
   }
 
@@ -1090,7 +1109,7 @@ class LibraryScene extends Phaser.Scene {
 
   handleInteractiveClick(entry) {
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
-    if (dist <= TRIGGER_RANGE) {
+    if (dist <= (entry.triggerRange || TRIGGER_RANGE)) {
       this.openInteraction(entry);
       return;
     }
@@ -1115,7 +1134,7 @@ class LibraryScene extends Phaser.Scene {
     let closestDist = Infinity;
     this.interactives.forEach((entry) => {
       const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
-      if (dist <= TRIGGER_RANGE && dist < closestDist) {
+      if (dist <= (entry.triggerRange || TRIGGER_RANGE) && dist < closestDist) {
         closest = entry;
         closestDist = dist;
       }
