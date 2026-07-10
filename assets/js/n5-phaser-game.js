@@ -171,6 +171,7 @@ const BOOK_PILE_DATA = [
 ];
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
+const FAVORITES_KEY = 'nekoBunko.n5.favorites';
 const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
 // Idle-only spritesheets confirmed present for exactly these 3 colors
 // (see design spec) — CalicoCatIdle.png/tuxedoIdle.png also exist but are
@@ -212,6 +213,24 @@ function saveProgress(progress) {
   } catch (e) {
     // localStorage unavailable (privacy mode, quota, etc.) — degrade to
     // session-only, never throw.
+  }
+}
+
+function loadFavorites() {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveFavorites(favorites) {
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  } catch (e) {
+    // localStorage unavailable — degrade to session-only, same pattern
+    // as saveProgress().
   }
 }
 
@@ -400,12 +419,14 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
     this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState1.png');
     this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
+    this.load.image('favoriteIcon', '../../assets/images/icons/pixels/gay.png');
     loadCatSpritesheets(this);
   }
 
   create() {
     this.interactives = []; // { id, kind, sprite, glow, stamp, x, y, prereq/requires }
     this.progress = loadProgress();
+    this.favorites = loadFavorites();
     this.furnitureSprites = {};
     registerCatAnimations(this);
 
@@ -848,6 +869,13 @@ class LibraryScene extends Phaser.Scene {
       const stamp = this.add.image(x + shelfW / 2 + 20, y + shelfH - 12, 'checkmarkIcon')
         .setOrigin(0.5).setDepth(4).setDisplaySize(16, 16).setVisible(false);
       this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+      // Favorite marker (retro menu's "Make Favorite?" option) — a small
+      // heart icon over the shelf's top-left corner, independent of
+      // lock/complete state (a locked shelf can't be favorited since the
+      // retro menu only opens once available, but a favorited shelf
+      // keeps showing the heart regardless of its progress state).
+      const favIcon = this.add.image(x + 14, y - 6, 'favoriteIcon')
+        .setOrigin(0.5).setDepth(4).setDisplaySize(14, 14).setVisible(false);
 
       // Deliberately non-solid: 2 shelves share each row with only a
       // 14px gap, and auto-walk routing to the far column would have to
@@ -858,7 +886,7 @@ class LibraryScene extends Phaser.Scene {
 
       const entry = {
         id: lesson.id, kind: 'shelf', title: lesson.title,
-        sprite, glow, stamp, lockedKey, filledKey: filledKeys[i % filledKeys.length],
+        sprite, glow, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
         x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
         baseScale: 1,
       };
@@ -989,6 +1017,9 @@ class LibraryScene extends Phaser.Scene {
 
     this.moveQueue = null;
     this.pendingInteract = null;
+    this.retroMenu = null;
+    this.retroUpKeyWasDown = false;
+    this.retroDownKeyWasDown = false;
   }
 
   // Called by CatSelectScene when reopened mid-game via the HUD "Change"
@@ -1033,8 +1064,14 @@ class LibraryScene extends Phaser.Scene {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     const tryInteract = () => {
+      // If the retro menu is already open, E/Enter/Space confirms the
+      // highlighted option instead of trying to open a new interaction.
+      if (this.retroMenu) {
+        this.selectRetroMenuOption();
+        return;
+      }
       const near = this.nearestInRange();
-      if (near) this.openPanel(near);
+      if (near) this.openInteraction(near);
     };
     this.interactKey.on('down', tryInteract);
     this.enterKey.on('down', tryInteract);
@@ -1044,7 +1081,7 @@ class LibraryScene extends Phaser.Scene {
   handleInteractiveClick(entry) {
     const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
     if (dist <= TRIGGER_RANGE) {
-      this.openPanel(entry);
+      this.openInteraction(entry);
       return;
     }
     // Route through the clear central corridor (horizontal -> vertical
@@ -1076,9 +1113,13 @@ class LibraryScene extends Phaser.Scene {
     return closest;
   }
 
-  // -- Lesson/review panel --------------------------------------------------
+  // -- Lesson/review interaction ---------------------------------------------
+  // Shelves and the 2 review piles use the retro in-canvas menu (below);
+  // the staircase/quiz gate keeps the older DOM panel for now — that
+  // flow (attempts/cooldown/sparkle) is mid-implementation on a separate
+  // task and isn't being redesigned in the same pass as this menu.
 
-  openPanel(entry) {
+  openInteraction(entry) {
     const state = entry.kind === 'shelf'
       ? getState(entry.id, entry.prereq, this.progress)
       : (this.progress[entry.id] ? 'completed'
@@ -1089,6 +1130,14 @@ class LibraryScene extends Phaser.Scene {
       return;
     }
 
+    if (entry.id === 'final-quiz') {
+      this.openPanel(entry, state);
+      return;
+    }
+    this.openRetroMenu(entry, state);
+  }
+
+  openPanel(entry, state) {
     const panel = ensurePanel();
     document.getElementById('nekoPanelTitle').textContent = entry.title;
     document.getElementById('nekoPanelBody').textContent = state === 'completed'
@@ -1117,6 +1166,106 @@ class LibraryScene extends Phaser.Scene {
     this.panelOpen = false;
   }
 
+  // -- Retro in-canvas selection menu (shelves + review piles) -----------
+  // Same interaction pattern as CatSelectScene: a dark panel with a
+  // ▶-prefixed, keyboard/click-selectable option list, screen-fixed
+  // (scrollFactor 0) so it stays centered regardless of camera position.
+
+  openRetroMenu(entry, state) {
+    const options = entry.kind === 'shelf'
+      ? [
+        { label: 'Start/Continue?', onSelect: () => this.completeInteraction(entry) },
+        { label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) },
+        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
+      ]
+      : [
+        { label: 'Read again', onSelect: () => this.completeInteraction(entry) },
+        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
+      ];
+    void state; // available vs completed doesn't change the option set — both are "revisit" actions
+    this.buildRetroMenu(entry.title, options);
+  }
+
+  completeInteraction(entry) {
+    this.progress[entry.id] = true;
+    saveProgress(this.progress);
+    this.refreshAllStates();
+    this.closeRetroMenu();
+  }
+
+  toggleFavorite(entry) {
+    this.favorites[entry.id] = !this.favorites[entry.id];
+    saveFavorites(this.favorites);
+    this.refreshAllStates();
+    this.closeRetroMenu();
+  }
+
+  buildRetroMenu(title, options) {
+    this.closeRetroMenu();
+    const cam = this.cameras.main;
+    const cx = cam.width / 2;
+    const cy = cam.height / 2;
+    const boxHeight = 76 + options.length * 32;
+    const boxTop = cy - boxHeight / 2;
+
+    const bg = this.add.rectangle(cx, cy, 300, boxHeight, 0x1a1410)
+      .setStrokeStyle(3, 0x8a6a3a).setScrollFactor(0).setDepth(2000);
+    const titleText = this.add.text(cx, boxTop + 26, title, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#F0C674',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001);
+    const optionTexts = options.map((opt, i) => this.add.text(cx - 118, boxTop + 58 + i * 32, '', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#B08D57',
+    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(2001)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => this.highlightRetroMenu(i))
+      .on('pointerup', () => { if (this.retroMenu && this.retroMenu.selectedIndex === i) this.selectRetroMenuOption(); }));
+
+    this.retroMenu = { bg, titleText, optionTexts, options, selectedIndex: 0 };
+    this.panelOpen = true;
+    this.highlightRetroMenu(0);
+  }
+
+  highlightRetroMenu(index) {
+    if (!this.retroMenu) return;
+    this.retroMenu.selectedIndex = index;
+    this.retroMenu.optionTexts.forEach((t, i) => {
+      t.setColor(i === index ? '#FFDD88' : '#B08D57');
+      t.setText((i === index ? '▶ ' : '  ') + this.retroMenu.options[i].label);
+    });
+  }
+
+  selectRetroMenuOption() {
+    if (!this.retroMenu) return;
+    const opt = this.retroMenu.options[this.retroMenu.selectedIndex];
+    if (opt) opt.onSelect();
+  }
+
+  // Up/down cycles the highlighted option, Enter/E/Space confirms it (the
+  // confirm side lives in wireInput's tryInteract) — same debounced
+  // isDown-edge pattern as CatSelectScene's keyboard nav.
+  updateRetroMenuInput() {
+    const upDown = this.cursors.up.isDown;
+    const downDown = this.cursors.down.isDown;
+    if (upDown && !this.retroUpKeyWasDown) {
+      this.highlightRetroMenu(Math.max(0, this.retroMenu.selectedIndex - 1));
+    }
+    if (downDown && !this.retroDownKeyWasDown) {
+      this.highlightRetroMenu(Math.min(this.retroMenu.options.length - 1, this.retroMenu.selectedIndex + 1));
+    }
+    this.retroUpKeyWasDown = upDown;
+    this.retroDownKeyWasDown = downDown;
+  }
+
+  closeRetroMenu() {
+    if (this.retroMenu) {
+      this.retroMenu.bg.destroy();
+      this.retroMenu.titleText.destroy();
+      this.retroMenu.optionTexts.forEach((t) => t.destroy());
+      this.retroMenu = null;
+    }
+    this.panelOpen = false;
+  }
+
   refreshAllStates() {
     this.interactives.forEach((entry) => {
       const state = entry.kind === 'shelf'
@@ -1126,6 +1275,7 @@ class LibraryScene extends Phaser.Scene {
 
       if (entry.kind === 'shelf') {
         entry.sprite.setTexture(state === 'locked' ? entry.lockedKey : entry.filledKey);
+        entry.favIcon.setVisible(!!this.favorites[entry.id]);
       }
       // The staircase is exempt from the locked-state dim — see
       // buildTopBand's comment: fading a large architectural piece to
@@ -1171,6 +1321,7 @@ class LibraryScene extends Phaser.Scene {
     this.updatePlayerAnimation();
     if (this.panelOpen) {
       this.player.setVelocity(0, 0);
+      if (this.retroMenu) this.updateRetroMenuInput();
       return;
     }
 
@@ -1197,7 +1348,7 @@ class LibraryScene extends Phaser.Scene {
           if (this.pendingInteract) {
             const toOpen = this.pendingInteract;
             this.pendingInteract = null;
-            this.openPanel(toOpen);
+            this.openInteraction(toOpen);
           }
         }
         return;
