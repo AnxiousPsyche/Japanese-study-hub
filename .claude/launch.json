@@ -110,6 +110,16 @@
         "9012"
       ],
       "port": 9012
+    },
+    {
+      "name": "jp-library-static-round5",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9123"
+      ],
+      "port": 9123
     }
   ],
   "autoVerify": true

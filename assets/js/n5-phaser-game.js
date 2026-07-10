@@ -41,11 +41,11 @@ const ASSET_RECTS = {
   // replacing the old pixellabLibrary bookPileTall per an explicit
   // reference image.
   bookPileTall: { x: 240, y: 96, w: 30, h: 48 },
-  // furniture03.png — checkered-basket-top cubby shelf, reused as the
-  // "shoe cabinet" placed near the start entrance per an explicit
-  // reference image. Alpha-scan corrected: the old h:32 bled ~4px into
-  // the bench sitting directly below it in the sheet.
-  shoeCabinet: { x: 128, y: 132, w: 48, h: 28 },
+  // furniture03.png — tall wardrobe/cabinet (plain top, checkered
+  // drawer-pull band, dark base), replacing the old checkered-basket
+  // cubby shelf as the "shoe cabinet" placed near the start entrance,
+  // per an explicit reference image.
+  shoeCabinet: { x: 176, y: 80, w: 39, h: 80 },
   // TopDownHouse_FurnitureState1.png — plain table + chair (replaces
   // furniture03's table/floorBench in the decor rows) and the 4-sofa
   // family (2-seat couch, 3-seat w/ pillows, armchair w/ pillow, plain
@@ -58,8 +58,12 @@ const ASSET_RECTS = {
   // {156,2,24,30} bled in slivers of the neighboring chairs on both
   // sides (same coarser-bounding-box mistake as the plant crop above).
   libChair: { x: 161, y: 9, w: 14, h: 22 },
-  sofaCouch2: { x: 24, y: 162, w: 44, h: 34 },
-  sofaCouch3: { x: 88, y: 158, w: 48, h: 38 },
+  // Alpha-scan corrected via per-row opaque-run isolation: the old
+  // {24,162,44,34} clipped the couch's right edge, and the old
+  // {88,158,48,38} both clipped its left edge and bled in a row of
+  // paver/stone tiles sitting just below it in the sheet.
+  sofaCouch2: { x: 24, y: 167, w: 56, h: 26 },
+  sofaCouch3: { x: 82, y: 161, w: 60, h: 31 },
   sofaArmchairPillow: { x: 144, y: 158, w: 32, h: 38 },
   sofaArmchairPlain: { x: 180, y: 160, w: 28, h: 36 },
 };
@@ -484,7 +488,13 @@ class LibraryScene extends Phaser.Scene {
     // close the gap with the shelf columns (leftColX[0] starts at x=40,
     // tile-index 2.5) so the shelves read as sitting flush against a
     // real wall instead of floating a few px off a thin border line.
-    for (let y = 0; y < GRID_ROWS; y++) {
+    // Starts below the top wall/window band (y=460, where the floor
+    // proper begins) instead of y=0 — this brick strip and the top
+    // band's own blue-paneled wall art are two different wall styles,
+    // and extending the brick strip up into that band made it visibly
+    // overlap/collide with the windows there.
+    const sideWallStartRow = Math.ceil(460 / TILE_SIZE);
+    for (let y = sideWallStartRow; y < GRID_ROWS; y++) {
       for (let col = 1; col <= 3; col++) {
         this.add.image(col * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
         this.add.image((GRID_COLS - 1 - col) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
@@ -619,9 +629,9 @@ class LibraryScene extends Phaser.Scene {
     // Center corridor rug — red instead of green, matching the existing
     // 0xd57c7c "CARPET RED" accents elsewhere in this room (reused
     // verbatim as the rug's own body color instead of introducing a
-    // second, clashing red) with a deeper oxblood border/cross-ties.
-    // Styled like a woven runner rug (darker border + a lighter center
-    // band + periodic cross-ties) rather than a flat, undecorated block.
+    // second, clashing red) with a deeper oxblood border, same 2-shade
+    // treatment (darker border + lighter center, no extra lines) as the
+    // original green version.
     // Non-solid (same as every other decor piece — see buildShelves'
     // header comment on the project's non-solid-furniture convention),
     // depth 0 so it sits at floor level under every sprite placed here.
@@ -639,10 +649,6 @@ class LibraryScene extends Phaser.Scene {
     this.add
       .rectangle(corridorX, corridorMidY, corridorWidth - 16, corridorHeight - 6, corridorBody)
       .setDepth(0);
-    const tieSpacing = 32;
-    for (let ty = corridorTop + tieSpacing / 2; ty < corridorBottom; ty += tieSpacing) {
-      this.add.rectangle(corridorX, ty, corridorWidth - 10, 4, corridorBorder).setDepth(0);
-    }
 
     // Per-shelf-row decor: P/T&C/RV sit in the gap between the left and
     // right shelf columns AT THE SAME ROW HEIGHT as the shelves next to
@@ -747,10 +753,11 @@ class LibraryScene extends Phaser.Scene {
     });
 
     // 2 shoe cabinets, symmetric, flanking the corridor between
-    // reception and spawn — per the reference diagram's "CAB CAB".
-    // Displayed at 1.6x their native crop (was rendered at native size,
-    // which read as too small next to the sofas/reception furniture).
-    const shoeCabinetScale = 1.6;
+    // reception and spawn — per the reference diagram's "CAB CAB". The
+    // new cabinet art is tall and narrow (native 39x80, vs the old
+    // wide-and-short 48x28 crop) so the display scale is much smaller
+    // than before to land at a similar on-screen footprint.
+    const shoeCabinetScale = 0.9;
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     const cabinetY = LAYOUT.spawnY - shoeCabinetH;
