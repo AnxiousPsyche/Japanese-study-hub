@@ -90,6 +90,26 @@
         "8890"
       ],
       "port": 8890
+    },
+    {
+      "name": "jp-library-static-sparkle-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8901"
+      ],
+      "port": 8901
+    },
+    {
+      "name": "jp-library-static-crop-recheck",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9012"
+      ],
+      "port": 9012
     }
   ],
   "autoVerify": true

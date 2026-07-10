@@ -30,9 +30,13 @@ const ASSET_RECTS = {
   // neighbors) is only y:49-80.
   wallWindow: { x: 130, y: 49, w: 26, h: 31 },
   // furniture03.png (256x256px)
-  // Alpha-scan corrected: the old {190,108,35,62} cut ~14px off the
-  // bottom of the pot and a few px off the right leaf tip.
-  plant: { x: 186, y: 114, w: 44, h: 78 },
+  // Alpha-scan corrected via per-row opaque-run isolation (not just
+  // bounding-box scanning): the old {186,114,44,78} bled in a
+  // neighboring chest's edge trim (left), a checkered picture-on-stand
+  // item (right), and a sofa (bottom) — all separate sprites sitting
+  // close enough to merge into one bounding box at the coarser scan
+  // resolution used before. This sprite is fronds only, no pot.
+  plant: { x: 193, y: 112, w: 16, h: 50 },
   // pixellab-2d-pixel-library-assets...png — a proper 3-book pile
   // (green/red/blue), used for review checkpoints instead of the old
   // 2-book bookStack crop above. Different source sheet than the rest
@@ -52,7 +56,10 @@ const ASSET_RECTS = {
   // Alpha-scan corrected: the old {0,28,44,36} clipped ~4px off the
   // table's right leg.
   libTable: { x: 0, y: 32, w: 48, h: 32 },
-  libChair: { x: 156, y: 2, w: 24, h: 30 },
+  // Alpha-scan corrected via per-row opaque-run isolation: the old
+  // {156,2,24,30} bled in slivers of the neighboring chairs on both
+  // sides (same coarser-bounding-box mistake as the plant crop above).
+  libChair: { x: 161, y: 9, w: 14, h: 22 },
   sofaCouch2: { x: 24, y: 162, w: 44, h: 34 },
   sofaCouch3: { x: 88, y: 158, w: 48, h: 38 },
   sofaArmchairPillow: { x: 144, y: 158, w: 32, h: 38 },
