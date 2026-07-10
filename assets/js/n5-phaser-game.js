@@ -6,7 +6,15 @@ const ASSET_RECTS = {
   // libassetpack-tiled.png (1488x528px) — all found via alpha-channel
   // pixel scanning (getImageData row/column opaque-run detection), the
   // only reliable measurement method found this project (see SUMMARY.md).
-  wallBalcony: { x: 1040, y: 0, w: 448, h: 300 },
+  // h trimmed from 300: a narrow (~8px) support-beam/pillar feature at
+  // the crop's right edge (cols 424-431) is opaque all the way to the
+  // crop's bottom row. Since display height scales uniformly with the
+  // width-driven wallScale (see buildTopBand's "moved right until the
+  // wood floor" fix), that pillar's tail was being stretched down to
+  // world y≈515 — well past the y=464 row where the side-wall brick
+  // strip already picks up — reading as a dark line running into open
+  // floor. 269 keeps the pillar but stops it right at that seam instead.
+  wallBalcony: { x: 1040, y: 0, w: 448, h: 269 },
   staircase: { x: 935, y: 0, w: 100, h: 300 },
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
   shelfLocked: { x: 28, y: 385, w: 87, h: 118 },
