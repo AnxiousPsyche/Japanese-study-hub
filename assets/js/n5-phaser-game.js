@@ -647,12 +647,13 @@ class LibraryScene extends Phaser.Scene {
     // Shoe cabinet, from furniture03.png per an explicit reference image.
     const shoeCabinetKey = cropToTexture(this, 'furniture03', ASSET_RECTS.shoeCabinet, 'shoeCabinetTex');
 
-    // Center corridor rug — red instead of green, matching the existing
-    // 0xd57c7c "CARPET RED" accents elsewhere in this room (reused
-    // verbatim as the rug's own body color instead of introducing a
-    // second, clashing red) with a deeper oxblood border, same 2-shade
-    // treatment (darker border + lighter center, no extra lines) as the
-    // original green version.
+    // Center corridor rug — a proper 3-shade nested rug (dark maroon
+    // border, mid-red body, a lighter pink center stripe) instead of a
+    // flat 2-tone block, per an explicit request to bring back the
+    // layered "real carpet" look the original green version had, just
+    // without that version's periodic cross-tie lines. The mid shade
+    // reuses the existing 0xd57c7c "CARPET RED" accents elsewhere in
+    // this room rather than introducing an unrelated red.
     // Non-solid (same as every other decor piece — see buildShelves'
     // header comment on the project's non-solid-furniture convention),
     // depth 0 so it sits at floor level under every sprite placed here.
@@ -662,13 +663,17 @@ class LibraryScene extends Phaser.Scene {
     const corridorBottom = LAYOUT.receptionY;
     const corridorHeight = corridorBottom - corridorTop;
     const corridorMidY = (corridorTop + corridorBottom) / 2;
-    const corridorBorder = 0x8a3f3a;
-    const corridorBody = 0xd57c7c;
+    const corridorBorder = 0x6b2f2c; // darkest — outer border
+    const corridorBody = 0xd57c7c; // mid — main rug body, matches the existing red-carpet accents
+    const corridorCenter = 0xecc4c0; // lightest — narrow center accent stripe
     this.add
       .rectangle(corridorX, corridorMidY, corridorWidth, corridorHeight, corridorBorder)
       .setDepth(0);
     this.add
       .rectangle(corridorX, corridorMidY, corridorWidth - 16, corridorHeight - 6, corridorBody)
+      .setDepth(0);
+    this.add
+      .rectangle(corridorX, corridorMidY, 16, corridorHeight - 6, corridorCenter)
       .setDepth(0);
 
     // Per-shelf-row decor: P/T&C/RV sit in the gap between the left and
