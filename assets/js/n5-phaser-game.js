@@ -718,23 +718,26 @@ class LibraryScene extends Phaser.Scene {
     const gapCenter = (gapLeft + gapRight) / 2;
     this.reviewPilePositions = {};
 
+    // Plants moved out of the review row and into the paired table row
+    // instead (per an explicit reference diagram) — "beside the wall" in
+    // the row that's actually adjacent to the shelf columns, not
+    // duplicated in both. The review pile shifts further left into the
+    // gap the left plant used to occupy, closer to the shelves.
     const buildReviewRow = (y, reviewPile) => {
-      const plantY = y - ASSET_RECTS.plant.h / 2;
-      this.add.image(gapLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      // Shifted left of center in the gap (was dead-centered), at
-      // shelf-row height, per an explicit request.
-      this.reviewPilePositions[reviewPile] = { x: gapCenter - 70, y: y - 8 };
+      this.reviewPilePositions[reviewPile] = { x: gapLeft + 70, y: y - 8 };
     };
     const buildTableRow = (y) => {
       const tableY = y - ASSET_RECTS.libTable.h / 2;
       const chairY = y + ASSET_RECTS.libTable.h / 2 - 6;
+      const plantY = y - ASSET_RECTS.plant.h / 2;
       const leftTableX = gapCenter - 40 - ASSET_RECTS.libTable.w;
       const rightTableX = gapCenter + 40;
+      this.add.image(gapLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
       this.add.image(leftTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
       this.add.image(leftTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
       this.add.image(rightTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
       this.add.image(rightTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
+      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
     };
     const buildSoloPlantRow = (y) => {
       const plantY = y - ASSET_RECTS.plant.h / 2;
@@ -755,17 +758,16 @@ class LibraryScene extends Phaser.Scene {
     buildTableRow(LAYOUT.zone2RowY[0]);
     buildReviewRow(LAYOUT.zone2RowY[1], 'review-1');
 
-    // One more pure-decor P-T&C-P row, nearest the carpet/globe — not
-    // shelf-adjacent, so it keeps its own small band.
+    // One more pure-decor T&C-T&C row, nearest the carpet/globe — not
+    // shelf-adjacent, so it keeps its own small band. No plants here
+    // (removed per feedback) — they were redundant with the ones now
+    // living in every table row.
     const decorSpanLeft = gapLeft;
     const decorSpanRight = gapRight;
-    const plantY3 = LAYOUT.decorRow3Y - ASSET_RECTS.plant.h / 2;
     const tableY3 = LAYOUT.decorRow3Y - ASSET_RECTS.libTable.h / 2;
     const chairY3 = LAYOUT.decorRow3Y + ASSET_RECTS.libTable.h / 2 - 6;
-    this.add.image(decorSpanLeft + 16, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
     this.add.image(decorSpanLeft + 80, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
     this.add.image(decorSpanLeft + 90, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
-    this.add.image(decorSpanRight - 16 - ASSET_RECTS.plant.w, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
     this.add.image(decorSpanRight - 80 - ASSET_RECTS.libTable.w, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
     this.add.image(decorSpanRight - 90 - ASSET_RECTS.libChair.w, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
 

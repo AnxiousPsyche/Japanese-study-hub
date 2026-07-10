@@ -160,6 +160,16 @@
         "9567"
       ],
       "port": 9567
+    },
+    {
+      "name": "jp-library-static-plants-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9678"
+      ],
+      "port": 9678
     }
   ],
   "autoVerify": true
