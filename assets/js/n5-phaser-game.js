@@ -37,12 +37,10 @@ const ASSET_RECTS = {
   // close enough to merge into one bounding box at the coarser scan
   // resolution used before. This sprite is fronds only, no pot.
   plant: { x: 193, y: 112, w: 16, h: 50 },
-  // pixellab-2d-pixel-library-assets...png — a proper 3-book pile
-  // (green/red/blue), used for review checkpoints instead of the old
-  // 2-book bookStack crop above. Different source sheet than the rest
-  // of this list; kept in its own ASSET_RECTS entry since it loads
-  // under a separate texture key (see preload()).
-  bookPileTall: { x: 21, y: 190, w: 33, h: 37 },
+  // libassetpack-tiled.png — review-pile book stack (green/red/tan),
+  // replacing the old pixellabLibrary bookPileTall per an explicit
+  // reference image.
+  bookPileTall: { x: 240, y: 96, w: 30, h: 48 },
   // furniture03.png — checkered-basket-top cubby shelf, reused as the
   // "shoe cabinet" placed near the start entrance per an explicit
   // reference image. Alpha-scan corrected: the old h:32 bled ~4px into
@@ -396,8 +394,8 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
-    this.load.image('pixellabLibrary', '../../assets/images/ui/pixellab-2d-pixel-library-assets-1783435154845.png');
     this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState1.png');
+    this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -659,8 +657,9 @@ class LibraryScene extends Phaser.Scene {
       const plantY = y - ASSET_RECTS.plant.h / 2;
       this.add.image(gapLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
       this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      // Centered in the gap, at shelf-row height.
-      this.reviewPilePositions[reviewPile] = { x: gapCenter - 23, y: y - 8 };
+      // Shifted left of center in the gap (was dead-centered), at
+      // shelf-row height, per an explicit request.
+      this.reviewPilePositions[reviewPile] = { x: gapCenter - 70, y: y - 8 };
     };
     const buildTableRow = (y) => {
       const tableY = y - ASSET_RECTS.libTable.h / 2;
@@ -828,9 +827,6 @@ class LibraryScene extends Phaser.Scene {
       const sprite = this.add.image(x, y, lockedKey).setOrigin(0, 0).setDepth(1);
       const glow = this.add.text(x + shelfW - 14, y - 6, '⭐', { fontSize: '16px' })
         .setOrigin(0.5).setDepth(4).setVisible(false);
-      const stamp = this.add.text(x + shelfW - 14, y - 6, '✅', { fontSize: '16px' })
-        .setOrigin(0.5).setDepth(4).setVisible(false);
-      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
       // Label placement (spec section 4): the lesson number engraved on
       // the empty plinth strip at the shelf's base — small, low-contrast
@@ -838,6 +834,13 @@ class LibraryScene extends Phaser.Scene {
       this.add.text(x + shelfW / 2, y + shelfH - 12, String(i + 1), {
         fontSize: '10px', fontFamily: 'Georgia, serif', color: '#4a1f1f',
       }).setOrigin(0.5).setDepth(2);
+      // Completion checkmark sits beside the number in the plinth label
+      // instead of floating over the top-right corner of the shelf, per
+      // an explicit request — uses the real checkmark asset instead of
+      // the "✅" emoji used everywhere else in this file.
+      const stamp = this.add.image(x + shelfW / 2 + 20, y + shelfH - 12, 'checkmarkIcon')
+        .setOrigin(0.5).setDepth(4).setDisplaySize(16, 16).setVisible(false);
+      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
       // Deliberately non-solid: 2 shelves share each row with only a
       // 14px gap, and auto-walk routing to the far column would have to
@@ -859,7 +862,7 @@ class LibraryScene extends Phaser.Scene {
   // -- 2 review book piles (final quiz is the staircase — see buildTopBand) --
 
   buildBookPiles() {
-    const bookKey = cropToTexture(this, 'pixellabLibrary', ASSET_RECTS.bookPileTall, 'bookPileTex');
+    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'bookPileTex');
     // Positions come from buildFurniture()'s decor rows — review-1 and
     // review-2 each sit as the "R" in one of the P-T&C-R-T&C-P rows (see
     // LAYOUT's comment for which row hosts which).
