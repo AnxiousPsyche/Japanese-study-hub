@@ -1,8 +1,16 @@
 const ASSET_RECTS = {
-  // floors-walls02.png (288x160px)
-  floorTile: { x: 220, y: 25, w: 16, h: 16 },
+  // floors-walls02.png (288x160px) — brickTile still used for the outer
+  // border only; the old floorTile/floorTileVariant crops were removed
+  // once the interior floor switched to TopDownHouse_FloorsAndWalls.png.
   brickTile: { x: 30, y: 90, w: 16, h: 16 },
-  floorTileVariant: { x: 220, y: 105, w: 16, h: 16 },
+  // TopDownHouse_FloorsAndWalls.png (288x144px) — a 4-column x 2-row grid
+  // of wall+floor swatch pairs (no consistent internal cell borders, found
+  // via per-row color-transition scanning, not a uniform tile grid). Column
+  // 2's pair confirmed against the user's own screenshot: the grooved
+  // reddish-brown wood panel (wall, replaces the corridor's old flat-color
+  // divider) and its paired tan diamond-weave floor (replaces floorTile).
+  dividerWallPanel: { x: 81, y: 52, w: 63, h: 28 },
+  topDownFloorTile: { x: 81, y: 81, w: 63, h: 46 },
   // libassetpack-tiled.png (1488x528px) — all found via alpha-channel
   // pixel scanning (getImageData row/column opaque-run detection), the
   // only reliable measurement method found this project (see SUMMARY.md).
@@ -69,11 +77,13 @@ const ASSET_RECTS = {
   // Alpha-scan corrected via per-row opaque-run isolation: the old
   // {24,162,44,34} clipped the couch's right edge, and the old
   // {88,158,48,38} both clipped its left edge and bled in a row of
-  // paver/stone tiles sitting just below it in the sheet.
-  sofaCouch2: { x: 24, y: 167, w: 56, h: 26 },
-  sofaCouch3: { x: 82, y: 161, w: 60, h: 31 },
-  sofaArmchairPillow: { x: 144, y: 158, w: 32, h: 38 },
-  sofaArmchairPlain: { x: 180, y: 160, w: 28, h: 36 },
+  // paver/stone tiles sitting just below it in the sheet. h further
+  // corrected 26->25: per-row scanning found the couch's own opaque
+  // content ends at row 191 (y:167-191), and the old h:26 crop's last
+  // row (192) was already the first row of an unrelated sprite sitting
+  // just below the couch in the sheet — showing as a stray dark line
+  // under the couch once rendered in-game.
+  sofaCouch2: { x: 24, y: 167, w: 56, h: 25 },
 };
 
 // Round 2 feedback item 1 (Option A — extend the map). World is much
@@ -89,7 +99,10 @@ const GRID_COLS = 56;
 // to fit both zones + 3 decor bands + sofas/reception/spawn stacked
 // vertically. See buildShelves()/buildFurniture() for the exact row
 // math this height was derived from.
-const GRID_ROWS = 119;
+// Was 119 — grown to fit the SHELF_SCALE-enlarged vertical stack below
+// (shelves render bigger now, so every row/zone/decor gap scales with
+// them; see LAYOUT).
+const GRID_ROWS = 151;
 const TILE_SIZE = 16;
 const WORLD_W = GRID_COLS * TILE_SIZE;
 const WORLD_H = GRID_ROWS * TILE_SIZE;
@@ -103,31 +116,64 @@ const GATE_COLS = [25, 26, 27, 28, 29, 30];
 // buildFurniture(), buildBookPiles(), buildReception() and buildPlayer()
 // all read from here instead of duplicating these numbers or deriving
 // them from WORLD_H, so the whole layout can be re-tuned in one place.
+//
+// Shelves render SHELF_SCALE times their native crop size (was native
+// 1x) so the wooden-plaque label's text doesn't need to be shrunk to
+// fit, per explicit request. Every gap in the vertical/horizontal stack
+// below (row spacing, the zone-1/zone-2 transition, decor row, carpet,
+// sofas, reception, spawn, and the gap between paired shelf columns)
+// scales proportionally with it, so the whole layout stays internally
+// consistent — retuning the size later only means changing this one
+// number. GRID_ROWS above grew (119 -> 151) to fit the taller result.
+// This is a bigger, untested change than earlier small tweaks this
+// session (browser tooling has been unavailable throughout) — the
+// reachability/no-overlap math is worked out by hand below, but a real
+// playthrough check is worth doing once verification is possible again.
+const SHELF_SCALE = 1.4;
+const shelfW = ASSET_RECTS.shelfLocked.w * SHELF_SCALE;
+const shelfH = ASSET_RECTS.shelfLocked.h * SHELF_SCALE;
+const shelfPairGap = 20 * SHELF_SCALE; // gap between the 2 shelves in the same column pair — was a fixed 20
+const shelfRowGap = 132 * SHELF_SCALE; // gap between consecutive shelf rows within one zone
+const zoneTransitionGap = 258 * SHELF_SCALE; // gap between zone 1's last row and zone 2's first row
+const decorRow3Gap = 158 * SHELF_SCALE;
+const carpetGlobeGap = 100 * SHELF_SCALE;
+const sofaRowGap = 140 * SHELF_SCALE;
+const receptionGap = 40 * SHELF_SCALE;
+const spawnGap = 180 * SHELF_SCALE;
+
+const zone1Row0 = 560; // unchanged anchor — same distance below the top wall band as before scaling
+const zone1RowY = [zone1Row0, zone1Row0 + shelfRowGap, zone1Row0 + shelfRowGap * 2];
+const zone2Row0 = zone1RowY[2] + zoneTransitionGap;
+const zone2RowY = [zone2Row0, zone2Row0 + shelfRowGap];
+const decorRow3Y = zone2RowY[1] + decorRow3Gap;
+const carpetGlobeY = decorRow3Y + carpetGlobeGap;
+const sofaRowY = carpetGlobeY + sofaRowGap;
+const receptionY = sofaRowY + receptionGap;
+const spawnY = receptionY + spawnGap;
+
 const LAYOUT = {
   // Shelf column geometry — shared by buildShelves() (shelf positions)
   // and buildFurniture() (the P/T&C/RV decor sitting in the gap between
   // the two shelf columns at each row, per an explicit reference
   // diagram showing those items beside the shelves, not in a separate
   // band above/below each zone).
-  shelfW: ASSET_RECTS.shelfLocked.w,
-  shelfH: ASSET_RECTS.shelfLocked.h,
-  // Margin was 40 — inside the 3-tile (48px) side-wall brick strip
-  // buildWalls() draws at x=16..64 (and its mirror at the right edge),
-  // so the inner shelf column's left 24px sat on top of the brick
-  // instead of the floor. 64 is exactly where that strip ends, so the
-  // shelf's edge sits flush against the wall with no overlap.
-  leftColX: [64, 64 + ASSET_RECTS.shelfLocked.w + 20],
+  shelfW,
+  shelfH,
+  // Margin stays 40 short of the wall's true edge (64), matching the
+  // "flush against the wall" fix from an earlier pass — untouched by
+  // the scale-up since it's independent of shelf size.
+  leftColX: [64, 64 + shelfW + shelfPairGap],
   rightColX: [
-    WORLD_W - 64 - ASSET_RECTS.shelfLocked.w * 2 - 20,
-    WORLD_W - 64 - ASSET_RECTS.shelfLocked.w,
+    WORLD_W - 64 - shelfW * 2 - shelfPairGap,
+    WORLD_W - 64 - shelfW,
   ],
-  zone1RowY: [560, 692, 824], // shelves 9-17 (nearest stairs -> nearest zone 2)
-  zone2RowY: [1082, 1214], // shelves 1-8 (nearest zone 1 -> nearest spawn)
-  decorRow3Y: 1372, // P / T&C / P — pure decor, nearest the carpet/globe
-  carpetGlobeY: 1472, // red carpet / globe / red carpet
-  sofaRowY: 1612, // 4 sofas, 2 per side, flanking the corridor
-  receptionY: 1652, // centered — sits between the two vertical sofa stacks
-  spawnY: 1832,
+  zone1RowY, // shelves 9-17 (nearest stairs -> nearest zone 2)
+  zone2RowY, // shelves 1-8 (nearest zone 1 -> nearest spawn)
+  decorRow3Y, // P / T&C / P — pure decor, nearest the carpet/globe
+  carpetGlobeY, // red carpet / globe / red carpet
+  sofaRowY, // 4 sofas, 2 per side, flanking the corridor
+  receptionY, // centered — sits between the two vertical sofa stacks
+  spawnY,
 };
 
 // 17-lesson roster (expanded from Round 2's 15, reconciling with
@@ -352,6 +398,269 @@ function cropToTexture(scene, sourceKey, rect, destKey) {
   return destKey;
 }
 
+// Hand-drawn woven pixel-art rug: bordered edges with alternating fringe
+// ticks, horizontal thread-line weave texture across the body, and a
+// centered cream/tan diamond motif. Brick-red/gold-tan palette (no pink)
+// per explicit feedback. Shared by the long corridor runner (drawn once
+// as a small repeat unit, then tiled via tileSprite) and the two smaller
+// accent rugs beside the globe (drawn at their own full, fixed size, no
+// tiling needed) so every rug in the room reads as the same family.
+function drawWovenRug(scene, key, w, h) {
+  const rugDark = 0x3a1816;
+  const rugFringeLight = 0x4a231f;
+  const rugBase = 0x7a3230;
+  const rugWeave = 0x6b2b28;
+  const rugMotif = 0xc9a66b;
+  const rugMotifShade = 0xa87f4a;
+  const borderW = 6;
+  const hex = (n) => '#' + n.toString(16).padStart(6, '0');
+
+  const tex = scene.textures.createCanvas(key, w, h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = hex(rugBase);
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = hex(rugWeave);
+  for (let y = 1; y < h; y += 3) ctx.fillRect(borderW, y, w - borderW * 2, 1);
+  ctx.fillStyle = hex(rugDark);
+  ctx.fillRect(0, 0, borderW, h);
+  ctx.fillRect(w - borderW, 0, borderW, h);
+  ctx.fillStyle = hex(rugFringeLight);
+  for (let y = 0; y < h; y += 4) {
+    ctx.fillRect(0, y, borderW - 2, 2);
+    ctx.fillRect(w - borderW + 2, y, borderW - 2, 2);
+  }
+
+  const dcx = w / 2;
+  const dcy = h / 2;
+  const dw = Math.min(18, w - borderW * 2 - 6);
+  const dh = Math.min(12, h - 6);
+  const drawDiamond = (fill, pad) => {
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.moveTo(dcx, dcy - dh / 2 - pad);
+    ctx.lineTo(dcx + dw / 2 + pad, dcy);
+    ctx.lineTo(dcx, dcy + dh / 2 + pad);
+    ctx.lineTo(dcx - dw / 2 - pad, dcy);
+    ctx.closePath();
+    ctx.fill();
+  };
+  drawDiamond(hex(rugMotifShade), 1);
+  drawDiamond(hex(rugMotif), 0);
+
+  tex.refresh();
+  return key;
+}
+
+// Reusable wooden-plaque shelf label — replaces the earlier parchment-tag
+// style per an explicit mockup comparison (deep maroon-red plank, matched
+// to the shelf's own wood color, over the lighter tan-brown a generic
+// wooden plaque would default to). Dark frame, wood-grain plank lines,
+// 4 gold corner rivets, cream engraved text in the project's existing
+// "Press Start 2P" pixel font (matching the retro menus/HUD elsewhere in
+// this file — no new text pipeline introduced). Auto-sizes to the text
+// (word-wrapped to maxWidth) so both short tags and long phrases fit
+// without overflowing. (x, y) anchors the plaque's top-center; the caller
+// positions it at the shelf's existing bottom-of-shelf label spot.
+//
+// "Press Start 2P" has no Japanese glyphs; DotGothic16 (loaded in
+// n5-dashboard.html as a fallback specifically for this) is a Japanese
+// pixel/dot-matrix font in a matching retro style. CSS font-family
+// fallback resolves per-glyph, so Latin characters still render in Press
+// Start 2P and only the Japanese ones (e.g. "か", "ましょう" in some
+// lesson titles) fall through to DotGothic16 — no separate text pipeline.
+let bookshelfLabelSeq = 0;
+function createBookshelfLabel(scene, x, y, text, options = {}) {
+  const fontSize = options.fontSize || 6;
+  const paddingX = options.paddingX || 6;
+  const paddingY = options.paddingY || 5;
+  const maxWidth = options.maxWidth || 78;
+  const frame = '#3a1414';
+  const plank = '#7a2e2e';
+  const grain = '#5a1f1f';
+  const rivet = '#c9a66b';
+  const ink = '#e8d4a8';
+  const textStyle = {
+    fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
+    align: 'center', wordWrap: { width: maxWidth - paddingX * 2, useAdvancedWrap: true },
+  };
+
+  // Measure first (throwaway, invisible) so the plaque background can be
+  // sized exactly to the wrapped text instead of a guessed constant.
+  const measure = scene.add.text(0, 0, text, textStyle).setVisible(false);
+  const textW = Math.min(measure.width, maxWidth - paddingX * 2);
+  const textH = measure.height;
+  measure.destroy();
+
+  const tagW = Math.ceil(textW + paddingX * 2);
+  const tagH = Math.ceil(textH + paddingY * 2);
+
+  bookshelfLabelSeq += 1;
+  const key = `bookshelfLabelTex_${bookshelfLabelSeq}`;
+  const tex = scene.textures.createCanvas(key, tagW, tagH);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  // Dark frame, inset plank fill.
+  ctx.fillStyle = frame;
+  ctx.fillRect(0, 0, tagW, tagH);
+  ctx.fillStyle = plank;
+  ctx.fillRect(2, 2, tagW - 4, tagH - 4);
+
+  // Wood-grain plank lines, every 6px.
+  ctx.fillStyle = grain;
+  for (let gy = 6; gy < tagH - 3; gy += 6) ctx.fillRect(4, gy, tagW - 8, 1);
+
+  // 4 gold corner rivets.
+  ctx.fillStyle = rivet;
+  ctx.fillRect(4, 4, 2, 2);
+  ctx.fillRect(tagW - 6, 4, 2, 2);
+  ctx.fillRect(4, tagH - 6, 2, 2);
+  ctx.fillRect(tagW - 6, tagH - 6, 2, 2);
+
+  tex.refresh();
+
+  const bg = scene.add.image(x, y, key).setOrigin(0.5, 0);
+  const label = scene.add.text(x, y + paddingY, text, textStyle).setOrigin(0.5, 0);
+  return { bg, label, width: tagW, height: tagH };
+}
+
+// Tiny retro-tech trinket sitting on top of a shelf — replaces the old
+// "⭐" emoji "available" indicator. Reads as a miniature version of the
+// game's own retro-menu chrome (same near-black + gold palette players
+// already see when clicking a shelf) rather than an unrelated prop: a
+// bordered panel with 2 corner accent squares and a segmented progress
+// bar, styled after a retro loading-screen panel per an explicit
+// reference. Actually animates (was a single static frame) — draws one
+// texture per fill state (0..segCount segments lit) and registers a
+// looping Phaser animation over them, so it genuinely reads as a loading
+// bar cycling rather than just a pulsing icon. Drawn/registered once
+// (guarded) and shared by every shelf sprite that plays the animation.
+let shelfTrinketAnimKey = null;
+function buildShelfTrinketAnim(scene) {
+  if (shelfTrinketAnimKey) return shelfTrinketAnimKey;
+  shelfTrinketAnimKey = 'shelfTrinketLoad';
+
+  // Was 26x19 — resized (alongside the matching completed-badge below)
+  // to match the mockup size/proportions the user approved.
+  const w = 30;
+  const h = 22;
+  const face = '#1a1410';
+  const hi = '#5a4a3a';
+  const lo = '#000000';
+  const track = '#0a0806';
+  const segFill = '#f0c674';
+  const segEmpty = '#3a2418';
+  const corner1 = '#f0c674';
+  const corner2 = '#6b2f2c';
+  const segCount = 5;
+
+  const frameKeys = [];
+  for (let segFilled = 0; segFilled <= segCount; segFilled++) {
+    const key = `shelfTrinketFrame${segFilled}`;
+    const tex = scene.textures.createCanvas(key, w, h);
+    const ctx = tex.getContext();
+    ctx.imageSmoothingEnabled = false;
+
+    ctx.fillStyle = lo;
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = face;
+    ctx.fillRect(1, 1, w - 2, h - 2);
+    ctx.fillStyle = hi;
+    ctx.fillRect(1, 1, w - 2, 1);
+
+    // Corner accent squares, top edge.
+    ctx.fillStyle = corner1;
+    ctx.fillRect(3, 3, 3, 3);
+    ctx.fillStyle = corner2;
+    ctx.fillRect(w - 6, 3, 3, 3);
+
+    // Segmented progress bar — this frame's fill state.
+    ctx.fillStyle = track;
+    ctx.fillRect(3, h - 7, w - 6, 4);
+    const segW = (w - 8) / segCount;
+    for (let i = 0; i < segCount; i++) {
+      ctx.fillStyle = i < segFilled ? segFill : segEmpty;
+      ctx.fillRect(4 + i * segW, h - 6, Math.max(1, segW - 1), 2);
+    }
+
+    tex.refresh();
+    frameKeys.push(key);
+  }
+
+  // 0 -> full -> back to 0, looping, slow enough (3fps) that each step
+  // reads as a distinct "block filled in" moment, not a blur.
+  const frames = frameKeys.concat(frameKeys.slice(1, -1).reverse()).map((key) => ({ key }));
+  scene.anims.create({ key: shelfTrinketAnimKey, frames, frameRate: 3, repeat: -1 });
+  return shelfTrinketAnimKey;
+}
+
+// Center-of-shelf "completed" indicator. Faithful port of the approved
+// mockup option ("same panel as the loading trinket, checkmark instead
+// of bar") — a slightly greener take on the trinket's panel (not an
+// exact color copy: gold top-left corner + green top-right, a dark
+// track strip with a solid green fill bar, smooth-stroked checkmark)
+// rather than the trinket's literal near-black/gold palette, since
+// that's what the shown mockup actually looked like and was approved.
+// 30x22, matching the trinket's own resize. Shown instead of the
+// trinket once a shelf reaches 'completed' (the trinket itself only
+// shows for 'available' — see refreshAllStates). Static single frame.
+let shelfCompleteKey = null;
+function drawShelfCompleteTexture(scene) {
+  if (shelfCompleteKey) return shelfCompleteKey;
+  shelfCompleteKey = 'shelfCompleteTex';
+
+  const w = 30;
+  const h = 22;
+  const outline = '#000000';
+  const face = '#1a2b1a';
+  const hi = '#3a6b40';
+  const corner1 = '#c9a66b';
+  const corner2 = '#2f6b3f';
+  const trackBg = '#0a0806';
+  const trackFill = '#3ca35c';
+  const checkColor = '#c8f0d0';
+
+  const tex = scene.textures.createCanvas(shelfCompleteKey, w, h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = outline;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = face;
+  ctx.fillRect(1, 1, w - 2, h - 2);
+  ctx.fillStyle = hi;
+  ctx.fillRect(1, 1, w - 2, 1);
+
+  ctx.fillStyle = corner1;
+  ctx.fillRect(3, 3, 3, 3);
+  ctx.fillStyle = corner2;
+  ctx.fillRect(w - 6, 3, 3, 3);
+
+  ctx.fillStyle = trackBg;
+  ctx.fillRect(3, h - 8, w - 6, 5);
+  ctx.fillStyle = trackFill;
+  ctx.fillRect(4, h - 7, w - 8, 3);
+
+  // Smooth-stroked checkmark (not blocky pixel squares) — matches the
+  // mockup exactly rather than this file's usual hard-pixel convention,
+  // since that softer line is specifically what was approved here.
+  const cx = w / 2;
+  const cy = h / 2 - 2;
+  const s = 6;
+  ctx.strokeStyle = checkColor;
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(cx - s * 0.5, cy);
+  ctx.lineTo(cx - s * 0.15, cy + s * 0.4);
+  ctx.lineTo(cx + s * 0.55, cy - s * 0.45);
+  ctx.stroke();
+
+  tex.refresh();
+  return shelfCompleteKey;
+}
+
 function ensureToast() {
   let toast = document.getElementById('nekoToast');
   if (toast) return toast;
@@ -380,6 +689,7 @@ class LibraryScene extends Phaser.Scene {
 
   preload() {
     this.load.image('floorsWalls', '../../assets/images/ui/floors-walls02.png');
+    this.load.image('floorsWallsTopDown', '../../assets/images/ui/TopDownHouse_FloorsAndWalls.png');
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
@@ -414,21 +724,27 @@ class LibraryScene extends Phaser.Scene {
   // -- Floor + border tilemap -------------------------------------------
 
   buildFloor() {
+    // Floor tile swapped for the new TopDownHouse_FloorsAndWalls.png crop
+    // (topDownFloorTile) per explicit request — rendered as a single
+    // tileSprite spanning the whole world instead of a per-cell tilemap
+    // tile, so the 63x46 source repeats at its native size with guaranteed
+    // seamless wrapping (Phaser tileSprite tiling) rather than being
+    // squeezed into the unrelated 16x16 border-tile grid. Sits at depth -1,
+    // strictly behind the border tilemap below.
+    const floorKey = cropToTexture(this, 'floorsWallsTopDown', ASSET_RECTS.topDownFloorTile, 'topDownFloorTileTex');
+    this.add.tileSprite(0, 0, WORLD_W, WORLD_H, floorKey).setOrigin(0, 0).setDepth(-1);
+
+    // Border tileset now holds only the brick tile — untouched, per
+    // explicit instruction to leave the left/right/outer border exactly
+    // as-is. Every non-border cell (including the gate opening) is now
+    // "no tile" (-1) so the floor tileSprite above shows through.
     const floorSrc = this.textures.get('floorsWalls').getSourceImage();
-    const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE * 3, TILE_SIZE);
+    const tileTex = this.textures.createCanvas('libraryTiles', TILE_SIZE, TILE_SIZE);
     const tileCtx = tileTex.getContext();
     tileCtx.imageSmoothingEnabled = false;
     tileCtx.drawImage(
-      floorSrc, ASSET_RECTS.floorTile.x, ASSET_RECTS.floorTile.y, TILE_SIZE, TILE_SIZE,
-      0, 0, TILE_SIZE, TILE_SIZE
-    );
-    tileCtx.drawImage(
       floorSrc, ASSET_RECTS.brickTile.x, ASSET_RECTS.brickTile.y, TILE_SIZE, TILE_SIZE,
-      TILE_SIZE, 0, TILE_SIZE, TILE_SIZE
-    );
-    tileCtx.drawImage(
-      floorSrc, ASSET_RECTS.floorTileVariant.x, ASSET_RECTS.floorTileVariant.y, TILE_SIZE, TILE_SIZE,
-      TILE_SIZE * 2, 0, TILE_SIZE, TILE_SIZE
+      0, 0, TILE_SIZE, TILE_SIZE
     );
     tileTex.refresh();
 
@@ -441,7 +757,7 @@ class LibraryScene extends Phaser.Scene {
       for (let x = 0; x < GRID_COLS; x++) {
         const isBorder = x === 0 || y === 0 || x === GRID_COLS - 1 || y === GRID_ROWS - 1;
         const isGate = y === GRID_ROWS - 1 && GATE_COLS.includes(x);
-        row.push(isBorder && !isGate ? 1 : 0);
+        row.push(isBorder && !isGate ? 0 : -1);
       }
       data.push(row);
     }
@@ -674,44 +990,34 @@ class LibraryScene extends Phaser.Scene {
     // floorBench stand-in).
     const libTableKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libTable, 'libTableTex');
     const libChairKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libChair, 'libChairTex');
-    // 4-sofa family, same source sheet — one distinct variant per sofa
-    // slot instead of repeating a single balconyBench sprite 4 times.
-    const sofaKeys = [
-      cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch2, 'sofaCouch2Tex'),
-      cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch3, 'sofaCouch3Tex'),
-      cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaArmchairPillow, 'sofaArmchairPillowTex'),
-      cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaArmchairPlain, 'sofaArmchairPlainTex'),
-    ];
+    // Single "upward facing" 2-seat couch, reused for all 4 sofa slots
+    // (was 4 distinct variants — see the placement loop below).
+    const sofaKeys = [cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch2, 'sofaCouch2Tex')];
     // Shoe cabinet, from furniture03.png per an explicit reference image.
     const shoeCabinetKey = cropToTexture(this, 'furniture03', ASSET_RECTS.shoeCabinet, 'shoeCabinetTex');
 
-    // Center corridor rug — a proper 3-shade nested rug (dark maroon
-    // border, mid-red body, a lighter pink center stripe) instead of a
-    // flat 2-tone block, per an explicit request to bring back the
-    // layered "real carpet" look the original green version had, just
-    // without that version's periodic cross-tie lines. The mid shade
-    // reuses the existing 0xd57c7c "CARPET RED" accents elsewhere in
-    // this room rather than introducing an unrelated red.
-    // Non-solid (same as every other decor piece — see buildShelves'
-    // header comment on the project's non-solid-furniture convention),
-    // depth 0 so it sits at floor level under every sprite placed here.
-    const corridorWidth = 56;
+    // Center corridor rug — a hand-drawn woven pixel-art runner (border +
+    // fringe ticks, horizontal thread-line texture, a repeating cream
+    // diamond motif) instead of either the old flat 3-shade block or the
+    // wood-panel wall texture tried in an earlier pass. Brick-red/gold-tan
+    // palette per explicit feedback that the previous pink/maroon clashed
+    // with the library's warm wood tones — the globe's accent rugs below
+    // get the same treatment now too. Drawn once as a small repeat-unit
+    // texture (drawWovenRug) and tiled via tileSprite — same rendering
+    // approach as the floor and wall-header tiles elsewhere in this file,
+    // guaranteeing a seamless repeat along the corridor's length. Non-
+    // solid, like every other decor piece (walkable, no collider added).
     const corridorX = WORLD_W / 2;
     const corridorTop = 460; // just below the top wall block, unrelated to any shelf row now
     const corridorBottom = LAYOUT.receptionY;
     const corridorHeight = corridorBottom - corridorTop;
     const corridorMidY = (corridorTop + corridorBottom) / 2;
-    const corridorBorder = 0x6b2f2c; // darkest — outer border
-    const corridorBody = 0xd57c7c; // mid — main rug body, matches the existing red-carpet accents
-    const corridorCenter = 0xecc4c0; // lightest — narrow center accent stripe
-    this.add
-      .rectangle(corridorX, corridorMidY, corridorWidth, corridorHeight, corridorBorder)
-      .setDepth(0);
-    this.add
-      .rectangle(corridorX, corridorMidY, corridorWidth - 16, corridorHeight - 6, corridorBody)
-      .setDepth(0);
-    this.add
-      .rectangle(corridorX, corridorMidY, 16, corridorHeight - 6, corridorCenter)
+    // Tunable — was 56 (the flat placeholder's width), widened per
+    // explicit request that the old strip read as too thin for the aisle.
+    const corridorWidth = 80;
+    const corridorRugRepeatH = 32;
+    drawWovenRug(this, 'corridorRugTex', corridorWidth, corridorRugRepeatH);
+    this.add.tileSprite(corridorX, corridorMidY, corridorWidth, corridorHeight, 'corridorRugTex')
       .setDepth(0);
 
     // Per-shelf-row decor: P/T&C/RV sit in the gap between the left and
@@ -787,43 +1093,44 @@ class LibraryScene extends Phaser.Scene {
     const globeY = LAYOUT.carpetGlobeY - ASSET_RECTS.globe.h / 2;
     this.furnitureSprites.globe = this.add.image(globeX, globeY, globeKey).setOrigin(0, 0).setDepth(1);
 
-    // Two carpet accents flanking the globe — same 3-shade nested-rug
-    // treatment (dark maroon border / mid-red body / light pink center
-    // stripe) as the corridor rug, per explicit feedback that these flat
-    // single-color swatches should match that retro palette too instead
-    // of being a plain block.
+    // Two carpet accents — moved out from flanking the globe to sitting
+    // below each shelf column instead (x centered on that column's own
+    // footprint), per explicit feedback that they read as too close to
+    // center for the aisle. Same woven-rug treatment as the corridor
+    // (drawWovenRug), drawn once each at their own fixed size (no tiling
+    // needed for a small accent rug), rather than the old flat 3-shade
+    // rectangles.
     const carpetW = 90;
     const carpetH = 50;
-    [WORLD_W / 2 - 170, WORLD_W / 2 + 170].forEach((cx) => {
-      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW, carpetH, corridorBorder).setDepth(0);
-      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW - 12, carpetH - 12, corridorBody).setDepth(0);
-      this.add.rectangle(cx, LAYOUT.carpetGlobeY, carpetW - 12, 10, corridorCenter).setDepth(0);
-    });
+    const leftShelfColCenterX = (LAYOUT.leftColX[0] + LAYOUT.leftColX[1] + LAYOUT.shelfW) / 2;
+    const rightShelfColCenterX = (LAYOUT.rightColX[0] + LAYOUT.rightColX[1] + LAYOUT.shelfW) / 2;
+    drawWovenRug(this, 'globeRugLeftTex', carpetW, carpetH);
+    drawWovenRug(this, 'globeRugRightTex', carpetW, carpetH);
+    this.add.image(leftShelfColCenterX, LAYOUT.carpetGlobeY, 'globeRugLeftTex').setDepth(0);
+    this.add.image(rightShelfColCenterX, LAYOUT.carpetGlobeY, 'globeRugRightTex').setDepth(0);
 
-    // 4 sofas, 2 per side, stacked vertically hugging each wall (not
-    // side-by-side — there isn't enough width between a wall and the
-    // centered reception nook below for 2 side-by-side at this scale).
-    // This also keeps the whole reception footprint clear on the X axis
-    // regardless of its Y, since sofas never reach the center columns.
-    // One distinct variant per slot (2-seat couch, 3-seat w/ pillows,
-    // armchair w/ pillow, plain armchair), matching the 4-sofa family
-    // shown in the reference image, rather than repeating one sprite.
-    // Their native crops differ in size (28-48px wide), which read as
-    // mismatched scale side-by-side — displayed at one shared size
-    // (the largest native footprint, so nothing gets downscaled) so
-    // all 4 look uniform.
-    const sofaRects = [ASSET_RECTS.sofaCouch2, ASSET_RECTS.sofaCouch3, ASSET_RECTS.sofaArmchairPillow, ASSET_RECTS.sofaArmchairPlain];
-    const sofaDisplayW = Math.max(...sofaRects.map((r) => r.w));
-    const sofaDisplayH = Math.max(...sofaRects.map((r) => r.h));
-    const sofaRowGap = 14;
-    const leftSofaX = 60;
-    const rightSofaX = WORLD_W - 60 - sofaDisplayW;
-    [leftSofaX, rightSofaX].forEach((x, side) => {
-      [0, 1].forEach((row) => {
-        const slot = side * 2 + row;
-        const y = LAYOUT.sofaRowY + row * (sofaDisplayH + sofaRowGap);
+    // 4 sofas, 2 per side, stacked vertically directly in front of (below)
+    // each accent rug — was hugging the outer wall further down near
+    // reception, with 4 distinct variants (2-seat couch, 3-seat, 2
+    // armchairs). Per explicit feedback, both slots on each side are now
+    // the same "upward facing" 2-seat couch (sofaCouch2Tex), centered on
+    // the same x as that side's rug, moved up so the sofas sit just below
+    // the rug instead of far down the aisle — and placed side by side
+    // (was stacked vertically) since there's enough width in the shelf
+    // column's own footprint for 2 sofas at this scale.
+    const sofaRect = ASSET_RECTS.sofaCouch2;
+    const sofaDisplayW = sofaRect.w;
+    const sofaDisplayH = sofaRect.h;
+    const sofaGap = 14;
+    const rugBottomY = LAYOUT.carpetGlobeY + carpetH / 2;
+    const sofaTopY = rugBottomY + 20;
+    const sofaPairWidth = sofaDisplayW * 2 + sofaGap;
+    [leftShelfColCenterX, rightShelfColCenterX].forEach((cx, side) => {
+      [0, 1].forEach((col) => {
+        const slot = side * 2 + col;
+        const x = cx - sofaPairWidth / 2 + col * (sofaDisplayW + sofaGap);
         this.furnitureSprites[`sofa${slot + 1}`] = this.add
-          .image(x, y, sofaKeys[slot]).setOrigin(0, 0).setDepth(1)
+          .image(x, sofaTopY, sofaKeys[0]).setOrigin(0, 0).setDepth(1)
           .setDisplaySize(sofaDisplayW, sofaDisplayH);
       });
     });
@@ -874,12 +1181,22 @@ class LibraryScene extends Phaser.Scene {
     // topmost shelf row (zone1's left column starts one row lower than
     // its right column, since row[0] is shelf-17's solo row).
     const colWidth = shelfW * 2 + 20;
-    const headerH = 14;
-    const headerColor = 0x5a4a3a;
-    const headerTrim = 0xc9bfa5;
+    // Was a flat 14px color rectangle — now the full 2-part wall swatch
+    // from TopDownHouse_FloorsAndWalls.png (flat orange plank on top of
+    // the grooved reddish-brown panel), tiled across each column's width
+    // and scaled down slightly so it reads as a real wall segment sitting
+    // above the shelf, per explicit request. Bottom edge stays anchored
+    // at topY-4 regardless of headerH (the center-Y formula below cancels
+    // headerH out of the bottom-edge position), so growing the header
+    // taller only extends it upward — no other positioning needs to change.
+    const headerH = 48;
+    const headerRect = { x: 81, y: 17, w: 63, h: 62 };
+    const headerKey = cropToTexture(this, 'floorsWallsTopDown', headerRect, 'wallHeaderTex');
+    const headerScale = headerH / headerRect.h;
     const buildWallHeader = (x, topY) => {
-      this.add.rectangle(x + colWidth / 2, topY - headerH / 2 - 4, colWidth, headerH, headerColor)
-        .setDepth(0).setStrokeStyle(2, headerTrim);
+      this.add.tileSprite(x + colWidth / 2, topY - headerH / 2 - 4, colWidth, headerH, headerKey)
+        .setTileScale(headerScale, headerScale)
+        .setDepth(0);
     };
     buildWallHeader(leftColX[0], zone1RowY[1]);
     buildWallHeader(rightColX[0], zone1RowY[0]);
@@ -904,26 +1221,57 @@ class LibraryScene extends Phaser.Scene {
     const filledKeys = filledVariants.map(
       (v) => cropToTexture(this, 'libAssetPack', ASSET_RECTS[v], v + 'Tex')
     );
+    // Registers the trinket's frame textures + looping animation once,
+    // before any shelf sprite tries to use them (must exist first).
+    const trinketAnimKey = buildShelfTrinketAnim(this);
 
+    // Shelf sprite is displayed at LAYOUT.shelfW/shelfH directly — those
+    // are already SHELF_SCALE-enlarged (see the LAYOUT block), so no
+    // extra multiplier is needed here (a separate ~1.12 visual-only bump
+    // from an earlier, smaller pass has been folded into SHELF_SCALE).
+    // Centered anchor keeps the sprite symmetric around the same point
+    // the row/column math is built from.
     LESSON_DATA.forEach((lesson, i) => {
       const [x, y] = positions[i];
-      const sprite = this.add.image(x, y, lockedKey).setOrigin(0, 0).setDepth(1);
-      const glow = this.add.text(x + shelfW - 14, y - 6, '⭐', { fontSize: '16px' })
+      const sprite = this.add.image(x + shelfW / 2, y + shelfH / 2, lockedKey)
+        .setOrigin(0.5, 0.5).setDepth(1)
+        .setDisplaySize(shelfW, shelfH);
+      // "Available" indicator — was a "⭐" emoji, now a bigger, actually-
+      // animated retro-tech trinket (mini loading-panel prop, its
+      // progress bar genuinely cycling through fill states) centered on
+      // the shelf instead of tucked in the top-right corner, per explicit
+      // request to make it more visible. Replaces the old static-image +
+      // alpha-pulse-tween combo entirely — the fill animation is the
+      // effect now, so no extra pulse layered on top.
+      const glow = this.add.sprite(x + shelfW / 2, y + shelfH / 2, 'shelfTrinketFrame0')
+        .setOrigin(0.5).setDepth(4).setVisible(false)
+        .play(trinketAnimKey);
+      // "Completed" indicator — same center spot the trinket occupies
+      // during 'available', shown once the shelf resolves to
+      // 'completed' (the trinket itself is hidden by then). Same panel
+      // chrome as the trinket, checkmark instead of a progress bar, per
+      // explicit request.
+      const completeBadge = this.add.image(x + shelfW / 2, y + shelfH / 2, drawShelfCompleteTexture(this))
         .setOrigin(0.5).setDepth(4).setVisible(false);
 
-      // Label placement (spec section 4): the lesson number engraved on
-      // the empty plinth strip at the shelf's base — small, low-contrast
-      // (a shade darker than the maroon plinth wood), not a bold badge.
-      this.add.text(x + shelfW / 2, y + shelfH - 12, String(i + 1), {
-        fontSize: '10px', fontFamily: 'Georgia, serif', color: '#4a1f1f',
-      }).setOrigin(0.5).setDepth(2);
-      // Completion checkmark sits beside the number in the plinth label
-      // instead of floating over the top-right corner of the shelf, per
-      // an explicit request — uses the real checkmark asset instead of
-      // the "✅" emoji used everywhere else in this file.
-      const stamp = this.add.image(x + shelfW / 2 + 20, y + shelfH - 12, 'checkmarkIcon')
-        .setOrigin(0.5).setDepth(4).setDisplaySize(16, 16).setVisible(false);
-      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+      // Wooden plaque label, same bottom-of-shelf spot the old
+      // parchment-tag/checkmark placeholders occupied. Back to the
+      // default (readable) font size now that SHELF_SCALE gives it real
+      // room, instead of the size-5 squeeze from when the shelf itself
+      // was only ~12% bigger. maxWidth allows a modest overhang past the
+      // shelf's own edges — the (now scaled-up) gap between shelves in
+      // the same column pair has room for this without the plaque
+      // colliding with its neighbor.
+      const label = createBookshelfLabel(this, x + shelfW / 2, y + shelfH - 20, lesson.title, {
+        maxWidth: shelfW + 20,
+      });
+      label.bg.setDepth(2);
+      label.label.setDepth(3);
+      // Completion checkmark now sits at the tag's top-right corner
+      // (small badge) instead of beside plain text — uses the real
+      // checkmark asset instead of the "✅" emoji used elsewhere here.
+      const stamp = this.add.image(label.bg.x + label.width / 2 - 6, label.bg.y + 6, 'checkmarkIcon')
+        .setOrigin(0.5).setDepth(4).setDisplaySize(12, 12).setVisible(false);
       // Favorite marker (retro menu's "Make Favorite?" option) — a small
       // heart icon over the shelf's top-left corner, independent of
       // lock/complete state (a locked shelf can't be favorited since the
@@ -941,7 +1289,7 @@ class LibraryScene extends Phaser.Scene {
 
       const entry = {
         id: lesson.id, kind: 'shelf', title: lesson.title,
-        sprite, glow, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
+        sprite, glow, completeBadge, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
         x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
         baseScale: 1,
       };
@@ -1362,6 +1710,7 @@ class LibraryScene extends Phaser.Scene {
       if (entry.kind === 'shelf') {
         entry.sprite.setTexture(state === 'locked' ? entry.lockedKey : entry.filledKey);
         entry.favIcon.setVisible(!!this.favorites[entry.id]);
+        entry.completeBadge.setVisible(state === 'completed');
       }
       // The staircase is exempt from the locked-state dim — see
       // buildTopBand's comment: fading a large architectural piece to
