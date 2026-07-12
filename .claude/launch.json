@@ -170,6 +170,256 @@
         "9678"
       ],
       "port": 9678
+    },
+    {
+      "name": "jp-library-static-wallheader-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9789"
+      ],
+      "port": 9789
+    },
+    {
+      "name": "jp-library-static-wallheader-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9890"
+      ],
+      "port": 9890
+    },
+    {
+      "name": "jp-library-static-wallsolid-reviews",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "9991"
+      ],
+      "port": 9991
+    },
+    {
+      "name": "jp-library-static-tables-lastwall",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10092"
+      ],
+      "port": 10092
+    },
+    {
+      "name": "jp-library-static-swap-review-table",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10193"
+      ],
+      "port": 10193
+    },
+    {
+      "name": "jp-library-static-wallfooter",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10294"
+      ],
+      "port": 10294
+    },
+    {
+      "name": "jp-library-static-headers-reception",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10395"
+      ],
+      "port": 10395
+    },
+    {
+      "name": "jp-library-static-chair-facing-down",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10496"
+      ],
+      "port": 10496
+    },
+    {
+      "name": "jp-library-static-cat-anims",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10597"
+      ],
+      "port": 10597
+    },
+    {
+      "name": "jp-library-static-desk-items",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10698"
+      ],
+      "port": 10698
+    },
+    {
+      "name": "jp-library-static-reception-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10799"
+      ],
+      "port": 10799
+    },
+    {
+      "name": "jp-library-static-reception-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10891"
+      ],
+      "port": 10891
+    },
+    {
+      "name": "jp-library-static-table-bigger2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "10992"
+      ],
+      "port": 10992
+    },
+    {
+      "name": "jp-library-static-chair-smaller",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11093"
+      ],
+      "port": 11093
+    },
+    {
+      "name": "jp-library-static-table-bigger3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11194"
+      ],
+      "port": 11194
+    },
+    {
+      "name": "jp-library-static-plant-gap",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11295"
+      ],
+      "port": 11295
+    },
+    {
+      "name": "jp-library-static-plant-gap2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11396"
+      ],
+      "port": 11396
+    },
+    {
+      "name": "jp-library-static-lesson-box",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11497"
+      ],
+      "port": 11497
+    },
+    {
+      "name": "jp-library-static-lesson-box-jrpg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11598"
+      ],
+      "port": 11598
+    },
+    {
+      "name": "jp-library-static-lesson-tv-summary",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11699"
+      ],
+      "port": 11699
+    },
+    {
+      "name": "jp-library-static-lesson-tv-big",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11790"
+      ],
+      "port": 11790
+    },
+    {
+      "name": "jp-library-static-table-contrast",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11891"
+      ],
+      "port": 11891
+    },
+    {
+      "name": "jp-library-static-shelf02",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "11992"
+      ],
+      "port": 11992
+    },
+    {
+      "name": "jp-library-static-pronunciation",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12093"
+      ],
+      "port": 12093
+    },
+    {
+      "name": "jp-library-static-shelf02-full",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12194"
+      ],
+      "port": 12194
     }
   ],
   "autoVerify": true

@@ -1,0 +1,512 @@
+/* Reusable retro RPG-style lesson dialogue box — styled after classic
+   16-bit JRPG textboxes (SNES-era): a stepped-pixel double border
+   (lavender outer line, white inner line) wrapping a navy/indigo
+   gradient interior, white pixel text, and a small bordered portrait
+   inset top-left with text wrapping beside/below it.
+
+   The stepped (non-smooth) rounded corner is built from a `clip-path`
+   polygon shared by every bordered box in this file (see --jr-step-a/
+   --jr-step-b) — 2 nested step sizes per corner instead of a curve,
+   which is what actually reads as "pixel-art rounded" rather than a
+   plain CSS border-radius. Chrome (portrait + text panel + continue
+   arrow) is fixed; only .lesson-box__content's children change per
+   lessonType. */
+
+:root {
+  --jr-step-a: 10px;
+  --jr-step-b: 5px;
+  --jr-step-a-sm: 6px;
+  --jr-step-b-sm: 3px;
+
+  --jr-border-outer: #a89cd8;
+  --jr-border-inner: #f4f2ff;
+  --jr-bg-top: #4b4aa0;
+  --jr-bg-bottom: #201d54;
+  --jr-portrait-bg: #2b2864;
+  --jr-text: #f5f4ff;
+  --jr-text-dim: #b9b3e6;
+
+  --lb-role-noun-bg: #6fb3e6;
+  --lb-role-noun-fg: #0b2438;
+  --lb-role-particle-bg: #f0c674;
+  --lb-role-particle-fg: #4a3211;
+  --lb-role-verb-bg: #7fd692;
+  --lb-role-verb-fg: #0e3a17;
+  --lb-role-adjective-bg: #e39be3;
+  --lb-role-adjective-fg: #3a123a;
+}
+
+/* Shared stepped-pixel-corner clip path, parameterized by --jr-step-a/b
+   (or the -sm variants for the smaller portrait boxes) so every layer —
+   outer border, inner border, content bg — cuts an identical corner
+   shape regardless of its own box size. */
+.jr-stepped {
+  clip-path: polygon(
+    var(--jr-a) 0, calc(100% - var(--jr-a)) 0,
+    calc(100% - var(--jr-a)) var(--jr-b), calc(100% - var(--jr-b)) var(--jr-b),
+    calc(100% - var(--jr-b)) var(--jr-a), 100% var(--jr-a),
+    100% calc(100% - var(--jr-a)),
+    calc(100% - var(--jr-b)) calc(100% - var(--jr-a)), calc(100% - var(--jr-b)) calc(100% - var(--jr-b)), calc(100% - var(--jr-a)) calc(100% - var(--jr-b)),
+    calc(100% - var(--jr-a)) 100%,
+    var(--jr-a) 100%,
+    var(--jr-a) calc(100% - var(--jr-b)), var(--jr-b) calc(100% - var(--jr-b)), var(--jr-b) calc(100% - var(--jr-a)), 0 calc(100% - var(--jr-a)),
+    0 var(--jr-a),
+    var(--jr-b) var(--jr-a), var(--jr-b) var(--jr-b), var(--jr-a) var(--jr-b), var(--jr-a) 0
+  );
+}
+
+.lesson-box-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  pointer-events: none;
+  z-index: 50;
+  /* VT323 (CRT terminal readout) carries running text; Press Start 2P
+     stays reserved for headers/labels via .lesson-box__display-face, so
+     lessons keep the game's pixel-RPG chrome while body copy reads more
+     "techy". Both fall back to DotGothic16 for Japanese characters. */
+  font-family: "VT323", "DotGothic16", monospace;
+}
+
+.lesson-box__display-face {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+}
+
+.lesson-box-overlay[hidden] {
+  display: none;
+}
+
+/* Big — a real "TV screen" filling most of the game view, not a slim
+   bottom textbox, per explicit "the window should be big, like a real
+   TV window" feedback. Fixed width/height (not just max-width) so it
+   reads as a screen with real presence rather than a box that happens
+   to be roomy. */
+.lesson-box {
+  pointer-events: auto;
+  width: 92%;
+  height: 88%;
+  max-width: 900px;
+  max-height: 620px;
+  display: flex;
+  cursor: pointer;
+  user-select: none;
+  --jr-a: var(--jr-step-a);
+  --jr-b: var(--jr-step-b);
+  background: var(--jr-border-outer);
+  padding: 5px;
+  transform-origin: center;
+}
+
+/* CRT-power-on pop-in, played once each time a lesson opens (not on
+   every page turn — see lesson-box.js's open(), which (re)adds this
+   class). Squashes to a bright horizontal line, holds it, then
+   un-squashes to full height with a brief overbright flash — the
+   classic "TV turning on" beat. */
+.lesson-box.lesson-box--tv-on {
+  animation: lesson-box-tv-on 420ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes lesson-box-tv-on {
+  0% { transform: scaleY(0.02); filter: brightness(8); opacity: 1; }
+  28% { transform: scaleY(0.02); filter: brightness(8); opacity: 1; }
+  55% { transform: scaleY(1); filter: brightness(2.2); opacity: 1; }
+  100% { transform: scaleY(1); filter: brightness(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-box.lesson-box--tv-on {
+    animation: none;
+  }
+}
+
+.lesson-box__mid {
+  flex: 1;
+  display: flex;
+  background: var(--jr-border-inner);
+  padding: 3px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.lesson-box__panel {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(180deg, var(--jr-bg-top) 0%, var(--jr-bg-bottom) 100%);
+  padding: 28px 34px 30px 30px;
+  overflow-y: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Faint scanline texture — reinforces the CRT-terminal read on the VT323
+   body text — sits behind all panel content, never intercepts clicks. */
+.lesson-box__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0px, rgba(0, 0, 0, 0.16) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+.lesson-box__panel > * {
+  position: relative;
+}
+
+/* -- Portrait: bordered box inset top-left, text flows around it --------- */
+
+.lesson-box__portrait {
+  float: left;
+  --jr-a: var(--jr-step-a);
+  --jr-b: var(--jr-step-b);
+  background: var(--jr-border-outer);
+  padding: 3px;
+  margin: 0 22px 12px 0;
+}
+
+.lesson-box__portrait-mid {
+  background: var(--jr-border-inner);
+  padding: 2px;
+}
+
+.lesson-box__portrait-inner {
+  background: var(--jr-portrait-bg);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lesson-box__portrait-sprite {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+  /* background-image + steps() animation set inline per lesson color by
+     lesson-box.js (the sheet path depends on which cat color is active) */
+}
+
+/* -- Text content ---------------------------------------------------------- */
+
+.lesson-box__speaker {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 14px;
+  color: var(--lb-role-particle-bg);
+  margin: 0 0 14px;
+  letter-spacing: 0.02em;
+}
+
+.lesson-box__content {
+  overflow: hidden; /* new block-formatting context so text wraps around the float cleanly */
+  color: var(--jr-text);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.lesson-box__continue {
+  position: absolute;
+  right: 20px;
+  bottom: 16px;
+  color: var(--jr-text);
+  font-size: 20px;
+  animation: lesson-box-blink 900ms steps(1) infinite;
+}
+
+@keyframes lesson-box-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-box__continue {
+    animation: none;
+  }
+}
+
+/* -- type: greeting -------------------------------------------------------- */
+
+.lesson-box__greeting-kana {
+  font-size: 38px;
+  color: var(--jr-text);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.lesson-box__greeting-romaji {
+  font-size: 16px;
+  color: var(--jr-text-dim);
+  margin-bottom: 4px;
+}
+
+/* English-syllable phonetic guide, e.g. "(koo-dah-sai)" — separate from
+   romaji since romaji alone doesn't tell a beginner how to actually say
+   the word out loud (stress, vowel length). Capitalized syllables in the
+   data itself mark the naturally-emphasized beat, since Japanese pitch
+   accent doesn't map cleanly onto a single CSS treatment. */
+.lesson-box__greeting-pronunciation {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--jr-text-dim);
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.lesson-box__greeting-meaning {
+  font-size: 14px;
+  color: var(--jr-text-dim);
+  margin-bottom: 18px;
+}
+
+.lesson-box__greeting-usage-label {
+  font-size: 11px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 6px;
+}
+
+.lesson-box__greeting-usage {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--jr-text);
+  background: rgba(0, 0, 0, 0.18);
+  border-left: 3px solid var(--lb-role-particle-bg);
+  padding: 10px 14px;
+  max-width: 46em;
+}
+
+/* -- type: sentence --------------------------------------------------------- */
+/* Inline/underlined word treatment (not filled tiles) — explicit
+   preference after comparing both against a filled-chip alternative:
+   larger colored text with a colored underline reads cleaner at this
+   font size than a bordered box. */
+
+.lesson-box__sentence-label {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 13px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+  clear: both;
+}
+
+.lesson-box__new-word-flag {
+  display: inline-block;
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 10px;
+  color: var(--jr-bg-top);
+  background: var(--lb-role-particle-bg);
+  padding: 3px 8px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lesson-box__sentence-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+  clear: both;
+  margin-bottom: 6px;
+}
+
+.lesson-box__word-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.lesson-box__word-tile-text {
+  font-size: 26px;
+  padding-bottom: 4px;
+  border-bottom: 4px solid;
+  letter-spacing: 0.02em;
+  position: relative;
+}
+
+.lesson-box__word-tile-text.role-noun { color: var(--lb-role-noun-bg); border-color: var(--lb-role-noun-bg); }
+.lesson-box__word-tile-text.role-particle { color: var(--lb-role-particle-bg); border-color: var(--lb-role-particle-bg); }
+.lesson-box__word-tile-text.role-verb { color: var(--lb-role-verb-bg); border-color: var(--lb-role-verb-bg); }
+.lesson-box__word-tile-text.role-adjective { color: var(--lb-role-adjective-bg); border-color: var(--lb-role-adjective-bg); }
+
+/* "NEW" badge for a word the player hasn't seen in an earlier example on
+   this shelf yet — set per-tile via page data, not inferred, since only
+   the lesson author knows which word is actually new to the sequence. */
+.lesson-box__word-tile-text.is-new::after {
+  content: "NEW";
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 8px;
+  color: var(--jr-bg-top);
+  background: var(--lb-role-particle-bg);
+  padding: 1px 4px;
+  letter-spacing: 0.04em;
+}
+
+.lesson-box__word-tile-gloss {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  text-align: center;
+  max-width: 110px;
+}
+
+.lesson-box__sentence-translation {
+  font-size: 15px;
+  color: var(--jr-text-dim);
+  border-top: 2px dashed rgba(255, 255, 255, 0.25);
+  padding-top: 10px;
+  margin-top: 14px;
+}
+
+.lesson-box__sentence-note {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--jr-text);
+  margin-top: 14px;
+}
+
+/* -- type: grammar-intro ----------------------------------------------------- */
+
+.lesson-box__section-label {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 12px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  clear: both;
+}
+
+.lesson-box__pattern-line {
+  font-size: 20px;
+  color: var(--jr-text);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+.lesson-box__pattern-line .role-noun { color: var(--lb-role-noun-bg); }
+.lesson-box__pattern-line .role-particle { color: var(--lb-role-particle-bg); }
+.lesson-box__pattern-line .role-verb { color: var(--lb-role-verb-bg); }
+
+.lesson-box__explain-text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--jr-text);
+}
+
+.lesson-box__explain-text + .lesson-box__explain-text {
+  margin-top: 8px;
+}
+
+.lesson-box__term-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 14px;
+  row-gap: 6px;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.lesson-box__term-name {
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.lesson-box__term-name.role-noun { color: var(--lb-role-noun-bg); }
+.lesson-box__term-name.role-particle { color: var(--lb-role-particle-bg); }
+.lesson-box__term-name.role-verb { color: var(--lb-role-verb-bg); }
+
+.lesson-box__term-desc {
+  color: var(--jr-text-dim);
+  line-height: 1.45;
+}
+
+.lesson-box__culture-note {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--jr-text);
+  background: rgba(0, 0, 0, 0.22);
+  border-left: 3px solid var(--lb-role-particle-bg);
+  padding: 10px 14px;
+  margin-top: 14px;
+}
+
+.lesson-box__culture-note b {
+  color: var(--lb-role-particle-bg);
+}
+
+/* -- shared data table (type: conjugation AND type: summary) ------------------ */
+/* Same 3-column shape (headword / romaji / gloss) works for both a verb's
+   conjugation forms and a lesson-end recap of every phrase covered — kept
+   as one class so future table-shaped content types reuse it too. */
+
+/* Every color/background below is set explicitly, not inherited — a
+   site-wide `th { background }` / `td { background: white }` rule in
+   components.css (loaded before this file) was otherwise winning on the
+   background, leaving 2 of the 3 columns rendering white-on-white
+   (only the Romaji column had enough contrast to read at all). */
+.lesson-box__data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  clear: both;
+  background: transparent;
+}
+
+.lesson-box__data-table th,
+.lesson-box__data-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.25);
+  background: transparent;
+}
+
+.lesson-box__data-table th {
+  color: var(--jr-bg-top);
+  background: var(--lb-role-particle-bg);
+  font-weight: normal;
+  font-size: 11px;
+}
+
+.lesson-box__data-table td:first-child {
+  color: var(--jr-text);
+  font-size: 15px;
+}
+
+.lesson-box__data-table td:nth-child(2) {
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__data-table td:nth-child(3) {
+  color: var(--jr-text);
+}
+
+/* -- type: summary ---------------------------------------------------------- */
+
+.lesson-box__summary-title {
+  font-size: 11px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 8px;
+  clear: both;
+}
+
+/* -- ambient corner cat (decorative, outside the text flow) ---------------- */
+
+.lesson-box__ambient-cat {
+  position: absolute;
+  top: -46px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}

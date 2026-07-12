@@ -34,11 +34,40 @@ const ASSET_RECTS = {
   // Alpha-scan corrected: the old {673,43,45,52} clipped ~4px off the top
   // of the gold frame. This is the complete, non-clipped bounding box.
   armchair: { x: 672, y: 39, w: 48, h: 57 },
+  // Same chair, facing the OTHER way (stacked directly below armchair in
+  // the sheet) — cushion fills the whole seat facing the viewer, instead
+  // of armchair's backrest-only view. Per-row scan started at y=100 (not
+  // armchair's own y=90 bottom) specifically to avoid merging its
+  // shadow/leg bleed into this box. Used for reception's chair, which
+  // needs to face down toward the desk.
+  armchairFacingDown: { x: 672, y: 100, w: 48, h: 68 },
   // Reception furniture (found via alpha-scan against the user's
   // reference images — desk/chair/rug/lamp are all confirmed matches).
   receptionDesk: { x: 541, y: 229, w: 191, h: 107 },
   receptionRug: { x: 456, y: 24, w: 168, h: 72 },
   deskLamp: { x: 624, y: 125, w: 24, h: 43 },
+  // Desk-clutter item sheet (18 sprites), all found by flood-fill
+  // island-scanning libassetpack-tiled.png's top-left region against the
+  // user's reference item-sheet image, then individually confirmed by
+  // rendering each candidate crop.
+  deskRedBook: { x: 360, y: 26, w: 24, h: 22 },
+  deskClipboard: { x: 390, y: 28, w: 12, h: 16 },
+  deskScrap: { x: 384, y: 159, w: 24, h: 9 },
+  deskStripedStack: { x: 361, y: 97, w: 22, h: 23 },
+  deskPaperWavy: { x: 387, y: 50, w: 17, h: 19 },
+  deskPaperFanned: { x: 410, y: 51, w: 21, h: 20 },
+  deskGreenLedger: { x: 360, y: 76, w: 24, h: 20 },
+  deskPaperStackA: { x: 409, y: 73, w: 22, h: 21 },
+  deskTallStack: { x: 240, y: 96, w: 30, h: 48 },
+  deskThickStack: { x: 240, y: 27, w: 31, h: 45 },
+  deskPaperStackB: { x: 388, y: 75, w: 15, h: 18 },
+  deskMug: { x: 415, y: 102, w: 10, h: 13 },
+  deskFlatBook: { x: 360, y: 55, w: 24, h: 17 },
+  deskDice: { x: 392, y: 130, w: 8, h: 7 },
+  deskQuillCup: { x: 415, y: 122, w: 10, h: 22 },
+  deskOpenBook: { x: 290, y: 24, w: 45, h: 24 },
+  deskRibbonScroll: { x: 361, y: 149, w: 22, h: 19 },
+  deskInkwellQuill: { x: 411, y: 144, w: 19, h: 24 },
   // TopDownHouse_DoorsAndWindows.png
   // Round 2 feedback item 3: previous h:55 crop bled into the door tiles
   // immediately above (y:40-47) and below (y:82+) this window in the
@@ -99,10 +128,12 @@ const GRID_COLS = 56;
 // to fit both zones + 3 decor bands + sofas/reception/spawn stacked
 // vertically. See buildShelves()/buildFurniture() for the exact row
 // math this height was derived from.
-// Was 119 — grown to fit the SHELF_SCALE-enlarged vertical stack below
-// (shelves render bigger now, so every row/zone/decor gap scales with
-// them; see LAYOUT).
-const GRID_ROWS = 151;
+// Was 119, then 151 (SHELF_SCALE-enlarged vertical stack), then 154 (zone
+// 2's widened internal row gap) — grew again to 161 so decorRow3Gap could
+// widen enough to fit a FULL-SIZE (110px, matching every other header)
+// wall below shelves 1/2/5/6, instead of the undersized 30px one that
+// only fit because decorRow3Gap was still at its old value.
+const GRID_ROWS = 161;
 const TILE_SIZE = 16;
 const WORLD_W = GRID_COLS * TILE_SIZE;
 const WORLD_H = GRID_ROWS * TILE_SIZE;
@@ -134,8 +165,18 @@ const shelfW = ASSET_RECTS.shelfLocked.w * SHELF_SCALE;
 const shelfH = ASSET_RECTS.shelfLocked.h * SHELF_SCALE;
 const shelfPairGap = 20 * SHELF_SCALE; // gap between the 2 shelves in the same column pair — was a fixed 20
 const shelfRowGap = 132 * SHELF_SCALE; // gap between consecutive shelf rows within one zone
+// Zone 2 only (shelves 1-8) needs a taller gap than shelfRowGap between
+// its 2 rows — shelfRowGap only leaves ~20px of clearance above the
+// second row, not enough to fit a wall header there without it colliding
+// with the shelf row above. Zone 1 keeps the tighter shelfRowGap (its
+// un-headered second/third rows weren't part of this request).
+const zone2RowGap = 160 * SHELF_SCALE;
 const zoneTransitionGap = 258 * SHELF_SCALE; // gap between zone 1's last row and zone 2's first row
-const decorRow3Gap = 158 * SHELF_SCALE;
+// Was 158 — widened so the wall below shelves 1/2/5/6 (see buildShelves'
+// buildWallFooter calls) can be the same 110px height as every other
+// header instead of a cramped 30px one, per explicit "same height and
+// size as the other header walls" feedback.
+const decorRow3Gap = 220 * SHELF_SCALE;
 const carpetGlobeGap = 100 * SHELF_SCALE;
 const sofaRowGap = 140 * SHELF_SCALE;
 const receptionGap = 40 * SHELF_SCALE;
@@ -144,7 +185,7 @@ const spawnGap = 180 * SHELF_SCALE;
 const zone1Row0 = 560; // unchanged anchor — same distance below the top wall band as before scaling
 const zone1RowY = [zone1Row0, zone1Row0 + shelfRowGap, zone1Row0 + shelfRowGap * 2];
 const zone2Row0 = zone1RowY[2] + zoneTransitionGap;
-const zone2RowY = [zone2Row0, zone2Row0 + shelfRowGap];
+const zone2RowY = [zone2Row0, zone2Row0 + zone2RowGap];
 const decorRow3Y = zone2RowY[1] + decorRow3Gap;
 const carpetGlobeY = decorRow3Y + carpetGlobeGap;
 const sofaRowY = carpetGlobeY + sofaRowGap;
@@ -203,44 +244,227 @@ const LESSON_DATA = [
   { id: 'shelf-17', title: 'Existence (あります・います)' },
 ];
 
+// Real lesson content, keyed by LESSON_DATA id, rendered through
+// LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
+// option is selected. Each entry is an array of "pages" the player clicks/
+// presses through in order (classic RPG dialogue chaining) — only
+// shelf-01 is populated for now; shelves without an entry here fall back
+// to the old direct-complete behavior (see openRetroMenu/startLesson).
+const LESSON_CONTENT = {
+  'shelf-01': [
+    {
+      type: 'greeting', kana: 'こんにちは', romaji: 'Konnichiwa', pronunciation: '(kohn-nee-chee-wah)', meaning: 'Hello / Good afternoon',
+      usage: 'Used from late morning through early evening. Safe with strangers, coworkers, and acquaintances — not usually used with close family or young children.',
+    },
+    {
+      type: 'greeting', kana: 'おはようございます', romaji: 'Ohayou gozaimasu', pronunciation: '(oh-hah-yoh goh-zah-ee-mahs)', meaning: 'Good morning (polite)',
+      usage: 'Used in the morning, roughly until mid-to-late morning. This is the polite form — used with teachers, coworkers, or people you don’t know well. Drop "gozaimasu" for the casual version among friends.',
+    },
+    {
+      type: 'greeting', kana: 'こんばんは', romaji: 'Konbanwa', pronunciation: '(kohn-bahn-wah)', meaning: 'Good evening',
+      usage: 'Used in the evening and at night, once it starts getting dark. Same level of formality as konnichiwa.',
+    },
+    {
+      type: 'greeting', kana: 'さようなら', romaji: 'Sayounara', pronunciation: '(sah-yoh-nah-rah)', meaning: 'Goodbye',
+      usage: 'A fairly formal goodbye that can imply you won’t see the person again for a while. Not typically used daily with close friends or family — they usually use a casual alternative instead.',
+    },
+    {
+      type: 'greeting', kana: 'ありがとうございます', romaji: 'Arigatou gozaimasu', pronunciation: '(ah-ree-gah-toh goh-zah-ee-mahs)', meaning: 'Thank you (polite)',
+      usage: 'The polite form of "thank you" — used with strangers, shop staff, and at work. Drop "gozaimasu" for casual thanks among friends.',
+    },
+    {
+      type: 'greeting', kana: 'すみません', romaji: 'Sumimasen', pronunciation: '(soo-mee-mah-sen)', meaning: 'Excuse me / Sorry',
+      usage: 'Very versatile: use it to apologize, to get someone’s attention (like a waiter), or even to say thanks when someone went out of their way for you.',
+    },
+  ],
+  'shelf-02': [
+    {
+      type: 'greeting', kana: 'お元気ですか', romaji: 'Ogenki desu ka', pronunciation: '(oh-GEN-kee dess kah)', meaning: 'How are you?',
+      usage: 'A polite check-in, but not used as casually as English "how are you" — often reserved for someone you haven’t seen in a while rather than a daily greeting to a coworker.',
+    },
+    {
+      type: 'greeting', kana: '元気です', romaji: 'Genki desu', pronunciation: '(GEN-kee dess)', meaning: 'I’m doing well',
+      usage: 'The standard reply to "ogenki desu ka". Can also be used on its own to describe someone as energetic/well.',
+    },
+    {
+      type: 'greeting', kana: 'いただきます', romaji: 'Itadakimasu', pronunciation: '(ee-tah-dah-kee-mahs)', meaning: 'Said before eating',
+      usage: 'Said right before starting a meal, whether alone or with others — a small expression of thanks for the food, not just to whoever cooked it.',
+    },
+    {
+      type: 'greeting', kana: 'ごちそうさまでした', romaji: 'Gochisousama deshita', pronunciation: '(goh-chee-soh-sah-mah desh-tah)', meaning: 'Said after eating',
+      usage: 'The counterpart to itadakimasu, said after finishing a meal. Also commonly said to a host, chef, or shop staff on the way out.',
+    },
+    {
+      type: 'greeting', kana: 'いってきます', romaji: 'Ittekimasu', pronunciation: '(eet-teh-kee-mahs)', meaning: 'I’m heading out',
+      usage: 'Said when leaving home (or your desk/base for a while), announcing you’re going and will be back. The people staying reply with "itterasshai".',
+    },
+    {
+      type: 'greeting', kana: 'ただいま', romaji: 'Tadaima', pronunciation: '(tah-dah-ee-mah)', meaning: 'I’m home',
+      usage: 'Said upon returning home (or back to a place you left earlier). The standard reply from whoever’s there is "okaeri" ("welcome back").',
+    },
+    {
+      type: 'greeting', kana: 'お願いします', romaji: 'Onegaishimasu', pronunciation: '(oh-neh-gai-shee-mahs)', meaning: 'Please (making a request)',
+      usage: 'Attached to the end of a request to make it polite — ordering food, asking a favor, or handing something over for someone to handle. Extremely common in daily conversation.',
+    },
+    {
+      type: 'greeting', kana: 'ください', romaji: 'Kudasai.', pronunciation: '(koo-duh-sai)', meaning: 'Please. (asking for something)',
+      usage: 'Attached after a noun (or a verb\'s te-form) to ask for something directly — e.g. handing over an item, or "mizu wo kudasai" ("water, please"). More concrete/direct than onegaishimasu, which can stand alone.',
+    },
+    {
+      type: 'greeting', kana: 'では、また。', romaji: 'Dewa, mata.', pronunciation: '(deh-wah, mah-tah)', meaning: 'See you again.',
+      usage: 'では means "well then" and また means "again". A neutral, slightly formal goodbye that implies you\'ll see the person again — works with coworkers or acquaintances.',
+    },
+    {
+      type: 'greeting', kana: 'じゃ、また。', romaji: 'Ja, mata.', pronunciation: '(jah, mah-tah)', meaning: 'See you again. (casual)',
+      usage: 'じゃ is the casual contraction of では — use this instead of "dewa, mata" with friends, family, or casual acquaintances.',
+    },
+    {
+      type: 'greeting', kana: 'じゃあ(ね)。', romaji: 'Jaa (ne).', pronunciation: '(jah(-neh))', meaning: 'See you. (more casual)',
+      usage: 'The most casual of the three "see you" phrases — used constantly among friends when parting ways, close to English "see ya" or "later". The ね softens it further.',
+    },
+    {
+      type: 'greeting', kana: 'お邪魔します', romaji: 'Ojama shimasu', pronunciation: '(oh-jah-mah shee-mahs)', meaning: 'Excuse me for intruding / Thanks for having me',
+      usage: 'Said when entering someone else\'s home or room — literally acknowledges you\'re "in their way". A must-know phrase for visiting someone\'s house.',
+    },
+    {
+      type: 'greeting', kana: 'よろしくお願いします', romaji: 'Yoroshiku onegaishimasu', pronunciation: '(yoh-roh-shee-koo oh-neh-gai-shee-mahs)', meaning: 'Please treat me kindly / Nice to meet you / Please take care of this',
+      usage: 'Extremely common and versatile — said right after introducing yourself, when starting to work with someone, or when asking someone to handle something. Doesn\'t translate directly into English.',
+    },
+    {
+      type: 'greeting', kana: 'はじめまして', romaji: 'Hajimemashite', pronunciation: '(hah-jee-meh-mahsh-teh)', meaning: 'How do you do / Nice to meet you',
+      usage: 'Said ONLY the very first time you meet someone — never used again with that same person afterward. Usually followed immediately by your name, then by "yoroshiku onegaishimasu".',
+    },
+  ],
+};
+
+// Builds the lesson-end recap page (LessonBox type: 'summary') from
+// whatever 'greeting' pages a lesson has, and appends it — generic to
+// any lesson's page array, not specific to shelf-01, so future
+// greeting-type lessons get the same recap for free. Lessons with no
+// greeting pages come back unchanged (no summary appended).
+function appendGreetingSummary(pages, lessonTitle) {
+  const greetings = pages.filter((p) => p.type === 'greeting');
+  if (greetings.length === 0) return pages;
+  const summaryPage = {
+    type: 'summary',
+    title: `Summary: ${lessonTitle}`,
+    headers: ['Phrase', 'Romaji', 'Meaning'],
+    rows: greetings.map((p) => ({ kana: p.kana, romaji: p.romaji, meaning: p.meaning })),
+  };
+  return [...pages, summaryPage];
+}
+
 // Prerequisite for each shelf to become "available": null = always
 // available (first lesson); otherwise the id of the shelf/pile that
-// must be completed first. Matches Neko-Bunko-Cat-Library-Spec.md's
-// progression rules: lessons unlock strictly in order, and passing a
-// review nook unlocks the next section (shelf-09 gates on review-1,
-// shelf-15 gates on review-2), not just the previous shelf.
+// must be completed first. Reviews now gate every 4 lessons (one per
+// shelf column-block — see buildWallHeader's 4 calls, same grouping) —
+// shelf-05 gates on review-1 (1-4), shelf-09 on review-2 (5-8), shelf-13
+// on review-3 (9-12), shelf-17 on review-4 (13-16) — instead of the
+// earlier 2-checkpoint (8-then-6) split, per explicit request.
 const SHELF_PREREQ = {
   'shelf-01': null,
   'shelf-02': 'shelf-01', 'shelf-03': 'shelf-02', 'shelf-04': 'shelf-03',
-  'shelf-05': 'shelf-04', 'shelf-06': 'shelf-05', 'shelf-07': 'shelf-06',
-  'shelf-08': 'shelf-07',
-  'shelf-09': 'review-1',
+  'shelf-05': 'review-1',
+  'shelf-06': 'shelf-05', 'shelf-07': 'shelf-06', 'shelf-08': 'shelf-07',
+  'shelf-09': 'review-2',
   'shelf-10': 'shelf-09', 'shelf-11': 'shelf-10', 'shelf-12': 'shelf-11',
-  'shelf-13': 'shelf-12', 'shelf-14': 'shelf-13',
-  'shelf-15': 'review-2',
-  'shelf-16': 'shelf-15', 'shelf-17': 'shelf-16',
+  'shelf-13': 'review-3',
+  'shelf-14': 'shelf-13', 'shelf-15': 'shelf-14', 'shelf-16': 'shelf-15',
+  'shelf-17': 'review-4',
 };
 
-// 2 review book piles. The 3rd checkpoint ("final-quiz") is no longer a
-// book pile — it's the staircase up at the north wall (see
+// 4 review book piles, one per 4-lesson column-block, each placed beside
+// that block's own side of the corridor (2 left, 2 right — was 2 piles
+// both on the left side only). The 5th checkpoint ("final-quiz") is not
+// a book pile — it's the staircase up at the north wall (see
 // buildTopBand()), which is the gate to N4 ("second floor").
 const BOOK_PILE_DATA = [
-  { id: 'review-1', title: 'Foundations Review', requires: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04', 'shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'] },
-  { id: 'review-2', title: 'Sentence Builder Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12', 'shelf-13', 'shelf-14'] },
+  { id: 'review-1', title: 'Foundations Review', requires: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04'] },
+  { id: 'review-2', title: 'Everyday Vocabulary Review', requires: ['shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'] },
+  { id: 'review-3', title: 'Core Grammar Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12'] },
+  { id: 'review-4', title: 'Sentence Builder Review', requires: ['shelf-13', 'shelf-14', 'shelf-15', 'shelf-16'] },
+];
+
+// Reception desk clutter — 18 items scattered across the desk's usable
+// surface (approved via mockup iterations: books cluster bottom-left/
+// bottom-right + 1 on each wing, papers/mug/scrap scattered around the
+// center, paper stack + quill cup + inkwell&quill grouped top-right-of-
+// center at 180deg). Coordinates are offsets (x, y, w, h) in the desk
+// SPRITE'S OWN native pixel space (0..191 wide, 0..107 tall, matching
+// ASSET_RECTS.receptionDesk) — not world coordinates — from the desk's
+// top-left corner, so buildDeskItems() can scale/position the whole set
+// relative to wherever the desk itself is drawn. tier is the depth
+// layer (1=back, 2=middle, 3=front); rot is a CSS-style rotation in
+// degrees, applied around each item's own center.
+const DESK_ITEMS = [
+  // Wings (the pillar-top surfaces flanking the notch) — 1 book each.
+  { key: 'stripedStack', rectKey: 'deskStripedStack', x: 4, y: 4, w: 14.3, h: 14.95, tier: 1, rot: 0 },
+  { key: 'flatBook', rectKey: 'deskFlatBook', x: 150, y: 4, w: 15.6, h: 11.05, tier: 1, rot: 0 },
+  // Bottom-left book cluster.
+  { key: 'tallStack', rectKey: 'deskTallStack', x: 20, y: 30, w: 19.5, h: 31.2, tier: 1, rot: 0 },
+  { key: 'greenLedger', rectKey: 'deskGreenLedger', x: 43.5, y: 65, w: 15.6, h: 13, tier: 2, rot: 0 },
+  { key: 'redBook', rectKey: 'deskRedBook', x: 62.1, y: 63.7, w: 15.6, h: 14.3, tier: 2, rot: 0 },
+  // Bottom-right book cluster.
+  { key: 'thickStack', rectKey: 'deskThickStack', x: 150.85, y: 30, w: 20.15, h: 29.25, tier: 1, rot: 0 },
+  { key: 'ribbonScroll', rectKey: 'deskRibbonScroll', x: 133.55, y: 65.65, w: 14.3, h: 12.35, tier: 2, rot: 0 },
+  { key: 'openBook', rectKey: 'deskOpenBook', x: 101.3, y: 62.4, w: 29.25, h: 15.6, tier: 2, rot: 0 },
+  // Papers + dice, scattered around the center.
+  { key: 'clipboard', rectKey: 'deskClipboard', x: 103.95, y: 51.06, w: 7.8, h: 10.4, tier: 3, rot: 0.3 },
+  { key: 'paperWavy', rectKey: 'deskPaperWavy', x: 150.35, y: 58.55, w: 11.05, h: 12.35, tier: 3, rot: 0.2 },
+  { key: 'paperFanned', rectKey: 'deskPaperFanned', x: 133.56, y: 63.22, w: 13.65, h: 13, tier: 3, rot: -3.4 },
+  { key: 'paperStackB', rectKey: 'deskPaperStackB', x: 152.92, y: 48.67, w: 9.75, h: 11.7, tier: 3, rot: -2.5 },
+  { key: 'dice', rectKey: 'deskDice', x: 156.86, y: 45.74, w: 5.2, h: 4.55, tier: 3, rot: -0.9 },
+  // Coffee mug — top-left-of-center.
+  { key: 'mug', rectKey: 'deskMug', x: 68.32, y: 32, w: 6.5, h: 8.45, tier: 2, rot: 0 },
+  // Parchment scroll — dead center.
+  { key: 'scrap', rectKey: 'deskScrap', x: 87.7, y: 51.08, w: 15.6, h: 5.85, tier: 3, rot: 0 },
+  // Paper stack + quill cup + inkwell&quill, grouped top-right-of-center,
+  // each rotated 180deg.
+  { key: 'paperStackA', rectKey: 'deskPaperStackA', x: 103.05, y: 32, w: 14.3, h: 13.65, tier: 2, rot: 180 },
+  { key: 'quillCup', rectKey: 'deskQuillCup', x: 120.35, y: 32, w: 6.5, h: 14.3, tier: 2, rot: 180 },
+  { key: 'inkwellQuill', rectKey: 'deskInkwellQuill', x: 129.85, y: 32, w: 12.35, h: 15.6, tier: 2, rot: 180 },
 ];
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
 const FAVORITES_KEY = 'nekoBunko.n5.favorites';
 const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
-// Idle-only spritesheets confirmed present for exactly these 3 colors
-// (see design spec) — CalicoCatIdle.png/tuxedoIdle.png also exist but are
-// explicitly out of scope ("exactly 3 entries... no more, no fewer").
-// All three sheets are 300x300px/frame; frame counts differ per sheet.
+// Idle + 4-directional walk, all 3 colors, confirmed present for exactly
+// these 3 colors (see design spec) — CalicoCatIdle.png/tuxedoIdle.png
+// also exist but are explicitly out of scope ("exactly 3 entries... no
+// more, no fewer"). Each sheet is a single 64x64-frame, 14-col x 72-row
+// grid covering a much larger animation rig (idle/walk/sleep/etc.) — only
+// the idle and walk rows are used here. Filenames were renamed from
+// "cat N (64х64).png" (Cyrillic х) to plain ASCII to make them safe to
+// reference from source. Row-to-animation mapping was confirmed by
+// visually inspecting the actual sheets (not assumed) — see
+// CAT_SHEET_ROWS below.
 const CAT_COLORS = {
-  orange: { key: 'orangeCatIdle', path: '../../assets/images/icons/pixels/OrangeCatIdle.png', frames: 12, label: 'Orange' },
-  black: { key: 'blackCatIdle', path: '../../assets/images/icons/pixels/blackCatIdle.png', frames: 20, label: 'Black' },
-  white: { key: 'whiteCatIdle', path: '../../assets/images/icons/pixels/whitecatIdle.png', frames: 18, label: 'White' },
+  orange: { key: 'orangeCatSheet', path: '../../assets/images/avatars/cat-2-64x64.png', label: 'Orange' },
+  black: { key: 'blackCatSheet', path: '../../assets/images/avatars/cat-1-64x64.png', label: 'Black' },
+  white: { key: 'whiteCatSheet', path: '../../assets/images/avatars/cat-3-64x64.png', label: 'White' },
 };
+// Frame geometry shared by all 3 sheets (same rig, palette-swapped).
+const CAT_SHEET_COLS = 14;
+// Row index (0-based) and frame count for each animation, confirmed by
+// visual inspection of the actual sheet content, not assumed from any
+// filename/ordering convention:
+//   row 2  = walking down/toward camera (front-facing), 6 frames
+//   row 3  = walking up/away (back of cat, tail curled above), 6 frames
+//   row 4  = walking left (side view facing left), 6 frames
+//   row 5  = walking right (side view facing right), 6 frames
+//   row 12 = idle: sitting facing forward, tail-flick, 8 frames
+const CAT_SHEET_ROWS = {
+  idle: { row: 12, count: 8 },
+  walkDown: { row: 2, count: 6 },
+  walkUp: { row: 3, count: 6 },
+  walkLeft: { row: 4, count: 6 },
+  walkRight: { row: 5, count: 6 },
+};
+function catFrameRange(rowKey) {
+  const { row, count } = CAT_SHEET_ROWS[rowKey];
+  const start = row * CAT_SHEET_COLS;
+  return { start, end: start + count - 1 };
+}
 const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
 const QUIZ_GATE_KEY = 'nekoBunko.n5.quizGate';
 const QUIZ_MAX_ATTEMPTS = 3;
@@ -350,22 +574,34 @@ function getState(id, prereq, progress) {
 function loadCatSpritesheets(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
-    scene.load.spritesheet(c.key, c.path, { frameWidth: 300, frameHeight: 300 });
+    scene.load.spritesheet(c.key, c.path, { frameWidth: 64, frameHeight: 64 });
   });
 }
 
 // Idempotent: both CatSelectScene and LibraryScene call this, and Phaser
-// throws if you register the same animation key twice.
+// throws if you register the same animation key twice. One idle + 4
+// directional walk animations per color, all sharing the naming
+// convention `${colorId}-${suffix}` so callers can look up the right key
+// by combining the selected color with whatever state they're in.
+const CAT_ANIM_DEFS = [
+  { suffix: 'idle', rowKey: 'idle', frameRate: 6 },
+  { suffix: 'walk-down', rowKey: 'walkDown', frameRate: 10 },
+  { suffix: 'walk-up', rowKey: 'walkUp', frameRate: 10 },
+  { suffix: 'walk-left', rowKey: 'walkLeft', frameRate: 10 },
+  { suffix: 'walk-right', rowKey: 'walkRight', frameRate: 10 },
+];
 function registerCatAnimations(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
-    const animKey = id + '-idle';
-    if (scene.anims.exists(animKey)) return;
-    scene.anims.create({
-      key: animKey,
-      frames: scene.anims.generateFrameNumbers(c.key, { start: 0, end: c.frames - 1 }),
-      frameRate: 8,
-      repeat: -1,
+    CAT_ANIM_DEFS.forEach((def) => {
+      const animKey = `${id}-${def.suffix}`;
+      if (scene.anims.exists(animKey)) return;
+      scene.anims.create({
+        key: animKey,
+        frames: scene.anims.generateFrameNumbers(c.key, catFrameRange(def.rowKey)),
+        frameRate: def.frameRate,
+        repeat: -1,
+      });
     });
   });
 }
@@ -396,6 +632,130 @@ function cropToTexture(scene, sourceKey, rect, destKey) {
   ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
   canvasTexture.refresh();
   return destKey;
+}
+
+// Hand-drawn "real wall" header: individual hand-cut planks (randomized
+// per-plank shade + grain streaks + occasional knots) instead of a single
+// flat tiled strip, a weathered stain streak across the lower wainscoting
+// band, a 3-step carved molding cap/base trim, and pillars with a flared
+// capital/base, a center grain line, and 2 riveted iron straps. Ported
+// verbatim (same palette + proportions) from the approved
+// wall_header_mockup_v2 visualize mockup — do not reinterpret the colors
+// or swap the blocky/smooth techniques used there.
+// Keyed by size (not a single cached key) — the shorter wall segment
+// above shelves 1/2/5/6 needs its own smaller texture alongside the main
+// 110px-tall header, and Phaser throws on re-registering a canvas key.
+function drawWallHeaderTexture(scene, w, h) {
+  const key = `wallHeaderPanelTex_${w}x${h}`;
+  if (scene.textures.exists(key)) return key;
+
+  let seed = 42;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed / 0x7fffffff;
+  };
+  const shade = ([r, g, b], amt) =>
+    `rgb(${Math.max(0, Math.min(255, r + amt))},${Math.max(0, Math.min(255, g + amt))},${Math.max(0, Math.min(255, b + amt))})`;
+
+  const tex = scene.textures.createCanvas(key, w, h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  const moldH = Math.max(3, Math.round((h * 6) / 58));
+  const baseH = Math.max(3, Math.round((h * 6) / 58));
+  const pillarW = Math.max(6, Math.round((w * 10) / 220));
+  const panelCount = 3;
+  const totalPillarW = pillarW * (panelCount - 1);
+  const panelW = (w - totalPillarW) / panelCount;
+  const plankW = Math.max(3, Math.round((w * 5) / 220));
+  const plankBandH = Math.max(6, Math.round(((h - moldH - baseH) * 24) / 46));
+
+  const plankTopBase = [192, 107, 30];
+  const panelBottomBase = [90, 47, 38];
+
+  // 3-step carved molding cap.
+  ctx.fillStyle = '#241209'; ctx.fillRect(0, 0, w, moldH);
+  ctx.fillStyle = '#4a2a1c'; ctx.fillRect(0, 1, w, Math.max(1, moldH - 2));
+  ctx.fillStyle = '#6a4128'; ctx.fillRect(0, 1, w, 1);
+
+  let x = 0;
+  for (let p = 0; p < panelCount; p++) {
+    // Individual planks — each a slightly different hand-cut shade, with
+    // a vertical grain streak and occasional knot.
+    for (let px = 0; px < panelW; px += plankW) {
+      const thisPlankW = Math.min(plankW, panelW - px);
+      const variance = Math.floor(rand() * 20) - 10;
+      ctx.fillStyle = shade(plankTopBase, variance);
+      ctx.fillRect(x + px, moldH, thisPlankW, plankBandH);
+      ctx.fillStyle = shade(plankTopBase, variance - 30);
+      ctx.fillRect(x + px, moldH, 1, plankBandH);
+      if (rand() > 0.4) {
+        ctx.fillStyle = shade(plankTopBase, variance - 18);
+        ctx.fillRect(x + px + Math.floor(thisPlankW / 2), moldH + Math.round(plankBandH * 0.12), 1, Math.round(plankBandH * 0.65));
+      }
+      if (rand() > 0.75) {
+        ctx.fillStyle = shade(plankTopBase, -35);
+        ctx.fillRect(x + px + 1, moldH + Math.round(plankBandH * 0.4) + Math.floor(rand() * Math.round(plankBandH * 0.25)), 2, 2);
+      }
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(x, moldH + plankBandH, panelW, 1);
+
+    // Lower panel (paneled wainscoting) with grain + a weathering streak.
+    const panelBandY = moldH + plankBandH + 1;
+    const panelBandH = h - baseH - panelBandY;
+    for (let px = 0; px < panelW; px += plankW) {
+      const thisPlankW = Math.min(plankW, panelW - px);
+      const variance = Math.floor(rand() * 16) - 8;
+      ctx.fillStyle = shade(panelBottomBase, variance);
+      ctx.fillRect(x + px, panelBandY, thisPlankW, panelBandH);
+      ctx.fillStyle = shade(panelBottomBase, variance - 25);
+      ctx.fillRect(x + px, panelBandY, 1, panelBandH);
+    }
+    ctx.fillStyle = shade(panelBottomBase, -30);
+    ctx.fillRect(x, panelBandY, panelW, 1);
+    ctx.fillRect(x, h - baseH - 1, panelW, 1);
+    ctx.fillStyle = 'rgba(20,10,6,0.25)';
+    ctx.fillRect(x + Math.floor(panelW * 0.3), panelBandY + 2, Math.max(2, Math.floor(panelW * 0.15)), Math.max(1, panelBandH - 4));
+
+    x += panelW;
+    if (p < panelCount - 1) {
+      // Pillar: flared capital + base, grain, 2 riveted metal straps.
+      const capFlare = 2;
+      ctx.fillStyle = '#241209';
+      ctx.fillRect(x - capFlare, moldH - 1, pillarW + capFlare * 2, 5);
+      ctx.fillRect(x, moldH + 4, pillarW, h - moldH - baseH - 8);
+      ctx.fillRect(x - capFlare, h - baseH - 4, pillarW + capFlare * 2, 5);
+
+      ctx.fillStyle = '#5a3220';
+      ctx.fillRect(x + 1, moldH + 4, pillarW - 2, h - moldH - baseH - 8);
+      ctx.fillStyle = '#6f4126';
+      ctx.fillRect(x + 1, moldH + 4, 1, h - moldH - baseH - 8);
+      ctx.fillStyle = '#3a2013';
+      ctx.fillRect(x + pillarW - 2, moldH + 4, 1, h - moldH - baseH - 8);
+
+      ctx.fillStyle = '#4a2a1a';
+      ctx.fillRect(x + Math.floor(pillarW / 2), moldH + 6, 1, h - moldH - baseH - 12);
+
+      ctx.fillStyle = '#3a3a38';
+      ctx.fillRect(x, moldH + 12, pillarW, 2);
+      ctx.fillRect(x, h - baseH - 16, pillarW, 2);
+      ctx.fillStyle = '#5a5a56';
+      ctx.fillRect(x, moldH + 12, pillarW, 1);
+      ctx.fillRect(x, h - baseH - 16, pillarW, 1);
+      ctx.fillStyle = '#1c1c1a';
+      ctx.fillRect(x + 1, moldH + 12, 1, 2);
+      ctx.fillRect(x + pillarW - 2, moldH + 12, 1, 2);
+
+      x += pillarW;
+    }
+  }
+
+  // 3-step carved base trim.
+  ctx.fillStyle = '#241209'; ctx.fillRect(0, h - baseH, w, baseH);
+  ctx.fillStyle = '#4a2a1c'; ctx.fillRect(0, h - baseH + 1, w, Math.max(1, baseH - 2));
+
+  tex.refresh();
+  return key;
 }
 
 // Hand-drawn woven pixel-art rug: bordered edges with alternating fringe
@@ -1032,23 +1392,59 @@ class LibraryScene extends Phaser.Scene {
     // Plants moved out of the review row and into the paired table row
     // instead (per an explicit reference diagram) — "beside the wall" in
     // the row that's actually adjacent to the shelf columns, not
-    // duplicated in both. The review pile shifts further left into the
-    // gap the left plant used to occupy, closer to the shelves.
-    const buildReviewRow = (y, reviewPile) => {
-      this.reviewPilePositions[reviewPile] = { x: gapLeft + 70, y: y - 8 };
+    // duplicated in both. The review pile now sits right beside the wall
+    // too (same x offset the plants use), one per side of the corridor —
+    // was always `gapLeft + 70` regardless of side, both dead-centered
+    // away from the wall and only ever on the left, per explicit feedback
+    // ("position it where I pointed" + "put one on the other side too").
+    const reviewPileW = ASSET_RECTS.bookPileTall.w * 0.7;
+    const buildReviewRow = (y, reviewPile, side) => {
+      const x = side === 'right' ? gapRight - 16 - reviewPileW : gapLeft + 16;
+      this.reviewPilePositions[reviewPile] = { x, y: y - 8 };
+    };
+    // Table/chair/sofa/carpet all scaled up ~1.3x per explicit "these
+    // table and chairs and sofa and carpet needs to be resized bigger"
+    // request. Checked against the corridor/shelf-column clearance by
+    // hand (right-side table's right edge lands ~7-10px inside the
+    // shelf column's inner edge at this scale — 1.5x was the computed
+    // ceiling before it would clip).
+    const FURNITURE_SCALE = 1.3;
+    const tableW = ASSET_RECTS.libTable.w * FURNITURE_SCALE;
+    const tableH = ASSET_RECTS.libTable.h * FURNITURE_SCALE;
+    const chairDW = ASSET_RECTS.libChair.w * FURNITURE_SCALE;
+    const chairDH = ASSET_RECTS.libChair.h * FURNITURE_SCALE;
+    // 2 chairs side by side in front of every table (was 1) — centered
+    // under the table with a small gap between them, per explicit
+    // request applied to every table+chair placement in the room.
+    const addTableWithChairs = (tableX, tableY, chairY) => {
+      const chairGap = 4;
+      const pairW = chairDW * 2 + chairGap;
+      const chairStartX = tableX + (tableW - pairW) / 2;
+      this.add.image(tableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1)
+        .setDisplaySize(tableW, tableH);
+      this.add.image(chairStartX, chairY, libChairKey).setOrigin(0, 0).setDepth(2)
+        .setDisplaySize(chairDW, chairDH);
+      this.add.image(chairStartX + chairDW + chairGap, chairY, libChairKey).setOrigin(0, 0).setDepth(2)
+        .setDisplaySize(chairDW, chairDH);
     };
     const buildTableRow = (y) => {
-      const tableY = y - ASSET_RECTS.libTable.h / 2;
-      const chairY = y + ASSET_RECTS.libTable.h / 2 - 6;
+      const tableY = y - tableH / 2;
+      const chairY = y + tableH / 2 - 6;
       const plantY = y - ASSET_RECTS.plant.h / 2;
-      const leftTableX = gapCenter - 40 - ASSET_RECTS.libTable.w;
+      // Plant pulled in flush against the wall (was +16 padding, now 0)
+      // per explicit "plants need to be moved a few pixels away from the
+      // table" feedback — at the post-FURNITURE_SCALE table width, the
+      // wall-to-table gap is only ~10px, less than the 16px-wide plant,
+      // so full separation isn't geometrically possible without also
+      // moving the table (which would push it into the corridor on the
+      // other side — left alone here, out of scope for a plant-only
+      // request). This still cuts the overlap from ~16px to ~6px.
+      const leftTableX = gapCenter - 40 - tableW;
       const rightTableX = gapCenter + 40;
-      this.add.image(gapLeft + 16, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(leftTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(leftTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
-      this.add.image(rightTableX, tableY, libTableKey).setOrigin(0, 0).setDepth(1);
-      this.add.image(rightTableX + 10, chairY, libChairKey).setOrigin(0, 0).setDepth(2);
-      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+      this.add.image(gapLeft, plantY, plantKey).setOrigin(0, 0).setDepth(1);
+      addTableWithChairs(leftTableX, tableY, chairY);
+      addTableWithChairs(rightTableX, tableY, chairY);
+      this.add.image(gapRight - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
     };
     // Beside the RIGHT wall specifically — this row only has a shelf
     // (shelf-17) on the right side (see the zone-1 call below), so that's
@@ -1060,31 +1456,39 @@ class LibraryScene extends Phaser.Scene {
     };
 
     // Zone 1 (nearest stairs -> nearest zone 2): row[0] is shelf-17's
-    // solo row (no left shelf, so just a plant), row[1] hosts review-2
-    // (gates shelf-15, which sits in this same row), row[2] gets a
-    // table+chair pair as the transition into zone 2.
+    // solo row (no left shelf, so just a plant), row[1] gets a
+    // table+chair pair, row[2] hosts both review-3 (left side, gates
+    // shelf-13 — requires the left column's 9-12) and review-4 (right
+    // side, gates shelf-17 — requires the right column's 13-16) as the
+    // transition into zone 2. Table/review-row order swapped back per
+    // explicit feedback that they'd ended up flipped from where they
+    // should be.
     buildSoloPlantRow(LAYOUT.zone1RowY[0]);
-    buildReviewRow(LAYOUT.zone1RowY[1], 'review-2');
-    buildTableRow(LAYOUT.zone1RowY[2]);
+    buildTableRow(LAYOUT.zone1RowY[1]);
+    buildReviewRow(LAYOUT.zone1RowY[2], 'review-3', 'left');
+    buildReviewRow(LAYOUT.zone1RowY[2], 'review-4', 'right');
     // Zone 2 (nearest zone 1 -> nearest spawn): row[0] gets a table+chair
-    // pair (transition from zone 1); row[1] hosts review-1 (gates
-    // shelf-09... reached via zone 1, but placed here since it requires
-    // all of zone 2's shelves, which finish in this row).
+    // pair (transition from zone 1); row[1] hosts both review-1 (left
+    // side, gates shelf-05 — requires the left column's 1-4) and
+    // review-2 (right side, gates shelf-09 — requires the right column's
+    // 5-8).
     buildTableRow(LAYOUT.zone2RowY[0]);
-    buildReviewRow(LAYOUT.zone2RowY[1], 'review-1');
+    buildReviewRow(LAYOUT.zone2RowY[1], 'review-1', 'left');
+    buildReviewRow(LAYOUT.zone2RowY[1], 'review-2', 'right');
 
     // One more pure-decor T&C-T&C row, nearest the carpet/globe — not
     // shelf-adjacent, so it keeps its own small band. No plants here
     // (removed per feedback) — they were redundant with the ones now
-    // living in every table row.
-    const decorSpanLeft = gapLeft;
-    const decorSpanRight = gapRight;
-    const tableY3 = LAYOUT.decorRow3Y - ASSET_RECTS.libTable.h / 2;
-    const chairY3 = LAYOUT.decorRow3Y + ASSET_RECTS.libTable.h / 2 - 6;
-    this.add.image(decorSpanLeft + 80, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
-    this.add.image(decorSpanLeft + 90, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
-    this.add.image(decorSpanRight - 80 - ASSET_RECTS.libTable.w, tableY3, libTableKey).setOrigin(0, 0).setDepth(1);
-    this.add.image(decorSpanRight - 90 - ASSET_RECTS.libChair.w, chairY3, libChairKey).setOrigin(0, 0).setDepth(2);
+    // living in every table row. Table X now uses the same gapCenter-
+    // relative formula as buildTableRow (was decorSpanLeft+80 /
+    // decorSpanRight-80-tableW, which put the two tables close enough to
+    // overlap into one fused table — per explicit "the two tables have
+    // joined" bug report and "make them the same position as the other
+    // table" request).
+    const tableY3 = LAYOUT.decorRow3Y - tableH / 2;
+    const chairY3 = LAYOUT.decorRow3Y + tableH / 2 - 6;
+    addTableWithChairs(gapCenter - 40 - tableW, tableY3, chairY3);
+    addTableWithChairs(gapCenter + 40, tableY3, chairY3);
 
     // Globe, centered on the corridor per the requested layout — non-
     // solid like every other decor piece, so centering it doesn't block
@@ -1100,8 +1504,8 @@ class LibraryScene extends Phaser.Scene {
     // (drawWovenRug), drawn once each at their own fixed size (no tiling
     // needed for a small accent rug), rather than the old flat 3-shade
     // rectangles.
-    const carpetW = 90;
-    const carpetH = 50;
+    const carpetW = 90 * FURNITURE_SCALE;
+    const carpetH = 50 * FURNITURE_SCALE;
     const leftShelfColCenterX = (LAYOUT.leftColX[0] + LAYOUT.leftColX[1] + LAYOUT.shelfW) / 2;
     const rightShelfColCenterX = (LAYOUT.rightColX[0] + LAYOUT.rightColX[1] + LAYOUT.shelfW) / 2;
     drawWovenRug(this, 'globeRugLeftTex', carpetW, carpetH);
@@ -1119,8 +1523,8 @@ class LibraryScene extends Phaser.Scene {
     // (was stacked vertically) since there's enough width in the shelf
     // column's own footprint for 2 sofas at this scale.
     const sofaRect = ASSET_RECTS.sofaCouch2;
-    const sofaDisplayW = sofaRect.w;
-    const sofaDisplayH = sofaRect.h;
+    const sofaDisplayW = sofaRect.w * FURNITURE_SCALE;
+    const sofaDisplayH = sofaRect.h * FURNITURE_SCALE;
     const sofaGap = 14;
     const rugBottomY = LAYOUT.carpetGlobeY + carpetH / 2;
     const sofaTopY = rugBottomY + 20;
@@ -1139,8 +1543,10 @@ class LibraryScene extends Phaser.Scene {
     // reception and spawn — per the reference diagram's "CAB CAB". The
     // new cabinet art is tall and narrow (native 39x80, vs the old
     // wide-and-short 48x28 crop) so the display scale is much smaller
-    // than before to land at a similar on-screen footprint.
-    const shoeCabinetScale = 0.9;
+    // than before to land at a similar on-screen footprint. Scaled up
+    // ~1.4x (0.9->1.26) alongside the reception cluster per explicit
+    // "enlarge... the shoe cabinet" request.
+    const shoeCabinetScale = 1.26;
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     const cabinetY = LAYOUT.spawnY - shoeCabinetH;
@@ -1181,27 +1587,57 @@ class LibraryScene extends Phaser.Scene {
     // topmost shelf row (zone1's left column starts one row lower than
     // its right column, since row[0] is shelf-17's solo row).
     const colWidth = shelfW * 2 + 20;
-    // Was a flat 14px color rectangle — now the full 2-part wall swatch
-    // from TopDownHouse_FloorsAndWalls.png (flat orange plank on top of
-    // the grooved reddish-brown panel), tiled across each column's width
-    // and scaled down slightly so it reads as a real wall segment sitting
-    // above the shelf, per explicit request. Bottom edge stays anchored
-    // at topY-4 regardless of headerH (the center-Y formula below cancels
-    // headerH out of the bottom-edge position), so growing the header
-    // taller only extends it upward — no other positioning needs to change.
-    const headerH = 48;
-    const headerRect = { x: 81, y: 17, w: 63, h: 62 };
-    const headerKey = cropToTexture(this, 'floorsWallsTopDown', headerRect, 'wallHeaderTex');
-    const headerScale = headerH / headerRect.h;
-    const buildWallHeader = (x, topY) => {
-      this.add.tileSprite(x + colWidth / 2, topY - headerH / 2 - 4, colWidth, headerH, headerKey)
-        .setTileScale(headerScale, headerScale)
-        .setDepth(0);
+    // Was a single flat-tiled crop of TopDownHouse_FloorsAndWalls.png (visible
+    // repeat seams) — now a hand-drawn "real wall" mural (drawWallHeaderTexture):
+    // individual planks with per-plank shading/grain/knots, a molding cap and
+    // base trim, and pillars between panels, per explicit "not some rectangles,
+    // give it more life" feedback. Bottom edge stays anchored at topY-4
+    // regardless of headerH (the center-Y formula below cancels headerH out of
+    // the bottom-edge position), so growing the header taller only extends it
+    // upward — no other positioning needs to change.
+    const headerH = 110;
+    const headerKey = drawWallHeaderTexture(this, colWidth, headerH);
+    // Solid, unlike every other decor piece in this file — it reads as a
+    // real built wall (molding/pillars/base trim), so the player should
+    // not be able to walk through it, per explicit feedback. Same
+    // invisible-rectangle + wallGroup pattern used for the top wall/
+    // staircase art in buildTopBand(). Height is overridable per call —
+    // the last shelf row (1/2/5/6, see below) only has ~59px of
+    // clearance above it (zone2RowGap - shelfH) before it would collide
+    // with the shelf row above, so it uses a shorter header.
+    const buildWallHeader = (x, topY, h = headerH) => {
+      const key = h === headerH ? headerKey : drawWallHeaderTexture(this, colWidth, h);
+      const cx = x + colWidth / 2;
+      const cy = topY - h / 2 - 4;
+      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
+      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
     };
     buildWallHeader(leftColX[0], zone1RowY[1]);
     buildWallHeader(rightColX[0], zone1RowY[0]);
     buildWallHeader(leftColX[0], zone2RowY[0]);
     buildWallHeader(rightColX[0], zone2RowY[0]);
+    // The last shelf row (shelves 1/2/5/6, nearest spawn) previously had
+    // no wall behind it at all. First attempt put it above the row (same
+    // as every other header) — per explicit correction ("the walls need
+    // to be on where the arrow lands"), it belongs BELOW this row
+    // instead, in the gap before the table row. Same height as every
+    // other header (110) — decorRow3Gap was widened specifically to fit
+    // this, per explicit "same height and size as the other header
+    // walls" feedback (was a cramped 30px to fit the old, narrower gap).
+    const lastRowFooterH = headerH;
+    const buildWallFooter = (x, bottomY, h) => {
+      const key = drawWallHeaderTexture(this, colWidth, h);
+      const cx = x + colWidth / 2;
+      const cy = bottomY + h / 2 + 4;
+      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
+      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
+    };
+    buildWallFooter(leftColX[0], zone2RowY[1] + shelfH, lastRowFooterH);
+    buildWallFooter(rightColX[0], zone2RowY[1] + shelfH, lastRowFooterH);
 
     // Matches LESSON_DATA's order (shelf-01..17) exactly.
     const positions = [
@@ -1297,19 +1733,22 @@ class LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- 2 review book piles (final quiz is the staircase — see buildTopBand) --
+  // -- 4 review book piles (final quiz is the staircase — see buildTopBand) --
 
   buildBookPiles() {
     const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'bookPileTex');
-    // Positions come from buildFurniture()'s decor rows — review-1 and
-    // review-2 each sit as the "R" in one of the P-T&C-R-T&C-P rows (see
-    // LAYOUT's comment for which row hosts which). Scale dropped from
+    // Positions come from buildFurniture()'s decor rows — each review
+    // pile sits beside its own column's wall, one per side, in the
+    // zone2RowY[1]/zone1RowY[1] rows (see the buildReviewRow calls there).
+    // Scale dropped from
     // 1.6 (52x83 displayed — towered over the neighboring plants/tables)
     // to 0.7, small enough to read as sitting "in" the shelf-row scale
     // instead of dominating it.
     const positions = {
       'review-1': { ...this.reviewPilePositions['review-1'], scale: 0.7 },
       'review-2': { ...this.reviewPilePositions['review-2'], scale: 0.7 },
+      'review-3': { ...this.reviewPilePositions['review-3'], scale: 0.7 },
+      'review-4': { ...this.reviewPilePositions['review-4'], scale: 0.7 },
     };
 
     BOOK_PILE_DATA.forEach((pile) => {
@@ -1344,12 +1783,31 @@ class LibraryScene extends Phaser.Scene {
   // the corridor between the two vertical sofa stacks (matches the
   // user's ASCII layout, which shows RECEPTION centered above "start").
 
+  buildDeskItems(originX, deskTopY, deskScale) {
+    DESK_ITEMS.forEach((item) => {
+      const rect = ASSET_RECTS[item.rectKey];
+      const texKey = cropToTexture(this, 'libAssetPack', rect, `${item.rectKey}Tex`);
+      const w = item.w * deskScale;
+      const h = item.h * deskScale;
+      const cx = originX + (item.x + item.w / 2) * deskScale;
+      const cy = deskTopY + (item.y + item.h / 2) * deskScale;
+      const img = this.add.image(cx, cy, texKey).setOrigin(0.5, 0.5)
+        .setDisplaySize(w, h).setDepth(1 + item.tier * 0.1);
+      if (item.rot) img.setAngle(item.rot);
+    });
+  }
+
   buildReception() {
     const deskKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.receptionDesk, 'receptionDeskTex');
     const rugKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.receptionRug, 'receptionRugTex');
-    // Reuses buildFurniture's armchairTex crop rather than re-cropping
-    // the same source rect under the same key (which Phaser rejects).
-    const chairKey = this.armchairKey;
+    // armchairFacingDown (not buildFurniture's armchairTex, which shows
+    // the chair's BACK) — alpha-scanned from the source sheet specifically
+    // because the reception chair needs to face down toward the desk, per
+    // explicit correction after both the unflipped and flipY(true)
+    // attempts still showed the wrong orientation. This is a genuinely
+    // different sprite (stacked below armchair in the sheet), not a
+    // transform of the same one.
+    const chairKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.armchairFacingDown, 'armchairFacingDownTex');
 
     // libAssetPack's furniture (desk/rug/armchair) is drawn at a much
     // higher pixel density than the sofa/cabinet/curio sheets used
@@ -1359,26 +1817,53 @@ class LibraryScene extends Phaser.Scene {
     // neighbors: desk width lands near the shelf sprite's 87px (the
     // project's existing "big furniture" reference), chair matches the
     // ~32-38px single-seat scale the sofa armchair variants use.
-    const deskW = 76;
+    // Scaled up ~1.4x (76->106 etc.) per explicit "enlarge all items
+    // here, including the reception table" request — desk items and the
+    // rug/chair all derive their own size from these three numbers, so
+    // bumping them enlarges the whole reception cluster together. Bumped
+    // again (106->118) per "a little bit bigger", then again (118->150)
+    // per plain "make the table more bigger" — rug kept at the same
+    // ratio to the desk each time (~1.22x). Bumped again (150->190).
+    // Chair was independently resized/repositioned per its own explicit
+    // feedback and stays fixed at 46 here (not tied to deskW).
+    const deskW = 190;
     const deskH = ASSET_RECTS.receptionDesk.h * (deskW / ASSET_RECTS.receptionDesk.w);
-    const rugW = 92;
+    const rugW = 232;
     const rugH = ASSET_RECTS.receptionRug.h * (rugW / ASSET_RECTS.receptionRug.w);
-    const chairW = 32;
-    const chairH = ASSET_RECTS.armchair.h * (chairW / ASSET_RECTS.armchair.w);
+    const chairW = 46;
+    const chairH = ASSET_RECTS.armchairFacingDown.h * (chairW / ASSET_RECTS.armchairFacingDown.w);
 
     const originX = WORLD_W / 2 - deskW / 2;
     const originY = LAYOUT.receptionY;
 
-    this.furnitureSprites.receptionRug = this.add
-      .image(originX - 8, originY, rugKey).setOrigin(0, 0)
-      .setDisplaySize(rugW, rugH).setDepth(0);
     this.furnitureSprites.receptionDesk = this.add
       .image(originX, originY + 10, deskKey).setOrigin(0, 0)
       .setDisplaySize(deskW, deskH).setDepth(1);
+    // Rug moved to sit IN FRONT of the desk (south of it, where a visitor
+    // approaching from spawn would stand) instead of behind/north of it
+    // — was `(originX - 8, originY)`, which put it mostly hidden behind
+    // the desk sprite, per explicit "position the red carpet... to be IN
+    // FRONT of the table" feedback. Horizontal centering offset is half
+    // the rug/desk width difference (was a hardcoded -8 for the old
+    // 92/76 sizes — recomputed so it stays centered after resizes).
+    this.furnitureSprites.receptionRug = this.add
+      .image(originX - (rugW - deskW) / 2, originY + 10 + deskH + 6, rugKey).setOrigin(0, 0)
+      .setDisplaySize(rugW, rugH).setDepth(0);
+    // Chair nudged further back each pass (further into the notch, away
+    // from the desk) — was -22, then -30, now -45 — and sized down
+    // (64->46) per explicit "the yellow chair must be smaller and move
+    // it back some more" feedback.
     this.furnitureSprites.receptionChair = this.add
-      .image(originX + deskW / 2 - chairW / 2, originY - 22, chairKey).setOrigin(0, 0)
+      .image(originX + deskW / 2 - chairW / 2, originY - 45, chairKey).setOrigin(0, 0)
       .setDisplaySize(chairW, chairH).setDepth(1);
     // Non-solid, same reasoning as every other decor piece this round.
+
+    // Desk clutter (books/papers/mug/writing implements) — positions are
+    // DESK_ITEMS's native-desk-pixel offsets (0..191 x, 0..107 y) from the
+    // desk sprite's own top-left, scaled by the same deskW/191 factor the
+    // desk itself uses, so the whole cluster moves with the desk if its
+    // position/size is ever retuned.
+    this.buildDeskItems(originX, originY + 10, deskW / ASSET_RECTS.receptionDesk.w);
   }
 
   // -- Player + camera -----------------------------------------------------
@@ -1395,7 +1880,7 @@ class LibraryScene extends Phaser.Scene {
     // not an expected runtime path.
     this.catColorId = getSavedCatColor() || 'orange';
     this.player = this.physics.add.sprite(spawnX, spawnY, CAT_COLORS[this.catColorId].key);
-    this.player.setDisplaySize(30, 30);
+    this.player.setDisplaySize(60, 60);
     // Deliberately left as `this.player.width` (frame-native size, NOT
     // displaySize) — investigated during planning and confirmed this
     // already produces an oversized/off-center Arcade body relative to
@@ -1439,19 +1924,27 @@ class LibraryScene extends Phaser.Scene {
     this.player.play(colorId + '-idle');
   }
 
-  // Idle plays while stationary; freezes on the current frame while
-  // moving (no walk-cycle art exists for any color — see design spec).
-  // Reads this.player.body.velocity, which Phaser only updates when
-  // setVelocity() is called — so this runs at the TOP of update(), before
-  // this frame's movement branches set a new velocity, meaning it reacts
-  // to last frame's velocity. One frame of lag at 60fps is imperceptible.
+  // Idle plays while stationary; the matching directional walk animation
+  // plays while moving (dominant axis of velocity picks the direction —
+  // diagonal movement reads as whichever of up/down/left/right is
+  // stronger that frame). Reads this.player.body.velocity, which Phaser
+  // only updates when setVelocity() is called — so this runs at the TOP
+  // of update(), before this frame's movement branches set a new
+  // velocity, meaning it reacts to last frame's velocity. One frame of
+  // lag at 60fps is imperceptible. `.play(key, true)` (ignoreIfPlaying)
+  // on every branch, not just once, so re-entering the same direction
+  // every tick doesn't restart the anim from frame 0 (that would show as
+  // a visible pop/stutter every frame while holding a direction).
   updatePlayerAnimation() {
     const vel = this.player.body.velocity;
     const moving = Math.abs(vel.x) > 0.5 || Math.abs(vel.y) > 0.5;
     if (moving) {
-      if (this.player.anims.isPlaying) this.player.anims.stop();
-    } else if (!this.player.anims.isPlaying) {
-      this.player.play(this.catColorId + '-idle');
+      const dir = Math.abs(vel.x) > Math.abs(vel.y)
+        ? (vel.x > 0 ? 'right' : 'left')
+        : (vel.y > 0 ? 'down' : 'up');
+      this.player.play(`${this.catColorId}-walk-${dir}`, true);
+    } else {
+      this.player.play(`${this.catColorId}-idle`, true);
     }
   }
 
@@ -1476,6 +1969,12 @@ class LibraryScene extends Phaser.Scene {
         this.selectRetroMenuOption();
         return;
       }
+      // LessonBox (a DOM overlay, not a Phaser object) owns E/Enter/Space
+      // while it's open via its own document keydown listener — without
+      // this guard, the SAME keypress would also fall through to
+      // nearestInRange()/openInteraction() here and re-open the shelf's
+      // retro menu underneath the lesson dialogue.
+      if (this.panelOpen) return;
       const near = this.nearestInRange();
       if (near) this.openInteraction(near);
     };
@@ -1554,9 +2053,15 @@ class LibraryScene extends Phaser.Scene {
   // (scrollFactor 0) so it stays centered regardless of camera position.
 
   openRetroMenu(entry, state) {
+    // Shelves with real LESSON_CONTENT open the LessonBox dialogue
+    // instead of completing instantly; everything else (shelves with no
+    // content yet, review piles) keeps the old direct-complete behavior.
+    const startAction = entry.kind === 'shelf' && LESSON_CONTENT[entry.id]
+      ? () => this.startLesson(entry)
+      : () => this.completeInteraction(entry);
     const options = entry.kind === 'shelf'
       ? [
-        { label: 'Start/Continue?', onSelect: () => this.completeInteraction(entry) },
+        { label: 'Start/Continue?', onSelect: startAction },
         { label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) },
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ]
@@ -1566,6 +2071,37 @@ class LibraryScene extends Phaser.Scene {
       ];
     void state; // available vs completed doesn't change the option set — both are "revisit" actions
     this.buildRetroMenu(entry.title, options);
+  }
+
+  // Opens the DOM LessonBox (assets/js/lesson-box.js) for shelves that
+  // have LESSON_CONTENT. Closes the in-canvas retro menu first (both
+  // can't be open at once), keeps this.panelOpen = true for the whole
+  // lesson (freezes player movement, same as the retro menu does), and
+  // marks progress complete only once the player reaches the last page —
+  // matching completeInteraction's own save/refresh/close sequence.
+  startLesson(entry) {
+    this.closeRetroMenu();
+    this.panelOpen = true;
+    // Appends a lesson-end recap table of every 'greeting' page seen so
+    // far, generic to any lesson (not hardcoded to shelf-01) — per
+    // explicit "summary table of all basic greetings used" request.
+    // Lessons with no greeting pages (future sentence/conjugation-only
+    // shelves) just don't get one.
+    const pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
+    const catColor = CAT_COLORS[this.catColorId];
+    window.LessonBox.open(pages, {
+      speaker: 'Neko-sensei',
+      catImagePath: catColor.path,
+      onComplete: () => {
+        this.progress[entry.id] = true;
+        saveProgress(this.progress);
+        this.refreshAllStates();
+        this.panelOpen = false;
+      },
+      onClose: () => {
+        this.panelOpen = false;
+      },
+    });
   }
 
   completeInteraction(entry) {

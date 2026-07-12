@@ -40,6 +40,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
           rel="stylesheet">
 
+    <!-- VT323: CRT-terminal readout font used for LessonBox running text
+         (grammar explanations, word glosses) — Press Start 2P stays
+         reserved for headers/labels, VT323 gives body copy a "techy"
+         retro-terminal feel without abandoning the pixel-RPG chrome. -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+          rel="stylesheet">
+
     <!-- =========================================
          BOOTSTRAP
     ========================================== -->
@@ -70,6 +77,11 @@
 
     <link rel="stylesheet"
           href="../../assets/css/n5-dashboard.css">
+
+    <!-- Lesson dialogue box (RPG-style, DOM overlay on the Phaser canvas) -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/lesson-box.css">
 
 </head>
 
@@ -220,6 +232,8 @@
     <div id="mapFrame">
 
         <div id="phaserGame"></div>
+
+        <div id="lessonBoxOverlay" class="lesson-box-overlay" hidden></div>
 
     </div>
 
@@ -403,6 +417,8 @@
 <!-- Dashboard -->
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+
+<script src="../../assets/js/lesson-box.js"></script>
 
 <script src="../../assets/js/n5-phaser-game.js"></script>
 
