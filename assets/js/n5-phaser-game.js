@@ -335,6 +335,273 @@ const LESSON_CONTENT = {
       usage: 'Said ONLY the very first time you meet someone — never used again with that same person afterward. Usually followed immediately by your name, then by "yoroshiku onegaishimasu".',
     },
   ],
+  'shelf-03': [
+    {
+      // Page 1/5: the jikoshoukai (self-introduction) flow, plus a light,
+      // practical first look at わたしは [name] です — わたし/は/です are
+      // genuinely new here (first appearance in the curriculum); the full
+      // grammar breakdown of the A は B です pattern is shelf-04's job,
+      // this shelf just borrows it to say a name.
+      type: 'grammar-intro',
+      sectionLabel: 'How self-introductions work',
+      explain: [
+        'A Japanese self-introduction (jikoshoukai) always follows the same shape: greet, say your name, then close politely — in that exact order. You already know the greeting and the closing from the last shelf: <b>はじめまして</b> and <b>よろしくお願いします</b>. The new piece is the middle: saying your name.',
+        'To say your name, you use: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> [name] <span class="role-verb">です</span></b> — literally "as for me, [name]." <span class="role-particle">は</span> marks <span class="role-noun">わたし</span> (I/me) as the topic, and <span class="role-verb">です</span> politely confirms it. You\'ll get the full breakdown of this pattern on the next shelf — for now, just borrow it to introduce yourself.',
+      ],
+    },
+    {
+      // Page 2/4: the self-intro exchange as an actual two-party
+      // conversation instead of a single static example sentence + a
+      // separate "putting it all together" recap page — replaces both
+      // of those per explicit "too wordy... make it alive" feedback.
+      // Neko-sensei's color is resolved dynamically at lesson-start
+      // (resolveConversationTurns) so she never matches the player's
+      // own selected cat color. Bubble text color-codes only the words
+      // this lesson is actually teaching (わたし/は/です, お名前/何/か) —
+      // set phrases already known from shelf-02 (はじめまして,
+      // よろしくお願いします) stay uncolored so the highlight reads as
+      // "new/pattern word" rather than decorating every line.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'はじめまして。<span class="role-noun">お名前</span><span class="role-particle">は</span><span class="role-noun">何</span><span class="role-verb">です</span><span class="role-particle">か</span>。',
+          romaji: 'Hajimemashite. O-namae wa nan desu ka. — "How do you do. What is your name?"',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: '<span class="role-noun">わたし</span><span class="role-particle">は</span>レイヤ<span class="role-verb">です</span>。',
+          romaji: 'Watashi wa Reya desu. — "I am Reya."',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'レイヤさん、よろしくお願いします！',
+          romaji: 'Reya-san, yoroshiku onegaishimasu! — "Nice to meet you, Reya!"',
+        },
+      ],
+    },
+    {
+      // Page 3/4: the culture behind jikoshoukai, on its own page.
+      type: 'grammar-intro',
+      cultureNotes: [
+        'Jikoshoukai isn\'t just small talk — it\'s treated like a small ritual. You give it standing up, often with a slight bow, on your first day at a new school or job, or when meeting someone through a mutual connection.',
+        'よろしくお願いします doesn\'t really translate into English — it\'s closer to "please treat me well going forward" or "I\'m counting on a good relationship." Saying it at the end of a self-introduction is basically mandatory, not optional politeness.',
+      ],
+    },
+    {
+      // Page 4/4: new-words recap + the pattern restated in the title,
+      // same "New Words" convention as shelf-04's summary page — now
+      // also covers お名前/何/か from the polite question in the exchange.
+      type: 'summary',
+      title: 'New Words & Pattern: わたしは [name] です',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'わたし', romaji: 'watashi', meaning: 'I / me' },
+        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
+        { kana: 'です', romaji: 'desu', meaning: 'am / is / are (polite)' },
+        { kana: 'お名前', romaji: 'o-namae', meaning: 'name (polite)' },
+        { kana: '何', romaji: 'nan', meaning: 'what' },
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+      ],
+    },
+  ],
+  'shelf-04': [
+    {
+      // Page 1/4 of the intro: explanation + tense pair + future/negative
+      // teaser only — the diagram, samples, and notes each get their own
+      // page below (click-to-advance), rather than one long scroll.
+      type: 'grammar-intro',
+      sectionLabel: 'How this sentence works',
+      explain: [
+        'は marks A as the topic and links it to B — that link already means "is." So "A は B" reads like "A is B," even before です shows up.',
+        'So what does です actually do here? Mostly it sets the <b>tense</b> (and adds politeness). Swap です for でした and the whole sentence slides from now to before — nothing else about the sentence changes:',
+      ],
+      tensePair: {
+        present: { kana: 'わたしはがくせい<span class="hl">です</span>', translation: '"I am a student."' },
+        past: { kana: 'わたしはがくせい<span class="hl">でした</span>', translation: '"I was a student."' },
+      },
+      explainAfter: [
+        'Japanese doesn\'t have a separate future word either — です already covers "will be." (There\'s also a <b>negative</b> form you\'ll meet in a later lesson: <b>わたしはがくせいではありません</b> / dewa arimasen — "I am NOT a student." Same は, same job — just です\'s ending changes again.)',
+      ],
+    },
+    {
+      // Page 2/4: the sentence-structure diagram, on its own page.
+      type: 'grammar-intro',
+      diagramSvg: `
+        <svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <defs>
+            <marker id="lb-arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-particle-bg)"></path>
+            </marker>
+            <marker id="lb-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-verb-bg)"></path>
+            </marker>
+          </defs>
+          <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
+          <g font-family="monospace" font-size="16">
+            <rect x="10" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
+            <text x="45" y="58" text-anchor="middle" fill="#efeeff">I</text>
+            <rect x="96" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
+            <text x="131" y="58" text-anchor="middle" fill="#efeeff">am</text>
+            <rect x="182" y="36" width="140" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
+            <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
+          </g>
+          <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="monospace">"is" + tense, bundled</text>
+          <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="var(--lb-role-particle-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
+          <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="monospace">"is" -&gt; は</text>
+          <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="var(--lb-role-verb-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
+          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-verb-bg)" font-family="monospace">tense -&gt; です (sentence-final)</text>
+          <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
+          <g font-family="monospace" font-size="16">
+            <rect x="10" y="160" width="90" height="34" rx="3" fill="var(--lb-role-noun-bg)"></rect>
+            <text x="55" y="182" text-anchor="middle" fill="var(--lb-role-noun-fg)">わたし</text>
+            <rect x="108" y="160" width="46" height="34" rx="3" fill="var(--lb-role-particle-bg)"></rect>
+            <text x="131" y="182" text-anchor="middle" fill="var(--lb-role-particle-fg)">は</text>
+            <rect x="162" y="160" width="110" height="34" rx="3" fill="var(--lb-role-noun-bg)"></rect>
+            <text x="217" y="182" text-anchor="middle" fill="var(--lb-role-noun-fg)">せんせい</text>
+            <rect x="280" y="160" width="70" height="34" rx="3" fill="var(--lb-role-verb-bg)"></rect>
+            <text x="315" y="182" text-anchor="middle" fill="var(--lb-role-verb-fg)">です</text>
+          </g>
+          <g font-family="monospace" font-size="9" fill="var(--jr-text-dim)">
+            <text x="55" y="208" text-anchor="middle">subject</text>
+            <text x="131" y="203" text-anchor="middle">topic + "is"</text>
+            <text x="217" y="208" text-anchor="middle">predicate</text>
+            <text x="315" y="203" text-anchor="middle">tense +</text>
+            <text x="315" y="215" text-anchor="middle">politeness</text>
+          </g>
+          <text x="10" y="238" font-size="10" fill="var(--jr-text-dim)" font-family="monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
+        </svg>
+      `,
+      diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',
+    },
+    {
+      // Page 3/4: the 3 quick illustrative samples, on their own page.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"I am a student."',
+          tiles: [
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'がくせい', role: 'noun', gloss: 'student' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Watashi wa gakusei desu.',
+        },
+        {
+          tag: '"This is a book."',
+          tiles: [
+            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Kore wa hon desu.',
+        },
+        {
+          tag: '"I was a student."',
+          tiles: [
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'がくせい', role: 'noun', gloss: 'student' },
+            { text: 'でした', role: 'verb', gloss: 'was (past)' },
+          ],
+          translation: 'Watashi wa gakusei deshita.',
+        },
+      ],
+    },
+    {
+      // Page 4/4: the two culture notes, on their own page.
+      type: 'grammar-intro',
+      cultureNotes: [
+        'です also makes a sentence sound <b>polite</b> — like how Filipino adds <b>"po"</b> or <b>"opo"</b>. It doesn\'t change what you\'re saying, just how respectful it sounds.',
+        'Filipino even has its own は: the particle <b>"ay"</b> sits right after the topic the same way は does — <b>"Ako ay guro"</b> works just like <b>"Watashi wa sensei."</b>',
+      ],
+    },
+    {
+      type: 'sentence',
+      label: 'Example 1',
+      tiles: [
+        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
+        { text: 'がくせい', role: 'noun', gloss: 'student (predicate)' },
+        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+      ],
+      translation: 'Watashi wa gakusei desu. — "I am a student."',
+    },
+    {
+      type: 'sentence',
+      label: 'Example 2',
+      newWordFlag: 'New word: これ (kore)',
+      tiles: [
+        { text: 'これ', role: 'noun', gloss: 'this (thing near me)', isNew: true },
+        { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
+        { text: 'ほん', role: 'noun', gloss: 'book (predicate)' },
+        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+      ],
+      translation: 'Kore wa hon desu. — "This is a book."',
+    },
+    {
+      type: 'sentence',
+      label: 'Example 3',
+      newWordFlag: 'New word: ペン (pen)',
+      tiles: [
+        { text: 'これ', role: 'noun', gloss: 'this (thing near me)' },
+        { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
+        { text: 'ペン', role: 'noun', gloss: 'pen (predicate)', isNew: true },
+        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+      ],
+      translation: 'Kore wa pen desu. — "This is a pen."',
+      note: 'Same これ from before, just a different B. Swap in any noun you know and the pattern still works.',
+    },
+    {
+      type: 'sentence',
+      label: 'Example 4',
+      newWordFlag: 'New word: でした (deshita)',
+      tiles: [
+        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
+        { text: 'がくせい', role: 'noun', gloss: 'student (predicate)' },
+        { text: 'でした', role: 'verb', gloss: 'was (copula, polite past)', isNew: true },
+      ],
+      translation: 'Watashi wa gakusei deshita. — "I was a student."',
+      note: 'でした is just です pushed into the past — same politeness, same job, only the tense changes. Nothing else about the sentence pattern moves.',
+    },
+    {
+      type: 'sentence',
+      label: 'Example 5',
+      newWordFlag: 'New word: せんせい (sensei)',
+      tiles: [
+        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
+        { text: 'せんせい', role: 'noun', gloss: 'teacher (predicate)', isNew: true },
+        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+      ],
+      translation: 'Watashi wa sensei desu. — "I am a teacher."',
+      note: 'Filipino lines up word-for-word almost perfectly: <b>Ako</b> (watashi) <b>ay</b> (wa) <b>guro/Teacher</b> (sensei) <b>po</b> (desu). ay plays は\'s role, po plays です\'s role.',
+    },
+    {
+      // Full-shelf vocab recap (reuses the 'summary' type's data table,
+      // same as appendGreetingSummary produces for greeting-type shelves)
+      // — every word used across the 5 example sentences, not just the
+      // ones flagged newWordFlag, since a beginner benefits from seeing
+      // the whole set reinforced together at the end.
+      type: 'summary',
+      title: 'New Words: A は B です',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'わたし', romaji: 'watashi', meaning: 'I / me' },
+        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
+        { kana: 'です', romaji: 'desu', meaning: 'am / is / are (polite)' },
+        { kana: 'がくせい', romaji: 'gakusei', meaning: 'student' },
+        { kana: 'これ', romaji: 'kore', meaning: 'this (thing near me)' },
+        { kana: 'ほん', romaji: 'hon', meaning: 'book' },
+        { kana: 'ペン', romaji: 'pen', meaning: 'pen' },
+        { kana: 'でした', romaji: 'deshita', meaning: 'was / were (polite past)' },
+        { kana: 'せんせい', romaji: 'sensei', meaning: 'teacher' },
+      ],
+    },
+  ],
 };
 
 // Builds the lesson-end recap page (LessonBox type: 'summary') from
@@ -352,6 +619,28 @@ function appendGreetingSummary(pages, lessonTitle) {
     rows: greetings.map((p) => ({ kana: p.kana, romaji: p.romaji, meaning: p.meaning })),
   };
   return [...pages, summaryPage];
+}
+
+// Resolves each 'conversation' page's turns to an actual spritePath —
+// LESSON_CONTENT only declares { speaker: 'sensei'|'player', action, ... }
+// since it's static data with no knowledge of which cat color the current
+// player picked. 'player' turns use the player's own selected color;
+// 'sensei' turns use a fixed color distinct from it (Neko-sensei isn't
+// the player's cat, so she shouldn't share its color and become
+// indistinguishable — falls back to black when the player is also
+// orange). Lessons with no 'conversation' pages come back unchanged.
+function resolveConversationTurns(pages, playerColorId) {
+  const senseiColorId = playerColorId === 'orange' ? 'black' : 'orange';
+  return pages.map((page) => {
+    if (page.type !== 'conversation') return page;
+    return {
+      ...page,
+      turns: page.turns.map((t) => {
+        const colorId = t.speaker === 'player' ? playerColorId : senseiColorId;
+        return { ...t, spritePath: ACTION_SPRITE_PATHS[t.action][colorId] };
+      }),
+    };
+  });
 }
 
 // Prerequisite for each shelf to become "available": null = always
@@ -442,6 +731,51 @@ const CAT_COLORS = {
   orange: { key: 'orangeCatSheet', path: '../../assets/images/avatars/cat-2-64x64.png', label: 'Orange' },
   black: { key: 'blackCatSheet', path: '../../assets/images/avatars/cat-1-64x64.png', label: 'Black' },
   white: { key: 'whiteCatSheet', path: '../../assets/images/avatars/cat-3-64x64.png', label: 'White' },
+};
+// Tight 3-frame "meow sit front" strips (192x64, closed/open/closed mouth)
+// cropped from the "<color> cat with text.png" asset packs' row 14 —
+// used only by LessonBox's speaker portrait so it visibly talks instead
+// of idling next to the dialogue text. DOM-only (background-image via
+// lesson-box.js), not a Phaser texture, so no scene.load needed here.
+const TALK_COLOR_PATHS = {
+  orange: '../../assets/images/avatars/talk-orange-64x64.png',
+  black: '../../assets/images/avatars/talk-black-64x64.png',
+  white: '../../assets/images/avatars/talk-white-64x64.png',
+};
+// Per-action, per-color sprite strips for LessonBox 'conversation' pages
+// (see resolveConversationTurns below) — all cropped from the same
+// "<color> cat with text.png" packs via a blob-center scan (fixed-grid
+// cropping bled neighboring frames' ears/tails into each cell; centering
+// each frame's crop window on its own detected blob eliminated that —
+// see assets/images/avatars/*-{color}-64x64.png). Each entry is a
+// single-row strip; frame counts are declared in lesson-box.js's
+// ACTION_META, not here (this file only resolves WHICH file to use).
+const ACTION_SPRITE_PATHS = {
+  meow: {
+    orange: '../../assets/images/avatars/talk-orange-64x64.png',
+    black: '../../assets/images/avatars/talk-black-64x64.png',
+    white: '../../assets/images/avatars/talk-white-64x64.png',
+  },
+  scratch: {
+    orange: '../../assets/images/avatars/scratch-orange-64x64.png',
+    black: '../../assets/images/avatars/scratch-black-64x64.png',
+    white: '../../assets/images/avatars/scratch-white-64x64.png',
+  },
+  tailwagFront: {
+    orange: '../../assets/images/avatars/tailwag-orange-64x64.png',
+    black: '../../assets/images/avatars/tailwag-black-64x64.png',
+    white: '../../assets/images/avatars/tailwag-white-64x64.png',
+  },
+  tailwagLeft: {
+    orange: '../../assets/images/avatars/tailwagleft-orange-64x64.png',
+    black: '../../assets/images/avatars/tailwagleft-black-64x64.png',
+    white: '../../assets/images/avatars/tailwagleft-white-64x64.png',
+  },
+  tailwagRight: {
+    orange: '../../assets/images/avatars/tailwagright-orange-64x64.png',
+    black: '../../assets/images/avatars/tailwagright-black-64x64.png',
+    white: '../../assets/images/avatars/tailwagright-white-64x64.png',
+  },
 };
 // Frame geometry shared by all 3 sheets (same rig, palette-swapped).
 const CAT_SHEET_COLS = 14;
@@ -2087,11 +2421,13 @@ class LibraryScene extends Phaser.Scene {
     // explicit "summary table of all basic greetings used" request.
     // Lessons with no greeting pages (future sentence/conjugation-only
     // shelves) just don't get one.
-    const pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
+    let pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
+    pages = resolveConversationTurns(pages, this.catColorId);
     const catColor = CAT_COLORS[this.catColorId];
     window.LessonBox.open(pages, {
       speaker: 'Neko-sensei',
       catImagePath: catColor.path,
+      talkImagePath: TALK_COLOR_PATHS[this.catColorId],
       onComplete: () => {
         this.progress[entry.id] = true;
         saveProgress(this.progress);

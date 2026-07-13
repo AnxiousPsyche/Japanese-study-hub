@@ -34,6 +34,8 @@
   --lb-role-verb-fg: #0e3a17;
   --lb-role-adjective-bg: #e39be3;
   --lb-role-adjective-fg: #3a123a;
+  --lb-role-neutral-bg: #746fa8;
+  --lb-role-neutral-fg: #efeeff;
 }
 
 /* Shared stepped-pixel-corner clip path, parameterized by --jr-step-a/b
@@ -203,7 +205,7 @@
   overflow: hidden; /* new block-formatting context so text wraps around the float cleanly */
   color: var(--jr-text);
   line-height: 1.8;
-  font-size: 15px;
+  font-size: 19px;
 }
 
 .lesson-box__continue {
@@ -375,16 +377,16 @@
 
 .lesson-box__section-label {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--lb-role-particle-bg);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   clear: both;
 }
 
 .lesson-box__pattern-line {
-  font-size: 20px;
+  font-size: 24px;
   color: var(--jr-text);
   text-align: center;
   background: rgba(0, 0, 0, 0.25);
@@ -393,12 +395,19 @@
   letter-spacing: 0.02em;
 }
 
-.lesson-box__pattern-line .role-noun { color: var(--lb-role-noun-bg); }
-.lesson-box__pattern-line .role-particle { color: var(--lb-role-particle-bg); }
-.lesson-box__pattern-line .role-verb { color: var(--lb-role-verb-bg); }
+/* Inline role-coloring for key words within running prose (explain
+   paragraphs, culture notes, conversation bubbles) — not just the
+   pattern-line — so a word like は or です stands out the same gold/green
+   everywhere it's mentioned, not just inside word-tiles. Text-color only
+   (no fill/border), since these sit inside normal sentences rather than
+   standing alone as a tile. */
+.lesson-box__content .role-noun { color: var(--lb-role-noun-bg); }
+.lesson-box__content .role-particle { color: var(--lb-role-particle-bg); }
+.lesson-box__content .role-verb { color: var(--lb-role-verb-bg); }
+.lesson-box__content .role-adjective { color: var(--lb-role-adjective-bg); }
 
 .lesson-box__explain-text {
-  font-size: 15px;
+  font-size: 19px;
   line-height: 1.55;
   color: var(--jr-text);
 }
@@ -412,7 +421,7 @@
   grid-template-columns: max-content 1fr;
   column-gap: 14px;
   row-gap: 6px;
-  font-size: 14px;
+  font-size: 17px;
   margin-top: 12px;
 }
 
@@ -431,7 +440,7 @@
 }
 
 .lesson-box__culture-note {
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.55;
   color: var(--jr-text);
   background: rgba(0, 0, 0, 0.22);
@@ -442,6 +451,113 @@
 
 .lesson-box__culture-note b {
   color: var(--lb-role-particle-bg);
+}
+
+/* Repeatable divider between grammar-intro sub-sections (explanation /
+   diagram / samples / notes) — only inserted between sections the page
+   data actually supplies, see lesson-box.js's `sections.join(divider)`. */
+.lesson-box__divider {
+  height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.35) 0 10px, transparent 10px 20px);
+  margin: 18px 0;
+  clear: both;
+}
+
+/* Present/past comparison cards (e.g. です vs でした) inside grammar-intro. */
+.lesson-box__tense-pair {
+  display: flex;
+  gap: 14px;
+  margin: 14px 0;
+  clear: both;
+}
+
+.lesson-box__tense-card {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.22);
+  border-top: 3px solid var(--lb-role-verb-bg);
+  padding: 10px 12px;
+}
+
+.lesson-box__tense-card.is-past {
+  border-top-color: var(--lb-role-noun-bg);
+}
+
+.lesson-box__tense-card-label {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.lesson-box__tense-card-kana {
+  font-size: 19px;
+  color: var(--jr-text);
+  margin-bottom: 4px;
+}
+
+.lesson-box__tense-card-kana .hl {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__tense-card.is-past .lesson-box__tense-card-kana .hl {
+  color: var(--lb-role-noun-bg);
+}
+
+.lesson-box__tense-card-en {
+  font-size: 14px;
+  color: var(--jr-text-dim);
+}
+
+/* Inline SVG sentence-structure diagram (author-supplied markup via
+   page.diagramSvg) — wrapped in a recessed panel to separate it visually
+   from the surrounding prose. */
+.lesson-box__diagram-wrap {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 10px 6px;
+  clear: both;
+}
+
+.lesson-box__diagram-caption {
+  font-size: 11px;
+  color: var(--jr-text-dim);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* Sub-section heading within grammar-intro (e.g. "Samples", "Notes / Fun
+   Fact") — smaller/dimmer than .lesson-box__section-label so it reads as
+   a subordinate heading, not a new top-level section. */
+.lesson-box__mini-label {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  margin-bottom: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  clear: both;
+}
+
+.lesson-box__sample-block {
+  clear: both;
+}
+
+.lesson-box__sample-block + .lesson-box__sample-block {
+  margin-top: 20px;
+}
+
+.lesson-box__sample-tag {
+  font-size: 16px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 8px;
+}
+
+.lesson-box__sample-translation {
+  font-size: 16px;
+  color: var(--jr-text-dim);
+  margin-top: 6px;
 }
 
 /* -- shared data table (type: conjugation AND type: summary) ------------------ */
@@ -457,7 +573,7 @@
 .lesson-box__data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 16px;
   clear: both;
   background: transparent;
 }
@@ -474,12 +590,12 @@
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
   font-weight: normal;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .lesson-box__data-table td:first-child {
   color: var(--jr-text);
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .lesson-box__data-table td:nth-child(2) {
@@ -497,6 +613,94 @@
   color: var(--lb-role-particle-bg);
   margin-bottom: 8px;
   clear: both;
+}
+
+/* -- type: conversation ----------------------------------------------------- */
+/* Two-party back-and-forth (e.g. the self-introduction exchange) — each
+   turn gets its own small animated avatar instead of sharing the single
+   top-left portrait, alternating sides by speaker so it reads like an
+   actual conversation rather than one character narrating. */
+
+.lesson-box__conv-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  clear: both;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.lesson-box__conv-turn {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.lesson-box__conv-turn.is-player {
+  flex-direction: row-reverse;
+}
+
+.lesson-box__conv-avatar {
+  width: 52px;
+  height: 52px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  /* background-image/position/animation set inline per turn by
+     lesson-box.js's render() (color + action vary per turn) */
+}
+
+.lesson-box__conv-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.lesson-box__conv-turn.is-player .lesson-box__conv-name-row {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.lesson-box__conv-name {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 11px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__conv-action-tag {
+  font-size: 14px;
+  color: var(--lb-role-particle-bg);
+  font-style: italic;
+}
+
+.lesson-box__conv-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+}
+
+.lesson-box__conv-bubble {
+  background: #fbfaff;
+  color: #241f42;
+  border: 3px solid var(--jr-bg-bottom);
+  border-radius: 14px 14px 14px 3px;
+  padding: 12px 16px;
+  font-size: 23px;
+}
+
+.lesson-box__conv-turn.is-player .lesson-box__conv-bubble {
+  border-radius: 14px 14px 3px 14px;
+  background: #fff4d6;
+}
+
+.lesson-box__conv-meta {
+  font-size: 15px;
+  color: var(--jr-text-dim);
+  margin-top: 5px;
+}
+
+.lesson-box__conv-turn.is-player .lesson-box__conv-meta {
+  text-align: right;
 }
 
 /* -- ambient corner cat (decorative, outside the text flow) ---------------- */

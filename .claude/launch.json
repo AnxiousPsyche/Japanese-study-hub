@@ -420,6 +420,126 @@
         "12194"
       ],
       "port": 12194
+    },
+    {
+      "name": "jp-library-static-shelf04-grammar",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12295"
+      ],
+      "port": 12295
+    },
+    {
+      "name": "jp-library-static-shelf04-simplify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12396"
+      ],
+      "port": 12396
+    },
+    {
+      "name": "jp-library-static-shelf04-nuance",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12497"
+      ],
+      "port": 12497
+    },
+    {
+      "name": "jp-library-static-shelf04-concise",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12598"
+      ],
+      "port": 12598
+    },
+    {
+      "name": "jp-library-static-shelf04-diagram",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12699"
+      ],
+      "port": 12699
+    },
+    {
+      "name": "jp-library-static-shelf04-paginated",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12790"
+      ],
+      "port": 12790
+    },
+    {
+      "name": "jp-library-static-shelf03",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12891"
+      ],
+      "port": 12891
+    },
+    {
+      "name": "jp-library-static-talk-portrait",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "12992"
+      ],
+      "port": 12992
+    },
+    {
+      "name": "jp-library-static-conversation",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13093"
+      ],
+      "port": 13093
+    },
+    {
+      "name": "jp-library-static-fontsize",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13194"
+      ],
+      "port": 13194
+    },
+    {
+      "name": "jp-library-static-colorwords",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13295"
+      ],
+      "port": 13295
+    },
+    {
+      "name": "jp-library-static-colorwords-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13396"
+      ],
+      "port": 13396
     }
   ],
   "autoVerify": true
