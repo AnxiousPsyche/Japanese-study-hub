@@ -33,6 +33,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=swap"
           rel="stylesheet">
 
+    <!-- DotGothic16: a Japanese pixel/dot-matrix font, used as a fallback
+         in the game's "Press Start 2P" text stacks so Japanese characters
+         in lesson titles (e.g. "か", "ましょう") render in a matching
+         retro-pixel style instead of the browser's default font. -->
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
+          rel="stylesheet">
+
+    <!-- VT323: CRT-terminal readout font used for LessonBox running text
+         (grammar explanations, word glosses) — Press Start 2P stays
+         reserved for headers/labels, VT323 gives body copy a "techy"
+         retro-terminal feel without abandoning the pixel-RPG chrome. -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+          rel="stylesheet">
+
     <!-- =========================================
          BOOTSTRAP
     ========================================== -->
@@ -64,31 +78,14 @@
     <link rel="stylesheet"
           href="../../assets/css/n5-dashboard.css">
 
+    <!-- Lesson dialogue box (RPG-style, DOM overlay on the Phaser canvas) -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/lesson-box.css">
+
 </head>
 
 <body>
-
-    <div class="hud-left">
-
-    <button class="hud-btn">
-
-        🏠 Home
-
-    </button>
-
-    <button class="hud-btn">
-
-        🗺 Journey
-
-    </button>
-
-    <button class="hud-btn">
-
-        📚 Lessons
-
-    </button>
-
-</div>
 
 <!-- =========================================
      RPG HUD
@@ -110,6 +107,24 @@
 
         </button>
 
+        <button class="hud-btn">
+
+            🏠 Home
+
+        </button>
+
+        <button class="hud-btn">
+
+            🗺 Journey
+
+        </button>
+
+        <button class="hud-btn">
+
+            📚 Lessons
+
+        </button>
+
     </div>
 
     <!-- Center -->
@@ -124,7 +139,7 @@
         <div class="hud-player">
 
             <img
-                src="../../assets/images/avatars/default-avatar.png"
+                src="../../assets/images/avatars/smeagol.png"
                 id="playerAvatar"
                 alt="Player">
 
@@ -189,6 +204,14 @@
         </div>
 
         <button
+            id="changeCharBtn"
+            class="hud-btn">
+
+            🐱 Change
+
+        </button>
+
+        <button
             id="musicButton"
             class="hud-btn">
 
@@ -206,417 +229,11 @@
 
 <main id="journeyMap">
 
-    <!-- Background Image -->
+    <div id="mapFrame">
 
-    <img
-        src="../../assets/images/backgrounds/n5-journey-map.png"
-        alt="JLPT N5 Journey"
-        class="journey-background">
+        <div id="phaserGame"></div>
 
-    <!-- =====================================
-         PLAYER CHARACTER
-    ====================================== -->
-
-    <div id="playerCharacter">
-
-        <img
-            src="../../assets/images/avatars/player.png"
-            alt="Player">
-
-    </div>
-
-    <!-- =====================================
-         START GATE
-    ====================================== -->
-
-    <div id="startGate">
-
-        <img
-            src="../../assets/images/map/torii.png"
-            alt="Start Gate">
-
-        <span>
-
-            START
-
-        </span>
-
-    </div>
-
-    <!-- =====================================
-         MAP CONTAINER
-         Lesson Nodes begin in Part 2
-    ====================================== -->
-
-    <div id="lessonMap">
-
-            <!-- =====================================
-         LESSON 1
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-1"
-        data-lesson="1">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-1">
-
-        👋 Basic Greetings
-
-    </div>
-
-    <!-- =====================================
-         LESSON 2
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-2"
-        data-lesson="2">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-2">
-
-        💬 Everyday Expressions
-
-    </div>
-
-    <!-- =====================================
-         LESSON 3
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-3"
-        data-lesson="3">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-3">
-
-        🙋 Self Introduction
-
-    </div>
-
-    <!-- =====================================
-         LESSON 4
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-4"
-        data-lesson="4">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-4">
-
-        📘 A は B です
-
-    </div>
-
-    <!-- =====================================
-         LESSON 5
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-5"
-        data-lesson="5">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-5">
-
-        📦 Demonstratives
-
-    </div>
-
-    <!-- =====================================
-         LESSON 6
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-6"
-        data-lesson="6">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-6">
-
-        ❓ Questions (か)
-
-    </div>
-
-    <!-- =====================================
-         LESSON 7
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-7"
-        data-lesson="7">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-7">
-
-        🧭 Places and Directions
-
-    </div>
-
-    <!-- =====================================
-         REVIEW CHECKPOINT
-    ====================================== -->
-
-    <button
-        class="lesson-node review-node"
-        data-lesson="review1">
-
-        <span class="review-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-review">
-
-        📋 Foundations Review
-
-    </div>
-
-    <!-- =====================================
-         LESSON 9
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-9"
-        data-lesson="9">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-9">
-
-        👥 Nouns & Pronouns
-
-    </div>
-
-        <!-- =====================================
-         LESSON 10
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-10"
-        data-lesson="10">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-10">
-
-        🌸 Adjectives
-
-    </div>
-
-    <!-- =====================================
-         LESSON 11
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-11"
-        data-lesson="11">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-11">
-
-        ⚡ Adverbs and Verbs
-
-    </div>
-
-    <!-- =====================================
-         LESSON 12
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-12"
-        data-lesson="12">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-12">
-
-        🔄 Conjugations
-
-    </div>
-
-    <!-- =====================================
-         REVIEW CHECKPOINT 2
-    ====================================== -->
-
-    <button
-        class="lesson-node review-node review-node-2"
-        data-lesson="review2">
-
-        <span class="review-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-review2">
-
-        📋 Sentence Builder Review
-
-    </div>
-
-    <!-- =====================================
-         LESSON 13
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-13"
-        data-lesson="13">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-13">
-
-        🧱 Sentence Construction
-
-    </div>
-
-    <!-- =====================================
-         LESSON 14
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-14"
-        data-lesson="14">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-14">
-
-        🧩 Particle Mastery
-
-    </div>
-
-    <!-- =====================================
-         LESSON 15
-    ====================================== -->
-
-    <button
-        class="lesson-node lesson-15"
-        data-lesson="15">
-
-        <span class="node-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-15">
-
-        👥 Existence (あります・います)
-
-    </div>
-
-    <!-- =====================================
-         FINAL EXAM
-    ====================================== -->
-
-    <button
-        class="lesson-node final-review"
-        data-lesson="final">
-
-        <span class="final-glow"></span>
-
-    </button>
-
-    <div class="lesson-sign lesson-sign-final">
-
-        🏆 Final N5 Review
-
-    </div>
-
-    <!-- =====================================
-         TREASURE CHEST 1
-    ====================================== -->
-
-    <button
-        class="treasure-node treasure-1">
-
-        <img
-            src="../../assets/images/map/treasure.png"
-            alt="Treasure">
-
-    </button>
-
-    <!-- =====================================
-         TREASURE CHEST 2
-    ====================================== -->
-
-    <button
-        class="treasure-node treasure-2">
-
-        <img
-            src="../../assets/images/map/treasure.png"
-            alt="Treasure">
-
-    </button>
-
-    <!-- =====================================
-         TREASURE CHEST 3
-    ====================================== -->
-
-    <button
-        class="treasure-node treasure-3">
-
-        <img
-            src="../../assets/images/map/treasure.png"
-            alt="Treasure">
-
-    </button>
-
-    <!-- =====================================
-         GOAL CASTLE
-    ====================================== -->
-
-    <div
-        id="goalCastle">
-
-        <img
-            src="../../assets/images/map/goal-castle.png"
-            alt="Goal Castle">
-
-        <span>
-
-            GOAL
-
-        </span>
-
-    </div>
-
-    <!-- =====================================
-         END OF MAP
-    ====================================== -->
+        <div id="lessonBoxOverlay" class="lesson-box-overlay" hidden></div>
 
     </div>
 
@@ -685,6 +302,14 @@
                 class="retro-btn">
 
                 ▶ Start Lesson
+
+            </button>
+
+            <button
+                id="favoriteLessonButton"
+                class="retro-btn retro-btn-secondary">
+
+                ⭐ Save/Favorite
 
             </button>
 
@@ -791,17 +416,11 @@
 
 <!-- Dashboard -->
 
-<script src="../../assets/js/n5-dashboard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-<script src="../../assets/js/n5-lessons.js"></script>
+<script src="../../assets/js/lesson-box.js"></script>
 
-<script src="../../assets/js/n5-player.js"></script>
-
-<script src="../../assets/js/n5-popup.js"></script>
-
-<script src="../../assets/js/n5-save.js"></script>
-
-<script src="../../assets/js/n5-map.js"></script>
+<script src="../../assets/js/n5-phaser-game.js"></script>
 
 </body>
 

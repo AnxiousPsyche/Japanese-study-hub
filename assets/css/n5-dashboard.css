@@ -12,13 +12,13 @@ ROOT
 
     --hud-height:90px;
 
-    --hud-bg:rgba(255,252,245,.88);
+    /* Round 1 feedback B7: exact retro-pastel treatment (#C9BFA5 border
+       on #F6F2EA background), not the earlier gold/cream approximation. */
+    --hud-bg:#F6F2EA;
 
-    --hud-border:#CBAE74;
+    --hud-border:#C9BFA5;
 
-    --hud-shadow:
-
-        0 12px 30px rgba(0,0,0,.18);
+    --hud-shadow:var(--shadow-window);
 
     --panel-radius:18px;
 
@@ -53,7 +53,21 @@ body{
 
     font-family:var(--body-font);
 
-    background:#E7F5FF;
+    background-color:var(--bg-main);
+
+    background-image:
+
+        linear-gradient(45deg, var(--bg-window) 25%, transparent 25%),
+
+        linear-gradient(-45deg, var(--bg-window) 25%, transparent 25%),
+
+        linear-gradient(45deg, transparent 75%, var(--bg-window) 75%),
+
+        linear-gradient(-45deg, transparent 75%, var(--bg-window) 75%);
+
+    background-size:32px 32px;
+
+    background-position:0 0, 0 16px, 16px -16px, -16px 0px;
 
     color:#2F2F2F;
 
@@ -85,10 +99,6 @@ HUD
     padding:0 35px;
 
     background:var(--hud-bg);
-
-    backdrop-filter:blur(16px);
-
-    -webkit-backdrop-filter:blur(16px);
 
     border-bottom:3px solid var(--hud-border);
 
@@ -150,19 +160,30 @@ HUD BUTTONS
 
 .hud-btn{
 
-    border:none;
+    border:2px solid var(--hud-border);
 
-    border-radius:14px;
+    border-radius:var(--radius);
 
     padding:12px 22px;
 
-    background:#89A8D8;
+    /* Scoped override of --title-bar (#87A8D8): that value is only
+       2.44:1 contrast against white text, failing WCAG AA (4.5:1) -
+       confirmed site-wide since --title-bar is shared across
+       components.css/mission.css/reset.css, so darkened locally here
+       rather than touching the global variable. */
+    background:#4E74A8;
 
     color:white;
 
     font-family:var(--title-font);
 
+    font-size:.6rem;
+
+    letter-spacing:1px;
+
     cursor:pointer;
+
+    box-shadow:var(--shadow-window);
 
     transition:var(--transition);
 
@@ -172,7 +193,15 @@ HUD BUTTONS
 
     transform:translateY(-3px);
 
-    background:#6F94CF;
+    background:#44689C;
+
+}
+
+.hud-btn:active{
+
+    transform:translateY(2px);
+
+    box-shadow:none;
 
 }
 
@@ -265,44 +294,151 @@ MAP
 
 #journeyMap{
 
-    overflow:auto;
+    position:relative;
+
+    width:100%;
+
+    height:calc(100vh - var(--hud-height) - 42px);
+
+    overflow:hidden;
 
 }
-
-.journey-background{
-
-    display:block;
-
-    width:1900px;
-
-    height:auto;
-
-    margin:auto;
-
-}
-
 
 /*======================================================
-BACKGROUND
+MAP FRAME
+Locks the map layer to a fixed 16:10 design ratio so
+furniture and %-positioned nodes always share the same
+coordinate space, at any window size. The library scene
+is code-drawn (no source image), so this ratio is an
+authored design choice, not a measured value.
 ======================================================*/
 
-.journey-background{
+#mapFrame{
 
     position:absolute;
 
-    top:0;
+    inset:0;
 
-    left:0;
+    margin:auto;
+
+    aspect-ratio:16/10;
+
+    max-width:100%;
+
+    max-height:100%;
+
+    overflow:hidden;
+
+}
+
+#phaserGame{
 
     width:100%;
 
     height:100%;
 
-    object-fit:cover;
+}
 
-    user-select:none;
 
-    pointer-events:none;
+/*======================================================
+LIBRARY ROOM SHELL
+======================================================*/
+
+.library-room{
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(#3B2A1E, #4A3520 60%, #5C4028);
+
+}
+
+.library-wall{
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    top:0;
+
+    height:45%;
+
+    background:#4A3520;
+
+}
+
+.library-window{
+
+    position:absolute;
+
+    top:8%;
+
+    width:14%;
+
+    height:22%;
+
+    background:linear-gradient(#FFE9B0, #FFB870);
+
+    border:6px solid #6E4A2E;
+
+    border-radius:6px;
+
+}
+
+.library-window--1{
+
+    left:12%;
+
+}
+
+.library-window--2{
+
+    right:12%;
+
+}
+
+.library-floor{
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    height:55%;
+
+    background-image:url("../images/library-tiles/floor-wood-plank.png");
+
+    background-repeat:repeat;
+
+    background-size:128px 128px;
+
+    image-rendering:pixelated;
+
+}
+
+.library-rug{
+
+    position:absolute;
+
+    left:20%;
+
+    right:20%;
+
+    bottom:6%;
+
+    height:30%;
+
+    background:#8B2E2E;
+
+    border:10px solid #6E2323;
+
+    border-radius:8px;
 
 }
 
@@ -325,73 +461,20 @@ LESSON MAP
 
 
 /*======================================================
-START GATE
+LIBRARY ENTRANCE (spawn anchor, no visible art)
 ======================================================*/
 
-#startGate{
+#libraryEntrance{
 
     position:absolute;
 
-    left:4%;
+    left:83%;
 
     bottom:6%;
 
-    display:flex;
+    width:1px;
 
-    flex-direction:column;
-
-    align-items:center;
-
-    z-index:100;
-
-}
-
-#startGate img{
-
-    width:95px;
-
-}
-
-#startGate span{
-
-    margin-top:8px;
-
-    font-family:var(--title-font);
-
-    font-size:.7rem;
-
-    color:white;
-
-    text-shadow:
-
-        2px 2px 4px rgba(0,0,0,.55);
-
-}
-
-
-/*======================================================
-MAP DECORATION
-======================================================*/
-
-#journeyMap::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-
-        linear-gradient(
-
-            rgba(255,255,255,.02),
-
-            rgba(0,0,0,.05)
-
-        );
-
-    pointer-events:none;
+    height:1px;
 
 }
 
@@ -416,47 +499,24 @@ SCROLLBAR
 
 /*======================================================
 PLAYER CHARACTER
+#playerCharacter IS a .cat instance (Task 4 puts both
+classes on the same element) — its 40x40 size comes from
+.cat itself (CAT COMPONENT section), so this rule only
+adds positioning, not a conflicting width/height. Do not
+add width/height here: overriding .cat's 40x40 without
+also rescaling every internal .cat__* child's fixed px
+coordinates would leave the shapes not filling the box.
 ======================================================*/
 
 #playerCharacter{
 
     position:absolute;
 
-    width:72px;
-
-    height:72px;
-
     left:8%;
 
     bottom:8%;
 
     z-index:300;
-
-    transition:
-
-        left .5s ease,
-
-        top .5s ease,
-
-        transform .25s ease;
-
-}
-
-#playerCharacter img{
-
-    width:100%;
-
-    image-rendering:pixelated;
-
-    user-select:none;
-
-    pointer-events:none;
-
-}
-
-#playerCharacter.walking{
-
-    animation:playerBounce .45s infinite alternate;
 
 }
 
@@ -527,6 +587,16 @@ LESSON NODE
 
 }
 
+.lesson-node.in-range{
+
+    transform:scale(1.4);
+
+    box-shadow:
+        0 0 22px #FFD84D,
+        0 0 45px #FFD84D;
+
+}
+
 
 /*======================================================
 NODE GLOW
@@ -587,49 +657,6 @@ FINAL REVIEW
         0 0 12px #FF6B6B,
 
         0 0 30px #FF6B6B;
-
-}
-
-
-/*======================================================
-WOODEN SIGN
-======================================================*/
-
-.lesson-sign{
-
-    position:absolute;
-
-    min-width:170px;
-
-    padding:10px 18px;
-
-    background:#8B5A2B;
-
-    color:#FFF9E8;
-
-    border:3px solid #C9A05A;
-
-    border-radius:16px;
-
-    font-size:.72rem;
-
-    font-weight:700;
-
-    text-align:center;
-
-    box-shadow:
-
-        0 8px 18px rgba(0,0,0,.18);
-
-    user-select:none;
-
-    z-index:210;
-
-}
-
-.lesson-sign:hover{
-
-    transform:translateY(-3px);
 
 }
 
@@ -722,253 +749,147 @@ GOAL CASTLE
 POSITIONS
 ======================================================*/
 
-/* Bottom Row */
+/* Starting shelf, bottom-center */
 
 .lesson-1{
 
-    left:13%;
+    left:43%;
 
-    bottom:10%;
-
-}
-
-.lesson-sign-1{
-
-    left:9%;
-
-    bottom:15%;
+    bottom:4%;
 
 }
+
+/* Left column (going up) */
 
 .lesson-2{
 
-    left:33%;
+    left:8%;
 
-    bottom:10%;
-
-}
-
-.lesson-sign-2{
-
-    left:28%;
-
-    bottom:15%;
+    bottom:8%;
 
 }
-
-.lesson-3{
-
-    left:53%;
-
-    bottom:10%;
-
-}
-
-.lesson-sign-3{
-
-    left:49%;
-
-    bottom:15%;
-
-}
-
-/* Row 2 */
 
 .lesson-4{
 
-    right:13%;
+    left:8%;
 
-    bottom:28%;
-
-}
-
-.lesson-sign-4{
-
-    right:8%;
-
-    bottom:33%;
-
-}
-
-.lesson-5{
-
-    right:33%;
-
-    bottom:28%;
-
-}
-
-.lesson-sign-5{
-
-    right:28%;
-
-    bottom:33%;
+    bottom:17%;
 
 }
 
 .lesson-6{
 
-    right:53%;
+    left:8%;
 
-    bottom:28%;
-
-}
-
-.lesson-sign-6{
-
-    right:48%;
-
-    bottom:33%;
-
-}
-
-/* Row 3 */
-
-.lesson-7{
-
-    left:13%;
-
-    bottom:46%;
-
-}
-
-.lesson-sign-7{
-
-    left:7%;
-
-    bottom:51%;
+    bottom:26%;
 
 }
 
 .review-node{
 
-    left:33%;
+    left:8%;
 
-    bottom:46%;
-
-}
-
-.lesson-sign-review{
-
-    left:26%;
-
-    bottom:51%;
+    bottom:35%;
 
 }
-
-.lesson-9{
-
-    left:53%;
-
-    bottom:46%;
-
-}
-
-.lesson-sign-9{
-
-    left:47%;
-
-    bottom:51%;
-
-}
-
-/* Row 4 */
 
 .lesson-10{
 
-    right:13%;
+    left:8%;
 
-    bottom:64%;
-
-}
-
-.lesson-sign-10{
-
-    right:8%;
-
-    bottom:69%;
-
-}
-
-.lesson-11{
-
-    right:33%;
-
-    bottom:64%;
-
-}
-
-.lesson-sign-11{
-
-    right:26%;
-
-    bottom:69%;
+    bottom:44%;
 
 }
 
 .lesson-12{
 
-    right:53%;
+    left:8%;
 
-    bottom:64%;
-
-}
-
-.lesson-sign-12{
-
-    right:47%;
-
-    bottom:69%;
+    bottom:53%;
 
 }
-
-/* Row 5 */
 
 .lesson-13{
 
-    left:13%;
+    left:8%;
 
-    bottom:82%;
-
-}
-
-.lesson-sign-13{
-
-    left:7%;
-
-    bottom:87%;
-
-}
-
-.lesson-14{
-
-    left:33%;
-
-    bottom:82%;
-
-}
-
-.lesson-sign-14{
-
-    left:27%;
-
-    bottom:87%;
+    bottom:62%;
 
 }
 
 .lesson-15{
 
-    left:53%;
+    left:8%;
 
-    bottom:82%;
+    bottom:70%;
 
 }
 
-.lesson-sign-15{
+/* Right column (going up) */
 
-    left:46%;
+.lesson-3{
 
-    bottom:87%;
+    right:8%;
+
+    bottom:8%;
+
+}
+
+.lesson-5{
+
+    right:8%;
+
+    bottom:17%;
+
+}
+
+.lesson-7{
+
+    right:8%;
+
+    bottom:26%;
+
+}
+
+.lesson-9{
+
+    right:8%;
+
+    bottom:35%;
+
+}
+
+.lesson-11{
+
+    right:8%;
+
+    bottom:44%;
+
+}
+
+.review-node-2{
+
+    left:auto;
+
+    right:8%;
+
+    bottom:53%;
+
+}
+
+.lesson-14{
+
+    right:8%;
+
+    bottom:62%;
+
+}
+
+.final-review{
+
+    right:8%;
+
+    bottom:70%;
 
 }
 
@@ -976,9 +897,9 @@ POSITIONS
 
 #goalCastle{
 
-    left:80%;
+    left:17%;
 
-    top:5%;
+    top:3%;
 
 }
 
@@ -986,27 +907,29 @@ POSITIONS
 
 .treasure-1{
 
-    left:22%;
+    left:30%;
 
-    bottom:37%;
+    bottom:46%;
 
 }
 
 .treasure-2{
 
-    right:22%;
+    right:30%;
 
-    bottom:55%;
+    bottom:64%;
 
 }
 
 .treasure-3{
 
-    left:66%;
+    left:30%;
 
-    bottom:72%;
+    bottom:16%;
 
 }
+
+
 /*======================================================
 LESSON POPUP
 ======================================================*/
@@ -1033,7 +956,7 @@ LESSON POPUP
 
 }
 
-.lesson-popup.active{
+.lesson-popup.show{
 
     display:flex;
 
@@ -1440,22 +1363,6 @@ ANIMATIONS
 
 }
 
-@keyframes playerBounce{
-
-    from{
-
-        transform:translateY(0);
-
-    }
-
-    to{
-
-        transform:translateY(-8px);
-
-    }
-
-}
-
 @keyframes teleportFlash{
 
     0%{
@@ -1533,17 +1440,11 @@ RESPONSIVE
 
 @media (max-width:768px){
 
-    .lesson-sign{
-
-        display:none;
-
-    }
-
     #playerCharacter{
 
-        width:58px;
+        transform:scale(1.45);
 
-        height:58px;
+        transform-origin:bottom left;
 
     }
 
@@ -1580,5 +1481,685 @@ RESPONSIVE
         display:none;
 
     }
+
+}
+
+/*======================================================
+CAT COMPONENT
+Reusable recolorable pixel-cat: body/head/ears/tail/legs
+as plain shapes, fur color driven by --fur/--fur-dark
+custom properties per .cat--<color> class. .cat__stripe
+only renders for tabby colors (orange, gray); .cat__patch
+only renders for calico. Toggling .walking on the outer
+.cat element runs the leg-alternation keyframes.
+======================================================*/
+
+.cat{
+
+    position:relative;
+
+    width:40px;
+
+    height:40px;
+
+}
+
+.cat__body{
+
+    position:absolute;
+
+    left:7px;
+
+    top:16px;
+
+    width:26px;
+
+    height:18px;
+
+    background:var(--fur);
+
+    border-radius:10px 10px 6px 6px;
+
+    z-index:2;
+
+}
+
+.cat__head{
+
+    position:absolute;
+
+    left:11px;
+
+    top:4px;
+
+    width:18px;
+
+    height:16px;
+
+    background:var(--fur);
+
+    border-radius:8px 8px 6px 6px;
+
+    z-index:3;
+
+}
+
+.cat__ear{
+
+    position:absolute;
+
+    top:-2px;
+
+    width:0;
+
+    height:0;
+
+    border-left:5px solid transparent;
+
+    border-right:5px solid transparent;
+
+    border-bottom:8px solid var(--fur);
+
+    z-index:3;
+
+}
+
+.cat__ear--l{
+
+    left:10px;
+
+    transform:rotate(-15deg);
+
+}
+
+.cat__ear--r{
+
+    left:22px;
+
+    transform:rotate(15deg);
+
+}
+
+.cat__tail{
+
+    position:absolute;
+
+    left:29px;
+
+    top:14px;
+
+    width:6px;
+
+    height:20px;
+
+    background:var(--fur);
+
+    border-radius:4px;
+
+    transform-origin:top center;
+
+    animation:catTailSway 1.2s ease-in-out infinite alternate;
+
+    z-index:1;
+
+}
+
+.cat__leg{
+
+    position:absolute;
+
+    bottom:0;
+
+    width:5px;
+
+    height:10px;
+
+    background:var(--fur-dark);
+
+    border-radius:2px;
+
+    transform-origin:top center;
+
+    z-index:1;
+
+}
+
+.cat__leg--fl{ left:9px; }
+
+.cat__leg--fr{ left:16px; }
+
+.cat__leg--bl{ left:23px; }
+
+.cat__leg--br{ left:30px; }
+
+.cat__stripe,
+.cat__patch{
+
+    display:none;
+
+}
+
+.cat--orange .cat__stripe,
+.cat--gray .cat__stripe{
+
+    display:block;
+
+    position:absolute;
+
+    background:var(--fur-dark);
+
+    border-radius:2px;
+
+    z-index:4;
+
+}
+
+.cat__stripe--1{ left:12px; top:8px; width:12px; height:3px; }
+
+.cat__stripe--2{ left:10px; top:20px; width:16px; height:3px; }
+
+.cat--calico .cat__patch{
+
+    display:block;
+
+    position:absolute;
+
+    border-radius:50%;
+
+    z-index:4;
+
+}
+
+.cat--calico .cat__patch--a{
+
+    left:10px;
+
+    top:6px;
+
+    width:10px;
+
+    height:8px;
+
+    background:#E8935A;
+
+}
+
+.cat--calico .cat__patch--b{
+
+    left:16px;
+
+    top:18px;
+
+    width:9px;
+
+    height:9px;
+
+    background:#2B2B2E;
+
+}
+
+.cat--tuxedo .cat__patch{
+
+    display:block;
+
+    position:absolute;
+
+    border-radius:50%;
+
+    z-index:4;
+
+}
+
+.cat--tuxedo .cat__patch--a{
+
+    left:11px;
+
+    top:16px;
+
+    width:14px;
+
+    height:14px;
+
+    background:#F5F1E8;
+
+}
+
+.cat--tuxedo .cat__patch--b{
+
+    display:none;
+
+}
+
+@keyframes catTailSway{
+
+    from{ transform:rotate(-10deg); }
+
+    to{ transform:rotate(10deg); }
+
+}
+
+@keyframes catWalkA{
+
+    0%, 100%{ transform:rotate(-18deg); }
+
+    50%{ transform:rotate(18deg); }
+
+}
+
+@keyframes catWalkB{
+
+    0%, 100%{ transform:rotate(18deg); }
+
+    50%{ transform:rotate(-18deg); }
+
+}
+
+.cat.walking .cat__leg--fl,
+.cat.walking .cat__leg--br{
+
+    animation:catWalkA .4s linear infinite;
+
+}
+
+.cat.walking .cat__leg--fr,
+.cat.walking .cat__leg--bl{
+
+    animation:catWalkB .4s linear infinite;
+
+}
+
+.cat--orange{ --fur:#E8935A; --fur-dark:#C97A44; }
+
+.cat--black{ --fur:#2B2B2E; --fur-dark:#1A1A1C; }
+
+.cat--gray{ --fur:#9AA0A6; --fur-dark:#7D8388; }
+
+.cat--brown{ --fur:#8B5E3C; --fur-dark:#6E4A2E; }
+
+.cat--white{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
+
+.cat--calico{ --fur:#F5F1E8; --fur-dark:#D8D2C4; }
+
+.cat--tuxedo{ --fur:#2B2B2E; --fur-dark:#1A1A1C; }
+
+/*======================================================
+FURNITURE NODE
+Re-themes the old glowing-circle lesson node as a labeled
+library furniture plank. Keeps the same interactive
+contract (.lesson-node, data-lesson, .in-range) that
+n5-map.js already drives — only the look changes.
+======================================================*/
+
+.furniture-node{
+
+    position:absolute;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    width:150px;
+
+    height:44px;
+
+    padding:0;
+
+    background-image:url("../images/library-tiles/bookshelf.png");
+
+    background-size:100% 100%;
+
+    background-repeat:no-repeat;
+
+    image-rendering:pixelated;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.35);
+
+    transition:.25s ease;
+
+    z-index:210;
+
+}
+
+.shelf-glass{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:4px;
+
+    width:100%;
+
+    padding:8px 10px 10px;
+
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(6px) saturate(140%);
+
+    -webkit-backdrop-filter:blur(6px) saturate(140%);
+
+    border-top:1px solid rgba(255,255,255,.55);
+
+    border-radius:0 0 8px 8px;
+
+    color:#FFF9E8;
+
+    font-size:.65rem;
+
+    font-weight:700;
+
+    text-align:center;
+
+    text-shadow:0 1px 3px rgba(0,0,0,.8);
+
+    transition:.25s ease;
+
+}
+
+.furniture-icon{
+
+    font-size:1.3rem;
+
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.5));
+
+}
+
+.furniture-node:hover{
+
+    transform:translateY(-4px);
+
+}
+
+.furniture-node:hover .shelf-glass{
+
+    background:rgba(255,255,255,.28);
+
+}
+
+.furniture-node.in-range{
+
+    transform:scale(1.08);
+
+    box-shadow:0 0 22px #FFD84D, 0 0 45px #FFD84D;
+
+}
+
+.furniture-node.in-range .shelf-glass{
+
+    background:rgba(255,216,77,.28);
+
+    border-top-color:#FFD84D;
+
+}
+
+.furniture-node.completed .shelf-glass{
+
+    background:rgba(97,217,108,.30);
+
+    border-top-color:#61D96C;
+
+}
+
+.furniture-node.locked{
+
+    cursor:not-allowed;
+
+    filter:grayscale(.85) brightness(.65);
+
+}
+
+.furniture-node.locked .shelf-glass{
+
+    background:rgba(0,0,0,.35);
+
+}
+
+.furniture-node.review-node .shelf-glass{
+
+    border-top-color:#F5C14C;
+
+}
+
+.furniture-node.final-review .shelf-glass{
+
+    border-top-color:#FF6B6B;
+
+}
+
+/*======================================================
+AVATAR PICKER
+======================================================*/
+
+.avatar-picker{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.55);
+
+    z-index:10000;
+
+}
+
+.avatar-picker.show{
+
+    display:flex;
+
+}
+
+.avatar-picker-window{
+
+    background:#FFFDF6;
+
+    border:4px solid #C7A35D;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    text-align:center;
+
+}
+
+.avatar-picker-window h2{
+
+    font-family:var(--title-font);
+
+    font-size:1rem;
+
+    margin-bottom:20px;
+
+}
+
+.avatar-swatches{
+
+    display:grid;
+
+    grid-template-columns:repeat(3, 1fr);
+
+    gap:20px;
+
+}
+
+.avatar-swatch{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#F7F9FD;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.avatar-swatch:hover{
+
+    background:#EAF3FF;
+
+    transform:translateY(-3px);
+
+}
+
+
+/*======================================================
+AVATAR SPRITE PREVIEWS
+Real hand-drawn idle-animation sprite sheets for the 5
+colors with real art (picker previews only — the actual
+roaming player/NPC cats always use the .cat CSS component,
+never these sheets, since there's no walk-cycle art here).
+Each sheet is a horizontal strip of 300x300px frames; the
+frame counts below (12/20/19/18/25) were re-confirmed
+against the actual files on disk (Step 0) and matched the
+plan's numbers exactly.
+======================================================*/
+
+.avatar-sprite{
+
+    width:48px;
+
+    height:48px;
+
+    image-rendering:pixelated;
+
+    background-repeat:no-repeat;
+
+}
+
+.avatar-sprite--orange{
+
+    background-image:url("../images/icons/pixels/OrangeCatIdle.png");
+
+    background-size:576px 48px;
+
+    animation:avatarSpriteOrange 1s steps(12) infinite;
+
+}
+
+.avatar-sprite--black{
+
+    background-image:url("../images/icons/pixels/blackCatIdle.png");
+
+    background-size:960px 48px;
+
+    animation:avatarSpriteBlack 1s steps(20) infinite;
+
+}
+
+.avatar-sprite--calico{
+
+    background-image:url("../images/icons/pixels/CalicoCatIdle.png");
+
+    background-size:912px 48px;
+
+    animation:avatarSpriteCalico 1s steps(19) infinite;
+
+}
+
+.avatar-sprite--white{
+
+    background-image:url("../images/icons/pixels/whitecatIdle.png");
+
+    background-size:864px 48px;
+
+    animation:avatarSpriteWhite 1s steps(18) infinite;
+
+}
+
+.avatar-sprite--tuxedo{
+
+    background-image:url("../images/icons/pixels/tuxedoIdle.png");
+
+    background-size:1200px 48px;
+
+    animation:avatarSpriteTuxedo 1s steps(25) infinite;
+
+}
+
+@keyframes avatarSpriteOrange{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-576px 0; }
+
+}
+
+@keyframes avatarSpriteBlack{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-960px 0; }
+
+}
+
+@keyframes avatarSpriteCalico{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-912px 0; }
+
+}
+
+@keyframes avatarSpriteWhite{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-864px 0; }
+
+}
+
+@keyframes avatarSpriteTuxedo{
+
+    from{ background-position:0 0; }
+
+    to{ background-position:-1200px 0; }
+
+}
+
+/*======================================================
+NPC CAT
+Each .npc-cat element is also a .cat instance, so — same
+reasoning as #playerCharacter above — this rule only adds
+positioning/z-index, not a conflicting width/height.
+======================================================*/
+
+.npc-cat{
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    z-index:280;
 
 }
