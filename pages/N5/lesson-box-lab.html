@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Lesson Box Lab (DEV ONLY)</title>
+
+    <!-- =========================================
+         GOOGLE FONTS (same set as the real game)
+    ========================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <!-- =========================================
+         CSS — reuses the REAL LessonBox stylesheet
+         for chrome/tokens, plus lab-only layout CSS
+    ========================================== -->
+
+    <link rel="stylesheet" href="../../assets/css/lesson-box.css">
+    <link rel="stylesheet" href="../../assets/css/lesson-box-lab.css">
+
+</head>
+
+<body>
+
+    <!-- DEV-ONLY tool: not linked from any real game page, not wired into
+         gameplay progression or save data. Reachable only by opening this
+         file directly (standalone route) — see CLAUDE.md if this file is
+         still around after the redesign decision has been made; it should
+         be deleted once the winning ideas are picked and built for real. -->
+
+    <header class="lab-header">
+        <h1>🧪 Lesson Box Lab</h1>
+        <p class="lab-warning">DEV-ONLY comparison tool — not part of real gameplay, no save data, not linked from the game. 30 candidate redesign ideas for the Self Introduction lesson, each rendered live in the actual LessonBox chrome/palette/fonts so they can be judged side by side. Star your picks below.</p>
+    </header>
+
+    <div class="lab-summary">
+        <div class="lab-summary-title">★ Favorites (<span id="labFavCount">0</span>)</div>
+        <div class="lab-summary-list" id="labFavList"></div>
+    </div>
+
+    <main id="labSections"></main>
+
+    <script src="../../assets/js/lesson-box-lab.js"></script>
+
+</body>
+
+</html>

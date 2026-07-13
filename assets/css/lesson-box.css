@@ -327,6 +327,15 @@
   border-bottom: 4px solid;
   letter-spacing: 0.02em;
   position: relative;
+  transition: text-shadow 0.2s, transform 0.2s;
+}
+
+/* "Spoken word" pulse — cycled automatically by lesson-box.js's
+   startPulseAnimations() across every word-tile row on the page, one
+   tile highlighted at a time, as if being read aloud. */
+.lesson-box__word-tile-text.is-pulsing {
+  text-shadow: 0 0 10px currentColor;
+  transform: scale(1.15);
 }
 
 .lesson-box__word-tile-text.role-noun { color: var(--lb-role-noun-bg); border-color: var(--lb-role-noun-bg); }
@@ -414,6 +423,27 @@
 
 .lesson-box__explain-text + .lesson-box__explain-text {
   margin-top: 8px;
+}
+
+/* "You already know this" recap badges — replaces a prose sentence with
+   small pill chips, reusable by any grammar-intro page. */
+.lesson-box__recap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  clear: both;
+}
+
+.lesson-box__recap-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(127, 214, 146, 0.16);
+  border: 1px solid var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-bg);
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 14px;
 }
 
 .lesson-box__term-grid {
@@ -701,6 +731,116 @@
 
 .lesson-box__conv-turn.is-player .lesson-box__conv-meta {
   text-align: right;
+}
+
+/* -- type: try-it (gated practice) ------------------------------------------ */
+
+.lesson-box__try-it-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lesson-box__try-it-input {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--lb-role-particle-bg);
+  color: var(--jr-text);
+  padding: 3px 8px;
+  border-radius: 4px;
+  width: 140px;
+  text-align: center;
+}
+
+.lesson-box__try-it-input:focus {
+  outline: none;
+  border-color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__try-it-hint {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Continue arrow dims while a 'try-it' page's gate is unsatisfied — see
+   lesson-box.js's advance()/render() updateGate(). Purely visual; the
+   actual block happens in JS, this just signals it. */
+.lesson-box__continue--locked {
+  opacity: 0.3;
+}
+
+/* -- type: quiz-fill --------------------------------------------------------- */
+
+.lesson-box__quiz-row {
+  margin-top: 14px;
+  clear: both;
+}
+
+.lesson-box__quiz-row:first-of-type {
+  margin-top: 4px;
+}
+
+.lesson-box__quiz-sentence {
+  font-size: 18px;
+  color: var(--jr-text);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lesson-box__quiz-blank {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--jr-text-dim);
+  color: var(--jr-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: 90px;
+  text-align: center;
+}
+
+.lesson-box__quiz-blank:focus {
+  outline: none;
+  border-color: var(--lb-role-particle-bg);
+}
+
+.lesson-box__quiz-result {
+  font-size: 15px;
+  font-weight: bold;
+  min-width: 1em;
+}
+
+.lesson-box__quiz-result.is-correct {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__quiz-result.is-wrong {
+  color: #ff9a8a;
+}
+
+.lesson-box__quiz-hint {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+  margin-top: 2px;
+}
+
+.lesson-box__quiz-check {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 12px;
+  background: var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-fg);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 16px;
 }
 
 /* -- ambient corner cat (decorative, outside the text flow) ---------------- */

@@ -540,6 +540,66 @@
         "13396"
       ],
       "port": 13396
+    },
+    {
+      "name": "jp-library-static-lessonbox-lab",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13497"
+      ],
+      "port": 13497
+    },
+    {
+      "name": "jp-library-static-shelf-swap",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13598"
+      ],
+      "port": 13598
+    },
+    {
+      "name": "jp-library-static-global-features",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13699"
+      ],
+      "port": 13699
+    },
+    {
+      "name": "jp-library-static-shelf12-retrofit",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13790"
+      ],
+      "port": 13790
+    },
+    {
+      "name": "jp-library-static-shelf-crop-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13891"
+      ],
+      "port": 13891
+    },
+    {
+      "name": "jp-library-static-shelf-crop-fix2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "13992"
+      ],
+      "port": 13992
     }
   ],
   "autoVerify": true

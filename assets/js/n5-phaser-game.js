@@ -25,10 +25,22 @@ const ASSET_RECTS = {
   wallBalcony: { x: 1040, y: 0, w: 448, h: 269 },
   staircase: { x: 935, y: 0, w: 100, h: 300 },
   bookshelf: { x: 385, y: 345, w: 100, h: 175 },
-  shelfLocked: { x: 28, y: 385, w: 87, h: 118 },
-  shelfFilled1: { x: 148, y: 385, w: 87, h: 118 },
-  shelfFilled2: { x: 268, y: 385, w: 87, h: 118 },
-  shelfFilled3: { x: 388, y: 385, w: 87, h: 118 },
+  // Alpha-scan corrected (per-shelf, not shared, and per-column x-window
+  // to avoid bleed from an unrelated small-furniture sprite sitting
+  // directly above shelfFilled2 in the sheet — see below). The 3 filled
+  // variants stack books ON TOP of the shelf; each book pile's true top
+  // is different per variant (books are hand-placed, not uniform
+  // height), so a single shared rect always clipped at least one of
+  // them. Found by scanning each column for the first opaque row,
+  // confirming a real transparent gap above it (not just "first hit in
+  // an overly generous window", which the first attempt at this fix got
+  // wrong for shelfFilled2 — its window's top edge caught the bottom of
+  // a small stool/table-leg prop positioned directly above it in the
+  // sheet, 5px of true gap separating the two).
+  shelfLocked: { x: 28, y: 384, w: 88, h: 120 },
+  shelfFilled1: { x: 148, y: 372, w: 88, h: 132 },
+  shelfFilled2: { x: 268, y: 365, w: 88, h: 139 },
+  shelfFilled3: { x: 388, y: 373, w: 88, h: 131 },
   globe: { x: 143, y: 217, w: 94, h: 118 },
   bookStack: { x: 358, y: 25, w: 26, h: 50 },
   // Alpha-scan corrected: the old {673,43,45,52} clipped ~4px off the top
@@ -227,8 +239,8 @@ const LAYOUT = {
 const LESSON_DATA = [
   { id: 'shelf-01', title: 'Basic Greetings' },
   { id: 'shelf-02', title: 'Everyday Expressions' },
-  { id: 'shelf-03', title: 'Self Introduction' },
-  { id: 'shelf-04', title: 'A は B です' },
+  { id: 'shelf-03', title: 'A は B です' },
+  { id: 'shelf-04', title: 'Self Introduction' },
   { id: 'shelf-05', title: 'Demonstratives' },
   { id: 'shelf-06', title: 'Questions (か)' },
   { id: 'shelf-07', title: 'Numbers & Counters' },
@@ -276,8 +288,40 @@ const LESSON_CONTENT = {
       type: 'greeting', kana: 'すみません', romaji: 'Sumimasen', pronunciation: '(soo-mee-mah-sen)', meaning: 'Excuse me / Sorry',
       usage: 'Very versatile: use it to apologize, to get someone’s attention (like a waiter), or even to say thanks when someone went out of their way for you.',
     },
+    {
+      // Two NPC cats using a few of the phrases above in a natural
+      // exchange, before the auto-generated summary table — brings the
+      // same "conversation" liveliness already used on later shelves to
+      // the very first lesson, using only vocab this shelf just taught.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'こんにちは！', romaji: 'Konnichiwa! — "Hello!"',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: 'こんにちは！ありがとうございます。', romaji: 'Konnichiwa! Arigatou gozaimasu. — "Hello! Thank you."',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'さようなら！', romaji: 'Sayounara! — "Goodbye!"',
+        },
+      ],
+    },
   ],
   'shelf-02': [
+    {
+      // Recap chips referencing shelf-01, before diving into more
+      // everyday phrases — same "already know this" pill-badge pattern
+      // used on shelf-04, retrofitted here instead of a prose sentence.
+      type: 'grammar-intro',
+      sectionLabel: 'Building on shelf 1',
+      explain: [
+        'You already have a few greetings in your pocket. This shelf adds more everyday phrases for check-ins, meals, and coming and going.',
+      ],
+      recapChips: ['こんにちは (hello)', 'ありがとうございます (thank you)', 'すみません (sorry/excuse me)'],
+    },
     {
       type: 'greeting', kana: 'お元気ですか', romaji: 'Ogenki desu ka', pronunciation: '(oh-GEN-kee dess kah)', meaning: 'How are you?',
       usage: 'A polite check-in, but not used as casually as English "how are you" — often reserved for someone you haven’t seen in a while rather than a daily greeting to a coworker.',
@@ -334,78 +378,34 @@ const LESSON_CONTENT = {
       type: 'greeting', kana: 'はじめまして', romaji: 'Hajimemashite', pronunciation: '(hah-jee-meh-mahsh-teh)', meaning: 'How do you do / Nice to meet you',
       usage: 'Said ONLY the very first time you meet someone — never used again with that same person afterward. Usually followed immediately by your name, then by "yoroshiku onegaishimasu".',
     },
-  ],
-  'shelf-03': [
     {
-      // Page 1/5: the jikoshoukai (self-introduction) flow, plus a light,
-      // practical first look at わたしは [name] です — わたし/は/です are
-      // genuinely new here (first appearance in the curriculum); the full
-      // grammar breakdown of the A は B です pattern is shelf-04's job,
-      // this shelf just borrows it to say a name.
-      type: 'grammar-intro',
-      sectionLabel: 'How self-introductions work',
-      explain: [
-        'A Japanese self-introduction (jikoshoukai) always follows the same shape: greet, say your name, then close politely — in that exact order. You already know the greeting and the closing from the last shelf: <b>はじめまして</b> and <b>よろしくお願いします</b>. The new piece is the middle: saying your name.',
-        'To say your name, you use: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> [name] <span class="role-verb">です</span></b> — literally "as for me, [name]." <span class="role-particle">は</span> marks <span class="role-noun">わたし</span> (I/me) as the topic, and <span class="role-verb">です</span> politely confirms it. You\'ll get the full breakdown of this pattern on the next shelf — for now, just borrow it to introduce yourself.',
-      ],
-    },
-    {
-      // Page 2/4: the self-intro exchange as an actual two-party
-      // conversation instead of a single static example sentence + a
-      // separate "putting it all together" recap page — replaces both
-      // of those per explicit "too wordy... make it alive" feedback.
-      // Neko-sensei's color is resolved dynamically at lesson-start
-      // (resolveConversationTurns) so she never matches the player's
-      // own selected cat color. Bubble text color-codes only the words
-      // this lesson is actually teaching (わたし/は/です, お名前/何/か) —
-      // set phrases already known from shelf-02 (はじめまして,
-      // よろしくお願いします) stay uncolored so the highlight reads as
-      // "new/pattern word" rather than decorating every line.
+      // Two NPC cats using shelf-02 vocab (plus one already-known
+      // shelf-01 phrase, reinforcing retention) in a natural exchange,
+      // same pattern as shelf-01's closing conversation page.
       type: 'conversation',
       turns: [
         {
           speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
-          text: 'はじめまして。<span class="role-noun">お名前</span><span class="role-particle">は</span><span class="role-noun">何</span><span class="role-verb">です</span><span class="role-particle">か</span>。',
-          romaji: 'Hajimemashite. O-namae wa nan desu ka. — "How do you do. What is your name?"',
+          text: 'お元気ですか？', romaji: 'Ogenki desu ka? — "How are you?"',
         },
         {
           speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
-          text: '<span class="role-noun">わたし</span><span class="role-particle">は</span>レイヤ<span class="role-verb">です</span>。',
-          romaji: 'Watashi wa Reya desu. — "I am Reya."',
+          text: '元気です！ありがとうございます。', romaji: 'Genki desu! Arigatou gozaimasu. — "I\'m doing well! Thank you."',
         },
         {
           speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
-          text: 'レイヤさん、よろしくお願いします！',
-          romaji: 'Reya-san, yoroshiku onegaishimasu! — "Nice to meet you, Reya!"',
+          text: 'じゃあね！', romaji: 'Jaa ne! — "See you!"',
         },
       ],
     },
-    {
-      // Page 3/4: the culture behind jikoshoukai, on its own page.
-      type: 'grammar-intro',
-      cultureNotes: [
-        'Jikoshoukai isn\'t just small talk — it\'s treated like a small ritual. You give it standing up, often with a slight bow, on your first day at a new school or job, or when meeting someone through a mutual connection.',
-        'よろしくお願いします doesn\'t really translate into English — it\'s closer to "please treat me well going forward" or "I\'m counting on a good relationship." Saying it at the end of a self-introduction is basically mandatory, not optional politeness.',
-      ],
-    },
-    {
-      // Page 4/4: new-words recap + the pattern restated in the title,
-      // same "New Words" convention as shelf-04's summary page — now
-      // also covers お名前/何/か from the polite question in the exchange.
-      type: 'summary',
-      title: 'New Words & Pattern: わたしは [name] です',
-      headers: ['Word', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: 'わたし', romaji: 'watashi', meaning: 'I / me' },
-        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
-        { kana: 'です', romaji: 'desu', meaning: 'am / is / are (polite)' },
-        { kana: 'お名前', romaji: 'o-namae', meaning: 'name (polite)' },
-        { kana: '何', romaji: 'nan', meaning: 'what' },
-        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
-      ],
-    },
   ],
-  'shelf-04': [
+  // shelf-03 and shelf-04 were swapped (A は B です moved from shelf-04 to
+  // shelf-03, Self Introduction moved from shelf-03 to shelf-04) per
+  // explicit request — A は B です is now taught FIRST, so Self
+  // Introduction can lean on it instead of re-teaching it. LESSON_DATA's
+  // titles above were swapped to match; only the content bodies below
+  // moved, the physical shelf positions/prereq chain did not change.
+  'shelf-03': [
     {
       // Page 1/4 of the intro: explanation + tense pair + future/negative
       // teaser only — the diagram, samples, and notes each get their own
@@ -599,6 +599,88 @@ const LESSON_CONTENT = {
         { kana: 'ペン', romaji: 'pen', meaning: 'pen' },
         { kana: 'でした', romaji: 'deshita', meaning: 'was / were (polite past)' },
         { kana: 'せんせい', romaji: 'sensei', meaning: 'teacher' },
+      ],
+    },
+  ],
+  'shelf-04': [
+    {
+      // Page 1/5: what jikoshoukai is + a BRIEF pattern reminder (not a
+      // re-teach — A は B です is shelf-03 now, already studied) + the
+      // culture behind it, all combined on one page via grammar-intro's
+      // section stacking (intro block, then a notes block, divided).
+      type: 'grammar-intro',
+      sectionLabel: 'What is jikoshoukai?',
+      explain: [
+        'A Japanese self-introduction (jikoshoukai) always follows the same shape: greet, say your name, then close politely — in that exact order.',
+        'Quick reminder of the pattern from the last shelf: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> Neko <span class="role-verb">です</span></b> — "as for me, Neko." That\'s it — this shelf is just putting it to work.',
+      ],
+      recapChips: ['はじめまして (greet)', 'A は B です (name)', 'よろしくお願いします (close)'],
+      cultureNotes: [
+        'Jikoshoukai isn\'t just small talk — it\'s treated like a small ritual. You give it standing up, often with a slight bow, on your first day at a new school or job, or when meeting someone through a mutual connection.',
+        'よろしくお願いします doesn\'t really translate into English — it\'s closer to "please treat me well going forward" or "I\'m counting on a good relationship." Saying it at the end of a self-introduction is basically mandatory, not optional politeness.',
+      ],
+    },
+    {
+      // Page 2/5: the self-intro exchange as an actual two-party
+      // conversation. Neko-sensei's color is resolved dynamically at
+      // lesson-start (resolveConversationTurns) so she never matches the
+      // player's own selected cat color. お名前/何/か are genuinely new
+      // here (jikoshoukai-specific vocab, not covered by A は B です) so
+      // they're still color-coded; わたし/は/です are NOT re-highlighted
+      // as new since shelf-03 already introduced them.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'はじめまして。<span class="role-noun">お名前</span><span class="role-particle">は</span><span class="role-noun">何</span><span class="role-verb">です</span><span class="role-particle">か</span>。',
+          romaji: 'Hajimemashite. O-namae wa nan desu ka. — "How do you do. What is your name?"',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: 'わたしはレイヤです。',
+          romaji: 'Watashi wa Reya desu. — "I am Reya."',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'レイヤさん、よろしくお願いします！',
+          romaji: 'Reya-san, yoroshiku onegaishimasu! — "Nice to meet you, Reya!"',
+        },
+      ],
+    },
+    {
+      // Page 3/5: "you try" gate — advance() won't move past this page
+      // until the player actually types a name (see lesson-box.js).
+      type: 'try-it',
+      sectionLabel: 'Your turn',
+      prompt: 'Now you try — type your own name to finish your self-introduction:',
+      before: 'わたしは ',
+      after: ' です',
+      placeholder: 'Neko',
+    },
+    {
+      // Page 4/5: new-words recap — only お名前/何/か are new to THIS
+      // shelf (わたし/は/です were already taught on shelf-03, so they're
+      // deliberately left off this table rather than re-listed).
+      type: 'summary',
+      title: 'New Words: Jikoshoukai',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'お名前', romaji: 'o-namae', meaning: 'name (polite)' },
+        { kana: '何', romaji: 'nan', meaning: 'what' },
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+      ],
+    },
+    {
+      // Page 5/5: fill-in-the-blank check — non-blocking (this is the
+      // last page; advancing past it completes the lesson regardless),
+      // "Check answers" just gives immediate right/wrong feedback.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check: Jikoshoukai',
+      intro: 'Fill in the blanks:',
+      questions: [
+        { before: '', after: 'まして。', answer: 'はじめ', altAnswers: ['hajime'], hint: '(the greeting — first meeting only)' },
+        { before: 'わたしはタロウ', after: '。', answer: 'です', altAnswers: ['desu'], hint: '(the polite copula)' },
+        { before: '', after: 'お願いします。', answer: 'よろしく', altAnswers: ['yoroshiku'], hint: '(closing politely)' },
       ],
     },
   ],

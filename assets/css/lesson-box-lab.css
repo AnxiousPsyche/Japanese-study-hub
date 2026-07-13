@@ -1,0 +1,648 @@
+/* Lesson Box Lab — DEV-ONLY comparison tool.
+   Reuses the real assets/css/lesson-box.css tokens (--jr-*, --lb-role-*)
+   and the .jr-stepped clip-path border technique so every mini demo box
+   below is visually identical to the real in-game LessonBox chrome, just
+   scaled down to card size. This file only adds LAB-specific layout
+   (grid, cards, star toggles, summary panel) — it never redefines a
+   .lesson-box__* class, so the real component's styling can't drift out
+   of sync with what's shown here. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0d0b16;
+  color: var(--jr-text);
+  font-family: "VT323", "DotGothic16", monospace;
+}
+
+.lab-header {
+  padding: 28px 28px 18px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+}
+
+.lab-header h1 {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 20px;
+  color: var(--lb-role-particle-bg);
+  margin: 0 0 10px;
+}
+
+.lab-warning {
+  font-size: 16px;
+  color: #ff9a8a;
+  background: rgba(255, 90, 60, 0.12);
+  border-left: 3px solid #ff6a4a;
+  padding: 8px 12px;
+  max-width: 900px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* -- pinned favorites summary -------------------------------------------- */
+
+.lab-summary {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #17132a;
+  border-bottom: 2px solid var(--jr-border-outer);
+  padding: 12px 28px;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lab-summary-title {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 13px;
+  color: var(--lb-role-particle-bg);
+  white-space: nowrap;
+}
+
+.lab-summary-list {
+  font-size: 17px;
+  color: var(--jr-text);
+  line-height: 1.6;
+}
+
+.lab-summary-chip {
+  display: inline-block;
+  background: var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-fg);
+  border-radius: 10px;
+  padding: 2px 10px;
+  margin: 2px 4px 2px 0;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.lab-summary-empty {
+  color: var(--jr-text-dim);
+  font-style: italic;
+}
+
+/* -- section layout -------------------------------------------------------- */
+
+main {
+  padding: 8px 28px 60px;
+}
+
+.lab-section {
+  margin-top: 36px;
+}
+
+.lab-section-title {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 16px;
+  color: var(--lb-role-noun-bg);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+}
+
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+/* -- card ------------------------------------------------------------------ */
+
+.lab-card {
+  background: #17132a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lab-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.lab-card-title {
+  font-size: 17px;
+  color: var(--jr-text);
+  font-weight: bold;
+  flex: 1;
+}
+
+.lab-card-desc {
+  font-size: 15px;
+  color: var(--jr-text-dim);
+  line-height: 1.4;
+  margin: 0 0 4px;
+}
+
+.lab-star {
+  flex-shrink: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lab-star input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.lab-star .star-glyph {
+  font-size: 22px;
+  color: #4a4560;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.lab-star input:checked + .star-glyph {
+  color: var(--lb-role-particle-bg);
+  transform: scale(1.15);
+}
+
+.lab-star input:focus-visible + .star-glyph {
+  outline: 2px solid var(--lb-role-noun-bg);
+  outline-offset: 2px;
+}
+
+.lab-demo-slot {
+  display: flex;
+  justify-content: center;
+}
+
+/* -- scaled-down replica of the real lesson-box chrome ---------------------- */
+
+.lab-box {
+  --jr-a: var(--jr-step-a);
+  --jr-b: var(--jr-step-b);
+  background: var(--jr-border-outer);
+  padding: 3px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.lab-box-mid {
+  background: var(--jr-border-inner);
+  padding: 2px;
+}
+
+.lab-box-panel {
+  background: linear-gradient(180deg, var(--jr-bg-top) 0%, var(--jr-bg-bottom) 100%);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  min-height: 90px;
+}
+
+.lab-box-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0px, rgba(0, 0, 0, 0.16) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+.lab-box-panel > * {
+  position: relative;
+}
+
+.lab-box.is-fixed-height .lab-box-panel {
+  height: 190px;
+}
+
+.lab-box.is-auto-height .lab-box-panel {
+  height: auto;
+}
+
+/* -- small shared demo widgets ---------------------------------------------- */
+
+.lab-tell-more {
+  background: none;
+  border: 1px solid var(--jr-text-dim);
+  color: var(--jr-text-dim);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.lab-tell-more:hover {
+  border-color: var(--lb-role-particle-bg);
+  color: var(--lb-role-particle-bg);
+}
+
+.lab-more-text {
+  font-size: 15px;
+  color: var(--jr-text);
+  line-height: 1.5;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.lab-more-text[hidden] {
+  display: none;
+}
+
+.lab-recap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(127, 214, 146, 0.18);
+  border: 1px solid var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-bg);
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin: 2px 6px 2px 0;
+  cursor: pointer;
+}
+
+.lab-recap-tooltip {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  margin-top: 6px;
+}
+
+.lab-takeaway {
+  background: rgba(240, 198, 116, 0.14);
+  border-left: 3px solid var(--lb-role-particle-bg);
+  color: var(--jr-text);
+  font-weight: bold;
+  font-size: 15px;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+
+.lab-two-col {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.lab-two-col > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.lab-narrow-text {
+  max-width: 22em;
+  line-height: 2;
+  font-size: 15px;
+  margin: 0 auto;
+}
+
+.lab-wide-text {
+  line-height: 1.2;
+  font-size: 15px;
+}
+
+.lab-callout {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--lb-role-noun-bg);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.lab-icon-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  text-align: center;
+}
+
+.lab-icon-step {
+  flex: 1;
+}
+
+.lab-icon-step .glyph {
+  font-size: 26px;
+  display: block;
+}
+
+.lab-icon-step .label {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+}
+
+/* word-tile reveal (idea 11) */
+.lab-tile-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.lab-tile-gloss-pop {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  padding: 3px 6px;
+  margin-top: 3px;
+  display: none;
+}
+
+.lab-tile-clickable.is-revealed .lab-tile-gloss-pop {
+  display: block;
+}
+
+.lab-name-input {
+  font-family: inherit;
+  font-size: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--jr-text-dim);
+  color: var(--jr-text);
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 110px;
+}
+
+.lab-name-input:focus {
+  outline: none;
+  border-color: var(--lb-role-particle-bg);
+}
+
+.lab-try-btn {
+  background: var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-fg);
+  border: none;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.lab-continue-locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lab-page-content {
+  min-height: 60px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lab-page-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.lab-page-arrow {
+  background: none;
+  border: none;
+  color: var(--jr-text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.lab-page-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.lab-page-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.lab-page-dot.is-active {
+  background: var(--lb-role-particle-bg);
+}
+
+.lab-mnemonic {
+  font-style: italic;
+  color: var(--lb-role-particle-bg);
+  font-size: 16px;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.lab-compare-strip {
+  display: flex;
+  gap: 10px;
+}
+
+.lab-compare-col {
+  flex: 1;
+}
+
+.lab-compare-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--jr-text-dim);
+  margin-bottom: 4px;
+}
+
+.lab-compare-item {
+  font-size: 14px;
+  padding: 3px 0;
+}
+
+.lab-compare-item.is-known { color: var(--jr-text-dim); }
+.lab-compare-item.is-known::before { content: "✓ "; color: var(--lb-role-verb-bg); }
+.lab-compare-item.is-new { color: var(--lb-role-particle-bg); text-shadow: 0 0 6px rgba(240, 198, 116, 0.6); }
+.lab-compare-item.is-new::before { content: "★ "; }
+
+.lab-defer-note {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+  border: 1px dashed var(--jr-text-dim);
+  border-radius: 10px;
+  padding: 3px 10px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+/* motion & feedback */
+
+@keyframes lab-ear-twitch {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  90% { transform: rotate(-4deg); }
+  93% { transform: rotate(3deg); }
+  96% { transform: rotate(0deg); }
+}
+
+.lab-idle-portrait {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  animation: lab-ear-twitch 3.2s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+
+.lab-word-pulse {
+  transition: text-shadow 0.15s, transform 0.15s;
+}
+
+.lab-word-pulse.is-active {
+  color: var(--lb-role-particle-bg);
+  text-shadow: 0 0 10px rgba(240, 198, 116, 0.9);
+  transform: scale(1.15);
+}
+
+@keyframes lab-bounce {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-10px) scale(1.08); }
+  55% { transform: translateY(0) scale(0.96); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.lab-bounce-play {
+  animation: lab-bounce 0.5s ease;
+}
+
+@keyframes lab-slide-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes lab-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lab-anim-slide {
+  animation: lab-slide-in 0.35s ease-out;
+}
+
+.lab-anim-fade {
+  animation: lab-fade-in 0.5s ease-out;
+}
+
+/* personalization */
+
+.lab-tag-chip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 9px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.lab-tag-chip.is-new {
+  background: var(--lb-role-particle-bg);
+  color: var(--lb-role-particle-fg);
+}
+
+.lab-tag-chip.is-review {
+  background: var(--lb-role-noun-bg);
+  color: var(--lb-role-noun-fg);
+}
+
+.lab-reopen-btn,
+.lab-mark-read-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--jr-text-dim);
+  color: var(--jr-text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.lab-collapsed-box {
+  cursor: pointer;
+}
+
+.lab-glossary-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--lb-role-noun-bg);
+  color: var(--lb-role-noun-fg);
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  margin-left: 2px;
+}
+
+.lab-glossary-tooltip {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0d0b16;
+  border: 1px solid var(--lb-role-noun-bg);
+  color: var(--jr-text);
+  font-size: 12px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  width: 160px;
+  display: none;
+  z-index: 5;
+  line-height: 1.4;
+}
+
+.lab-glossary-icon.is-open .lab-glossary-tooltip {
+  display: block;
+}
+
+/* atmosphere */
+
+.lab-atmosphere-wrap {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.lab-atmosphere-bg {
+  position: absolute;
+  inset: -10px;
+  background-size: 220px;
+  background-repeat: repeat;
+  filter: blur(3px) brightness(0.55);
+  z-index: 0;
+}
+
+.lab-atmosphere-wrap > .lab-box {
+  position: relative;
+  z-index: 1;
+}
+
+.lab-sound-btn {
+  background: var(--lb-role-particle-bg);
+  color: var(--lb-role-particle-fg);
+  border: none;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}
