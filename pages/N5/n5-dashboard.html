@@ -40,17 +40,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block"
           rel="stylesheet">
 
-    <!-- VT323: CRT-terminal readout font used for LessonBox running text
-         (grammar explanations, word glosses) — Press Start 2P stays
-         reserved for headers/labels, VT323 gives body copy a "techy"
-         retro-terminal feel without abandoning the pixel-RPG chrome.
-         display=block (not swap): a LessonBox page can open before the
-         webfont finishes downloading, and "swap" was letting that first
-         paint render in the browser's plain default font before flashing
-         to VT323 a moment later — "block" hides text briefly instead of
-         showing the wrong font, since these font files are tiny. -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=block"
-          rel="stylesheet">
+    <!-- VT323 (LessonBox running text) is no longer loaded from Google
+         Fonts here — it's self-hosted instead (assets/fonts/VT323-
+         Regular.woff2, @font-face declared in lesson-box.css). Depending
+         on the Google Fonts request succeeding meant lesson body text
+         sometimes silently fell back to a completely different, plainer
+         font when that request was slow/blocked — self-hosting removes
+         the dependency instead of just tuning the loading timing. -->
 
     <!-- =========================================
          BOOTSTRAP
@@ -245,86 +241,6 @@
 </main>
 
 <!-- =========================================
-     LESSON POPUP
-========================================== -->
-
-<div
-    id="lessonPopup"
-    class="lesson-popup">
-
-    <div class="popup-window">
-
-        <div class="popup-header">
-
-            <h2 id="popupTitle">
-
-                Lesson
-
-            </h2>
-
-            <button
-                id="closePopup">
-
-                ✕
-
-            </button>
-
-        </div>
-
-        <div class="popup-body">
-
-            <img
-                id="popupImage"
-                src="../../assets/images/icons/book.png"
-                alt="Lesson">
-
-            <h3 id="popupLessonTitle">
-
-                Lesson Title
-
-            </h3>
-
-            <p id="popupLessonDescription">
-
-                Lesson description...
-
-            </p>
-
-            <div
-                class="lesson-rewards">
-
-                ⭐ XP:
-                <span id="popupXP">
-
-                    +50
-
-                </span>
-
-            </div>
-
-            <button
-                id="startLessonButton"
-                class="retro-btn">
-
-                ▶ Start Lesson
-
-            </button>
-
-            <button
-                id="favoriteLessonButton"
-                class="retro-btn retro-btn-secondary">
-
-                ⭐ Save/Favorite
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- =========================================
      FOOTER
 ========================================== -->
 
@@ -414,8 +330,6 @@
 <script src="../../assets/js/sakura.js"></script>
 
 <script src="../../assets/js/teleport.js"></script>
-
-<script src="../../assets/js/achievement.js"></script>
 
 <script src="../../assets/js/music-player.js"></script>
 

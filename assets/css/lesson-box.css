@@ -1,3 +1,22 @@
+/* Self-hosted VT323 (LessonBox's running-text font) — previously loaded
+   from Google Fonts (fonts.googleapis.com), which meant its rendering
+   depended on that request succeeding in the player's own network
+   environment. When it didn't (or was slow), text fell back to whatever
+   generic monospace/sans the browser had, and looked like a completely
+   different, plainer font from the rest of the lesson content — this is
+   the "some lessons have a different, harder-to-read font" bug reported
+   directly. Self-hosting the woff2 file removes that dependency entirely.
+   Only the 'latin' subset (assets/fonts/VT323-Regular.woff2) is bundled —
+   Japanese characters still render via DotGothic16 (still Google-Fonts-
+   loaded; unaffected by this bug and far too large to self-host in full). */
+@font-face {
+  font-family: "VT323";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../fonts/VT323-Regular.woff2") format("woff2");
+}
+
 /* Reusable retro RPG-style lesson dialogue box — styled after classic
    16-bit JRPG textboxes (SNES-era): a stepped-pixel double border
    (lavender outer line, white inner line) wrapping a navy/indigo
@@ -66,11 +85,18 @@
   padding: 18px;
   pointer-events: none;
   z-index: 50;
-  /* VT323 (CRT terminal readout) carries running text; Press Start 2P
-     stays reserved for headers/labels via .lesson-box__display-face, so
-     lessons keep the game's pixel-RPG chrome while body copy reads more
-     "techy". Both fall back to DotGothic16 for Japanese characters. */
-  font-family: "VT323", "DotGothic16", monospace;
+  /* VT323's pixel shapes read great big (headlines, big-idea/explain
+     paragraphs, kana display text) but get muddy at caption/hint sizes —
+     reported directly as "some lessons have a font that's hard to read"
+     pointing at small text specifically. So the DEFAULT here is a clean
+     system monospace (no extra font load, always available) that every
+     small caption/label/hint inherits automatically; the specific
+     "header or bigger" elements (see the "VT323 for big/display text"
+     block further down this file) opt back into VT323 explicitly. Press
+     Start 2P stays reserved for headers/labels via
+     .lesson-box__display-face. DotGothic16 (Google-Fonts-loaded) covers
+     Japanese characters in both stacks. */
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, "DotGothic16", monospace;
 }
 
 .lesson-box__display-face {
@@ -231,6 +257,7 @@
 /* -- type: greeting -------------------------------------------------------- */
 
 .lesson-box__greeting-kana {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 38px;
   color: var(--jr-text);
   line-height: 1.4;
@@ -373,6 +400,7 @@
    actually read to check meaning) is sized up instead, see
    .lesson-box__word-tile-gloss below. */
 .lesson-box__word-tile-text {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 21px;
   padding-bottom: 3px;
   border-bottom: 3px solid;
@@ -448,6 +476,7 @@
 /* One-line, no-jargon framing sentence — "here's the big idea," always
    the very first thing on a grammar-intro page when supplied. */
 .lesson-box__big-idea {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 19px;
   color: var(--jr-text);
   line-height: 1.5;
@@ -489,6 +518,7 @@
    takeaway, always last in the intro block, in its own high-contrast
    callout so it doesn't blend into the rest of the explanation. */
 .lesson-box__takeaway {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 17px;
   line-height: 1.5;
   color: var(--jr-bg-bottom);
@@ -511,6 +541,7 @@
 .lesson-box__content .role-adjective { color: var(--lb-role-adjective-bg); }
 
 .lesson-box__explain-text {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 19px;
   line-height: 1.55;
   color: var(--jr-text);
@@ -542,6 +573,7 @@
 }
 
 .lesson-box__term-grid {
+  font-family: "VT323", "DotGothic16", monospace;
   display: grid;
   grid-template-columns: max-content 1fr;
   column-gap: 14px;
@@ -565,6 +597,7 @@
 }
 
 .lesson-box__culture-note {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 18px;
   line-height: 1.55;
   color: var(--jr-text);
@@ -616,6 +649,7 @@
 }
 
 .lesson-box__tense-card-kana {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 19px;
   color: var(--jr-text);
   margin-bottom: 4px;
@@ -665,7 +699,6 @@
 
 .lesson-box__demo-head {
   font-size: 10px;
-  font-family: "VT323", "DotGothic16", monospace;
   text-align: center;
   color: var(--jr-text-dim);
   letter-spacing: 0.04em;
@@ -679,6 +712,7 @@
 }
 
 .lesson-box__demo-row-word {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 22px;
   text-align: center;
 }
@@ -732,7 +766,6 @@
 .lesson-box__demo-row-note {
   grid-column: 1 / -1;
   font-size: 12px;
-  font-family: "VT323", "DotGothic16", monospace;
   color: var(--jr-text-dim);
   padding: 2px 0 6px 64px;
 }
@@ -804,6 +837,7 @@
 }
 
 .lesson-box__data-table td:first-child {
+  font-family: "VT323", "DotGothic16", monospace;
   color: var(--jr-text);
   font-size: 18px;
 }
@@ -890,6 +924,7 @@
 }
 
 .lesson-box__conv-bubble {
+  font-family: "VT323", "DotGothic16", monospace;
   background: #fbfaff;
   color: #241f42;
   border: 3px solid var(--jr-bg-bottom);
@@ -966,6 +1001,7 @@
 }
 
 .lesson-box__quiz-sentence {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 18px;
   color: var(--jr-text);
   display: flex;
@@ -1035,6 +1071,7 @@
 }
 
 .lesson-box__quizreview-prompt {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 17px;
   color: var(--jr-text);
   margin-bottom: 8px;
@@ -1072,6 +1109,7 @@
 }
 
 .lesson-box__quizreview-fill {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 18px;
   color: var(--jr-text);
   display: flex;
@@ -1125,6 +1163,7 @@
 }
 
 .lesson-box__quizanswer-correct {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 17px;
   color: var(--jr-text);
 }
@@ -1152,6 +1191,7 @@
 }
 
 .lesson-box__quizscore-label {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 17px;
   color: var(--jr-text-dim);
 }

@@ -730,6 +730,36 @@
         "15295"
       ],
       "port": 15295
+    },
+    {
+      "name": "jp-library-static-font-selfhost",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15396"
+      ],
+      "port": 15396
+    },
+    {
+      "name": "jp-library-static-font-split",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15497"
+      ],
+      "port": 15497
+    },
+    {
+      "name": "jp-library-static-jikoshoukai-recap",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15598"
+      ],
+      "port": 15598
     }
   ],
   "autoVerify": true

@@ -309,9 +309,10 @@ const REVIEW_1_QUIZ_QUESTIONS = [
 // Real lesson content, keyed by LESSON_DATA id, rendered through
 // LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
 // option is selected. Each entry is an array of "pages" the player clicks/
-// presses through in order (classic RPG dialogue chaining) — only
-// shelf-01 is populated for now; shelves without an entry here fall back
-// to the old direct-complete behavior (see openRetroMenu/startLesson).
+// presses through in order (classic RPG dialogue chaining) — shelf-01
+// through shelf-05 are populated as of this writing; shelves without an
+// entry here fall back to the old direct-complete behavior (see
+// openRetroMenu/startLesson).
 const LESSON_CONTENT = {
   'shelf-01': [
     {
@@ -1149,12 +1150,51 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Recap 4/4: Self Introduction — the 3-step shape reminder
-      // (recapChips, same pattern shelf-04's own intro page uses) plus
-      // its vocab table on the same page.
+      // Recap 4/4: Self Introduction — a complete jikoshoukai shown as one
+      // flowing example (greet+name+close as a single sample, not 3
+      // separate step chips) plus 2 more versions with different names
+      // right below it in the same box, so the 3-step shape reads as one
+      // reusable template instead of an abstract outline.
       type: 'grammar-intro',
       sectionLabel: 'Recap: Self Introduction (jikoshoukai)',
-      recapChips: ['1. Greet — はじめまして', '2. Name — A は B です', '3. Close — よろしくお願いします'],
+      samples: [
+        {
+          tag: 'A complete self-introduction',
+          tiles: [
+            { text: 'はじめまして', role: 'noun', gloss: 'how do you do (greet)' },
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'レイヤ', role: 'noun', gloss: 'name' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'よろしくお願いします', role: 'particle', gloss: 'please treat me kindly (close)' },
+          ],
+          translation: 'Hajimemashite. Watashi wa Reya desu. Yoroshiku onegaishimasu.',
+        },
+        {
+          tag: 'Another version (swap in any name)',
+          tiles: [
+            { text: 'はじめまして', role: 'noun', gloss: 'greet' },
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'タロウ', role: 'noun', gloss: 'name' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'よろしくお願いします', role: 'particle', gloss: 'close' },
+          ],
+          translation: 'Hajimemashite. Watashi wa Tarou desu. Yoroshiku onegaishimasu.',
+        },
+        {
+          tag: 'One more version',
+          tiles: [
+            { text: 'はじめまして', role: 'noun', gloss: 'greet' },
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ユキ', role: 'noun', gloss: 'name' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'よろしくお願いします', role: 'particle', gloss: 'close' },
+          ],
+          translation: 'Hajimemashite. Watashi wa Yuki desu. Yoroshiku onegaishimasu.',
+        },
+      ],
     },
     {
       type: 'summary',
@@ -1312,7 +1352,11 @@ const BOOK_PILE_DATA = [
   { id: 'review-1', title: 'Foundations Review', requires: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04'] },
   { id: 'review-2', title: 'Everyday Vocabulary Review', requires: ['shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'] },
   { id: 'review-3', title: 'Core Grammar Review', requires: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12'] },
-  { id: 'review-4', title: 'Sentence Builder Review', requires: ['shelf-13', 'shelf-14', 'shelf-15', 'shelf-16'] },
+  // Renamed from "Sentence Builder Review" — that name collides with a
+  // different lesson grouping (shelves 9-14) used in the N5 map design
+  // doc/chat spec; this pile actually covers shelves 13-16, so it gets
+  // its own non-colliding name instead.
+  { id: 'review-4', title: 'Grammar Mastery Review', requires: ['shelf-13', 'shelf-14', 'shelf-15', 'shelf-16'] },
 ];
 
 // Reception desk clutter — 18 items scattered across the desk's usable
