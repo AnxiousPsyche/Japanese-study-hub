@@ -30,21 +30,26 @@
           href="https://fonts.gstatic.com"
           crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=block"
           rel="stylesheet">
 
     <!-- DotGothic16: a Japanese pixel/dot-matrix font, used as a fallback
          in the game's "Press Start 2P" text stacks so Japanese characters
          in lesson titles (e.g. "か", "ましょう") render in a matching
          retro-pixel style instead of the browser's default font. -->
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block"
           rel="stylesheet">
 
     <!-- VT323: CRT-terminal readout font used for LessonBox running text
          (grammar explanations, word glosses) — Press Start 2P stays
          reserved for headers/labels, VT323 gives body copy a "techy"
-         retro-terminal feel without abandoning the pixel-RPG chrome. -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+         retro-terminal feel without abandoning the pixel-RPG chrome.
+         display=block (not swap): a LessonBox page can open before the
+         webfont finishes downloading, and "swap" was letting that first
+         paint render in the browser's plain default font before flashing
+         to VT323 a moment later — "block" hides text briefly instead of
+         showing the wrong font, since these font files are tiny. -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=block"
           rel="stylesheet">
 
     <!-- =========================================

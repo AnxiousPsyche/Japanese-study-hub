@@ -256,6 +256,56 @@ const LESSON_DATA = [
   { id: 'shelf-17', title: 'Existence (あります・います)' },
 ];
 
+// review-1's quiz questions ("Foundations Review", gates shelf-05) — a
+// single shared array referenced by BOTH the 'quiz-review' page (captures
+// answers, no inline grading) and the 'quiz-answers' page (grades against
+// this exact same array) below, so the two pages can never drift out of
+// sync with each other. 10 questions across shelf-01..04 (1 multiple-choice
+// + 1 fill-in-the-blank per shelf, plus one extra pair on shelf-01/shelf-04
+// to reach 10), in shelf order.
+const REVIEW_1_QUIZ_QUESTIONS = [
+  {
+    kind: 'mc', prompt: 'What does すみません mean?',
+    choices: ['Thank you', 'Excuse me / Sorry', 'Hello', 'Goodbye'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"Good morning" (polite):',
+    before: '', after: 'ございます。', answer: 'おはよう', altAnswers: ['ohayou'],
+  },
+  {
+    kind: 'mc', prompt: 'What does ありがとうございます mean?',
+    choices: ['Nice to meet you', 'Excuse me', 'Thank you (polite)', 'Good evening'], correctIndex: 2,
+  },
+  {
+    kind: 'mc', prompt: 'What do you say right before eating?',
+    choices: ['ごちそうさまでした', 'いただきます', 'いってきます', 'ただいま'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: 'Said when you arrive back home:',
+    before: '', after: '', answer: 'ただいま', altAnswers: ['tadaima'],
+  },
+  {
+    kind: 'mc', prompt: 'Which particle marks the topic in "わたしはがくせいです"?',
+    choices: ['です', 'これ', 'は', 'か'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: '"I WAS a student" (past tense):',
+    before: 'わたしはがくせい', after: '。', answer: 'でした', altAnswers: ['deshita'],
+  },
+  {
+    kind: 'mc', prompt: 'What is the correct order of a jikoshoukai (self-introduction)?',
+    choices: ['Close → Name → Greet', 'Greet → Name → Close', 'Name → Close → Greet', 'Greet → Close → Name'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: 'The closing phrase of a self-introduction:',
+    before: '', after: 'お願いします。', answer: 'よろしく', altAnswers: ['yoroshiku'],
+  },
+  {
+    kind: 'fill', prompt: '"What is your name?" (polite):',
+    before: '', after: 'は何ですか。', answer: 'お名前', altAnswers: ['onamae', 'o-namae'],
+  },
+];
+
 // Real lesson content, keyed by LESSON_DATA id, rendered through
 // LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
 // option is selected. Each entry is an array of "pages" the player clicks/
@@ -267,26 +317,40 @@ const LESSON_CONTENT = {
     {
       type: 'greeting', kana: 'こんにちは', romaji: 'Konnichiwa', pronunciation: '(kohn-nee-chee-wah)', meaning: 'Hello / Good afternoon',
       usage: 'Used from late morning through early evening. Safe with strangers, coworkers, and acquaintances — not usually used with close family or young children.',
+      // pixel bgs.png is a 3-band day/night sprite strip (night / day / sunset,
+      // 63px each) — index 1 selects the daytime sun-and-clouds band.
+      imageSrc: '../../assets/images/lesson/pixel%20bgs.png', spriteRows: 3, spriteIndex: 1,
+      visualAlt: 'Pixel-art daytime sky with sun and clouds',
     },
     {
       type: 'greeting', kana: 'おはようございます', romaji: 'Ohayou gozaimasu', pronunciation: '(oh-hah-yoh goh-zah-ee-mahs)', meaning: 'Good morning (polite)',
       usage: 'Used in the morning, roughly until mid-to-late morning. This is the polite form — used with teachers, coworkers, or people you don’t know well. Drop "gozaimasu" for the casual version among friends.',
+      imageSrc: '../../assets/images/lesson/sunrise-pixel-Original.png', visualAlt: 'Pixel-art sunrise over water',
     },
     {
       type: 'greeting', kana: 'こんばんは', romaji: 'Konbanwa', pronunciation: '(kohn-bahn-wah)', meaning: 'Good evening',
       usage: 'Used in the evening and at night, once it starts getting dark. Same level of formality as konnichiwa.',
+      imageSrc: '../../assets/images/lesson/sunset-pixel-Original.png', visualAlt: 'Pixel-art sunset over water',
     },
     {
+      // No matching photo supplied for this one — falls back to a
+      // hand-drawn SVG icon in the same framed slot so the page still
+      // reads consistently with its neighbors (see visual-aid mockup).
       type: 'greeting', kana: 'さようなら', romaji: 'Sayounara', pronunciation: '(sah-yoh-nah-rah)', meaning: 'Goodbye',
       usage: 'A fairly formal goodbye that can imply you won’t see the person again for a while. Not typically used daily with close friends or family — they usually use a casual alternative instead.',
+      iconSvg: '<svg viewBox="0 0 56 56"><path d="M20 48 C20 30, 20 18, 28 12 C32 9, 38 12, 36 18 C34 23, 28 24, 28 24" fill="none" stroke="#e8c99b" stroke-width="7" stroke-linecap="round"></path><circle cx="28" cy="12" r="6" fill="#e8c99b"></circle></svg>',
     },
     {
       type: 'greeting', kana: 'ありがとうございます', romaji: 'Arigatou gozaimasu', pronunciation: '(ah-ree-gah-toh goh-zah-ee-mahs)', meaning: 'Thank you (polite)',
       usage: 'The polite form of "thank you" — used with strangers, shop staff, and at work. Drop "gozaimasu" for casual thanks among friends.',
+      imageSrc: '../../assets/images/lesson/563640%20(1).jpg', visualAlt: 'A person bowing politely',
     },
     {
+      // Also no matching photo — same SVG-icon fallback pattern as
+      // さようなら above.
       type: 'greeting', kana: 'すみません', romaji: 'Sumimasen', pronunciation: '(soo-mee-mah-sen)', meaning: 'Excuse me / Sorry',
       usage: 'Very versatile: use it to apologize, to get someone’s attention (like a waiter), or even to say thanks when someone went out of their way for you.',
+      iconSvg: '<svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="20" fill="none" stroke="#f0c674" stroke-width="2.5"></circle><text x="28" y="36" text-anchor="middle" font-size="24" fill="#f0c674" font-family="VT323, DotGothic16, monospace">!</text></svg>',
     },
     {
       // Two NPC cats using a few of the phrases above in a natural
@@ -407,14 +471,24 @@ const LESSON_CONTENT = {
   // moved, the physical shelf positions/prereq chain did not change.
   'shelf-03': [
     {
-      // Page 1/4 of the intro: explanation + tense pair + future/negative
-      // teaser only — the diagram, samples, and notes each get their own
-      // page below (click-to-advance), rather than one long scroll.
+      // Page 1/4 of the intro — restructured to the standing "explain a
+      // grammar point" template: one-line big idea (no jargon) -> real-
+      // world analogy -> parts table -> fixed pattern (code-box style)
+      // -> tense-pair detail -> one bolded takeaway. Diagram/samples/
+      // notes each still get their own page below.
       type: 'grammar-intro',
       sectionLabel: 'How this sentence works',
+      bigIdea: 'One short pattern does the job of "is/am/are" almost everywhere in Japanese.',
+      analogy: 'Think of は like a spotlight and です like a stamp of approval: は swings the spotlight onto whatever you\'re about to talk about, and です stamps "yep, that\'s what it is" at the end.',
+      terms: [
+        { role: 'particle', name: 'は (wa)', desc: 'Points the spotlight at A — "as for A..."' },
+        { role: 'verb', name: 'です (desu)', desc: 'Stamps it as true, politely — "...it\'s B." Also carries the tense.' },
+      ],
+      pattern: [
+        { text: 'A', role: 'noun' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'noun' }, { text: 'です', role: 'verb' },
+      ],
       explain: [
-        'は marks A as the topic and links it to B — that link already means "is." So "A は B" reads like "A is B," even before です shows up.',
-        'So what does です actually do here? Mostly it sets the <b>tense</b> (and adds politeness). Swap です for でした and the whole sentence slides from now to before — nothing else about the sentence changes:',
+        'です changes shape to move the tense — swap it for でした and the whole sentence slides from now to before, nothing else changes:',
       ],
       tensePair: {
         present: { kana: 'わたしはがくせい<span class="hl">です</span>', translation: '"I am a student."' },
@@ -423,6 +497,7 @@ const LESSON_CONTENT = {
       explainAfter: [
         'Japanese doesn\'t have a separate future word either — です already covers "will be." (There\'s also a <b>negative</b> form you\'ll meet in a later lesson: <b>わたしはがくせいではありません</b> / dewa arimasen — "I am NOT a student." Same は, same job — just です\'s ending changes again.)',
       ],
+      takeaway: 'A は B です means "A is B" — that\'s the one thing to remember for now; everything else is detail.',
     },
     {
       // Page 2/4: the sentence-structure diagram, on its own page.
@@ -437,8 +512,8 @@ const LESSON_CONTENT = {
               <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-verb-bg)"></path>
             </marker>
           </defs>
-          <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
-          <g font-family="monospace" font-size="16">
+          <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
             <rect x="10" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
             <text x="45" y="58" text-anchor="middle" fill="#efeeff">I</text>
             <rect x="96" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
@@ -446,13 +521,13 @@ const LESSON_CONTENT = {
             <rect x="182" y="36" width="140" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
             <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
           </g>
-          <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="monospace">"is" + tense, bundled</text>
+          <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
           <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="var(--lb-role-particle-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
-          <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="monospace">"is" -&gt; は</text>
+          <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
           <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="var(--lb-role-verb-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
-          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-verb-bg)" font-family="monospace">tense -&gt; です (sentence-final)</text>
-          <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
-          <g font-family="monospace" font-size="16">
+          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-verb-bg)" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
+          <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
             <rect x="10" y="160" width="90" height="34" rx="3" fill="var(--lb-role-noun-bg)"></rect>
             <text x="55" y="182" text-anchor="middle" fill="var(--lb-role-noun-fg)">わたし</text>
             <rect x="108" y="160" width="46" height="34" rx="3" fill="var(--lb-role-particle-bg)"></rect>
@@ -462,14 +537,14 @@ const LESSON_CONTENT = {
             <rect x="280" y="160" width="70" height="34" rx="3" fill="var(--lb-role-verb-bg)"></rect>
             <text x="315" y="182" text-anchor="middle" fill="var(--lb-role-verb-fg)">です</text>
           </g>
-          <g font-family="monospace" font-size="9" fill="var(--jr-text-dim)">
+          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="var(--jr-text-dim)">
             <text x="55" y="208" text-anchor="middle">subject</text>
             <text x="131" y="203" text-anchor="middle">topic + "is"</text>
             <text x="217" y="208" text-anchor="middle">predicate</text>
             <text x="315" y="203" text-anchor="middle">tense +</text>
             <text x="315" y="215" text-anchor="middle">politeness</text>
           </g>
-          <text x="10" y="238" font-size="10" fill="var(--jr-text-dim)" font-family="monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
+          <text x="10" y="238" font-size="10" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
         </svg>
       `,
       diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',
@@ -610,15 +685,22 @@ const LESSON_CONTENT = {
       // section stacking (intro block, then a notes block, divided).
       type: 'grammar-intro',
       sectionLabel: 'What is jikoshoukai?',
-      explain: [
-        'A Japanese self-introduction (jikoshoukai) always follows the same shape: greet, say your name, then close politely — in that exact order.',
-        'Quick reminder of the pattern from the last shelf: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> Neko <span class="role-verb">です</span></b> — "as for me, Neko." That\'s it — this shelf is just putting it to work.',
-      ],
+      bigIdea: 'A Japanese self-introduction always follows the exact same 3-step shape.',
+      analogy: 'It\'s like a knock-knock joke — everyone already knows the shape, so you just fill in your own punchline (your name) in the middle.',
       recapChips: ['はじめまして (greet)', 'A は B です (name)', 'よろしくお願いします (close)'],
+      terms: [
+        { role: 'noun', name: '1. Greet', desc: 'はじめまして — said only at a first meeting.' },
+        { role: 'particle', name: '2. Name', desc: 'わたしは [name] です — the pattern from the last shelf, put to work.' },
+        { role: 'verb', name: '3. Close', desc: 'よろしくお願いします — closes politely, every time.' },
+      ],
+      explain: [
+        'Quick reminder of the pattern from the last shelf: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> Neko <span class="role-verb">です</span></b> — "as for me, Neko."',
+      ],
       cultureNotes: [
         'Jikoshoukai isn\'t just small talk — it\'s treated like a small ritual. You give it standing up, often with a slight bow, on your first day at a new school or job, or when meeting someone through a mutual connection.',
         'よろしくお願いします doesn\'t really translate into English — it\'s closer to "please treat me well going forward" or "I\'m counting on a good relationship." Saying it at the end of a self-introduction is basically mandatory, not optional politeness.',
       ],
+      takeaway: 'Greet, say your name with A は B です, close politely — same 3 steps, every single time.',
     },
     {
       // Page 2/5: the self-intro exchange as an actual two-party
@@ -684,6 +766,424 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  'shelf-05': [
+    {
+      // Page 1/8: how the demonstrative (こそあど) system works, plus a
+      // recap chip for これ (already known since shelf-03's samples) so
+      // it doesn't get re-taught as new — 10-page template (intro,
+      // diagram, 4x samples, conversation, try-it, summary, quiz) is the
+      // standing pattern for every future grammar shelf from here on.
+      type: 'grammar-intro',
+      sectionLabel: 'How demonstratives work',
+      bigIdea: 'Japanese picks "this/that" based on distance, not just what the object is.',
+      analogy: 'It\'s like a 3-ring dartboard centered on YOU, the speaker: the bullseye ring is yours, the middle ring belongs to whoever you\'re talking to, and everything outside that is "over there," full stop.',
+      recapChips: ['これ (this — already known)'],
+      terms: [
+        { role: 'noun', name: 'これ / この', desc: 'Close to YOU, the speaker.' },
+        { role: 'particle', name: 'それ / その', desc: 'Close to the person you\'re talking to.' },
+        { role: 'verb', name: 'あれ / あの', desc: 'Far from both of you.' },
+      ],
+      explain: [
+        'Two shapes per distance: これ/それ/あれ stand alone ("this one"), while この/その/あの attach directly in front of a noun ("this ___").',
+      ],
+      takeaway: 'Distance from YOU decides the word — これ is always yours, それ is always theirs, あれ is always far away.',
+    },
+    {
+      // Page 2/10: the near-you / near-them / far-from-both diagram — one
+      // row per word instead of three side-by-side zone boxes, using the
+      // player's own cat color for "you" and Neko-sensei's derived color
+      // for "listener" (a function here, not a static string — resolved
+      // by resolveDynamicDiagrams at lesson-open time, same mechanism
+      // resolveConversationTurns already uses for conversation pages) plus
+      // the cattomouse pixel art as the item marker.
+      type: 'grammar-intro',
+      diagramSvg: buildDemonstrativesDiagram,
+      diagramCaption: 'これ/それ/あれ always track distance from the SPEAKER — not from the object to "you" in general.',
+    },
+    {
+      // Page 3/10: standalone これ/それ/あれ samples — これ shown too
+      // (unflagged, since it's already known) so the full 3-way contrast
+      // reads together instead of only showing the 2 new ones in isolation.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"This is a book." (near you)',
+          tiles: [
+            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Kore wa hon desu.',
+        },
+        {
+          tag: '"That is a pen." (near the listener)',
+          tiles: [
+            { text: 'それ', role: 'particle', gloss: 'that', isNew: true },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Sore wa pen desu.',
+        },
+        {
+          tag: '"That over there is a book." (far from both)',
+          tiles: [
+            { text: 'あれ', role: 'verb', gloss: 'that over there', isNew: true },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Are wa hon desu.',
+        },
+      ],
+    },
+    {
+      // Page 4/10: この/その/あの + どれ/どの (the noun-modifying shapes,
+      // plus the question member of the set — a full こそあど lesson
+      // conventionally covers all 4, not just 3). These are short noun
+      // phrases, not full sentences (this shelf comes before adjectives
+      // or の-possessives, so there's nothing to build a natural full
+      // sentence out of yet without borrowing ungrounded grammar).
+      type: 'grammar-intro',
+      sectionLabel: 'Attaching to a noun',
+      samples: [
+        {
+          tag: '"this book"',
+          tiles: [
+            { text: 'この', role: 'noun', gloss: 'this ~', isNew: true },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+          ],
+          translation: 'kono hon',
+        },
+        {
+          tag: '"that pen" (near the listener)',
+          tiles: [
+            { text: 'その', role: 'particle', gloss: 'that ~', isNew: true },
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+          ],
+          translation: 'sono pen',
+        },
+        {
+          tag: '"that teacher over there"',
+          tiles: [
+            { text: 'あの', role: 'verb', gloss: 'that ~ over there', isNew: true },
+            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+          ],
+          translation: 'ano sensei',
+        },
+        {
+          tag: '"which student?"',
+          tiles: [
+            { text: 'どの', role: 'adjective', gloss: 'which ~', isNew: true },
+            { text: 'がくせい', role: 'noun', gloss: 'student' },
+          ],
+          translation: 'dono gakusei',
+        },
+      ],
+    },
+    {
+      // Page 5/10: ここ/そこ/あそこ/どこ — the "place" row of the こそあど
+      // grid (これ/この/ここ/こちら etc. is a 4-column table; this shelf
+      // now covers 3 of those 4 columns). Full copula sentences, same
+      // shape as page 3, since these stand alone like これ/それ/あれ
+      // rather than attaching to a noun like この/その/あの.
+      type: 'grammar-intro',
+      sectionLabel: 'Talking about places',
+      samples: [
+        {
+          tag: '"The book is here." (near you)',
+          tiles: [
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ここ', role: 'noun', gloss: 'here', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Hon wa koko desu.',
+        },
+        {
+          tag: '"The pen is there." (near the listener)',
+          tiles: [
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'そこ', role: 'particle', gloss: 'there', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Pen wa soko desu.',
+        },
+        {
+          tag: '"The teacher is over there." (far from both)',
+          tiles: [
+            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'あそこ', role: 'verb', gloss: 'over there', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Sensei wa asoko desu.',
+        },
+        {
+          tag: '"Where is the cat?"',
+          tiles: [
+            { text: 'ねこ', role: 'noun', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'どこ', role: 'adjective', gloss: 'where', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker' },
+          ],
+          translation: 'Neko wa doko desu ka?',
+        },
+      ],
+    },
+    {
+      // Page 6/10: こちら/そちら/あちら/どちら — the polite/direction row
+      // (the 4th column of the grid). More formal than これ/それ/あれ and
+      // doubles as a polite way to refer to a person ("this is ~"), so the
+      // samples lean on real service-counter phrasing (restroom/exit/
+      // station) rather than repeating the book/pen examples verbatim.
+      type: 'grammar-intro',
+      sectionLabel: 'Polite direction words',
+      explain: [
+        'こちら/そちら/あちら/どちら are the polite versions of これ/それ/あれ/どれ — same distance rules, softer tone. Common on signs, in shops, and when politely introducing someone ("こちらは〜です" = "this is ~").',
+      ],
+      samples: [
+        {
+          tag: '"This is Tanaka-san." (polite, introducing someone near you)',
+          tiles: [
+            { text: 'こちら', role: 'noun', gloss: 'this (polite)', isNew: true },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'たなかさん', role: 'noun', gloss: 'Mr. / Ms. Tanaka' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Kochira wa Tanaka-san desu.',
+        },
+        {
+          tag: '"The restroom is that way." (near the listener)',
+          tiles: [
+            { text: 'おてあらい', role: 'noun', gloss: 'restroom' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'そちら', role: 'particle', gloss: 'that way (polite)', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Otearai wa sochira desu.',
+        },
+        {
+          tag: '"The exit is over there." (far from both, polite)',
+          tiles: [
+            { text: 'でぐち', role: 'noun', gloss: 'exit' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'あちら', role: 'verb', gloss: 'over there (polite)', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Deguchi wa achira desu.',
+        },
+        {
+          tag: '"Which way is the station?"',
+          tiles: [
+            { text: 'えき', role: 'noun', gloss: 'station' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'どちら', role: 'adjective', gloss: 'which way', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker' },
+          ],
+          translation: 'Eki wa dochira desu ka?',
+        },
+      ],
+    },
+    {
+      // Page 7/10: conversation — reuses なん (shelf-04) and ありがとう
+      // (shelf-01) so it's not leaning on brand-new vocab beyond この
+      // shelf's own それ.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: '<span class="role-particle">それ</span>はなんですか？',
+          romaji: 'Sore wa nan desu ka? — "What is that (by you)?"',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: '<span class="role-noun">これ</span>はほんです。',
+          romaji: 'Kore wa hon desu. — "This is a book."',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'ありがとう！',
+          romaji: 'Arigatou! — "Thanks!"',
+        },
+      ],
+    },
+    {
+      // Page 8/10: "you try" gate — advance() stays locked until typed,
+      // same mechanism as shelf-04's try-it (see lesson-box.js).
+      type: 'try-it',
+      sectionLabel: 'Your turn',
+      prompt: 'Something is right next to YOU. Fill in the blank to say "this is a pen":',
+      before: '',
+      after: 'はペンです',
+      placeholder: 'これ',
+    },
+    {
+      // Page 9/10: new-words recap — これ deliberately excluded (already
+      // taught on shelf-03), matching the "only genuinely new words"
+      // convention from shelf-04's summary page. Now covers all 4 columns
+      // of the こそあど grid (これ/この/ここ/こちら etc.), not just the
+      // first two.
+      type: 'summary',
+      title: 'New Words: Demonstratives',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'それ', romaji: 'sore', meaning: 'that (near listener)' },
+        { kana: 'あれ', romaji: 'are', meaning: 'that over there' },
+        { kana: 'どれ', romaji: 'dore', meaning: 'which one' },
+        { kana: 'この', romaji: 'kono', meaning: 'this ~ (+noun)' },
+        { kana: 'その', romaji: 'sono', meaning: 'that ~ (+noun)' },
+        { kana: 'あの', romaji: 'ano', meaning: 'that ~ over there (+noun)' },
+        { kana: 'どの', romaji: 'dono', meaning: 'which ~ (+noun)' },
+        { kana: 'ここ', romaji: 'koko', meaning: 'here (near you)' },
+        { kana: 'そこ', romaji: 'soko', meaning: 'there (near listener)' },
+        { kana: 'あそこ', romaji: 'asoko', meaning: 'over there (far from both)' },
+        { kana: 'どこ', romaji: 'doko', meaning: 'where' },
+        { kana: 'こちら', romaji: 'kochira', meaning: 'this (polite) / this way' },
+        { kana: 'そちら', romaji: 'sochira', meaning: 'that (polite) / that way' },
+        { kana: 'あちら', romaji: 'achira', meaning: 'that over there (polite)' },
+        { kana: 'どちら', romaji: 'dochira', meaning: 'which way (polite)' },
+      ],
+    },
+    {
+      // Page 10/10: fill-in-the-blank check — non-blocking, same pattern
+      // as shelf-04's closing quiz. Covers all 4 columns now, not just
+      // これ/それ/あれ/どれ.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check: Demonstratives',
+      intro: 'Fill in the blanks:',
+      questions: [
+        { before: '', after: 'はペンです。 (near the listener)', answer: 'それ', altAnswers: ['sore'], hint: '(close to the person you\'re talking to)' },
+        { before: '', after: 'はほんです。 (far from both of you)', answer: 'あれ', altAnswers: ['are'], hint: '(far from both speaker and listener)' },
+        { before: '', after: 'ですか。 (asking "which one?")', answer: 'どれ', altAnswers: ['dore'], hint: '(the question member of the set)' },
+        { before: 'ねこは', after: 'ですか。 (asking "where is the cat?")', answer: 'どこ', altAnswers: ['doko'], hint: '(place question word)' },
+        { before: 'えきは', after: 'です。 (far away, polite)', answer: 'あちら', altAnswers: ['achira'], hint: '(polite "over there")' },
+      ],
+    },
+  ],
+  // "Foundations Review" — review-1, gates shelf-05. First review pile to
+  // actually open LessonBox content (previously all review piles were
+  // instant-complete with nothing to read — see openRetroMenu's
+  // hasContent check). Recaps shelf-01..04 by reusing their real vocab
+  // data directly (not re-authored prose), then a mixed MC/fill quiz with
+  // deferred grading — see REVIEW_1_QUIZ_QUESTIONS above and the
+  // 'quiz-review'/'quiz-answers'/'quiz-score' page types in lesson-box.js.
+  'review-1': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Foundations Review',
+      bigIdea: 'Before Demonstratives, let\'s make sure the first 4 lessons actually stuck.',
+      explain: [
+        'This review recaps Basic Greetings, Everyday Expressions, A は B です, and Self Introduction — then closes with a 10-question quiz (multiple choice + fill-in-the-blank). The quiz doesn\'t grade as you go: answer everything first, then the next page shows the answer key so you can self-check, followed by your score.',
+      ],
+      takeaway: 'Skim each recap, then take the quiz at the end — no pressure, you can revisit this pile any time.',
+    },
+    {
+      // Recap 1/4: Basic Greetings — same 6 rows shelf-01's own
+      // auto-generated summary uses (appendGreetingSummary), just
+      // hand-listed here since review-1 isn't itself built from
+      // 'greeting'-type pages.
+      type: 'summary',
+      title: 'Recap: Basic Greetings',
+      headers: ['Phrase', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'こんにちは', romaji: 'Konnichiwa', meaning: 'Hello / Good afternoon' },
+        { kana: 'おはようございます', romaji: 'Ohayou gozaimasu', meaning: 'Good morning (polite)' },
+        { kana: 'こんばんは', romaji: 'Konbanwa', meaning: 'Good evening' },
+        { kana: 'さようなら', romaji: 'Sayounara', meaning: 'Goodbye' },
+        { kana: 'ありがとうございます', romaji: 'Arigatou gozaimasu', meaning: 'Thank you (polite)' },
+        { kana: 'すみません', romaji: 'Sumimasen', meaning: 'Excuse me / Sorry' },
+      ],
+    },
+    {
+      // Recap 2/4: Everyday Expressions — same 14 phrases shelf-02
+      // teaches, in the same order they're introduced there.
+      type: 'summary',
+      title: 'Recap: Everyday Expressions',
+      headers: ['Phrase', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'お元気ですか', romaji: 'Ogenki desu ka', meaning: 'How are you?' },
+        { kana: '元気です', romaji: 'Genki desu', meaning: 'I’m doing well' },
+        { kana: 'いただきます', romaji: 'Itadakimasu', meaning: 'Said before eating' },
+        { kana: 'ごちそうさまでした', romaji: 'Gochisousama deshita', meaning: 'Said after eating' },
+        { kana: 'いってきます', romaji: 'Ittekimasu', meaning: 'I’m heading out' },
+        { kana: 'ただいま', romaji: 'Tadaima', meaning: 'I’m home' },
+        { kana: 'お願いします', romaji: 'Onegaishimasu', meaning: 'Please (making a request)' },
+        { kana: 'ください', romaji: 'Kudasai', meaning: 'Please (asking for something)' },
+        { kana: 'では、また。', romaji: 'Dewa, mata', meaning: 'See you again' },
+        { kana: 'じゃ、また。', romaji: 'Ja, mata', meaning: 'See you again (casual)' },
+        { kana: 'じゃあ(ね)。', romaji: 'Jaa (ne)', meaning: 'See you (more casual)' },
+        { kana: 'お邪魔します', romaji: 'Ojama shimasu', meaning: 'Excuse me for intruding' },
+        { kana: 'よろしくお願いします', romaji: 'Yoroshiku onegaishimasu', meaning: 'Please treat me kindly' },
+        { kana: 'はじめまして', romaji: 'Hajimemashite', meaning: 'How do you do' },
+      ],
+    },
+    {
+      // Recap 3/4: A は B です — the pattern itself (short reminder,
+      // matching shelf-03's own "code box" pattern-line treatment) plus
+      // its vocab table on the same page.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: A は B です',
+      pattern: [
+        { text: 'A', role: 'noun' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'noun' }, { text: 'です', role: 'verb' },
+      ],
+      explain: [
+        'は marks the topic ("as for A..."), です stamps it as true and carries the tense — swap です for でした and the sentence slides from present to past.',
+      ],
+    },
+    {
+      type: 'summary',
+      title: 'Recap: A は B です — Words',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'わたし', romaji: 'watashi', meaning: 'I / me' },
+        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
+        { kana: 'です', romaji: 'desu', meaning: 'am / is / are (polite)' },
+        { kana: 'がくせい', romaji: 'gakusei', meaning: 'student' },
+        { kana: 'でした', romaji: 'deshita', meaning: 'was / were (polite past)' },
+        { kana: 'せんせい', romaji: 'sensei', meaning: 'teacher' },
+      ],
+    },
+    {
+      // Recap 4/4: Self Introduction — the 3-step shape reminder
+      // (recapChips, same pattern shelf-04's own intro page uses) plus
+      // its vocab table on the same page.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: Self Introduction (jikoshoukai)',
+      recapChips: ['1. Greet — はじめまして', '2. Name — A は B です', '3. Close — よろしくお願いします'],
+    },
+    {
+      type: 'summary',
+      title: 'Recap: Self Introduction — Words',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'お名前', romaji: 'o-namae', meaning: 'name (polite)' },
+        { kana: '何', romaji: 'nan', meaning: 'what' },
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+      ],
+    },
+    {
+      type: 'quiz-review',
+      sectionLabel: 'Foundations Review Quiz',
+      intro: 'Answer each question, then continue to see the answer key. 10 questions across the 4 lessons.',
+      questions: REVIEW_1_QUIZ_QUESTIONS,
+    },
+    {
+      type: 'quiz-answers',
+      sectionLabel: 'Answer Key',
+      questions: REVIEW_1_QUIZ_QUESTIONS,
+    },
+    {
+      // note omitted deliberately — quizScoreMessage in lesson-box.js
+      // auto-picks a retro-cat reaction line from the score percentage.
+      type: 'quiz-score',
+      title: 'Foundations Review — Score',
+    },
+  ],
 };
 
 // Builds the lesson-end recap page (LessonBox type: 'summary') from
@@ -722,6 +1222,65 @@ function resolveConversationTurns(pages, playerColorId) {
         return { ...t, spritePath: ACTION_SPRITE_PATHS[t.action][colorId] };
       }),
     };
+  });
+}
+
+// Builds shelf-05's distance-diagram markup (page 2/8) as one row per
+// demonstrative instead of three side-by-side zone boxes: a YOU / LISTENER
+// / FAR AWAY column track per row, with the item's icon landing in
+// whichever column matches where it actually is for that word. Takes the
+// resolved playerColorId/senseiColorId (see resolveDynamicDiagrams below)
+// so the cat-face pips always match the player's actual chosen colors,
+// the same colors resolveConversationTurns already uses for this player.
+// TALK_COLOR_PATHS is defined later in this file (per-color, referenced
+// only when this function is actually called at lesson-open time, by
+// which point the whole module has finished loading).
+function buildDemonstrativesDiagram(playerColorId, senseiColorId) {
+  const youPath = TALK_COLOR_PATHS[playerColorId];
+  const listenerPath = TALK_COLOR_PATHS[senseiColorId];
+  const itemPath = '../../assets/images/lesson/cattomouse-Original.png';
+  const track = '<div class="lesson-box__demo-track"></div>';
+  const pip = (path) => `<div class="lesson-box__demo-cat-pip" style="background-image:url('${path}');"></div>`;
+  const item = '<img class="lesson-box__demo-item-icon" src="' + itemPath + '" alt="item">';
+  return `
+    <div class="lesson-box__demo-grid">
+      <div class="lesson-box__demo-head lesson-box__demo-head--word"></div>
+      <div class="lesson-box__demo-head">YOU</div>
+      <div class="lesson-box__demo-head">LISTENER</div>
+      <div class="lesson-box__demo-head">FAR AWAY</div>
+
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-noun-bg);">これ</div>
+      <div class="lesson-box__demo-cell">${track}${pip(youPath)}${item}</div>
+      <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}</div>
+      <div class="lesson-box__demo-cell">${track}</div>
+      <div class="lesson-box__demo-row-note">kore — the item is right there <b>with you</b>.</div>
+
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-particle-bg);">それ</div>
+      <div class="lesson-box__demo-cell">${track}${pip(youPath)}</div>
+      <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}${item}</div>
+      <div class="lesson-box__demo-cell">${track}</div>
+      <div class="lesson-box__demo-row-note">sore — the item is over <b>with the listener</b>.</div>
+
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-verb-bg);">あれ</div>
+      <div class="lesson-box__demo-cell">${track}${pip(youPath)}</div>
+      <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}</div>
+      <div class="lesson-box__demo-cell">${track}${item}</div>
+      <div class="lesson-box__demo-row-note">are — far from <b>both of you</b>.</div>
+    </div>
+  `;
+}
+
+// Resolves any 'grammar-intro' page whose diagramSvg is a function (not a
+// plain string) into real markup using this lesson's actual cat colors —
+// mirrors resolveConversationTurns' player/sensei color derivation so a
+// diagram page and a conversation page in the same lesson never disagree
+// about which color means "you" vs "the other cat". Pages with a static
+// string diagramSvg (or none) pass through unchanged.
+function resolveDynamicDiagrams(pages, playerColorId) {
+  const senseiColorId = playerColorId === 'orange' ? 'black' : 'orange';
+  return pages.map((page) => {
+    if (typeof page.diagramSvg !== 'function') return page;
+    return { ...page, diagramSvg: page.diagramSvg(playerColorId, senseiColorId) };
   });
 }
 
@@ -1471,7 +2030,11 @@ class LibraryScene extends Phaser.Scene {
     this.load.image('doorsWindows', '../../assets/images/ui/TopDownHouse_DoorsAndWindows.png');
     this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState1.png');
     this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
-    this.load.image('favoriteIcon', '../../assets/images/icons/pixels/gay.png');
+    // Replaces the old 'favoriteIcon' (gay.png — a leftover rainbow-flag
+    // placeholder that never actually read as "favorite") — a pixel-art
+    // floppy-disk/save-point icon, cropped tight in buildShelves() below
+    // to strip this source file's ~40% transparent padding.
+    this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
     this.load.image('finishFlagIcon', '../../assets/images/ui/finish-line-Original.png');
     loadCatSpritesheets(this);
   }
@@ -2076,6 +2639,11 @@ class LibraryScene extends Phaser.Scene {
     // Registers the trinket's frame textures + looping animation once,
     // before any shelf sprite tries to use them (must exist first).
     const trinketAnimKey = buildShelfTrinketAnim(this);
+    // Favorite icon: crop savePointRaw down to its tight 624x624 content
+    // box (source is 1024x1024 with ~40% transparent padding around a
+    // centered glyph) so setDisplaySize below fills its box cleanly
+    // instead of rendering a tiny disk surrounded by dead space.
+    const favoriteDiskKey = cropToTexture(this, 'savePointRaw', { x: 200, y: 200, w: 624, h: 624 }, 'favoriteDiskTex');
 
     // Shelf sprite is displayed at LAYOUT.shelfW/shelfH directly — those
     // are already SHELF_SCALE-enlarged (see the LAYOUT block), so no
@@ -2125,12 +2693,17 @@ class LibraryScene extends Phaser.Scene {
       const stamp = this.add.image(label.bg.x + label.width / 2 - 6, label.bg.y + 6, 'checkmarkIcon')
         .setOrigin(0.5).setDepth(4).setDisplaySize(12, 12).setVisible(false);
       // Favorite marker (retro menu's "Make Favorite?" option) — a small
-      // heart icon over the shelf's top-left corner, independent of
-      // lock/complete state (a locked shelf can't be favorited since the
-      // retro menu only opens once available, but a favorited shelf
-      // keeps showing the heart regardless of its progress state).
-      const favIcon = this.add.image(x + 14, y - 6, 'favoriteIcon')
-        .setOrigin(0.5).setDepth(4).setDisplaySize(14, 14).setVisible(false);
+      // floppy-disk badge floating above the plaque's top-right corner
+      // (not riding the right edge at vertical-center anymore — that
+      // sat directly over the title text and made it unreadable).
+      // Independent of lock/complete state (a locked shelf can't be
+      // favorited since the retro menu only opens once available, but a
+      // favorited shelf keeps showing the disk regardless of its
+      // progress state). Was a top-left heart-shaped icon (actually a
+      // leftover rainbow-flag placeholder, gay.png) — moved here and
+      // reskinned per explicit request.
+      const favIcon = this.add.image(label.bg.x + label.width / 2 - 10, label.bg.y - 8, favoriteDiskKey)
+        .setOrigin(0.5).setDepth(4).setDisplaySize(18, 18).setVisible(false);
 
       // Deliberately non-solid: 2 shelves share each row with only a
       // 14px gap, and auto-walk routing to the far column would have to
@@ -2469,16 +3042,20 @@ class LibraryScene extends Phaser.Scene {
   // (scrollFactor 0) so it stays centered regardless of camera position.
 
   openRetroMenu(entry, state) {
-    // Shelves with real LESSON_CONTENT open the LessonBox dialogue
-    // instead of completing instantly; everything else (shelves with no
-    // content yet, review piles) keeps the old direct-complete behavior.
-    const startAction = entry.kind === 'shelf' && LESSON_CONTENT[entry.id]
+    // Anything (shelf or review pile) with real LESSON_CONTENT opens the
+    // LessonBox dialogue instead of completing instantly; entries with no
+    // content yet keep the old direct-complete behavior. Piles skip
+    // "Make Favorite?" — favoriting is a shelf-plaque-specific affordance
+    // (see the favorite-disk icon wiring in buildShelves), not something
+    // review piles have a slot for.
+    const hasContent = !!LESSON_CONTENT[entry.id];
+    const startAction = hasContent
       ? () => this.startLesson(entry)
       : () => this.completeInteraction(entry);
-    const options = entry.kind === 'shelf'
+    const options = hasContent
       ? [
         { label: 'Start/Continue?', onSelect: startAction },
-        { label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) },
+        ...(entry.kind === 'shelf' ? [{ label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) }] : []),
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ]
       : [
@@ -2505,6 +3082,7 @@ class LibraryScene extends Phaser.Scene {
     // shelves) just don't get one.
     let pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
     pages = resolveConversationTurns(pages, this.catColorId);
+    pages = resolveDynamicDiagrams(pages, this.catColorId);
     const catColor = CAT_COLORS[this.catColorId];
     window.LessonBox.open(pages, {
       speaker: 'Neko-sensei',

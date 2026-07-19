@@ -8,7 +8,12 @@
 // LessonBox only ever renders whichever lessonType the clicked shelf is).
 //
 // Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, onComplete, onClose })
-//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill', ...fields }
+//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score', ...fields }
+//   'quiz-review'/'quiz-answers'/'quiz-score' are a 3-page group: the
+//     review page captures MC/fill answers with no inline grading, the
+//     answers page reveals + grades them against the SAME questions array
+//     reference, and the score page just displays the resulting tally —
+//     see renderContent() below for each page's exact field contract.
 //   catImagePath: URL to that color's idle+walk spritesheet (896x4608,
 //     64x64 frames, 14 cols — same sheet CAT_COLORS already loads in
 //     n5-phaser-game.js) — used for the ambient corner cat (looping idle).
@@ -118,6 +123,34 @@
     el.style.animation = `${animName} ${duration} steps(${frameCount}) infinite`;
   }
 
+  // Shared by 'quiz-answers' (grading) — compares a captured answer
+  // (state.quizReviewAnswers[i], set by 'quiz-review') against a question's
+  // correct answer. MC compares choice index; fill compares trimmed
+  // lowercase text against answer + altAnswers, same normalization as
+  // 'quiz-fill' uses for its own inline check.
+  function gradeQuizQuestion(q, userAnswer) {
+    if (q.kind === 'mc') return userAnswer === q.correctIndex;
+    const typed = (userAnswer || '').trim().toLowerCase();
+    const accepted = [q.answer].concat(q.altAnswers || []).map((a) => a.toLowerCase());
+    return accepted.includes(typed);
+  }
+
+  // Shared by 'quiz-score' — a retro-RPG-flavored cat reaction picked from
+  // the score percentage, so every quiz-score page gets an appropriate
+  // message automatically (page.note still overrides it per-page if a
+  // lesson ever wants different flavor text for its own score screen).
+  function quizScoreMessage(score) {
+    const total = score.total || 0;
+    const pct = total > 0 ? (score.correct / total) * 100 : 0;
+    if (pct >= 80) {
+      return '*proud meow, tail held high* Purrfect! These foundations are locked in.';
+    }
+    if (pct >= 55) {
+      return '*tail flicks happily* Nice work! Most of this has already sunk in.';
+    }
+    return '*ears droop, then perk right back up* That\'s totally fine — every cat stumbles on the first climb up the shelf. Come back and revisit this pile any time.';
+  }
+
   // Shared by 'conjugation' and 'summary' — both are a 3-column
   // headword/romaji/gloss table, just with different headers and data.
   function renderDataTable(headers, rows) {
@@ -148,7 +181,27 @@
       const pronunciation = page.pronunciation
         ? `<div class="lesson-box__greeting-pronunciation">${page.pronunciation}</div>`
         : '';
+      // Visual aid — a small framed image or hand-drawn icon floated to
+      // the right so the kana/romaji/meaning text wraps around it (same
+      // "float, text flows around" pattern already used for the
+      // portrait on the left). imageSrc takes a real photo/illustration
+      // path; iconSvg takes raw inline SVG markup for phrases with no
+      // photo available — both render into the same framed slot so the
+      // page reads consistently either way. Optional: pages without
+      // either just render without a visual, unchanged from before.
+      // spriteRows/spriteIndex select one equal-height band out of a
+      // vertically stacked sprite sheet (e.g. a day/night strip) via
+      // background-position math instead of needing a separately
+      // cropped image file on disk.
+      const visual = page.imageSrc
+        ? (page.spriteRows
+          ? `<div class="lesson-box__greeting-visual jr-stepped lesson-box__greeting-visual--sprite" role="img" aria-label="${page.visualAlt || ''}" style="background-image:url('${page.imageSrc}');background-size:100% ${page.spriteRows * 100}%;background-position-y:${(page.spriteIndex / (page.spriteRows - 1)) * 100}%;"></div>`
+          : `<div class="lesson-box__greeting-visual jr-stepped"><img src="${page.imageSrc}" alt="${page.visualAlt || ''}"></div>`)
+        : page.iconSvg
+          ? `<div class="lesson-box__greeting-visual jr-stepped lesson-box__greeting-visual--icon">${page.iconSvg}</div>`
+          : '';
       c.innerHTML = `
+        ${visual}
         <div class="lesson-box__greeting-kana">${page.kana}</div>
         <div class="lesson-box__greeting-romaji">${page.romaji}</div>
         ${pronunciation}
@@ -179,6 +232,10 @@
       // samples+notes layout (currently shelf-04's intro page uses the
       // latter). Sections are only emitted (and only separated by a
       // divider) when the caller actually supplies that field.
+      //   bigIdea: one-line, no-jargon "here's the big idea" framing
+      //     sentence — rendered first, before anything else.
+      //   analogy: a real-world-comparison paragraph, rendered right
+      //     after bigIdea, before the technical breakdown (terms/pattern).
       //   pattern: array of {text, role?} — inline colored A/は/B/です line.
       //   recapChips: array of plain strings — "already know this" pill
       //     badges, rendered before explain (replaces a prose recap
@@ -192,6 +249,13 @@
       //     not user input) + optional diagramCaption string.
       //   samples: array of {tag, tiles:[{text,role,gloss}], translation}.
       //   cultureNote / cultureNotes: single string or array of strings.
+      //   takeaway: one bolded sentence — "the one thing that actually
+      //     matters right now," rendered last in the intro block, in its
+      //     own high-contrast callout so it doesn't blend into the rest
+      //     of the explanation.
+      const bigIdeaHtml = page.bigIdea ? `<div class="lesson-box__big-idea">${page.bigIdea}</div>` : '';
+      const analogyHtml = page.analogy ? `<div class="lesson-box__analogy">${page.analogy}</div>` : '';
+      const takeawayHtml = page.takeaway ? `<div class="lesson-box__takeaway"><b>${page.takeaway}</b></div>` : '';
       const patternHtml = page.pattern ? `<div class="lesson-box__pattern-line">${
         page.pattern.map((p) => (p.role ? `<span class="role-${p.role}">${p.text}</span>` : p.text)).join(' ')
       }</div>` : '';
@@ -260,9 +324,9 @@
       // "samples", and "notes" across separate pages (one type per
       // page, click-to-advance) instead of forcing them onto one long
       // scrolling page.
-      const hasIntroContent = Boolean(page.pattern || page.recapChips || (page.explain && page.explain.length) || page.tensePair || page.terms);
+      const hasIntroContent = Boolean(page.bigIdea || page.analogy || page.pattern || page.recapChips || (page.explain && page.explain.length) || page.tensePair || page.terms || page.takeaway);
       const introHtml = hasIntroContent
-        ? `<div class="lesson-box__section-label">${page.sectionLabel || 'How this sentence works'}</div>${patternHtml}${recapChipsHtml}${explainHtml}${tensePairHtml}${explainAfterHtml}${termsHtml}`
+        ? `<div class="lesson-box__section-label">${page.sectionLabel || 'How this sentence works'}</div>${bigIdeaHtml}${analogyHtml}${recapChipsHtml}${explainHtml}${patternHtml}${termsHtml}${tensePairHtml}${explainAfterHtml}${takeawayHtml}`
         : '';
       const divider = '<div class="lesson-box__divider"></div>';
       const sections = [introHtml, diagramHtml, samplesHtml, notesHtml].filter(Boolean);
@@ -302,7 +366,7 @@
         <div class="lesson-box__pattern-line lesson-box__try-it-line">
           ${page.before || ''}<input type="text" class="lesson-box__try-it-input" placeholder="${page.placeholder || ''}" autocomplete="off">${page.after || ''}
         </div>
-        <div class="lesson-box__try-it-hint">Type your name, then click anywhere (or press Enter) to continue.</div>
+        <div class="lesson-box__try-it-hint">Type your answer, then click anywhere (or press Enter) to continue.</div>
       `;
     } else if (page.type === 'quiz-fill') {
       // Non-blocking fill-in-the-blank check (unlike 'try-it', this never
@@ -340,6 +404,89 @@
         page.headers || ['Phrase', 'Romaji', 'Meaning'],
         page.rows.map((r) => [r.kana, r.romaji, r.meaning]),
       );
+    } else if (page.type === 'quiz-review') {
+      // Mixed multiple-choice + fill-in-the-blank review quiz — unlike
+      // 'quiz-fill', this does NOT grade inline. Answers are captured into
+      // state.quizReviewAnswers (keyed by question index) as the player
+      // interacts, and grading + reveal happens on the following
+      // 'quiz-answers' page instead — a "answer everything, then compare
+      // against the key" self-check flow rather than instant feedback.
+      // Each question: { kind: 'mc', prompt, choices, correctIndex } or
+      // { kind: 'fill', prompt?, before, after, answer, altAnswers? }.
+      const questionsHtml = page.questions.map((q, i) => {
+        const prompt = `<div class="lesson-box__quizreview-prompt">${i + 1}. ${q.prompt || ''}</div>`;
+        if (q.kind === 'mc') {
+          const choicesHtml = q.choices.map((choice, ci) => `
+            <div class="lesson-box__quizreview-choice" data-q-idx="${i}" data-choice-idx="${ci}">${choice}</div>
+          `).join('');
+          return `
+            <div class="lesson-box__quizreview-block" data-q-idx="${i}">
+              ${prompt}
+              <div class="lesson-box__quizreview-choices">${choicesHtml}</div>
+            </div>
+          `;
+        }
+        return `
+          <div class="lesson-box__quizreview-block" data-q-idx="${i}">
+            ${prompt}
+            <div class="lesson-box__quizreview-fill">
+              ${q.before || ''}<input type="text" class="lesson-box__quizreview-input" data-q-idx="${i}" autocomplete="off">${q.after || ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+      c.innerHTML = `
+        <div class="lesson-box__section-label">${page.sectionLabel || 'Review Quiz'}</div>
+        ${page.intro ? `<div class="lesson-box__explain-text">${page.intro}</div>` : ''}
+        ${questionsHtml}
+      `;
+    } else if (page.type === 'quiz-answers') {
+      // Reveal + grade page for the immediately preceding 'quiz-review'
+      // page — the caller passes the SAME questions array reference to
+      // both pages, so grading here reads state.quizReviewAnswers
+      // (captured on the review page) against that shared array. Stashes
+      // the tally into state.quizReviewScore for the following
+      // 'quiz-score' page to display, rather than re-grading there too.
+      const answers = state.quizReviewAnswers || {};
+      let correctCount = 0;
+      const rowsHtml = page.questions.map((q, i) => {
+        const userAnswer = answers[i];
+        const correct = gradeQuizQuestion(q, userAnswer);
+        if (correct) correctCount += 1;
+        const correctLabel = q.kind === 'mc' ? q.choices[q.correctIndex] : q.answer;
+        const yourAnswerLabel = q.kind === 'mc'
+          ? (userAnswer != null ? q.choices[userAnswer] : '(no answer)')
+          : (userAnswer && userAnswer.trim() ? userAnswer : '(no answer)');
+        return `
+          <div class="lesson-box__quizanswer-row">
+            <span class="lesson-box__quizanswer-mark ${correct ? 'is-correct' : 'is-wrong'}">${correct ? '✓' : '✗'}</span>
+            <div>
+              <div class="lesson-box__quizanswer-correct">${i + 1}. Correct: <b>${correctLabel}</b></div>
+              <div class="lesson-box__quizanswer-yours">Your answer: ${yourAnswerLabel}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      state.quizReviewScore = { correct: correctCount, total: page.questions.length };
+      c.innerHTML = `
+        <div class="lesson-box__section-label">${page.sectionLabel || 'Answer Key'}</div>
+        ${rowsHtml}
+      `;
+    } else if (page.type === 'quiz-score') {
+      // Final tally page — reads state.quizReviewScore, computed as a
+      // side effect of rendering the preceding 'quiz-answers' page, so
+      // this page never re-grades anything itself. The reaction line is
+      // auto-picked from the score percentage (quizScoreMessage) unless
+      // the page explicitly supplies its own page.note.
+      const score = state.quizReviewScore || { correct: 0, total: 0 };
+      const note = page.note || quizScoreMessage(score);
+      c.innerHTML = `
+        <div class="lesson-box__quizscore-box">
+          <div class="lesson-box__quizscore-num">${score.correct} / ${score.total}</div>
+          <div class="lesson-box__quizscore-label">${page.title || 'Score'}</div>
+          <div class="lesson-box__quizscore-note">${note}</div>
+        </div>
+      `;
     }
   }
 
@@ -368,7 +515,7 @@
         tiles.forEach((t) => t.classList.remove('is-pulsing'));
         i = (i + 1) % tiles.length;
         tiles[i].classList.add('is-pulsing');
-      }, 750);
+      }, 1150);
       state.pulseIntervals.push(id);
     });
   }
@@ -445,6 +592,33 @@
           result.className = `lesson-box__quiz-result ${correct ? 'is-correct' : 'is-wrong'}`;
         });
       });
+    } else if (page.type === 'quiz-review') {
+      // Captures answers into state.quizReviewAnswers as the player
+      // interacts (no inline grading — see renderContent's 'quiz-review'
+      // branch). MC choices toggle a single selection per question; fill
+      // inputs capture on every keystroke, same as quiz-fill's blanks.
+      // Both stop click propagation so selecting/typing doesn't trigger
+      // the box's click-anywhere-to-advance listener.
+      const blocks = els.content.querySelectorAll('.lesson-box__quizreview-block');
+      blocks.forEach((block) => {
+        const qIdx = Number(block.dataset.qIdx);
+        const choices = block.querySelectorAll('.lesson-box__quizreview-choice');
+        choices.forEach((choiceEl) => {
+          choiceEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            state.quizReviewAnswers[qIdx] = Number(choiceEl.dataset.choiceIdx);
+            choices.forEach((c) => c.classList.remove('is-selected'));
+            choiceEl.classList.add('is-selected');
+          });
+        });
+        const input = block.querySelector('.lesson-box__quizreview-input');
+        if (input) {
+          input.addEventListener('click', (e) => e.stopPropagation());
+          input.addEventListener('input', () => {
+            state.quizReviewAnswers[qIdx] = input.value;
+          });
+        }
+      });
     }
     if (isConversation) {
       page.turns.forEach((t, i) => {
@@ -505,6 +679,11 @@
       onComplete: options && options.onComplete,
       onClose: options && options.onClose,
       pulseIntervals: [],
+      // Captured by 'quiz-review' pages, read (and graded) by the
+      // following 'quiz-answers' page — lives for the whole lesson-open
+      // session since LessonBox has no back-navigation, so a question's
+      // answer is only ever written once per open().
+      quizReviewAnswers: {},
     };
     root.hidden = false;
     render();

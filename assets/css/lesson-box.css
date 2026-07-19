@@ -278,6 +278,53 @@
   max-width: 46em;
 }
 
+/* Visual aid — floats right so the kana/romaji/meaning text wraps
+   around it, mirroring the portrait's float-left treatment on the
+   opposite side. Same lavender/white double-border chrome as the
+   portrait so a real photo (sunrise, blue sky, a bowing figure) or a
+   hand-drawn SVG icon both read as "part of this game's frame," not a
+   pasted-in image. */
+.lesson-box__greeting-visual {
+  float: right;
+  width: 120px;
+  height: 120px;
+  margin: 0 0 12px 18px;
+  background: var(--jr-border-outer);
+  padding: 4px;
+}
+
+.lesson-box__greeting-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--jr-portrait-bg);
+}
+
+.lesson-box__greeting-visual--icon {
+  background: var(--jr-border-outer);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lesson-box__greeting-visual--icon svg {
+  width: 100%;
+  height: 100%;
+  background: var(--jr-portrait-bg);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Single band of a stacked sprite sheet (background-size/position set
+   inline per-page) — pixelated so the pixel-art strip doesn't blur when
+   scaled up into the 120px frame. */
+.lesson-box__greeting-visual--sprite {
+  background-color: var(--jr-portrait-bg);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
 /* -- type: sentence --------------------------------------------------------- */
 /* Inline/underlined word treatment (not filled tiles) — explicit
    preference after comparing both against a filled-chip alternative:
@@ -318,13 +365,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
+/* Kana tile size trimmed down from 26px so more sample rows fit in view
+   without scrolling as heavily — the gloss caption below (which learners
+   actually read to check meaning) is sized up instead, see
+   .lesson-box__word-tile-gloss below. */
 .lesson-box__word-tile-text {
-  font-size: 26px;
-  padding-bottom: 4px;
-  border-bottom: 4px solid;
+  font-size: 21px;
+  padding-bottom: 3px;
+  border-bottom: 3px solid;
   letter-spacing: 0.02em;
   position: relative;
   transition: text-shadow 0.2s, transform 0.2s;
@@ -361,10 +412,10 @@
 }
 
 .lesson-box__word-tile-gloss {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--jr-text-dim);
   text-align: center;
-  max-width: 110px;
+  max-width: 130px;
 }
 
 .lesson-box__sentence-translation {
@@ -394,14 +445,58 @@
   clear: both;
 }
 
+/* One-line, no-jargon framing sentence — "here's the big idea," always
+   the very first thing on a grammar-intro page when supplied. */
+.lesson-box__big-idea {
+  font-size: 19px;
+  color: var(--jr-text);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  clear: both;
+}
+
+/* Real-world analogy, rendered before any technical breakdown — a
+   quote-like treatment (left rule + italic) to read as "an aside that
+   makes the idea click," distinct from the plainer explain-text. */
+.lesson-box__analogy {
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--jr-text-dim);
+  border-left: 3px solid var(--lb-role-noun-bg);
+  padding: 6px 12px;
+  margin-bottom: 12px;
+  clear: both;
+}
+
+/* Fixed pattern the learner should treat as copy/reuse-able — styled
+   like a "code box" (monospace, dashed border) rather than plain prose,
+   since it's meant to be memorized/reused verbatim. */
 .lesson-box__pattern-line {
+  font-family: "VT323", "DotGothic16", monospace;
   font-size: 24px;
   color: var(--jr-text);
   text-align: center;
   background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed var(--jr-text-dim);
+  border-radius: 4px;
   padding: 10px 14px;
   margin-bottom: 12px;
   letter-spacing: 0.02em;
+}
+
+/* "The one thing that actually matters right now" — a single bolded
+   takeaway, always last in the intro block, in its own high-contrast
+   callout so it doesn't blend into the rest of the explanation. */
+.lesson-box__takeaway {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--jr-bg-bottom);
+  background: var(--lb-role-particle-bg);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  clear: both;
 }
 
 /* Inline role-coloring for key words within running prose (explain
@@ -555,6 +650,91 @@
   text-align: center;
   margin-top: 4px;
   letter-spacing: 0.02em;
+}
+
+/* Row-per-word distance diagram (shelf-05's demonstratives page) — a
+   YOU / LISTENER / FAR AWAY column track per row, built by
+   buildDemonstrativesDiagram in n5-phaser-game.js. */
+.lesson-box__demo-grid {
+  display: grid;
+  grid-template-columns: 64px repeat(3, 1fr);
+  row-gap: 14px;
+  column-gap: 0;
+  align-items: center;
+}
+
+.lesson-box__demo-head {
+  font-size: 10px;
+  font-family: "VT323", "DotGothic16", monospace;
+  text-align: center;
+  color: var(--jr-text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.lesson-box__demo-head--word {
+  border-bottom: none;
+}
+
+.lesson-box__demo-row-word {
+  font-size: 22px;
+  text-align: center;
+}
+
+.lesson-box__demo-cell {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+.lesson-box__demo-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Cat "talk" strips are 192x64 (3 frames, closed/open/closed mouth) —
+   showing frame 0 (closed mouth) as a resting face icon via
+   background-position, same crop-without-a-separate-file trick used for
+   pixel bgs.png in Basic Greetings. */
+.lesson-box__demo-cat-pip {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  image-rendering: pixelated;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.lesson-box__demo-item-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.lesson-box__demo-row-note {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-family: "VT323", "DotGothic16", monospace;
+  color: var(--jr-text-dim);
+  padding: 2px 0 6px 64px;
 }
 
 /* Sub-section heading within grammar-intro (e.g. "Samples", "Notes / Fun
@@ -761,7 +941,7 @@
 }
 
 .lesson-box__try-it-hint {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--jr-text-dim);
   text-align: center;
   margin-top: 10px;
@@ -841,6 +1021,148 @@
   border-radius: 5px;
   cursor: pointer;
   margin-top: 16px;
+}
+
+/* -- type: quiz-review / quiz-answers / quiz-score ------------------------- */
+
+.lesson-box__quizreview-block {
+  margin-top: 18px;
+  clear: both;
+}
+
+.lesson-box__quizreview-block:first-of-type {
+  margin-top: 6px;
+}
+
+.lesson-box__quizreview-prompt {
+  font-size: 17px;
+  color: var(--jr-text);
+  margin-bottom: 8px;
+}
+
+.lesson-box__quizreview-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lesson-box__quizreview-choice {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 16px;
+  color: var(--jr-text);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.lesson-box__quizreview-choice::before {
+  content: "▸ ";
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__quizreview-choice.is-selected {
+  border-color: var(--lb-role-particle-bg);
+  background: rgba(240, 198, 116, 0.14);
+}
+
+.lesson-box__quizreview-choice.is-selected::before {
+  content: "▶ ";
+  color: var(--lb-role-particle-bg);
+}
+
+.lesson-box__quizreview-fill {
+  font-size: 18px;
+  color: var(--jr-text);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lesson-box__quizreview-input {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--jr-text-dim);
+  color: var(--jr-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: 90px;
+  text-align: center;
+}
+
+.lesson-box__quizreview-input:focus {
+  outline: none;
+  border-color: var(--lb-role-particle-bg);
+}
+
+.lesson-box__quizanswer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  clear: both;
+}
+
+.lesson-box__quizanswer-row:first-of-type {
+  margin-top: 4px;
+}
+
+.lesson-box__quizanswer-mark {
+  font-size: 18px;
+  font-weight: bold;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.lesson-box__quizanswer-mark.is-correct {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__quizanswer-mark.is-wrong {
+  color: #ff9a8a;
+}
+
+.lesson-box__quizanswer-correct {
+  font-size: 17px;
+  color: var(--jr-text);
+}
+
+.lesson-box__quizanswer-correct b {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__quizanswer-yours {
+  font-size: 15px;
+  color: var(--jr-text-dim);
+  margin-top: 2px;
+}
+
+.lesson-box__quizscore-box {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.lesson-box__quizscore-num {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 40px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 10px;
+}
+
+.lesson-box__quizscore-label {
+  font-size: 17px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__quizscore-note {
+  font-size: 15px;
+  color: var(--jr-text-dim);
+  margin-top: 14px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* -- ambient corner cat (decorative, outside the text flow) ---------------- */

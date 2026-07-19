@@ -600,6 +600,136 @@
         "13992"
       ],
       "port": 13992
+    },
+    {
+      "name": "jp-library-dashboard-live",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14093"
+      ],
+      "port": 14093
+    },
+    {
+      "name": "jp-library-static-favicon-reposition",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14194"
+      ],
+      "port": 14194
+    },
+    {
+      "name": "jp-library-static-shelf05-demonstratives",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14295"
+      ],
+      "port": 14295
+    },
+    {
+      "name": "jp-library-static-teaching-style",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14396"
+      ],
+      "port": 14396
+    },
+    {
+      "name": "jp-library-static-visual-aids",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14497"
+      ],
+      "port": 14497
+    },
+    {
+      "name": "jp-library-static-sprite-bg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14598"
+      ],
+      "port": 14598
+    },
+    {
+      "name": "jp-library-static-demo-diagram",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14699"
+      ],
+      "port": 14699
+    },
+    {
+      "name": "jp-library-static-shelf05-expand",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14790"
+      ],
+      "port": 14790
+    },
+    {
+      "name": "jp-library-static-readability-tweaks",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14891"
+      ],
+      "port": 14891
+    },
+    {
+      "name": "jp-library-static-cat-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "14992"
+      ],
+      "port": 14992
+    },
+    {
+      "name": "jp-library-static-review1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15093"
+      ],
+      "port": 15093
+    },
+    {
+      "name": "jp-library-static-review1-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15194"
+      ],
+      "port": 15194
+    },
+    {
+      "name": "jp-library-static-font-block",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15295"
+      ],
+      "port": 15295
     }
   ],
   "autoVerify": true
