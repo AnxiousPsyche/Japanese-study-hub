@@ -216,7 +216,7 @@
       const tiles = page.tiles.map((t) => `
         <div class="lesson-box__word-tile">
           <div class="lesson-box__word-tile-text role-${t.role}${t.isNew ? ' is-new' : ''}">${t.text}</div>
-          <div class="lesson-box__word-tile-gloss">${t.gloss}</div>
+          <div class="lesson-box__word-tile-gloss${t.smallGloss ? ' is-small' : ''}">${t.gloss}</div>
         </div>
       `).join('');
       const note = page.note ? `<div class="lesson-box__sentence-note">${page.note}</div>` : '';
@@ -247,7 +247,11 @@
       //   terms: array of {role, name, desc} — glossary grid.
       //   diagramSvg: raw inline <svg> markup (author-controlled content,
       //     not user input) + optional diagramCaption string.
-      //   samples: array of {tag, tiles:[{text,role,gloss}], translation}.
+      //   samples: array of {tag, tiles:[{text,role,gloss,smallGloss?}], translation}.
+      //     smallGloss: true shrinks just that tile's gloss caption — for a
+      //     long phrase-as-single-tile (e.g. よろしくお願いします) whose gloss
+      //     text is also long enough to wrap to 2 lines at the normal size,
+      //     breaking baseline alignment with its shorter neighbor tiles.
       //   cultureNote / cultureNotes: single string or array of strings.
       //   takeaway: one bolded sentence — "the one thing that actually
       //     matters right now," rendered last in the intro block, in its
@@ -305,7 +309,7 @@
               ${s.tiles.map((t) => `
                 <div class="lesson-box__word-tile">
                   <div class="lesson-box__word-tile-text role-${t.role}">${t.text}</div>
-                  <div class="lesson-box__word-tile-gloss">${t.gloss}</div>
+                  <div class="lesson-box__word-tile-gloss${t.smallGloss ? ' is-small' : ''}">${t.gloss}</div>
                 </div>
               `).join('')}
             </div>

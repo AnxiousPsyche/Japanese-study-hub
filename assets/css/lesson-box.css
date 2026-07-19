@@ -446,6 +446,25 @@
   max-width: 130px;
 }
 
+/* For a tile whose gloss text is long enough to wrap onto 2 lines at the
+   normal size (a long phrase-as-single-tile, e.g. よろしくお願いします) —
+   nowrap + no max-width keeps it on one line (the inherited 130px
+   max-width would otherwise still wrap it even at a smaller font-size).
+   The line-height is pinned to 27px — the exact rendered height a normal
+   15px/1.8-line-height gloss already gets — rather than left to the
+   smaller font's own natural line-height: with align-items:flex-end on
+   .lesson-box__sentence-row, ANY tile whose total height differs (even by
+   a few px) shifts that whole tile's kana text up/down relative to its
+   neighbors, which is what made the "smaller" version still look
+   misaligned. Pinning the height keeps every tile the same overall size
+   regardless of its own gloss font-size. */
+.lesson-box__word-tile-gloss.is-small {
+  font-size: 11px;
+  line-height: 27px;
+  max-width: none;
+  white-space: nowrap;
+}
+
 .lesson-box__sentence-translation {
   font-size: 15px;
   color: var(--jr-text-dim);

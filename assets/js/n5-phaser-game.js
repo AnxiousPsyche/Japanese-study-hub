@@ -1152,47 +1152,39 @@ const LESSON_CONTENT = {
     {
       // Recap 4/4: Self Introduction — a complete jikoshoukai shown as one
       // flowing example (greet+name+close as a single sample, not 3
-      // separate step chips) plus 2 more versions with different names
+      // separate step chips) plus 1 more version with a different name
       // right below it in the same box, so the 3-step shape reads as one
-      // reusable template instead of an abstract outline.
+      // reusable template instead of an abstract outline. はじめまして/
+      // よろしくお願いします use smallGloss — as long single-tile phrases
+      // their glosses were wrapping to 2 lines and breaking baseline
+      // alignment with the short 1-word tiles (わたし/は/name/です) beside
+      // them in the same row.
       type: 'grammar-intro',
       sectionLabel: 'Recap: Self Introduction (jikoshoukai)',
       samples: [
         {
           tag: 'A complete self-introduction',
           tiles: [
-            { text: 'はじめまして', role: 'noun', gloss: 'how do you do (greet)' },
+            { text: 'はじめまして', role: 'noun', gloss: 'how do you do (greet)', smallGloss: true },
             { text: 'わたし', role: 'noun', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
             { text: 'レイヤ', role: 'noun', gloss: 'name' },
             { text: 'です', role: 'verb', gloss: 'am / is / are' },
-            { text: 'よろしくお願いします', role: 'particle', gloss: 'please treat me kindly (close)' },
+            { text: 'よろしくお願いします', role: 'particle', gloss: 'please treat me kindly (close)', smallGloss: true },
           ],
           translation: 'Hajimemashite. Watashi wa Reya desu. Yoroshiku onegaishimasu.',
         },
         {
           tag: 'Another version (swap in any name)',
           tiles: [
-            { text: 'はじめまして', role: 'noun', gloss: 'greet' },
+            { text: 'はじめまして', role: 'noun', gloss: 'greet', smallGloss: true },
             { text: 'わたし', role: 'noun', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
             { text: 'タロウ', role: 'noun', gloss: 'name' },
             { text: 'です', role: 'verb', gloss: 'am / is / are' },
-            { text: 'よろしくお願いします', role: 'particle', gloss: 'close' },
+            { text: 'よろしくお願いします', role: 'particle', gloss: 'close', smallGloss: true },
           ],
           translation: 'Hajimemashite. Watashi wa Tarou desu. Yoroshiku onegaishimasu.',
-        },
-        {
-          tag: 'One more version',
-          tiles: [
-            { text: 'はじめまして', role: 'noun', gloss: 'greet' },
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
-            { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ユキ', role: 'noun', gloss: 'name' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
-            { text: 'よろしくお願いします', role: 'particle', gloss: 'close' },
-          ],
-          translation: 'Hajimemashite. Watashi wa Yuki desu. Yoroshiku onegaishimasu.',
         },
       ],
     },

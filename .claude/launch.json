@@ -760,6 +760,36 @@
         "15598"
       ],
       "port": 15598
+    },
+    {
+      "name": "jp-library-static-jikoshoukai-smallgloss",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15699"
+      ],
+      "port": 15699
+    },
+    {
+      "name": "jp-library-static-gloss-nowrap",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15791"
+      ],
+      "port": 15791
+    },
+    {
+      "name": "jp-library-static-gloss-lineheight",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15892"
+      ],
+      "port": 15892
     }
   ],
   "autoVerify": true
