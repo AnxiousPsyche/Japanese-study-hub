@@ -374,6 +374,35 @@ const LESSON_CONTENT = {
         },
       ],
     },
+    {
+      // 3 drag-and-drop mini-checks (page.choices) — matching shelf-05's
+      // pattern, retrofitted here so every content-complete lesson has at
+      // least 3. Each blank stands alone (no before/after sentence frame)
+      // since these greetings are standalone phrases, not sentence-
+      // embedded — the prompt itself carries the context.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'How do you say "Thank you" politely?',
+      before: '', after: '',
+      choices: ['すみません', 'ありがとうございます', 'さようなら'],
+      answer: 'ありがとうございます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Which one means "Good morning" (polite)?',
+      before: '', after: '',
+      choices: ['こんにちは', 'おはようございます', 'こんばんは'],
+      answer: 'おはようございます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'You bump into someone by accident — what do you say?',
+      before: '', after: '',
+      choices: ['ありがとうございます', 'こんにちは', 'すみません'],
+      answer: 'すみません',
+    },
   ],
   'shelf-02': [
     {
@@ -462,6 +491,32 @@ const LESSON_CONTENT = {
           text: 'じゃあね！', romaji: 'Jaa ne! — "See you!"',
         },
       ],
+    },
+    {
+      // 3 drag-and-drop mini-checks (page.choices) — see shelf-01's for
+      // the standing pattern this retrofits everywhere.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'What do you say right before eating?',
+      before: '', after: '',
+      choices: ['ごちそうさまでした', 'いただきます', 'いってきます'],
+      answer: 'いただきます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Said when you arrive back home:',
+      before: '', after: '',
+      choices: ['いってきます', 'ただいま', 'お邪魔します'],
+      answer: 'ただいま',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'The most casual way to say "see you"?',
+      before: '', after: '',
+      choices: ['では、また。', 'じゃ、また。', 'じゃあ(ね)。'],
+      answer: 'じゃあ(ね)。',
     },
   ],
   // shelf-03 and shelf-04 were swapped (A は B です moved from shelf-04 to
@@ -677,10 +732,38 @@ const LESSON_CONTENT = {
         { kana: 'せんせい', romaji: 'sensei', meaning: 'teacher' },
       ],
     },
+    {
+      // 3 drag-and-drop mini-checks (page.choices) — see shelf-01's for
+      // the standing pattern this retrofits everywhere. Distractors are
+      // all words this shelf itself already taught (see the summary
+      // table above), not invented/untaught vocab.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I am a student":',
+      before: 'わたしはがくせい', after: '。',
+      choices: ['でした', 'です', 'せんせい'],
+      answer: 'です',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "This is a pen":',
+      before: 'これは', after: 'です。',
+      choices: ['ほん', 'ペン', 'がくせい'],
+      answer: 'ペン',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I WAS a student" (past tense):',
+      before: 'わたしはがくせい', after: '。',
+      choices: ['です', 'でした', 'せんせい'],
+      answer: 'でした',
+    },
   ],
   'shelf-04': [
     {
-      // Page 1/5: what jikoshoukai is + a BRIEF pattern reminder (not a
+      // Page 1/8: what jikoshoukai is + a BRIEF pattern reminder (not a
       // re-teach — A は B です is shelf-03 now, already studied) + the
       // culture behind it, all combined on one page via grammar-intro's
       // section stacking (intro block, then a notes block, divided).
@@ -704,7 +787,7 @@ const LESSON_CONTENT = {
       takeaway: 'Greet, say your name with A は B です, close politely — same 3 steps, every single time.',
     },
     {
-      // Page 2/5: the self-intro exchange as an actual two-party
+      // Page 2/8: the self-intro exchange as an actual two-party
       // conversation. Neko-sensei's color is resolved dynamically at
       // lesson-start (resolveConversationTurns) so she never matches the
       // player's own selected cat color. お名前/何/か are genuinely new
@@ -731,8 +814,12 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 3/5: "you try" gate — advance() won't move past this page
+      // Page 3/8: "you try" gate — advance() won't move past this page
       // until the player actually types a name (see lesson-box.js).
+      // Deliberately kept as free-text (not the drag-and-drop
+      // page.choices variant) — this blank has no single fixed correct
+      // answer, any name is valid, so offering 3 fake "name choices"
+      // wouldn't make sense here the way it does for a real grammar blank.
       type: 'try-it',
       sectionLabel: 'Your turn',
       prompt: 'Now you try — type your own name to finish your self-introduction:',
@@ -741,7 +828,33 @@ const LESSON_CONTENT = {
       placeholder: 'Neko',
     },
     {
-      // Page 4/5: new-words recap — only お名前/何/か are new to THIS
+      // 3 drag-and-drop mini-checks (page.choices) — see shelf-01's for
+      // the standing pattern this retrofits everywhere.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'The greeting used ONLY the first time you meet someone:',
+      before: '', after: '',
+      choices: ['よろしくお願いします', 'はじめまして', 'こんにちは'],
+      answer: 'はじめまして',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "What is your name?" (polite):',
+      before: '', after: 'は何ですか。',
+      choices: ['か', 'お名前', '何'],
+      answer: 'お名前',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'The polite closing line after introducing yourself:',
+      before: '', after: '',
+      choices: ['はじめまして', 'よろしくお願いします', 'ありがとうございます'],
+      answer: 'よろしくお願いします',
+    },
+    {
+      // Page 7/8: new-words recap — only お名前/何/か are new to THIS
       // shelf (わたし/は/です were already taught on shelf-03, so they're
       // deliberately left off this table rather than re-listed).
       type: 'summary',
@@ -754,7 +867,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 5/5: fill-in-the-blank check — non-blocking (this is the
+      // Page 8/8: fill-in-the-blank check — non-blocking (this is the
       // last page; advancing past it completes the lesson regardless),
       // "Check answers" just gives immediate right/wrong feedback.
       type: 'quiz-fill',
@@ -769,11 +882,13 @@ const LESSON_CONTENT = {
   ],
   'shelf-05': [
     {
-      // Page 1/8: how the demonstrative (こそあど) system works, plus a
+      // Page 1/13: how the demonstrative (こそあど) system works, plus a
       // recap chip for これ (already known since shelf-03's samples) so
-      // it doesn't get re-taught as new — 10-page template (intro,
-      // diagram, 4x samples, conversation, try-it, summary, quiz) is the
-      // standing pattern for every future grammar shelf from here on.
+      // it doesn't get re-taught as new — intro/diagram/4x samples/
+      // conversation/try-it/summary/quiz is the standing pattern for
+      // every future grammar shelf; this one has an extra page (これ vs
+      // この construction contrast) specific to demonstratives' quirk of
+      // some forms standing alone and others needing a noun attached.
       type: 'grammar-intro',
       sectionLabel: 'How demonstratives work',
       bigIdea: 'Japanese picks "this/that" based on distance, not just what the object is.',
@@ -830,7 +945,7 @@ const LESSON_CONTENT = {
         {
           tag: '"That over there is a book." (far from both)',
           tiles: [
-            { text: 'あれ', role: 'verb', gloss: 'that over there', isNew: true },
+            { text: 'あれ', role: 'verb', gloss: 'that over there', smallGloss: true, isNew: true },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
             { text: 'ほん', role: 'noun', gloss: 'book' },
             { text: 'です', role: 'verb', gloss: 'am / is / are' },
@@ -884,7 +999,50 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 5/10: ここ/そこ/あそこ/どこ — the "place" row of the こそあど
+      // これ vs この sentence-construction contrast — これ/それ/あれ can
+      // BE the subject on their own (page 3), but この/その/あの/どの
+      // can't stand alone (page 4 above only shows them as bare noun
+      // phrases, e.g. "kono hon") — they grab a noun, and that noun
+      // becomes the subject together with them. Borrows の (possessive
+      // "'s/mine") one shelf early specifically to show a real full
+      // sentence built on a この-phrase, since without it there's no
+      // natural predicate to attach — flagged isNew like any other
+      // early-introduced word.
+      type: 'grammar-intro',
+      sectionLabel: 'これ vs この — same word, different job',
+      bigIdea: 'これ IS the subject. この can\'t be the subject alone — it grabs a noun, and the two together become the subject.',
+      analogy: 'これ is like pointing at something and saying "this one" — that\'s the whole subject, done. この is like pointing while your hand is already resting on a noun — "this ___" only becomes the subject once you name what "___" is.',
+      explain: [
+        'That\'s why これはペンです works (これ alone is enough to be "this"), but この alone doesn\'t — この always needs a noun glued to it (このペン, "this pen"), and THAT whole phrase is what は marks as the topic.',
+      ],
+      samples: [
+        {
+          tag: '"This is a pen." — これ alone is the subject',
+          tiles: [
+            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Kore wa pen desu.',
+        },
+        {
+          tag: '"This pen is mine." — この+pen together are the subject',
+          tiles: [
+            { text: 'この', role: 'noun', gloss: 'this ~' },
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'の', role: 'particle', gloss: '\'s / mine (possessive)', smallGloss: true, isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Kono pen wa watashi no desu.',
+        },
+      ],
+      takeaway: 'これ replaces a whole noun; この borrows one — either way, は…です still wraps around whatever the real subject turns out to be.',
+    },
+    {
+      // Page 6/13: ここ/そこ/あそこ/どこ — the "place" row of the こそあど
       // grid (これ/この/ここ/こちら etc. is a 4-column table; this shelf
       // now covers 3 of those 4 columns). Full copula sentences, same
       // shape as page 3, since these stand alone like これ/それ/あれ
@@ -936,7 +1094,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 6/10: こちら/そちら/あちら/どちら — the polite/direction row
+      // Page 7/13: こちら/そちら/あちら/どちら — the polite/direction row
       // (the 4th column of the grid). More formal than これ/それ/あれ and
       // doubles as a polite way to refer to a person ("this is ~"), so the
       // samples lean on real service-counter phrasing (restroom/exit/
@@ -991,7 +1149,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 7/10: conversation — reuses なん (shelf-04) and ありがとう
+      // Page 8/13: conversation — reuses なん (shelf-04) and ありがとう
       // (shelf-01) so it's not leaning on brand-new vocab beyond この
       // shelf's own それ.
       type: 'conversation',
@@ -1014,17 +1172,41 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 8/10: "you try" gate — advance() stays locked until typed,
-      // same mechanism as shelf-04's try-it (see lesson-box.js).
+      // Page 9/13: "you try" gate — advance() stays locked until the
+      // correct tile is dragged into the blank, same gate mechanism as
+      // shelf-04's try-it (see lesson-box.js) but the drag-and-drop
+      // variant (page.choices) — this blank has one fixed correct answer
+      // (これ), so 3 draggable options work naturally here, unlike
+      // shelf-04's free-name blank.
       type: 'try-it',
       sectionLabel: 'Your turn',
-      prompt: 'Something is right next to YOU. Fill in the blank to say "this is a pen":',
+      prompt: 'Something is right next to YOU. Drag the right word into the blank to say "this is a pen":',
       before: '',
       after: 'はペンです',
-      placeholder: 'これ',
+      choices: ['それ', 'これ', 'あれ'],
+      answer: 'これ',
     },
     {
-      // Page 9/10: new-words recap — これ deliberately excluded (already
+      // 2 more drag-and-drop mini-checks — brings this shelf to 3 total
+      // (this + the これ one above), matching the standing per-lesson
+      // minimum retrofitted across shelf-01..05.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Something is far from both you and the listener. Say "that is a book":',
+      before: '', after: 'はほんです。',
+      choices: ['それ', 'あれ', 'これ'],
+      answer: 'あれ',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Ask "Where is the cat?":',
+      before: 'ねこは', after: 'ですか。',
+      choices: ['どこ', 'ここ', 'そこ'],
+      answer: 'どこ',
+    },
+    {
+      // Page 10/13: new-words recap — これ deliberately excluded (already
       // taught on shelf-03), matching the "only genuinely new words"
       // convention from shelf-04's summary page. Now covers all 4 columns
       // of the こそあど grid (これ/この/ここ/こちら etc.), not just the
@@ -1048,10 +1230,11 @@ const LESSON_CONTENT = {
         { kana: 'そちら', romaji: 'sochira', meaning: 'that (polite) / that way' },
         { kana: 'あちら', romaji: 'achira', meaning: 'that over there (polite)' },
         { kana: 'どちら', romaji: 'dochira', meaning: 'which way (polite)' },
+        { kana: 'の', romaji: 'no', meaning: '\'s / mine (possessive)' },
       ],
     },
     {
-      // Page 10/10: fill-in-the-blank check — non-blocking, same pattern
+      // Page 13/13: fill-in-the-blank check — non-blocking, same pattern
       // as shelf-04's closing quiz. Covers all 4 columns now, not just
       // これ/それ/あれ/どれ.
       type: 'quiz-fill',
@@ -1063,6 +1246,289 @@ const LESSON_CONTENT = {
         { before: '', after: 'ですか。 (asking "which one?")', answer: 'どれ', altAnswers: ['dore'], hint: '(the question member of the set)' },
         { before: 'ねこは', after: 'ですか。 (asking "where is the cat?")', answer: 'どこ', altAnswers: ['doko'], hint: '(place question word)' },
         { before: 'えきは', after: 'です。 (far away, polite)', answer: 'あちら', altAnswers: ['achira'], hint: '(polite "over there")' },
+      ],
+    },
+  ],
+  // shelf-06's "Questions (か)" — builds on shelf-05's どこ/どの/どちら and
+  // shelf-04's なん, adding か itself plus だれ/いつ/どうして・なぜ/いくつ/
+  // いくら and the はい/いいえ/そうです/ちがいます answer words. Every
+  // sample stays on the established Xは...です(か) pattern — no adjectives
+  // or verb conjugation yet (those start at shelf-10/11/13).
+  'shelf-06': [
+    {
+      // Page 1/14: か's hook — just the big idea + analogy, kept alone so
+      // the very first thing the player sees is light, not a wall of
+      // fields (previously this page also carried recapChips/terms/
+      // pattern/explain/takeaway all at once — split across pages 1-3
+      // below per explicit "keep it 3 page, easy on the eyes" request).
+      type: 'grammar-intro',
+      sectionLabel: 'How か makes a question',
+      dividedIntro: true,
+      bigIdea: 'One tiny particle turns any calm statement into a question — nothing else moves.',
+      analogy: 'か works like the sound of a question mark: you don\'t reorder the sentence or slot in a new word partway through, you just tack it onto the very end.',
+    },
+    {
+      // Page 2/14: the mechanics — recap + the term itself + the fixed
+      // pattern, dividedIntro so these 3 distinct chunks each read as
+      // their own section instead of one dense stack.
+      type: 'grammar-intro',
+      dividedIntro: true,
+      recapChips: ['です (shelf 3)', 'なん (shelf 4)', 'どこ・どの・どちら (shelf 5)'],
+      terms: [
+        { role: 'particle', name: 'か (ka)', desc: 'Added to the very end of a sentence — turns a statement into a question.' },
+      ],
+      pattern: [
+        { text: '[statement]', role: 'noun' }, { text: 'か', role: 'particle' },
+      ],
+    },
+    {
+      // Page 3/14: the fuller explanation + the one-thing-to-remember
+      // takeaway, on their own page.
+      type: 'grammar-intro',
+      dividedIntro: true,
+      explain: [
+        'か works two ways: tack it onto a plain yes/no statement (これはほんです → これはほんですか, "Is this a book?"), or onto a sentence that already has a question word in it (せんせいはどこです → せんせいはどこですか, "Where is the teacher?", reusing どこ from shelf 5). Either way, word order never changes — か always goes at the very end.',
+      ],
+      takeaway: 'Add か to the end of any statement — that\'s a question. No question mark needed.',
+    },
+    {
+      // Page 4/14: statement -> question diagram — real cat-face pips
+      // (buildQuestionParticleDiagram), matching shelf-05's diagram
+      // treatment instead of plain SVG boxes, per explicit request.
+      // Function, not a static string — resolved by resolveDynamicDiagrams
+      // at lesson-open time (same mechanism shelf-05 uses).
+      type: 'grammar-intro',
+      diagramSvg: buildQuestionParticleDiagram,
+      diagramCaption: 'Same words, same order — か tacked onto the very end is the only difference between a statement and a question.',
+    },
+    {
+      // Page 5/14: yes/no questions and their answers — introduces
+      // はい/いいえ/そうです/ちがいます inline with the questions they answer.
+      type: 'grammar-intro',
+      sectionLabel: 'Yes-or-no questions, and answering them',
+      samples: [
+        {
+          tag: '"Is this a book?"',
+          tiles: [
+            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true, isNew: true },
+          ],
+          translation: 'Kore wa hon desu ka?',
+        },
+        {
+          tag: '"Yes, that\'s right."',
+          tiles: [
+            { text: 'はい', role: 'verb', gloss: 'yes', isNew: true },
+            { text: 'そうです', role: 'verb', gloss: 'that\'s right', isNew: true },
+          ],
+          translation: 'Hai, sou desu.',
+        },
+        {
+          tag: '"Is that a pen?"',
+          tiles: [
+            { text: 'それ', role: 'noun', gloss: 'that' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Sore wa pen desu ka?',
+        },
+        {
+          tag: '"No, that\'s wrong. It\'s a book."',
+          tiles: [
+            { text: 'いいえ', role: 'verb', gloss: 'no', isNew: true },
+            { text: 'ちがいます', role: 'verb', gloss: 'that\'s wrong', smallGloss: true, isNew: true },
+            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+          ],
+          translation: 'Iie, chigaimasu. Hon desu.',
+        },
+      ],
+    },
+    {
+      // Page 6/14: the 5 new content question words as a set.
+      type: 'grammar-intro',
+      sectionLabel: 'The question words',
+      explain: [
+        'These attach the same way どこ/どの/どちら did on shelf 5 — swap in whichever question word fits, keep everything else the same.',
+      ],
+      terms: [
+        { role: 'noun', name: 'だれ (dare)', desc: 'Who' },
+        { role: 'particle', name: 'いつ (itsu)', desc: 'When' },
+        { role: 'verb', name: 'どうして (doushite)', desc: 'Why — neutral, spoken' },
+        { role: 'verb', name: 'なぜ (naze)', desc: 'Why — more formal, written' },
+        { role: 'adjective', name: 'いくつ (ikutsu)', desc: 'How many (small countable things)' },
+        { role: 'adjective', name: 'いくら (ikura)', desc: 'How much (price)' },
+      ],
+    },
+    {
+      // Page 7/14: だれ・いつ samples. たんじょうび is a one-off context
+      // noun (same precedent as shelf-05's えき/でぐち/おてあらい) — glossed
+      // inline, not added to this shelf's vocab table.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"Who is the teacher?"',
+          tiles: [
+            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'だれ', role: 'noun', gloss: 'who', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Sensei wa dare desu ka?',
+        },
+        {
+          tag: '"When is your birthday?"',
+          tiles: [
+            { text: 'たんじょうび', role: 'noun', gloss: 'birthday' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'いつ', role: 'particle', gloss: 'when', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Tanjoubi wa itsu desu ka?',
+        },
+      ],
+    },
+    {
+      // Page 8/14: どうして・なぜ・いくつ・いくら samples. りんご is a
+      // one-off context noun, same treatment as たんじょうび above.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"Why?" (casual, spoken)',
+          tiles: [
+            { text: 'どうして', role: 'verb', gloss: 'why (casual)', smallGloss: true, isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Doushite desu ka?',
+        },
+        {
+          tag: '"Why?" (formal, written)',
+          tiles: [
+            { text: 'なぜ', role: 'verb', gloss: 'why (formal)', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Naze desu ka?',
+        },
+        {
+          tag: '"How many apples?"',
+          tiles: [
+            { text: 'りんご', role: 'noun', gloss: 'apple' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'いくつ', role: 'adjective', gloss: 'how many', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Ringo wa ikutsu desu ka?',
+        },
+        {
+          tag: '"How much is this?"',
+          tiles: [
+            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'いくら', role: 'adjective', gloss: 'how much (price)', isNew: true },
+            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
+          ],
+          translation: 'Kore wa ikura desu ka?',
+        },
+      ],
+    },
+    {
+      // Page 9/14: conversation — reuses なん (shelf-04) and this shelf's
+      // own か/ありがとうございます (shelf-01). そうですか (literally
+      // そう+です+か) is called out inline via the romaji gloss since it
+      // functions as "oh, I see" — a reaction phrase, not a real question.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'player', name: 'You', action: 'tailwagRight', actionLabel: '*tail wags*',
+          text: 'すみません、これはなんですか？',
+          romaji: 'Sumimasen, kore wa nan desu ka? — "Excuse me, what is this?"',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'それはほんです。',
+          romaji: 'Sore wa hon desu. — "That is a book."',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: 'そうですか！ありがとうございます。',
+          romaji: 'Sou desu ka! Arigatou gozaimasu. — "Oh, I see! Thank you."',
+        },
+      ],
+    },
+    {
+      // Page 10/14: drag-and-drop mini-check — the shelf's core grammar
+      // point itself (add か to make a question), not just vocab recall.
+      // Distractors are taught words that would NOT turn this into a
+      // question, so a correct pick means actually understanding か's job.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Turn "これはほんです" into a question — drag the one particle that goes at the very end:',
+      before: 'これはほんです', after: '',
+      choices: ['は', 'です', 'か'],
+      answer: 'か',
+    },
+    {
+      // Page 11/14: drag-and-drop mini-check — だれ.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Ask "Who is the teacher?":',
+      before: 'せんせいは', after: 'ですか。',
+      choices: ['だれ', 'いつ', 'いくつ'],
+      answer: 'だれ',
+    },
+    {
+      // Page 12/14: drag-and-drop mini-check — いくら.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Ask "How much is this?":',
+      before: 'これは', after: 'ですか。',
+      choices: ['いくつ', 'いくら', 'いつ'],
+      answer: 'いくら',
+    },
+    {
+      // Page 13/14: new-words recap — 11 words, none re-taught from
+      // earlier shelves (どこ/どの/どちら/なん stay excluded per scope).
+      type: 'summary',
+      title: 'New Words: Questions (か)',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+        { kana: 'だれ', romaji: 'dare', meaning: 'who' },
+        { kana: 'いつ', romaji: 'itsu', meaning: 'when' },
+        { kana: 'どうして', romaji: 'doushite', meaning: 'why (casual)' },
+        { kana: 'なぜ', romaji: 'naze', meaning: 'why (formal)' },
+        { kana: 'いくつ', romaji: 'ikutsu', meaning: 'how many' },
+        { kana: 'いくら', romaji: 'ikura', meaning: 'how much (price)' },
+        { kana: 'はい', romaji: 'hai', meaning: 'yes' },
+        { kana: 'いいえ', romaji: 'iie', meaning: 'no' },
+        { kana: 'そうです', romaji: 'sou desu', meaning: 'that\'s right' },
+        { kana: 'ちがいます', romaji: 'chigaimasu', meaning: 'that\'s wrong' },
+      ],
+    },
+    {
+      // Page 14/14: fill-in-the-blank check — non-blocking, same pattern
+      // as every other shelf's closing quiz. Samples (not exhaustively
+      // covers) the new set, matching shelf-05's quiz size.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check: Questions (か)',
+      intro: 'Fill in the blanks:',
+      questions: [
+        { before: 'これはほんです', after: '。 (turn it into a question)', answer: 'か', altAnswers: ['ka'], hint: '(goes at the very end)' },
+        { before: 'せんせいは', after: 'ですか。 (asking "who?")', answer: 'だれ', altAnswers: ['dare'], hint: '(asking about a person)' },
+        { before: 'たんじょうびは', after: 'ですか。 (asking "when?")', answer: 'いつ', altAnswers: ['itsu'], hint: '(asking about time)' },
+        { before: 'りんごは', after: 'ですか。 (asking "how many?")', answer: 'いくつ', altAnswers: ['ikutsu'], hint: '(small countable things)' },
+        { before: 'これは', after: 'ですか。 (asking "how much?")', answer: 'いくら', altAnswers: ['ikura'], hint: '(asking about price)' },
       ],
     },
   ],
@@ -1298,6 +1764,39 @@ function buildDemonstrativesDiagram(playerColorId, senseiColorId) {
       <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}</div>
       <div class="lesson-box__demo-cell">${track}${item}</div>
       <div class="lesson-box__demo-row-note">are — far from <b>both of you</b>.</div>
+    </div>
+  `;
+}
+
+// Builds shelf-06's statement-to-question diagram — two rows (STATEMENT /
+// QUESTION) with a real cat-face pip per row (player's own color for the
+// statement, sensei's derived color for the question — same "who's
+// talking" cue used everywhere else, not a distance/listener concept like
+// shelf-05's diagram, just reusing the same real-cat-sprite treatment
+// instead of plain boxes) plus a tilted "?" badge and a glowing highlight
+// ring on か itself so it reads as "the one thing that changed."
+function buildQuestionParticleDiagram(playerColorId, senseiColorId) {
+  const youPath = TALK_COLOR_PATHS[playerColorId];
+  const senseiPath = TALK_COLOR_PATHS[senseiColorId];
+  const pip = (path) => `<div class="lesson-box__qdiagram-cat" style="background-image:url('${path}');"></div>`;
+  const tile = (text, role, extraClass) => `<div class="lesson-box__qdiagram-tile role-${role}${extraClass ? ' ' + extraClass : ''}">${text}</div>`;
+  return `
+    <div class="lesson-box__qdiagram">
+      <div class="lesson-box__qdiagram-row">
+        <div class="lesson-box__qdiagram-label">Statement</div>
+        <div class="lesson-box__qdiagram-cells">
+          ${pip(youPath)}
+          ${tile('これ', 'noun')}${tile('は', 'particle')}${tile('ほん', 'noun')}${tile('です', 'verb')}
+        </div>
+      </div>
+      <div class="lesson-box__qdiagram-row">
+        <div class="lesson-box__qdiagram-label">Question</div>
+        <div class="lesson-box__qdiagram-cells">
+          <span class="lesson-box__qdiagram-qmark">?</span>
+          ${pip(senseiPath)}
+          ${tile('これ', 'noun')}${tile('は', 'particle')}${tile('ほん', 'noun')}${tile('です', 'verb')}${tile('か', 'particle', 'is-highlight')}
+        </div>
+      </div>
     </div>
   `;
 }

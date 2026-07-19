@@ -790,6 +790,86 @@
         "15892"
       ],
       "port": 15892
+    },
+    {
+      "name": "jp-library-static-kono-construction",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "15993"
+      ],
+      "port": 15993
+    },
+    {
+      "name": "jp-library-static-dragdrop-tryit",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16094"
+      ],
+      "port": 16094
+    },
+    {
+      "name": "jp-library-static-dragdrop-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16195"
+      ],
+      "port": 16195
+    },
+    {
+      "name": "jp-library-static-tryit-hint-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16296"
+      ],
+      "port": 16296
+    },
+    {
+      "name": "jp-library-static-suppress-click-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16397"
+      ],
+      "port": 16397
+    },
+    {
+      "name": "jp-library-static-tryit-all-lessons",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16498"
+      ],
+      "port": 16498
+    },
+    {
+      "name": "jp-library-static-shelf06-content",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16599"
+      ],
+      "port": 16599
+    },
+    {
+      "name": "jp-library-static-shelf06-declutter",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16700"
+      ],
+      "port": 16700
     }
   ],
   "autoVerify": true

@@ -46,6 +46,17 @@
   let root = null;
   let els = null;
   let state = null; // { pages, index, onComplete, onClose }
+  // Set true for one mouseup/touchend after a try-it drag-and-drop
+  // interaction (see wireTryItDragDrop) — when mousedown and mouseup land
+  // on DIFFERENT elements (tile -> blank), the browser still synthesizes
+  // a 'click' event afterward, targeting the nearest COMMON ANCESTOR of
+  // the two (not the tile or the blank specifically) — so a narrow
+  // stopPropagation() on just those two elements never catches it, and
+  // that click bubbles to els.box's click-to-advance listener, silently
+  // skipping straight to the next page on every successful drop. This
+  // flag is checked (and consumed) in that listener instead, which
+  // catches the click regardless of which ancestor it actually targets.
+  let suppressNextBoxClick = false;
 
   function ensureDom() {
     if (root) return;
@@ -79,7 +90,13 @@
       content: root.querySelector('.lesson-box__content'),
       continue: root.querySelector('.lesson-box__continue'),
     };
-    els.box.addEventListener('click', advance);
+    els.box.addEventListener('click', () => {
+      if (suppressNextBoxClick) {
+        suppressNextBoxClick = false;
+        return;
+      }
+      advance();
+    });
   }
 
   // opts: { sheetCols, row, frameCount, duration, animKey } — defaults
@@ -121,6 +138,95 @@
       document.head.appendChild(styleTag);
     }
     el.style.animation = `${animName} ${duration} steps(${frameCount}) infinite`;
+  }
+
+  // Wires the drag-and-drop variant of 'try-it' (page.choices present —
+  // see renderContent()). Pointer-based (mousedown/touchstart + document-
+  // level move/up), not native HTML5 drag-and-drop, so the same code path
+  // works with mouse AND touch — native DnD has no touch support at all.
+  // A lifted clone of the tile follows the pointer via position:fixed
+  // (appended to document.body so it isn't clipped by the box's own
+  // overflow:hidden panel); dropping over the blank's rect satisfies the
+  // gate on a correct word, or shakes the blank on a wrong one. Calls
+  // onSolved() once, on the first correct drop.
+  function wireTryItDragDrop(onSolved) {
+    const blank = els.content.querySelector('.lesson-box__tryit-blank');
+    const options = els.content.querySelectorAll('.lesson-box__tryit-option');
+    if (!blank || !options.length) return;
+    // Stray lifted clones can outlive a drag if the box closes/advances
+    // mid-drag (e.g. a fast double-tap) — belt-and-suspenders cleanup.
+    document.querySelectorAll('.lesson-box__tryit-option.is-lifted').forEach((el) => el.remove());
+
+    blank.addEventListener('click', (e) => e.stopPropagation());
+
+    const startDrag = (downEvent, tile) => {
+      if (blank.classList.contains('is-filled')) return;
+      downEvent.preventDefault();
+      downEvent.stopPropagation();
+      const rect = tile.getBoundingClientRect();
+      const offsetX = rect.width / 2;
+      const offsetY = rect.height / 2;
+      const clone = tile.cloneNode(true);
+      clone.classList.add('is-lifted');
+      clone.style.left = `${rect.left}px`;
+      clone.style.top = `${rect.top}px`;
+      document.body.appendChild(clone);
+      tile.classList.add('is-dragging');
+
+      const moveTo = (x, y) => {
+        clone.style.left = `${x - offsetX}px`;
+        clone.style.top = `${y - offsetY}px`;
+      };
+      const point = (ev) => (ev.touches ? ev.touches[0] : ev);
+      const isOverBlank = (x, y) => {
+        const r = blank.getBoundingClientRect();
+        return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+      };
+
+      const onMove = (ev) => {
+        const p = point(ev);
+        moveTo(p.clientX, p.clientY);
+        blank.classList.toggle('is-dragover', isOverBlank(p.clientX, p.clientY));
+      };
+      const onUp = (ev) => {
+        // Mousedown was on the tile, mouseup is on/near the blank — two
+        // different elements, so the click the browser synthesizes right
+        // after this targets their common ancestor, not either one. Set
+        // the flag here (consumed once by els.box's click listener) so
+        // that click never reaches advance(), regardless of what it
+        // actually targets.
+        suppressNextBoxClick = true;
+        const p = ev.changedTouches ? ev.changedTouches[0] : ev;
+        const dropped = isOverBlank(p.clientX, p.clientY);
+        blank.classList.remove('is-dragover');
+        clone.remove();
+        tile.classList.remove('is-dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onUp);
+        if (!dropped) return;
+        if (tile.dataset.word === blank.dataset.answer) {
+          blank.textContent = tile.dataset.word;
+          blank.classList.add('is-filled', 'is-correct');
+          options.forEach((o) => o.classList.add('is-used'));
+          onSolved();
+        } else {
+          blank.classList.add('is-wrong');
+          setTimeout(() => blank.classList.remove('is-wrong'), 350);
+        }
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('touchend', onUp);
+    };
+
+    options.forEach((tile) => {
+      tile.addEventListener('mousedown', (e) => startDrag(e, tile));
+      tile.addEventListener('touchstart', (e) => startDrag(e, tile), { passive: false });
+      tile.addEventListener('click', (e) => e.stopPropagation());
+    });
   }
 
   // Shared by 'quiz-answers' (grading) — compares a captured answer
@@ -257,6 +363,12 @@
       //     matters right now," rendered last in the intro block, in its
       //     own high-contrast callout so it doesn't blend into the rest
       //     of the explanation.
+      //   dividedIntro: true inserts a dashed divider (the same one used
+      //     between top-level sections) between each present field WITHIN
+      //     the intro block — use on a page cramming several distinct
+      //     fields together (e.g. recapChips + terms + pattern all at
+      //     once) so each concept reads as its own chunk instead of one
+      //     dense wall. Leave unset on pages with only 1-2 fields.
       const bigIdeaHtml = page.bigIdea ? `<div class="lesson-box__big-idea">${page.bigIdea}</div>` : '';
       const analogyHtml = page.analogy ? `<div class="lesson-box__analogy">${page.analogy}</div>` : '';
       const takeawayHtml = page.takeaway ? `<div class="lesson-box__takeaway"><b>${page.takeaway}</b></div>` : '';
@@ -329,10 +441,22 @@
       // page, click-to-advance) instead of forcing them onto one long
       // scrolling page.
       const hasIntroContent = Boolean(page.bigIdea || page.analogy || page.pattern || page.recapChips || (page.explain && page.explain.length) || page.tensePair || page.terms || page.takeaway);
-      const introHtml = hasIntroContent
-        ? `<div class="lesson-box__section-label">${page.sectionLabel || 'How this sentence works'}</div>${bigIdeaHtml}${analogyHtml}${recapChipsHtml}${explainHtml}${patternHtml}${termsHtml}${tensePairHtml}${explainAfterHtml}${takeawayHtml}`
-        : '';
       const divider = '<div class="lesson-box__divider"></div>';
+      // page.dividedIntro: true inserts the same dashed divider ALREADY
+      // used between top-level sections (intro/diagram/samples/notes)
+      // between each present field WITHIN the intro block too — for a
+      // page cramming several distinct fields together (e.g. recapChips +
+      // terms + pattern all at once), plain field-after-field
+      // concatenation reads as one dense wall; explicit dividers make
+      // each concept visually its own chunk. Off by default (unchanged
+      // behavior) since most intro pages only have 1-2 fields anyway,
+      // where a divider would just add noise.
+      const introBody = page.dividedIntro
+        ? [bigIdeaHtml, analogyHtml, recapChipsHtml, explainHtml, patternHtml, termsHtml, tensePairHtml, explainAfterHtml, takeawayHtml].filter(Boolean).join(divider)
+        : `${bigIdeaHtml}${analogyHtml}${recapChipsHtml}${explainHtml}${patternHtml}${termsHtml}${tensePairHtml}${explainAfterHtml}${takeawayHtml}`;
+      const introHtml = hasIntroContent
+        ? `<div class="lesson-box__section-label">${page.sectionLabel || 'How this sentence works'}</div>${introBody}`
+        : '';
       const sections = [introHtml, diagramHtml, samplesHtml, notesHtml].filter(Boolean);
       c.innerHTML = sections.join(divider);
     } else if (page.type === 'conversation') {
@@ -360,18 +484,45 @@
       c.innerHTML = `<div class="lesson-box__conv-thread">${turnsHtml}</div>`;
     } else if (page.type === 'try-it') {
       // Gated practice page — advance() (both click-anywhere and
-      // keyboard) is blocked until the player types something into the
-      // blank; see the 'try-it' block in advance() and the input
-      // listener wired below in render(). before/after render around a
-      // live text input styled to match the pattern-line diagram.
-      c.innerHTML = `
-        <div class="lesson-box__section-label">${page.sectionLabel || 'Your turn'}</div>
-        <div class="lesson-box__explain-text">${page.prompt}</div>
-        <div class="lesson-box__pattern-line lesson-box__try-it-line">
-          ${page.before || ''}<input type="text" class="lesson-box__try-it-input" placeholder="${page.placeholder || ''}" autocomplete="off">${page.after || ''}
-        </div>
-        <div class="lesson-box__try-it-hint">Type your answer, then click anywhere (or press Enter) to continue.</div>
-      `;
+      // keyboard) is blocked until satisfied; see the 'try-it' block in
+      // advance() and the wiring in render(). Two variants depending on
+      // whether the page supplies `choices`:
+      //   - page.choices: [word,...] + page.answer: word — drag-and-drop.
+      //     3 draggable option tiles, one matching page.answer; dropping
+      //     it into the blank satisfies the gate. Use this whenever the
+      //     blank has one fixed correct answer (testing recall of a
+      //     specific grammar point).
+      //   - no page.choices (just page.placeholder) — free-text input,
+      //     satisfied by typing anything non-empty. Use this ONLY when
+      //     there's no fixed correct answer to offer as choices (e.g.
+      //     shelf-04's "type your own name" — any name is valid, so a
+      //     3-option drag pick would be nonsensical).
+      // Both variants render before/after around the blank, matching the
+      // pattern-line "code box" styling.
+      if (page.choices) {
+        const optionsHtml = page.choices.map((word) => `
+          <div class="lesson-box__tryit-option" data-word="${word}">${word}</div>
+        `).join('');
+        c.innerHTML = `
+          <div class="lesson-box__section-label">${page.sectionLabel || 'Your turn'}</div>
+          <div class="lesson-box__explain-text">${page.prompt}</div>
+          <div class="lesson-box__pattern-line lesson-box__tryit-dnd-line">
+            ${page.before || ''}<span class="lesson-box__tryit-blank" data-answer="${page.answer}"></span>${page.after || ''}
+          </div>
+          <div class="lesson-box__tryit-options-label">Drag one:</div>
+          <div class="lesson-box__tryit-options-row">${optionsHtml}</div>
+          <div class="lesson-box__try-it-hint">Drag a tile into the blank, then click anywhere (or press Enter) to continue.</div>
+        `;
+      } else {
+        c.innerHTML = `
+          <div class="lesson-box__section-label">${page.sectionLabel || 'Your turn'}</div>
+          <div class="lesson-box__explain-text">${page.prompt}</div>
+          <div class="lesson-box__pattern-line lesson-box__try-it-line">
+            ${page.before || ''}<input type="text" class="lesson-box__try-it-input" placeholder="${page.placeholder || ''}" autocomplete="off">${page.after || ''}
+          </div>
+          <div class="lesson-box__try-it-hint">Type your answer, then click anywhere (or press Enter) to continue.</div>
+        `;
+      }
     } else if (page.type === 'quiz-fill') {
       // Non-blocking fill-in-the-blank check (unlike 'try-it', this never
       // gates advance() — it's the lesson's last page, so the player can
@@ -565,7 +716,15 @@
     // stale "already typed" pass from a previous open()).
     state.tryItSatisfied = false;
     renderContent(page);
-    if (page.type === 'try-it') {
+    if (page.type === 'try-it' && page.choices) {
+      els.continue.classList.add('lesson-box__continue--locked');
+      const hint = els.content.querySelector('.lesson-box__try-it-hint');
+      wireTryItDragDrop(() => {
+        state.tryItSatisfied = true;
+        els.continue.classList.remove('lesson-box__continue--locked');
+        if (hint) hint.innerHTML = '<b>✓ Correct!</b> Click anywhere (or press Enter) to continue.';
+      });
+    } else if (page.type === 'try-it') {
       const input = els.content.querySelector('.lesson-box__try-it-input');
       const updateGate = () => {
         state.tryItSatisfied = input.value.trim().length > 0;

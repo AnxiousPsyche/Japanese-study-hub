@@ -967,6 +967,74 @@
   text-align: right;
 }
 
+/* Statement-to-question diagram (shelf-06) — two rows, real cat-face pips
+   (background-position crop trick, same as .lesson-box__demo-cat-pip),
+   built by buildQuestionParticleDiagram in n5-phaser-game.js. */
+.lesson-box__qdiagram-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.lesson-box__qdiagram-row:last-child {
+  margin-bottom: 4px;
+}
+
+.lesson-box__qdiagram-label {
+  width: 74px;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--jr-text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lesson-box__qdiagram-cells {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.lesson-box__qdiagram-cat {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  image-rendering: pixelated;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  flex-shrink: 0;
+}
+
+.lesson-box__qdiagram-tile {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 18px;
+  padding-bottom: 2px;
+  border-bottom: 3px solid;
+}
+
+.lesson-box__qdiagram-tile.is-highlight {
+  border-radius: 5px;
+  border: 2px solid #fff6da;
+  padding: 1px 6px;
+  box-shadow: 0 0 10px rgba(240, 198, 116, 0.6);
+}
+
+.lesson-box__qdiagram-qmark {
+  position: absolute;
+  top: -20px;
+  left: 8px;
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 15px;
+  color: var(--lb-role-particle-bg);
+  transform: rotate(-8deg);
+}
+
 /* -- type: try-it (gated practice) ------------------------------------------ */
 
 .lesson-box__try-it-line {
@@ -1001,11 +1069,127 @@
   margin-top: 10px;
 }
 
+.lesson-box__try-it-hint b {
+  color: var(--lb-role-verb-bg);
+}
+
 /* Continue arrow dims while a 'try-it' page's gate is unsatisfied — see
    lesson-box.js's advance()/render() updateGate(). Purely visual; the
    actual block happens in JS, this just signals it. */
 .lesson-box__continue--locked {
   opacity: 0.3;
+}
+
+/* Drag-and-drop variant of try-it (page.choices present) — see
+   wireTryItDragDrop() in lesson-box.js. .lesson-box__tryit-dnd-line reuses
+   .lesson-box__pattern-line's "code box" look; the blank itself is an
+   inline-flex drop target sized to hold one word-tile-sized answer. */
+.lesson-box__tryit-blank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  height: 38px;
+  margin: 0 2px;
+  border: 2px dashed var(--jr-text-dim);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.lesson-box__tryit-blank.is-dragover {
+  border-color: var(--lb-role-particle-bg);
+  background: rgba(240, 198, 116, 0.14);
+}
+
+.lesson-box__tryit-blank.is-filled {
+  border-style: solid;
+  border-color: var(--lb-role-noun-bg);
+  color: var(--lb-role-noun-bg);
+}
+
+.lesson-box__tryit-blank.is-correct {
+  border-color: var(--lb-role-verb-bg);
+  background: rgba(127, 214, 146, 0.16);
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__tryit-blank.is-wrong {
+  border-color: #ff9a8a;
+  background: rgba(255, 154, 138, 0.16);
+  animation: lesson-box-tryit-shake 0.35s;
+}
+
+@keyframes lesson-box-tryit-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-box__tryit-blank.is-wrong {
+    animation: none;
+  }
+}
+
+.lesson-box__tryit-options-label {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 11px;
+  color: var(--jr-text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 10px;
+}
+
+.lesson-box__tryit-options-row {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lesson-box__tryit-option {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 20px;
+  color: var(--lb-role-noun-fg);
+  background: var(--lb-role-noun-bg);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  padding: 8px 18px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  transition: opacity 0.15s;
+}
+
+.lesson-box__tryit-option:active {
+  cursor: grabbing;
+}
+
+.lesson-box__tryit-option.is-dragging {
+  opacity: 0.35;
+}
+
+/* Applied to the pointer-following CLONE (appended to document.body, not
+   the original tile) — position:fixed so it isn't clipped by the box
+   panel's overflow:hidden, and a high z-index so it floats above the
+   whole overlay (.lesson-box-overlay itself is z-index:50). */
+.lesson-box__tryit-option.is-lifted {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
+.lesson-box__tryit-option.is-used {
+  visibility: hidden;
 }
 
 /* -- type: quiz-fill --------------------------------------------------------- */
