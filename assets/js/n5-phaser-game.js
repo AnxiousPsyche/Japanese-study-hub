@@ -1984,6 +1984,445 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  'shelf-08': [
+    {
+      // Page 1/24: hook — あります/います is the first grammar this shelf
+      // adds beyond です, so the intro frames it as a genuinely new tool,
+      // not just more vocab.
+      type: 'grammar-intro',
+      sectionLabel: 'Places & Directions',
+      dividedIntro: true,
+      bigIdea: 'To say where something is, Japanese reaches for a whole new pair of words — あります and います — instead of です.',
+      analogy: 'Think of です as "naming" something ("this is a book") and あります/います as "placing" something ("the book is over there"). Different job, different word.',
+    },
+    {
+      // Page 2/24: places vocab — 9 places, confirmed scope.
+      type: 'grammar-intro',
+      sectionLabel: 'Places',
+      terms: [
+        { role: 'subject', name: 'がっこう (gakkou)', desc: 'school' },
+        { role: 'subject', name: 'えき (eki)', desc: 'station' },
+        { role: 'subject', name: 'としょかん (toshokan)', desc: 'library' },
+        { role: 'subject', name: 'びょういん (byouin)', desc: 'hospital' },
+        { role: 'subject', name: 'レストラン (resutoran)', desc: 'restaurant' },
+        { role: 'subject', name: 'こうえん (kouen)', desc: 'park' },
+        { role: 'subject', name: 'ほんや (honya)', desc: 'bookstore' },
+        { role: 'subject', name: 'ぎんこう (ginkou)', desc: 'bank' },
+        { role: 'subject', name: 'うち (uchi)', desc: 'home' },
+      ],
+    },
+    {
+      // Page 3/24: あります/います mechanics — the animate/inanimate split
+      // is the one thing that actually needs explaining; everything else
+      // about the sentence shape stays put. Each verb gets its own
+      // labeled paragraph (rather than one combined sentence) so the
+      // categories read as clearly separate, and the plant exception is
+      // called out explicitly since "is it alive?" is the wrong test —
+      // players who reason from "alive" alone will get plants wrong.
+      type: 'grammar-intro',
+      sectionLabel: 'あります / います — "there is / there are"',
+      dividedIntro: true,
+      pattern: [
+        { text: '[Thing]', role: 'subject' }, { text: 'は', role: 'particle' }, { text: '[Place]', role: 'predicate' }, { text: 'に', role: 'particle' }, { text: 'あります・います', role: 'copula' },
+      ],
+      explain: [
+        '<b class="role-copula">います</b> is for things that are truly alive <i>and</i> can move around on their own: people (せんせい、がくせい) and animals (ねこ、いぬ). If it could get up and walk away, use います.',
+        '<b class="role-copula">あります</b> is for everything else: objects (ほん、つくえ) and places (がっこう、えき) — but also plants (木、はな)! A tree is alive, but it can\'t move itself, so even a living plant still takes あります, not います.',
+        'Everything else about the sentence stays the same either way: [Thing] は [Place] に あります・います — "As for [thing], it is at [place]."',
+      ],
+      takeaway: 'The real test isn\'t "is it alive?" — it\'s "can it walk away on its own?" That\'s the whole reason plants take あります even though they\'re alive.',
+    },
+    {
+      // Page 4/24: drag-and-drop mini-check — あります vs います, placed
+      // right after the explanation and before the samples page (page 5)
+      // per explicit request, so the distinction (including the plant
+      // exception) is tested immediately, not just shown passively in
+      // samples first. 木 (tree) is used here specifically to drill the
+      // "alive but can't walk away" exception just explained.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "the tree is here" — pick the right verb (remember: can it walk away?):',
+      before: '木はここに', after: '。',
+      choices: ['あります', 'います', 'です'],
+      answer: 'あります',
+    },
+    {
+      // Page 5/24: あります vs います side-by-side, same "near" pattern so
+      // the only thing that changes between the two examples is the verb.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"The library is near the school."',
+          tiles: [
+            { text: 'としょかん', role: 'subject', gloss: 'library', isNew: true },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'がっこう', role: 'predicate', gloss: 'school', isNew: true },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: 'ちかく', role: 'predicate', gloss: 'near', isNew: true },
+            { text: 'に', role: 'particle', gloss: 'location marker', isNew: true },
+            { text: 'あります', role: 'copula', gloss: 'there is (things)', isNew: true },
+          ],
+          translation: 'Toshokan wa gakkou no chikaku ni arimasu.',
+        },
+        {
+          tag: '"The cat is near the station."',
+          tiles: [
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'えき', role: 'predicate', gloss: 'station', isNew: true },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: 'ちかく', role: 'predicate', gloss: 'near' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'います', role: 'copula', gloss: 'there is (living things)', isNew: true },
+          ],
+          translation: 'Neko wa eki no chikaku ni imasu.',
+        },
+      ],
+    },
+    {
+      // Page 6/24: direction words — intro, flags the naka/soto exception
+      // up front so the diagram (2 pages later) doesn't need to re-explain
+      // why it has 2 stages.
+      type: 'grammar-intro',
+      sectionLabel: 'Direction words',
+      dividedIntro: true,
+      bigIdea: 'These 10 words describe where something is relative to something else — most compare to the cat itself, but two need an actual container to make sense.',
+      explain: [
+        '前・後ろ・右・左・隣・近く・上・下 all work the same way against any reference: "[Thing] は [something]の [direction]に あります." 中 and 外 ("inside"/"outside") only make sense next to a container — a cat isn\'t a box, so those two get their own box example instead.',
+      ],
+    },
+    {
+      // Page 7/24: all 10 direction words as a table, before the
+      // interactive diagram puts them into motion.
+      type: 'grammar-intro',
+      sectionLabel: 'The 10 direction words',
+      terms: [
+        { role: 'predicate', name: '前 (mae)', desc: 'in front of' },
+        { role: 'predicate', name: '後ろ (ushiro)', desc: 'behind' },
+        { role: 'predicate', name: '右 (migi)', desc: 'right of' },
+        { role: 'predicate', name: '左 (hidari)', desc: 'left of' },
+        { role: 'predicate', name: '隣 (tonari)', desc: 'next to' },
+        { role: 'predicate', name: '近く (chikaku)', desc: 'near' },
+        { role: 'predicate', name: '上 (ue)', desc: 'above' },
+        { role: 'predicate', name: '下 (shita)', desc: 'below' },
+        { role: 'predicate', name: '中 (naka)', desc: 'inside' },
+        { role: 'predicate', name: '外 (soto)', desc: 'outside' },
+      ],
+    },
+    {
+      // Page 8/24: interactive diagram — click any of the 10 direction
+      // words, a book repositions around the cat (or the box, for
+      // naka/soto) and the live sentence below rebuilds with it. See
+      // buildDirectionsDiagram/wireDirectionsDiagram in this file.
+      type: 'grammar-intro',
+      diagramSvg: buildDirectionsDiagram,
+      wireDiagram: wireDirectionsDiagram,
+      diagramCaption: 'Click a direction word — the book moves, and the sentence below updates to match.',
+    },
+    {
+      // Page 9/24: written practice on 3 of the direction words (one per
+      // reference type: cat, cat, box) reinforcing what the diagram just
+      // showed in motion. はこ (box) introduced here as the one new word
+      // the diagram needed but the vocab table didn't cover yet.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"The book is in front of the cat."',
+          tiles: [
+            { text: 'ほん', role: 'subject', gloss: 'book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ねこ', role: 'predicate', gloss: 'cat' },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '前', role: 'predicate', gloss: 'in front of', isNew: true },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'あります', role: 'copula', gloss: 'there is' },
+          ],
+          translation: 'Hon wa neko no mae ni arimasu.',
+        },
+        {
+          tag: '"The book is next to the cat."',
+          tiles: [
+            { text: 'ほん', role: 'subject', gloss: 'book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ねこ', role: 'predicate', gloss: 'cat' },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '隣', role: 'predicate', gloss: 'next to', isNew: true },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'あります', role: 'copula', gloss: 'there is' },
+          ],
+          translation: 'Hon wa neko no tonari ni arimasu.',
+        },
+        {
+          tag: '"The book is inside the box."',
+          tiles: [
+            { text: 'ほん', role: 'subject', gloss: 'book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'はこ', role: 'predicate', gloss: 'box', isNew: true },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '中', role: 'predicate', gloss: 'inside', isNew: true },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'あります', role: 'copula', gloss: 'there is' },
+          ],
+          translation: 'Hon wa hako no naka ni arimasu.',
+        },
+      ],
+    },
+    {
+      // Page 10/24: interactive town-map diagram — pays off the direction
+      // words with real place vocab instead of the abstract book/cat. See
+      // buildPlacesMapDiagram/wirePlacesMapDiagram in this file.
+      type: 'grammar-intro',
+      diagramSvg: buildPlacesMapDiagram,
+      wireDiagram: wirePlacesMapDiagram,
+      diagramCaption: 'Click a building — its relationship to the station lights up, and the sentence updates to match.',
+    },
+    {
+      // Page 11/24: 2 more places+direction samples using vocab the map
+      // diagram didn't cover (restaurant/park, bank/bookstore), so the
+      // player practices beyond just the 4 buildings shown on the map.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"The restaurant is next to the park."',
+          tiles: [
+            { text: 'レストラン', role: 'subject', gloss: 'restaurant' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'こうえん', role: 'predicate', gloss: 'park' },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '隣', role: 'predicate', gloss: 'next to' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'あります', role: 'copula', gloss: 'there is' },
+          ],
+          translation: 'Resutoran wa kouen no tonari ni arimasu.',
+        },
+        {
+          tag: '"The bank is near the bookstore."',
+          tiles: [
+            { text: 'ぎんこう', role: 'subject', gloss: 'bank' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ほんや', role: 'predicate', gloss: 'bookstore' },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '近く', role: 'predicate', gloss: 'near' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'あります', role: 'copula', gloss: 'there is' },
+          ],
+          translation: 'Ginkou wa honya no chikaku ni arimasu.',
+        },
+      ],
+    },
+    {
+      // Page 12/24: conversation — reuses どこ (shelf-05) to ask where
+      // something is, answered with this shelf's own ちかく pattern.
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'player', name: 'You', action: 'tailwagRight', actionLabel: '*tail wags*',
+          text: 'すみません、としょかんはどこですか？',
+          romaji: 'Sumimasen, toshokan wa doko desu ka? — "Excuse me, where is the library?"',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'としょかんはえきのちかくにあります。',
+          romaji: 'Toshokan wa eki no chikaku ni arimasu. — "The library is near the station."',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: 'ありがとうございます！',
+          romaji: 'Arigatou gozaimasu! — "Thank you!"',
+        },
+      ],
+    },
+    {
+      // Page 13/24: giving-directions movement vocab — a different kind
+      // of direction word than pages 6-10's positional ones ("where
+      // something is" vs "which way to walk"). あっち/こっち/どっち
+      // explicitly called back as the casual counterparts of shelf-05's
+      // こちら/そちら/あちら/どちら (どちら has no everyday そっち-slot
+      // equivalent in casual speech, hence only 3 words here vs 4 there).
+      type: 'grammar-intro',
+      sectionLabel: 'Giving directions: movement words',
+      dividedIntro: true,
+      bigIdea: 'Actually walking somewhere needs a different kind of word — not "where something is," but "which way to go."',
+      recapChips: ['こちら・そちら・あちら・どちら (shelf 5)'],
+      explain: [
+        'あっち・こっち・どっち are the everyday, casual versions of こちら・そちら・あちら・どちら from shelf 5 — same "which way" meaning, softer tone.',
+      ],
+      terms: [
+        { role: 'predicate', name: 'まっすぐ (massugu)', desc: 'straight ahead' },
+        { role: 'predicate', name: '曲がります (magarimasu)', desc: 'to turn' },
+        { role: 'predicate', name: '行きます (ikimasu)', desc: 'to go' },
+        { role: 'predicate', name: 'あっち (acchi)', desc: 'that way (casual)' },
+        { role: 'predicate', name: 'こっち (kocchi)', desc: 'this way (casual)' },
+        { role: 'predicate', name: 'どっち (docchi)', desc: 'which way (casual)' },
+      ],
+    },
+    {
+      // Page 14/24: interactive movement diagram — click まっすぐ/turn-
+      // right/turn-left, a single arrow rotates to match and the sentence
+      // below updates. See buildMovementDiagram/wireMovementDiagram.
+      type: 'grammar-intro',
+      diagramSvg: buildMovementDiagram,
+      wireDiagram: wireMovementDiagram,
+      diagramCaption: 'Click a movement word — the arrow turns to match, and the sentence below updates.',
+    },
+    {
+      // Page 15/24: interactive route diagram — a real cat sprite (not an
+      // emoji marker) walks 4 legs to 駅, one per screen direction
+      // (前・右・後ろ・左), per explicit "use the existing cat sprite" /
+      // "walking right left below above" request. See
+      // buildRouteDiagram/wireRouteDiagram.
+      type: 'grammar-intro',
+      diagramSvg: buildRouteDiagram,
+      wireDiagram: wireRouteDiagram,
+      diagramCaption: 'Click each step in order to watch the cat walk the route to 駅.',
+    },
+    {
+      // Page 16/24: compass diagram — 北・南・東・西, a fixed reference
+      // grid rather than anything relative to the cat, so this one stays
+      // static (no interactivity needed the way relative directions had).
+      type: 'grammar-intro',
+      sectionLabel: 'The compass',
+      diagramSvg: buildCompassDiagram(),
+      terms: [
+        { role: 'predicate', name: '北 (kita)', desc: 'north' },
+        { role: 'predicate', name: '南 (minami)', desc: 'south' },
+        { role: 'predicate', name: '東 (higashi)', desc: 'east' },
+        { role: 'predicate', name: '西 (nishi)', desc: 'west' },
+      ],
+    },
+    {
+      // Page 17/24: に/の spelled out explicitly — both particles have
+      // been used all lesson without being named as a pattern; this page
+      // names it and gives one more worked example with new vocab 木.
+      type: 'grammar-intro',
+      sectionLabel: 'に and の, one more time',
+      explain: [
+        'You\'ve been using に (location marker) and の ("\'s / of") this whole lesson without a name for the pattern — here it is spelled out: [Reference]の [Direction]に あります・います literally reads "at [reference]\'s [direction]."',
+      ],
+      samples: [
+        {
+          tag: '"The cat is under the tree."',
+          tiles: [
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '木', role: 'predicate', gloss: 'tree', isNew: true },
+            { text: 'の', role: 'particle', gloss: "'s / of" },
+            { text: '下', role: 'predicate', gloss: 'below' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: 'います', role: 'copula', gloss: 'there is (living things)' },
+          ],
+          translation: 'Neko wa ki no shita ni imasu.',
+        },
+      ],
+    },
+    {
+      // Page 18/24: drag-and-drop mini-check — a direction word, with
+      // 中 as a distractor to make sure the player isn't just guessing.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "the book is in front of the cat":',
+      before: 'ほんはねこの', after: 'にあります。',
+      choices: ['前', '後ろ', '中'],
+      answer: '前',
+    },
+    {
+      // Page 19/24: drag-and-drop mini-check — あります vs います, the
+      // core new grammar point itself, not just vocab recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "the cat is near the station" — pick the right verb:',
+      before: 'ねこはえきのちかくに', after: '。',
+      choices: ['あります', 'います', 'です'],
+      answer: 'います',
+    },
+    {
+      // Page 20/24: drag-and-drop mini-check — places + a direction word.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "the bank is left of the school":',
+      before: 'ぎんこうはがっこうの', after: 'にあります。',
+      choices: ['左', '右', '中'],
+      answer: '左',
+    },
+    {
+      // Page 21/24: drag-and-drop mini-check — movement vocab, the newest
+      // grammar this shelf added (pages 12-16).
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "turn right":',
+      before: '', after: 'に曲がります。',
+      choices: ['右', '左', 'まっすぐ'],
+      answer: '右',
+    },
+    {
+      // Page 22/24: new-words recap, part 1 — the 9 places + はこ.
+      type: 'summary',
+      title: 'New Words: Places',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'がっこう', romaji: 'gakkou', meaning: 'school' },
+        { kana: 'えき', romaji: 'eki', meaning: 'station' },
+        { kana: 'としょかん', romaji: 'toshokan', meaning: 'library' },
+        { kana: 'びょういん', romaji: 'byouin', meaning: 'hospital' },
+        { kana: 'レストラン', romaji: 'resutoran', meaning: 'restaurant' },
+        { kana: 'こうえん', romaji: 'kouen', meaning: 'park' },
+        { kana: 'ほんや', romaji: 'honya', meaning: 'bookstore' },
+        { kana: 'ぎんこう', romaji: 'ginkou', meaning: 'bank' },
+        { kana: 'うち', romaji: 'uchi', meaning: 'home' },
+        { kana: 'はこ', romaji: 'hako', meaning: 'box' },
+      ],
+    },
+    {
+      // Page 23/24: new-words recap, part 2 — the grammar + all 10
+      // direction words + the movement/compass vocab added later, split
+      // from the places table per the established "2 summary tables beat
+      // 1 giant one" lesson from shelf-07.
+      type: 'summary',
+      title: 'New Words: Directions & Grammar',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'あります', romaji: 'arimasu', meaning: 'there is (things, places)' },
+        { kana: 'います', romaji: 'imasu', meaning: 'there is (people, animals)' },
+        { kana: '前', romaji: 'mae', meaning: 'in front of' },
+        { kana: '後ろ', romaji: 'ushiro', meaning: 'behind' },
+        { kana: '右', romaji: 'migi', meaning: 'right of' },
+        { kana: '左', romaji: 'hidari', meaning: 'left of' },
+        { kana: '隣', romaji: 'tonari', meaning: 'next to' },
+        { kana: '近く', romaji: 'chikaku', meaning: 'near' },
+        { kana: '上', romaji: 'ue', meaning: 'above' },
+        { kana: '下', romaji: 'shita', meaning: 'below' },
+        { kana: '中', romaji: 'naka', meaning: 'inside' },
+        { kana: '外', romaji: 'soto', meaning: 'outside' },
+        { kana: 'まっすぐ', romaji: 'massugu', meaning: 'straight ahead' },
+        { kana: '曲がります', romaji: 'magarimasu', meaning: 'to turn' },
+        { kana: '行きます', romaji: 'ikimasu', meaning: 'to go' },
+        { kana: 'あっち', romaji: 'acchi', meaning: 'that way (casual)' },
+        { kana: 'こっち', romaji: 'kocchi', meaning: 'this way (casual)' },
+        { kana: 'どっち', romaji: 'docchi', meaning: 'which way (casual)' },
+        { kana: '北', romaji: 'kita', meaning: 'north' },
+        { kana: '南', romaji: 'minami', meaning: 'south' },
+        { kana: '東', romaji: 'higashi', meaning: 'east' },
+        { kana: '西', romaji: 'nishi', meaning: 'west' },
+        { kana: '木', romaji: 'ki', meaning: 'tree' },
+      ],
+    },
+    {
+      // Page 24/24: fill-in-the-blank check — non-blocking, same pattern
+      // as every other shelf's closing quiz.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check: Places & Directions',
+      intro: 'Fill in the blanks:',
+      questions: [
+        { before: 'としょかんはえきのちかくに', after: '。 (things/places verb)', answer: 'あります', altAnswers: ['arimasu'], hint: '(the library can\'t walk away)' },
+        { before: 'ねこはえきのちかくに', after: '。 (people/animals verb)', answer: 'います', altAnswers: ['imasu'], hint: '(the cat could walk away)' },
+        { before: 'ほんはねこの', after: 'にあります。 (in front of)', answer: '前', altAnswers: ['mae'], hint: '(front)' },
+        { before: 'ほんははこの', after: 'にあります。 (inside)', answer: '中', altAnswers: ['naka'], hint: '(needs a container, not the cat)' },
+        { before: 'ぎんこうはがっこうの', after: 'にあります。 (left of)', answer: '左', altAnswers: ['hidari'], hint: '(left)' },
+        { before: '', after: 'に曲がります。 (turn right)', answer: '右', altAnswers: ['migi'], hint: '(right)' },
+        { before: 'ねこは木の', after: 'にいます。 (under the tree)', answer: '下', altAnswers: ['shita'], hint: '(below)' },
+      ],
+    },
+  ],
   // "Foundations Review" — review-1, gates shelf-05. First review pile to
   // actually open LessonBox content (previously all review piles were
   // instant-complete with nothing to read — see openRetroMenu's
@@ -2248,6 +2687,438 @@ function buildQuestionParticleDiagram(playerColorId, senseiColorId) {
           ${pip(senseiPath)}
           ${tile('これ', 'subject')}${tile('は', 'particle')}${tile('ほん', 'predicate')}${tile('です', 'copula')}${tile('か', 'particle', 'is-highlight')}
         </div>
+      </div>
+    </div>
+  `;
+}
+
+// -- shelf-08 interactive direction diagram ---------------------------------
+// "Around the cat" (bird's-eye compass: mae/ushiro/migi/hidari/tonari,
+// plus chikaku as a dashed proximity ring) — all relative to the
+// player's own cat — and a "box & cat" side view for ue/shita (still cat-
+// relative) and naka/soto (a cat isn't a container, so those two get a
+// drawn box as their reference instead). diagramSvg is a function
+// (playerColorId) => string, resolved once by resolveDynamicDiagrams like
+// buildQuestionParticleDiagram/buildDemonstrativesDiagram above.
+// wireDirectionsDiagram has no color dependency, so it's attached
+// directly as page.wireDiagram (see lesson-box.js render()'s hook) rather
+// than going through that resolver.
+function buildDirectionsDiagram(playerColorId) {
+  const catPath = TALK_COLOR_PATHS[playerColorId];
+  return `
+    <div class="lesson-box__dirdiagram">
+      <div class="lesson-box__dirdiagram-stages">
+        <div>
+          <div class="lesson-box__dirdiagram-stage-label">Around the cat</div>
+          <div class="lesson-box__dirdiagram-grid">
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell lesson-box__dirdiagram-cat-cell">
+              <div class="lesson-box__dirdiagram-cat" data-anchor="cat-compass" style="background-image:url('${catPath}');"></div>
+              <div class="lesson-box__dirdiagram-near-ring" data-near></div>
+            </div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+          </div>
+        </div>
+        <div>
+          <div class="lesson-box__dirdiagram-stage-label">Box &amp; cat (side view)</div>
+          <div class="lesson-box__dirdiagram-sideview">
+            <div class="lesson-box__dirdiagram-cell"></div>
+            <div class="lesson-box__dirdiagram-side-row">
+              <div class="lesson-box__dirdiagram-cat" data-anchor="cat-side" style="background-image:url('${catPath}');"></div>
+              <div class="lesson-box__dirdiagram-box" data-anchor="box"></div>
+            </div>
+            <div class="lesson-box__dirdiagram-cell"></div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-box__dirdiagram-target" data-target hidden>&#128214;</div>
+      <div class="lesson-box__dirdiagram-controls">
+        <button class="lesson-box__dirdiagram-btn" data-dir="mae">前</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="ushiro">後ろ</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="migi">右</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="hidari">左</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="tonari">隣</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="chikaku">近く</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="ue">上</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="shita">下</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="naka">中</button>
+        <button class="lesson-box__dirdiagram-btn" data-dir="soto">外</button>
+      </div>
+      <div class="lesson-box__dirdiagram-sentence" data-sentence></div>
+    </div>
+  `;
+}
+
+// Pixel offset (from the anchor element's own center) the floating target
+// icon moves to for each direction word, plus which anchor it's relative
+// to — computed at click time against real layout via
+// getBoundingClientRect (see wireDirectionsDiagram), not baked into fixed
+// page coordinates, so this stays correct at any panel width.
+const DIRDIAGRAM_OFFSETS = {
+  mae: { anchor: 'cat-compass', dx: 0, dy: 50 },
+  ushiro: { anchor: 'cat-compass', dx: 0, dy: -50 },
+  migi: { anchor: 'cat-compass', dx: 50, dy: 0 },
+  hidari: { anchor: 'cat-compass', dx: -50, dy: 0 },
+  tonari: { anchor: 'cat-compass', dx: -48, dy: -48 },
+  chikaku: { anchor: 'cat-compass', dx: 34, dy: -34, ring: true },
+  ue: { anchor: 'cat-side', dx: 0, dy: -42 },
+  shita: { anchor: 'cat-side', dx: 0, dy: 42 },
+  naka: { anchor: 'box', dx: 0, dy: 0 },
+  soto: { anchor: 'box', dx: 46, dy: 0 },
+};
+
+const DIRDIAGRAM_SENTENCES = {
+  mae: { ref: 'ねこの', refGloss: "cat's", word: '前', gloss: 'in front of', romaji: 'Hon wa neko no mae ni arimasu.' },
+  ushiro: { ref: 'ねこの', refGloss: "cat's", word: '後ろ', gloss: 'behind', romaji: 'Hon wa neko no ushiro ni arimasu.' },
+  migi: { ref: 'ねこの', refGloss: "cat's", word: '右', gloss: 'right of', romaji: 'Hon wa neko no migi ni arimasu.' },
+  hidari: { ref: 'ねこの', refGloss: "cat's", word: '左', gloss: 'left of', romaji: 'Hon wa neko no hidari ni arimasu.' },
+  tonari: { ref: 'ねこの', refGloss: "cat's", word: '隣', gloss: 'next to', romaji: 'Hon wa neko no tonari ni arimasu.' },
+  chikaku: { ref: 'ねこの', refGloss: "cat's", word: '近く', gloss: 'near', romaji: 'Hon wa neko no chikaku ni arimasu.' },
+  ue: { ref: 'ねこの', refGloss: "cat's", word: '上', gloss: 'above', romaji: 'Hon wa neko no ue ni arimasu.' },
+  shita: { ref: 'ねこの', refGloss: "cat's", word: '下', gloss: 'below', romaji: 'Hon wa neko no shita ni arimasu.' },
+  naka: { ref: 'はこの', refGloss: "box's", word: '中', gloss: 'inside', romaji: 'Hon wa hako no naka ni arimasu.' },
+  soto: { ref: 'はこの', refGloss: "box's", word: '外', gloss: 'outside', romaji: 'Hon wa hako no soto ni arimasu.' },
+};
+
+function wireDirectionsDiagram(container) {
+  const wrap = container.querySelector('.lesson-box__dirdiagram');
+  if (!wrap) return;
+  const anchors = {
+    'cat-compass': wrap.querySelector('[data-anchor="cat-compass"]'),
+    'cat-side': wrap.querySelector('[data-anchor="cat-side"]'),
+    box: wrap.querySelector('[data-anchor="box"]'),
+  };
+  const target = wrap.querySelector('[data-target]');
+  const near = wrap.querySelector('[data-near]');
+  const sentence = wrap.querySelector('[data-sentence]');
+  const buttons = Array.from(wrap.querySelectorAll('[data-dir]'));
+
+  function select(dir) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.dir === dir));
+    const cfg = DIRDIAGRAM_OFFSETS[dir];
+    const anchorEl = anchors[cfg.anchor];
+    const wrapRect = wrap.getBoundingClientRect();
+    const anchorRect = anchorEl.getBoundingClientRect();
+    const cx = anchorRect.left + anchorRect.width / 2 - wrapRect.left;
+    const cy = anchorRect.top + anchorRect.height / 2 - wrapRect.top;
+    target.style.left = `${cx + cfg.dx}px`;
+    target.style.top = `${cy + cfg.dy}px`;
+    target.hidden = false;
+    near.classList.toggle('is-shown', !!cfg.ring);
+
+    const s = DIRDIAGRAM_SENTENCES[dir];
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-subject">ほん</div><div class="lesson-box__word-tile-gloss">book</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">は</div><div class="lesson-box__word-tile-gloss">topic marker</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${s.ref}</div><div class="lesson-box__word-tile-gloss">${s.refGloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${s.word}</div><div class="lesson-box__word-tile-gloss">${s.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">に</div><div class="lesson-box__word-tile-gloss">location marker</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-copula">あります</div><div class="lesson-box__word-tile-gloss">there is</div></div>
+      </div>
+      <div class="lesson-box__sentence-translation">${s.romaji}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.dir);
+  }));
+  select('mae');
+}
+
+// -- shelf-08 interactive town-map diagram -----------------------------------
+// Reuses this shelf's own places vocab + direction words together (駅 as a
+// fixed anchor building, 3 others positioned around it) so the "map" pays
+// off the "around the cat" diagram's direction words with real place
+// nouns instead of an abstract book/cat. No color dependency, but
+// diagramSvg still has to be a function reference here (not called
+// eagerly) — LESSON_CONTENT is defined before MAPDIAGRAM_PLACES/
+// MAPDIAGRAM_PAIRS below, so calling buildPlacesMapDiagram() inline
+// would hit those consts before their temporal-dead-zone initialization.
+// resolveDynamicDiagrams calls any function-valued diagramSvg lazily at
+// lesson-open time regardless of whether it uses the color args, so this
+// resolves the same way buildDirectionsDiagram does. wirePlacesMapDiagram
+// is attached directly as page.wireDiagram (that hook is never resolved
+// early, so no such ordering constraint there).
+const MAPDIAGRAM_PLACES = [
+  { id: 'eki', kana: '駅', gloss: 'station', x: 108, y: 78, icon: '\u{1F686}' },
+  { id: 'toshokan', kana: '図書館', gloss: 'library', x: 16, y: 12, icon: '\u{1F4DA}' },
+  { id: 'gakkou', kana: '学校', gloss: 'school', x: 196, y: 12, icon: '\u{1F3EB}' },
+  { id: 'byouin', kana: '病院', gloss: 'hospital', x: 196, y: 140, icon: '\u{1F3E5}' },
+];
+
+const MAPDIAGRAM_PAIRS = {
+  toshokan: { near: 'eki', word: '近く', gloss: 'near', romaji: 'Toshokan wa eki no chikaku ni arimasu.' },
+  gakkou: { near: 'eki', word: '右', gloss: 'right of', romaji: 'Gakkou wa eki no migi ni arimasu.' },
+  byouin: { near: 'eki', word: '左', gloss: 'left of', romaji: 'Byouin wa eki no hidari ni arimasu.' },
+};
+
+function buildPlacesMapDiagram() {
+  const buildings = MAPDIAGRAM_PLACES.map((p) => `
+    <div class="lesson-box__mapdiagram-building${p.id === 'eki' ? ' is-anchor' : ''}" data-building="${p.id}" style="left:${p.x}px; top:${p.y}px;">
+      <div>${p.icon}</div>
+      <div class="lesson-box__mapdiagram-building-label">${p.kana}</div>
+    </div>
+  `).join('');
+  const buttons = Object.keys(MAPDIAGRAM_PAIRS).map((id) => {
+    const p = MAPDIAGRAM_PLACES.find((x) => x.id === id);
+    return `<button class="lesson-box__mapdiagram-btn" data-place="${id}">${p.kana} (${p.gloss})</button>`;
+  }).join('');
+  return `
+    <div class="lesson-box__mapdiagram">
+      <div class="lesson-box__mapdiagram-town">${buildings}</div>
+      <div class="lesson-box__mapdiagram-btn-list">${buttons}</div>
+    </div>
+    <div class="lesson-box__mapdiagram-sentence" data-map-sentence></div>
+  `;
+}
+
+function wirePlacesMapDiagram(container) {
+  const buildingEls = {};
+  container.querySelectorAll('[data-building]').forEach((el) => { buildingEls[el.dataset.building] = el; });
+  const buttons = Array.from(container.querySelectorAll('[data-place]'));
+  const sentence = container.querySelector('[data-map-sentence]');
+  if (!sentence) return;
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.place === id));
+    Object.keys(buildingEls).forEach((k) => buildingEls[k].classList.remove('is-subject'));
+    buildingEls[id].classList.add('is-subject');
+    const pair = MAPDIAGRAM_PAIRS[id];
+    const p = MAPDIAGRAM_PLACES.find((x) => x.id === id);
+    const ref = MAPDIAGRAM_PLACES.find((x) => x.id === pair.near);
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-subject">${p.kana}</div><div class="lesson-box__word-tile-gloss">${p.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">は</div><div class="lesson-box__word-tile-gloss">topic marker</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${ref.kana}の</div><div class="lesson-box__word-tile-gloss">${ref.gloss}'s</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${pair.word}</div><div class="lesson-box__word-tile-gloss">${pair.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">に</div><div class="lesson-box__word-tile-gloss">location marker</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-copula">あります</div><div class="lesson-box__word-tile-gloss">there is</div></div>
+      </div>
+      <div class="lesson-box__sentence-translation">${pair.romaji}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.place);
+  }));
+  select('toshokan');
+}
+
+// -- shelf-08 interactive movement diagram -----------------------------------
+// Click まっすぐ/turn-right/turn-left — a single arrow rotates to match
+// and the sentence below rebuilds. diagramSvg is a function
+// (playerColorId) => string, resolved by resolveDynamicDiagrams like
+// buildDirectionsDiagram; wireMovementDiagram has no color dependency, so
+// it's attached directly as page.wireDiagram.
+function buildMovementDiagram(playerColorId) {
+  const catPath = TALK_COLOR_PATHS[playerColorId];
+  return `
+    <div class="lesson-box__movediagram">
+      <div class="lesson-box__movediagram-stage">
+        <div class="lesson-box__movediagram-arrow" data-arrow>&#8593;</div>
+        <div class="lesson-box__movediagram-cat" style="background-image:url('${catPath}');"></div>
+      </div>
+      <div class="lesson-box__movediagram-controls">
+        <button class="lesson-box__movediagram-btn" data-move="massugu">まっすぐ</button>
+        <button class="lesson-box__movediagram-btn" data-move="migi">右に曲がります</button>
+        <button class="lesson-box__movediagram-btn" data-move="hidari">左に曲がります</button>
+      </div>
+      <div class="lesson-box__movediagram-sentence" data-move-sentence></div>
+    </div>
+  `;
+}
+
+const MOVEDIAGRAM_DATA = {
+  massugu: { rotate: 0, romaji: 'Massugu ikimasu.', tiles: [{ t: 'まっすぐ', r: 'predicate', g: 'straight ahead' }, { t: '行きます', r: 'copula', g: 'to go' }] },
+  migi: { rotate: 90, romaji: 'Migi ni magarimasu.', tiles: [{ t: '右', r: 'predicate', g: 'right' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '曲がります', r: 'copula', g: 'to turn' }] },
+  hidari: { rotate: -90, romaji: 'Hidari ni magarimasu.', tiles: [{ t: '左', r: 'predicate', g: 'left' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '曲がります', r: 'copula', g: 'to turn' }] },
+};
+
+function wireMovementDiagram(container) {
+  const wrap = container.querySelector('.lesson-box__movediagram');
+  if (!wrap) return;
+  const arrow = wrap.querySelector('[data-arrow]');
+  const sentence = wrap.querySelector('[data-move-sentence]');
+  const buttons = Array.from(wrap.querySelectorAll('[data-move]'));
+
+  function select(move) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.move === move));
+    const d = MOVEDIAGRAM_DATA[move];
+    arrow.style.transform = `rotate(${d.rotate}deg)`;
+    const tilesHtml = d.tiles.map((t) => `
+      <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-${t.r}">${t.t}</div><div class="lesson-box__word-tile-gloss">${t.g}</div></div>
+    `).join('');
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">${tilesHtml}</div>
+      <div class="lesson-box__sentence-translation">${d.romaji}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.move);
+  }));
+  select('massugu');
+}
+
+// -- shelf-08 interactive route diagram --------------------------------------
+// A 4-leg walk to 駅 using the player's own real cat sprite (the full
+// idle+walk spritesheet already loaded for the player character in
+// LibraryScene — CAT_COLORS[id].path, NOT the talk-portrait crop used by
+// the other diagrams on this shelf) instead of a generic emoji marker,
+// walking in all 4 screen directions (up/right/down/left) so each of
+// 前・後ろ・右・左 gets demonstrated as an actual movement, not just a
+// static position word. diagramSvg is a function (playerColorId) =>
+// string, resolved by resolveDynamicDiagrams like buildDirectionsDiagram;
+// wireRouteDiagram has no further color dependency (the path is baked
+// into the returned markup via a data attribute), so it's attached
+// directly as page.wireDiagram.
+function buildRouteDiagram(playerColorId) {
+  const catPath = CAT_COLORS[playerColorId].path;
+  return `
+    <div class="lesson-box__routediagram">
+      <div class="lesson-box__routediagram-map">
+        <div class="lesson-box__routediagram-eki" data-eki style="left:70px; top:90px;">&#128647;<span>駅</span></div>
+        <div class="lesson-box__routediagram-cat" data-cat data-cat-path="${catPath}"></div>
+      </div>
+      <div class="lesson-box__routediagram-controls">
+        <button class="lesson-box__routediagram-btn" data-step="1">1. 前に行きます</button>
+        <button class="lesson-box__routediagram-btn" data-step="2">2. 右に曲がります</button>
+        <button class="lesson-box__routediagram-btn" data-step="3">3. 後ろに行きます</button>
+        <button class="lesson-box__routediagram-btn" data-step="4">4. 左に曲がります</button>
+      </div>
+      <div class="lesson-box__routediagram-sentence" data-route-sentence></div>
+    </div>
+  `;
+}
+
+// One waypoint per step (index 0 = start) — screen pixel coordinates
+// within the 220x170 map. Each leg's direction is purely visual (which
+// way the position moves, and which walk row that plays); it doesn't
+// need to trace a geometrically "efficient" path to read as a walk.
+const ROUTE_WAYPOINTS = [
+  { x: 20, y: 120 }, // start
+  { x: 20, y: 20 }, // after step 1 (前 — walks up)
+  { x: 160, y: 20 }, // after step 2 (右 — walks right)
+  { x: 160, y: 90 }, // after step 3 (後ろ — walks down)
+  { x: 70, y: 90 }, // after step 4 (左 — walks left) = 駅
+];
+
+// animRow indices match CAT_SHEET_ROWS above (walkUp=3, walkRight=5,
+// walkDown=2, walkLeft=4).
+const ROUTE_STEPS = {
+  1: {
+    animRow: 3,
+    tiles: [{ t: '前', r: 'predicate', g: 'forward' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '行きます', r: 'copula', g: 'to go' }],
+    romaji: 'Mae ni ikimasu.',
+  },
+  2: {
+    animRow: 5,
+    tiles: [{ t: '右', r: 'predicate', g: 'right' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '曲がります', r: 'copula', g: 'to turn' }],
+    romaji: 'Migi ni magarimasu.',
+  },
+  3: {
+    animRow: 2,
+    tiles: [{ t: '後ろ', r: 'predicate', g: 'backward' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '行きます', r: 'copula', g: 'to go' }],
+    romaji: 'Ushiro ni ikimasu.',
+  },
+  4: {
+    animRow: 4,
+    tiles: [{ t: '左', r: 'predicate', g: 'left' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '曲がります', r: 'copula', g: 'to turn' }],
+    romaji: 'Hidari ni magarimasu. — ここは駅です。("Here is the station.")',
+  },
+};
+const ROUTE_STEP_DURATION_MS = 500;
+
+function wireRouteDiagram(container) {
+  const wrap = container.querySelector('.lesson-box__routediagram');
+  if (!wrap) return;
+  const catEl = wrap.querySelector('[data-cat]');
+  const eki = wrap.querySelector('[data-eki]');
+  const sentence = wrap.querySelector('[data-route-sentence]');
+  const buttons = Array.from(wrap.querySelectorAll('[data-step]'));
+  const catPath = catEl.dataset.catPath;
+  let step = 0;
+  let idleTimeout = null;
+
+  function setCatPosition(p) {
+    catEl.style.left = `${p.x}px`;
+    catEl.style.top = `${p.y}px`;
+  }
+
+  function playWalk(animRow) {
+    window.LessonBox.spriteStyle(catEl, catPath, 36, {
+      sheetCols: CAT_SHEET_COLS, row: animRow, frameCount: 6, duration: '0.5s', animKey: `route-walk-${animRow}`,
+    });
+  }
+
+  function playIdle() {
+    window.LessonBox.spriteStyle(catEl, catPath, 36, {
+      sheetCols: CAT_SHEET_COLS, row: CAT_SHEET_ROWS.idle.row, frameCount: CAT_SHEET_ROWS.idle.count, duration: '1.2s', animKey: 'route-idle',
+    });
+  }
+
+  function render() {
+    buttons.forEach((b) => {
+      const n = Number(b.dataset.step);
+      b.classList.toggle('is-active', n === step);
+      b.disabled = n !== step + 1;
+    });
+    eki.classList.toggle('is-arrived', step >= 4);
+    if (step === 0) {
+      sentence.innerHTML = '<div class="lesson-box__diagram-caption">Click step 1 to start walking.</div>';
+      return;
+    }
+    const s = ROUTE_STEPS[step];
+    const tilesHtml = s.tiles.map((t) => `
+      <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-${t.r}">${t.t}</div><div class="lesson-box__word-tile-gloss">${t.g}</div></div>
+    `).join('');
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">${tilesHtml}</div>
+      <div class="lesson-box__sentence-translation">${s.romaji}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const n = Number(b.dataset.step);
+    if (n !== step + 1) return;
+    clearTimeout(idleTimeout);
+    playWalk(ROUTE_STEPS[n].animRow);
+    setCatPosition(ROUTE_WAYPOINTS[n]);
+    step = n;
+    render();
+    idleTimeout = setTimeout(playIdle, ROUTE_STEP_DURATION_MS);
+  }));
+
+  setCatPosition(ROUTE_WAYPOINTS[0]);
+  playIdle();
+  render();
+}
+
+// -- shelf-08 compass diagram -------------------------------------------------
+// 北・南・東・西 around a fixed ring — a static diagram (no page.wireDiagram)
+// since compass directions are fixed reference points, not anything
+// relative to the cat that needs interactive repositioning.
+function buildCompassDiagram() {
+  return `
+    <div class="lesson-box__compass">
+      <div class="lesson-box__compass-ring">
+        <div class="lesson-box__compass-label lesson-box__compass-n">北<span>kita</span></div>
+        <div class="lesson-box__compass-label lesson-box__compass-e">東<span>higashi</span></div>
+        <div class="lesson-box__compass-label lesson-box__compass-s">南<span>minami</span></div>
+        <div class="lesson-box__compass-label lesson-box__compass-w">西<span>nishi</span></div>
+        <div class="lesson-box__compass-needle"></div>
       </div>
     </div>
   `;
@@ -4084,6 +4955,10 @@ class LibraryScene extends Phaser.Scene {
             { label: 'Start Over', onSelect: startAction },
           ]
           : [{ label: 'Start Lesson', onSelect: startAction }]),
+        // "Michi Shirube" overworld direction scene — only offered from
+        // shelf-08 (Places & Directions), the shelf that actually teaches
+        // まっすぐ/みぎ/ひだり/うしろにきて. See DirectionMapScene below.
+        ...(entry.id === 'shelf-08' ? [{ label: 'Walk the Route (駅)', onSelect: () => this.launchDirectionMap() }] : []),
         ...(entry.kind === 'shelf' ? [{ label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) }] : []),
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ]
@@ -4139,6 +5014,18 @@ class LibraryScene extends Phaser.Scene {
         saveLessonPage(this.lessonPage);
       },
     });
+  }
+
+  // Launches the overworld "Michi Shirube" direction scene as an overlay,
+  // same pause/launch/resume pattern CatSelectScene's overlay re-pick
+  // uses (this.scene.pause + this.scene.launch, resumed by the other
+  // scene calling this.scene.resume('LibraryScene') when it's done) —
+  // not a LessonBox popup, a real scene swap, since it needs the cat to
+  // actually walk a route rather than read paginated content.
+  launchDirectionMap() {
+    this.closeRetroMenu();
+    this.scene.pause('LibraryScene');
+    this.scene.launch('DirectionMapScene', { catColorId: this.catColorId });
   }
 
   completeInteraction(entry) {
@@ -4254,12 +5141,12 @@ class LibraryScene extends Phaser.Scene {
     if (opt) opt.onSelect();
   }
 
-  // Up/down cycles the highlighted option, Enter/E/Space confirms it (the
-  // confirm side lives in wireInput's tryInteract) — same debounced
-  // isDown-edge pattern as CatSelectScene's keyboard nav.
+  // Up/down (arrow keys or WASD) cycles the highlighted option, Enter/E/
+  // Space confirms it (the confirm side lives in wireInput's tryInteract)
+  // — same debounced isDown-edge pattern as CatSelectScene's keyboard nav.
   updateRetroMenuInput() {
-    const upDown = this.cursors.up.isDown;
-    const downDown = this.cursors.down.isDown;
+    const upDown = this.cursors.up.isDown || this.wasd.up.isDown;
+    const downDown = this.cursors.down.isDown || this.wasd.down.isDown;
     if (upDown && !this.retroUpKeyWasDown) {
       this.highlightRetroMenu(Math.max(0, this.retroMenu.selectedIndex - 1));
     }
@@ -4451,6 +5338,7 @@ class CatSelectScene extends Phaser.Scene {
     }).setInteractive({ useHandCursor: true }).on('pointerdown', () => this.confirm());
 
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({ up: 'W', down: 'S' });
     this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.upKeyWasDown = false;
     this.downKeyWasDown = false;
@@ -4483,8 +5371,8 @@ class CatSelectScene extends Phaser.Scene {
   }
 
   update() {
-    const upDown = this.cursors.up.isDown;
-    const downDown = this.cursors.down.isDown;
+    const upDown = this.cursors.up.isDown || this.wasd.up.isDown;
+    const downDown = this.cursors.down.isDown || this.wasd.down.isDown;
     if (upDown && !this.upKeyWasDown) {
       this.highlight(Math.max(0, this.selectedIndex - 1));
     }
@@ -4499,11 +5387,661 @@ class CatSelectScene extends Phaser.Scene {
   }
 }
 
+// -- "Michi Shirube" (道しるべ, signpost) direction scene --------------------
+// A route the cat walks to Eki, taught as a click-to-choose puzzle: at each
+// junction the player picks the correct direction word (ひだり/みぎ/まっすぐ)
+// from three buttons — no auto-walk-past-a-signpost, the player has to get
+// it right to advance. Only three direction words are used (no うしろ/
+// reversal): ひだり → みぎ → まっすぐ → みぎ, migi repeated for the final leg
+// since that's the word that actually points the road at the station.
+// Buildings are the real lesson-folder illustrations (standalone images,
+// never cropped from a packed sheet — see SUMMARY.md's crop-rect lesson),
+// and every Latin/romaji/gloss/note string uses the self-hosted "Datatype"
+// face (lesson-box.css's @font-face, already loaded on this page), kept in
+// a completely separate font-family declaration from the Japanese
+// DIRMAP_JP_FONT stack — Datatype has zero CJK glyphs.
+const DIRMAP_COLORS = {
+  cream: 0xf3efe6,
+  sage: 0x8fa68e,
+  terracotta: 0xc97b63,
+  gold: 0xf2b45c,
+  indigo: 0x3d3875,
+  indigoLight: 0x6a5fa8,
+};
+const DIRMAP_JP_FONT = '"DotGothic16", sans-serif';
+const DIRMAP_LATIN_FONT = '"Datatype", monospace';
+
+// One continuous road, four real junctions, three vocabulary words total
+// (migi appears twice). Each waypoint's `correct` is the word needed to
+// leave it; the last waypoint (Eki) has none — arriving there just ends
+// the route. Geometry verified via heading vectors (not just labeled by
+// guess): WP0->WP1 heads west (hidari from an assumed north-facing
+// start), WP1->WP2 heads north (migi from west), WP2->WP3 continues north
+// (massugu), WP3->WP4 heads east (migi from north) — straight into Eki.
+const DIRECTION_ROUTE = [
+  { x: 620, y: 380, correct: 'hidari' },
+  { x: 260, y: 380, correct: 'migi' },
+  { x: 260, y: 220, correct: 'massugu' },
+  { x: 260, y: 110, correct: 'migi' },
+  { x: 520, y: 110, correct: null },
+];
+
+// Vocabulary shown on the junction buttons — shared across every junction
+// that needs it (migi's grammar note doesn't change between its two uses),
+// so it's keyed by word, not duplicated per waypoint.
+const DIRMAP_CHOICES = {
+  hidari: {
+    kana: 'ひだり', romaji: 'hidari', full: 'ひだりに曲がって', gloss: 'turn left',
+    note: '曲がる (magaru, "to turn") → 曲がって (te-form). に marks the direction you’re turning toward.',
+  },
+  migi: {
+    kana: 'みぎ', romaji: 'migi', full: 'みぎに曲がって', gloss: 'turn right',
+    note: '曲がる (magaru, "to turn") → 曲がって (te-form). に marks the direction you’re turning toward.',
+  },
+  massugu: {
+    kana: 'まっすぐ', romaji: 'massugu', full: 'まっすぐ行って', gloss: 'go straight',
+    note: '行く (iku, "to go") → 行って (te-form) — softens a plain verb into a natural direction.',
+  },
+};
+// Fixed order every time (not shuffled) — same three buttons throughout,
+// so the player is reading the words, not hunting for a moved button.
+const DIRMAP_CHOICE_ORDER = ['hidari', 'migi', 'massugu'];
+
+// The real lesson-folder illustrations used for every building/compass in
+// this scene, loaded once as standalone images (no cropping from a packed
+// sheet — each file is its own icon).
+const DIRMAP_ASSET_FILES = {
+  house: 'house-pixel-Original.png',
+  church: 'cathedral-pixel-Original.png',
+  school: 'college-building-Original.png',
+  restaurant: 'restaurant-building-Original.png',
+  hospital: 'hospital-building-Original.png',
+  building: 'apartment-building-2-Original.png',
+  station: 'subway-station-Original.png',
+  compass: 'compass-icon-1-Original.png',
+};
+
+// Buildings positioned relative to the road (segment index into
+// DIRECTION_ROUTE + how far along it [0-1] + which side), pulled in tight
+// to the road shoulder so they read as storefronts lining an actual street
+// rather than floating off it.
+const DIRMAP_BUILDINGS = [
+  { key: 'restaurant', label: 'レストラン', segment: 0, t: 0.18, side: -1, scale: 0.05 },
+  { key: 'hospital', label: '病院', segment: 0, t: 0.58, side: 1, scale: 0.05 },
+  { key: 'school', label: '学校', segment: 1, t: 0.5, side: -1, scale: 0.05 },
+  { key: 'church', label: '教会', segment: 2, t: 0.5, side: 1, scale: 0.05 },
+  { key: 'building', label: 'ビル', segment: 3, t: 0.5, side: -1, scale: 0.055 },
+];
+// Offset from the road centerline, in px — clears the road's own ~11px
+// half-width plus a small margin so buildings sit close to the street
+// instead of floating far off it.
+const DIRMAP_PROP_OFFSET = 42;
+
+// Resolves a {segment, t, side} descriptor to real {x, y} screen
+// coordinates: a point `t` fraction along DIRECTION_ROUTE[segment]->
+// [segment+1], offset perpendicular to that segment's direction by
+// DIRMAP_PROP_OFFSET * side (side is 1 or -1).
+function resolveDirmapPropPosition(prop) {
+  const a = DIRECTION_ROUTE[prop.segment];
+  const b = DIRECTION_ROUTE[prop.segment + 1];
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const nx = -uy;
+  const ny = ux;
+  const px = a.x + ux * len * prop.t;
+  const py = a.y + uy * len * prop.t;
+  const offset = typeof prop.offset === 'number' ? prop.offset : DIRMAP_PROP_OFFSET;
+  return { x: px + nx * offset * prop.side, y: py + ny * offset * prop.side };
+}
+
+// Turns a sharp-cornered waypoint list into a dense, smoothly-rounded
+// point list (straight legs, quadratic-bezier-rounded corners at each
+// interior waypoint) — a curved road instead of right-angle bends.
+// `radius` is clamped per-corner to at most half of its shorter
+// neighboring leg so a short leg's rounding never overshoots into the
+// previous/next corner.
+function buildRoundedRoadPoints(pts, radius, steps) {
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const prev = pts[i - 1];
+    const curr = pts[i];
+    const next = pts[i + 1];
+    const inDx = curr.x - prev.x;
+    const inDy = curr.y - prev.y;
+    const inLen = Math.sqrt(inDx * inDx + inDy * inDy) || 1;
+    const outDx = next.x - curr.x;
+    const outDy = next.y - curr.y;
+    const outLen = Math.sqrt(outDx * outDx + outDy * outDy) || 1;
+    const r = Math.min(radius, inLen / 2, outLen / 2);
+    const beforePt = { x: curr.x - (inDx / inLen) * r, y: curr.y - (inDy / inLen) * r };
+    const afterPt = { x: curr.x + (outDx / outLen) * r, y: curr.y + (outDy / outLen) * r };
+    out.push(beforePt);
+    for (let s = 1; s <= steps; s++) {
+      const t = s / steps;
+      const mt = 1 - t;
+      out.push({
+        x: mt * mt * beforePt.x + 2 * mt * t * curr.x + t * t * afterPt.x,
+        y: mt * mt * beforePt.y + 2 * mt * t * curr.y + t * t * afterPt.y,
+      });
+    }
+  }
+  out.push(pts[pts.length - 1]);
+  return out;
+}
+const DIRMAP_CORNER_RADIUS = 40;
+const DIRMAP_CORNER_STEPS = 12;
+
+// Phaser Text draws its own glyphs onto a small offscreen canvas, then
+// uploads that as a texture — with the game's pixelArt:true nearest-
+// neighbor filtering (needed to keep sprites crisp), that texture gets
+// blown up blockily when Scale.FIT stretches the canvas, reading as
+// blurry/muddy instead of sharp. Rendering at a higher internal resolution
+// before LINEAR-filtering it back (see addPixelText) fixes this.
+const DIRMAP_TEXT_RESOLUTION = 3;
+
+class DirectionMapScene extends Phaser.Scene {
+  constructor() {
+    super('DirectionMapScene');
+  }
+
+  init(data) {
+    this.catColorId = (data && data.catColorId) || getSavedCatColor() || 'orange';
+  }
+
+  // Every text label in this scene should go through here instead of
+  // this.add.text() directly: the higher internal resolution rasterizes
+  // glyphs more crisply, and — the fix that actually matters — this
+  // switches the text's own texture back to LINEAR filtering, since the
+  // game-wide pixelArt:true default (NEAREST, correct for sprites) makes
+  // text alias into illegible mush.
+  addPixelText(x, y, text, style) {
+    const t = this.add.text(x, y, text, { ...style, resolution: DIRMAP_TEXT_RESOLUTION });
+    t.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    return t;
+  }
+
+  preload() {
+    // Guarded the same way as every load call here — LibraryScene has
+    // always already loaded the cat spritesheets by the time this scene
+    // can be reached (only launched from LibraryScene's shelf-08 menu),
+    // but re-declaring an existing key throws, so check first.
+    CAT_COLOR_ORDER.forEach((id) => {
+      const c = CAT_COLORS[id];
+      if (!this.textures.exists(c.key)) {
+        this.load.spritesheet(c.key, c.path, { frameWidth: 64, frameHeight: 64 });
+      }
+    });
+    Object.entries(DIRMAP_ASSET_FILES).forEach(([key, file]) => {
+      const textureKey = `dirmap-${key}`;
+      if (!this.textures.exists(textureKey)) {
+        this.load.image(textureKey, `../../assets/images/lesson/${file}`);
+      }
+    });
+  }
+
+  create() {
+    // Draw the background immediately so the screen isn't blank while
+    // fonts finish loading below — everything that actually NEEDS the
+    // real fonts waits in buildScene().
+    this.add.rectangle(0, 0, 768, 480, DIRMAP_COLORS.cream).setOrigin(0, 0).setDepth(0);
+    const loadingText = this.add.text(384, 240, 'Loading…', {
+      fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#3D3875',
+    }).setOrigin(0.5).setDepth(999);
+
+    this.ensureDirmapFontsReady().then(() => {
+      loadingText.destroy();
+      this.buildScene();
+    });
+  }
+
+  // Phaser rasterizes each Text object onto its own canvas using whatever
+  // font is ACTUALLY available in the browser at that exact instant — if
+  // Datatype/DotGothic16 haven't finished loading yet, the text bakes in
+  // using the browser's fallback font, and Phaser never re-renders it once
+  // the real font arrives later. Gate every this.add.* call in the scene
+  // behind this resolving first, verified live via document.fonts.check()
+  // rather than assumed from the fontFamily string being correct.
+  async ensureDirmapFontsReady() {
+    try {
+      await Promise.all([
+        document.fonts.load('16px "Datatype"'),
+        document.fonts.load('16px "DotGothic16"'),
+        document.fonts.ready,
+      ]);
+    } catch (e) {
+      // Font Loading API unsupported or the load itself failed — proceed
+      // anyway rather than block the scene forever; worst case is the
+      // pre-fix fallback-font behavior, not a stuck loading screen.
+    }
+  }
+
+  buildScene() {
+    registerCatAnimations(this);
+    this.drawRoad();
+    this.placeHeaderBanner();
+    this.placeCompass();
+    this.placeHouse();
+
+    DIRMAP_BUILDINGS.forEach((b) => {
+      const pos = resolveDirmapPropPosition(b);
+      const img = this.add.image(pos.x, pos.y, `dirmap-${b.key}`).setScale(b.scale).setDepth(5);
+      this.addPixelText(pos.x, pos.y + img.displayHeight / 2 + 8, b.label, {
+        fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#3D3875',
+      }).setOrigin(0.5).setDepth(6);
+    });
+
+    this.placeStation();
+
+    // Every building image (+ label margin), used by showJunction/
+    // onArrival to pick a panel position that's actually clear of them —
+    // measured real bounds, not assumed from the layout data.
+    this.propExclusionRects = this.children.list
+      .filter((o) => o.type === 'Image' && o.texture && o.texture.key && o.texture.key.startsWith('dirmap-') && o.texture.key !== 'dirmap-compass')
+      .map((o) => {
+        const r = o.getBounds();
+        return { x: r.x - 10, y: r.y - 10, width: r.width + 20, height: r.height + 40 };
+      });
+
+    const start = DIRECTION_ROUTE[0];
+    const catColor = CAT_COLORS[this.catColorId];
+    this.playerSprite = this.add.sprite(start.x, start.y, catColor.key).setDepth(20);
+    this.playerSprite.play(`${this.catColorId}-idle`);
+
+    this.routeIndex = 0;
+    this.advanceRoute();
+  }
+
+  // This page's own DOM header (#gameHUD) visually sits on top of the
+  // canvas' top edge — confirmed via getBoundingClientRect(), not assumed
+  // from a fixed pixel guess, since the overlap in canvas-internal units
+  // depends on Phaser's current Scale.FIT zoom factor, which changes with
+  // viewport size.
+  getHeaderSafeY() {
+    try {
+      const header = document.getElementById('gameHUD');
+      const canvas = this.sys.game.canvas;
+      if (!header || !canvas) return 90;
+      const headerRect = header.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      const scale = canvasRect.height / 480;
+      if (scale <= 0) return 90;
+      return Math.max(0, (headerRect.bottom - canvasRect.top) / scale);
+    } catch (e) {
+      return 90;
+    }
+  }
+
+  // Centered banner naming the goal — kept narrower than the full canvas
+  // width so the compass (top-right corner) still has a clear spot beside
+  // it instead of the two fighting over the same strip.
+  placeHeaderBanner() {
+    const y = this.getHeaderSafeY() + 20;
+    const text = 'Help Neko reach Eki by clicking the correct road!';
+    const style = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '11px' };
+    const measure = this.addPixelText(0, 0, text, style).setVisible(false);
+    const w = measure.width;
+    const h = measure.height;
+    measure.destroy();
+    this.add.rectangle(384, y, w + 26, h + 12, 0x2b2864, 0.92).setStrokeStyle(2, DIRMAP_COLORS.terracotta).setDepth(2);
+    this.addPixelText(384, y, text, { ...style, color: '#F2B45C' }).setOrigin(0.5).setDepth(3);
+  }
+
+  // Purely decorative, tucked in the corner clear of the banner and the
+  // road/buildings — not part of propExclusionRects, so it never blocks a
+  // junction panel from using that corner.
+  placeCompass() {
+    this.add.image(710, this.getHeaderSafeY() + 40, 'dirmap-compass').setScale(0.045).setDepth(4);
+  }
+
+  // The house the cat starts from — drawn BELOW WP0 (not centered on it),
+  // since the player sprite sits exactly at WP0 and a house drawn at the
+  // same point was fully hidden behind the cat (measured/reported).
+  placeHouse() {
+    const start = DIRECTION_ROUTE[0];
+    const houseY = start.y + 42;
+    const img = this.add.image(start.x, houseY, 'dirmap-house').setScale(0.05).setDepth(5);
+    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 7, '家', {
+      fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#3D3875',
+    }).setOrigin(0.5).setDepth(6);
+    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 20, 'START HERE', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#8FA68E',
+    }).setOrigin(0.5).setDepth(6);
+  }
+
+  // Larger than every other building (matches the size bump the game
+  // already uses to call out "this is the destination"), plus a small pin
+  // marker above it and a GOAL tag for a second, unambiguous cue.
+  placeStation() {
+    const goal = DIRECTION_ROUTE[DIRECTION_ROUTE.length - 1];
+    const img = this.add.image(goal.x, goal.y, 'dirmap-station').setScale(0.07).setDepth(7);
+    const pin = this.add.graphics().setDepth(8);
+    const pinY = goal.y - img.displayHeight / 2 - 16;
+    pin.fillStyle(DIRMAP_COLORS.terracotta, 1);
+    pin.fillCircle(goal.x, pinY, 8);
+    pin.fillTriangle(goal.x - 6, pinY + 6, goal.x + 6, pinY + 6, goal.x, pinY + 18);
+    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 8, '駅', {
+      fontFamily: DIRMAP_JP_FONT, fontSize: '16px', color: '#3D3875',
+    }).setOrigin(0.5).setDepth(9);
+    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 26, 'GOAL', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#C97B63',
+    }).setOrigin(0.5).setDepth(9);
+  }
+
+  drawRoad() {
+    const pts = buildRoundedRoadPoints(
+      DIRECTION_ROUTE.map((wp) => ({ x: wp.x, y: wp.y })),
+      DIRMAP_CORNER_RADIUS, DIRMAP_CORNER_STEPS,
+    );
+    const road = this.add.graphics().setDepth(1);
+    road.lineStyle(22, DIRMAP_COLORS.sage, 1);
+    road.beginPath();
+    road.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) road.lineTo(pts[i].x, pts[i].y);
+    road.strokePath();
+    road.lineStyle(16, DIRMAP_COLORS.cream, 1);
+    road.beginPath();
+    road.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) road.lineTo(pts[i].x, pts[i].y);
+    road.strokePath();
+
+    const centerline = this.add.graphics().setDepth(2);
+    centerline.lineStyle(3, DIRMAP_COLORS.gold, 1);
+    this.drawDashedPath(centerline, pts);
+  }
+
+  // Dashes by cumulative distance along the WHOLE point list rather than
+  // per-original-segment, so the dash pattern flows continuously through
+  // a rounded corner instead of resetting at every one of
+  // buildRoundedRoadPoints' short curve sub-segments.
+  drawDashedPath(g, pts) {
+    const dashLen = 10;
+    const gapLen = 8;
+    let dashOn = true;
+    let remaining = dashLen;
+    g.beginPath();
+    g.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      let a = pts[i - 1];
+      const b = pts[i];
+      let segLen = Phaser.Math.Distance.Between(a.x, a.y, b.x, b.y);
+      while (segLen > 0) {
+        const step = Math.min(remaining, segLen);
+        const nx = a.x + (b.x - a.x) * (step / (segLen || 1));
+        const ny = a.y + (b.y - a.y) * (step / (segLen || 1));
+        if (dashOn) g.lineTo(nx, ny); else g.moveTo(nx, ny);
+        a = { x: nx, y: ny };
+        segLen -= step;
+        remaining -= step;
+        if (remaining <= 0) {
+          dashOn = !dashOn;
+          remaining = dashOn ? dashLen : gapLen;
+        }
+      }
+    }
+    g.strokePath();
+  }
+
+  // A junction pauses for the click-quiz; the null-`correct` final
+  // waypoint (the station) just arrives.
+  advanceRoute() {
+    const wp = DIRECTION_ROUTE[this.routeIndex];
+    if (wp.correct) {
+      this.showJunction(wp, () => this.walkNextLeg());
+    } else if (this.routeIndex < DIRECTION_ROUTE.length - 1) {
+      this.walkNextLeg();
+    } else {
+      this.onArrival();
+    }
+  }
+
+  walkNextLeg() {
+    const from = this.routeIndex;
+    const to = from + 1;
+    this.tweenCatTo(from, to, () => {
+      this.routeIndex = to;
+      this.advanceRoute();
+    });
+  }
+
+  tweenCatTo(fromIdx, toIdx, onComplete) {
+    const from = DIRECTION_ROUTE[fromIdx];
+    const to = DIRECTION_ROUTE[toIdx];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    this.playerSprite.play(`${this.catColorId}-walk-${dir}`);
+    this.tweens.add({
+      targets: this.playerSprite,
+      x: to.x,
+      y: to.y,
+      duration: 700,
+      ease: 'Linear',
+      onComplete: () => {
+        this.playerSprite.play(`${this.catColorId}-idle`);
+        onComplete();
+      },
+    });
+  }
+
+  // Cut-corner pixel-border panel (LessonBox's stepped-corner language,
+  // approximated as a single flat corner cut) — shared by showJunction and
+  // onArrival so both popups stay visually consistent.
+  drawCutCornerPanel(cx, cy, w, h, fillColor, strokeColor, strokeWidth, cut) {
+    const l = cx - w / 2;
+    const r = cx + w / 2;
+    const t = cy - h / 2;
+    const b = cy + h / 2;
+    const pts = [
+      { x: l + cut, y: t }, { x: r - cut, y: t },
+      { x: r, y: t + cut }, { x: r, y: b - cut },
+      { x: r - cut, y: b }, { x: l + cut, y: b },
+      { x: l, y: b - cut }, { x: l, y: t + cut },
+    ];
+    const g = this.add.graphics();
+    g.fillStyle(fillColor, 1);
+    g.lineStyle(strokeWidth, strokeColor, 1);
+    g.beginPath();
+    g.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+    g.closePath();
+    g.fillPath();
+    g.strokePath();
+    return g;
+  }
+
+  // The click-to-choose junction: a prompt plus three buttons (always the
+  // same three words, fixed order — see DIRMAP_CHOICE_ORDER), each showing
+  // its kana + romaji. Clicking the correct one flashes it green and
+  // advances; clicking a wrong one shakes it red and stays open so the
+  // player can try again — no auto-advance, the player has to get it
+  // right. Sized from real measured text/button dimensions, positioned via
+  // a corner-search against propExclusionRects (bottom-center first) so it
+  // never lands on a building.
+  showJunction(wp, onCorrect) {
+    const depth = 500;
+    const promptStyle = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#9d97c9' };
+    const promptText = 'Which way now?';
+    const measurePrompt = this.addPixelText(0, 0, promptText, promptStyle).setVisible(false);
+    const promptW = measurePrompt.width;
+    const promptH = measurePrompt.height;
+    measurePrompt.destroy();
+
+    const btnW = 76;
+    const btnH = 44;
+    const btnGap = 8;
+    const padding = 10;
+    const rowGap = 6;
+    const totalBtnW = DIRMAP_CHOICE_ORDER.length * btnW + (DIRMAP_CHOICE_ORDER.length - 1) * btnGap;
+    const panelW = Math.max(promptW, totalBtnW) + padding * 2;
+    const panelH = promptH + rowGap + btnH + padding * 2;
+
+    const headerSafeY = this.getHeaderSafeY() + 60;
+    const minX = panelW / 2 + 10;
+    const maxX = 768 - panelW / 2 - 10;
+    const minY = headerSafeY + panelH / 2;
+    const maxY = 480 - panelH / 2 - 10;
+    const candidates = [
+      { x: 384, y: maxY },
+      { x: minX, y: maxY },
+      { x: maxX, y: maxY },
+      { x: 384, y: minY },
+      { x: minX, y: minY },
+      { x: maxX, y: minY },
+    ];
+    const overlapsAny = (rect, rects) => rects.some((r) => (
+      rect.x < r.x + r.width && rect.x + rect.width > r.x && rect.y < r.y + r.height && rect.y + rect.height > r.y
+    ));
+    let cx = candidates[0].x;
+    let cy = candidates[0].y;
+    for (const candidate of candidates) {
+      const rect = { x: candidate.x - panelW / 2, y: candidate.y - panelH / 2, width: panelW, height: panelH };
+      if (!overlapsAny(rect, this.propExclusionRects)) {
+        cx = candidate.x;
+        cy = candidate.y;
+        break;
+      }
+    }
+
+    const panel = this.drawCutCornerPanel(cx, cy, panelW, panelH, 0x2b2864, DIRMAP_COLORS.terracotta, 2, 8).setDepth(depth);
+    const promptObj = this.addPixelText(cx, cy - panelH / 2 + padding, promptText, promptStyle).setOrigin(0.5, 0).setDepth(depth + 1);
+
+    const by = cy - panelH / 2 + padding + promptH + rowGap + btnH / 2;
+    let bx = cx - totalBtnW / 2 + btnW / 2;
+    const buttons = [];
+    const texts = [promptObj];
+    let resolved = false;
+    const btnFill = 0x3d3875;
+
+    DIRMAP_CHOICE_ORDER.forEach((choiceId) => {
+      const choice = DIRMAP_CHOICES[choiceId];
+      const thisBx = bx;
+      const btnRect = this.add.rectangle(thisBx, by, btnW, btnH, btnFill)
+        .setStrokeStyle(2, DIRMAP_COLORS.terracotta)
+        .setDepth(depth + 1)
+        .setInteractive({ useHandCursor: true });
+      const kanaText = this.addPixelText(thisBx, by - 9, choice.kana, {
+        fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#F2B45C',
+      }).setOrigin(0.5).setDepth(depth + 2);
+      const romajiText = this.addPixelText(thisBx, by + 11, choice.romaji, {
+        fontFamily: DIRMAP_LATIN_FONT, fontSize: '8px', color: '#F3EFE6',
+      }).setOrigin(0.5).setDepth(depth + 2);
+      buttons.push(btnRect);
+      texts.push(kanaText, romajiText);
+
+      btnRect.on('pointerdown', () => {
+        if (resolved) return;
+        if (choiceId === wp.correct) {
+          resolved = true;
+          btnRect.setFillStyle(DIRMAP_COLORS.sage);
+          this.time.delayedCall(320, () => {
+            panel.destroy();
+            texts.forEach((t) => t.destroy());
+            buttons.forEach((b) => b.destroy());
+            onCorrect();
+          });
+        } else {
+          btnRect.setFillStyle(0xa4453a);
+          this.tweens.add({
+            targets: [btnRect, kanaText, romajiText],
+            x: thisBx + 6,
+            duration: 45,
+            yoyo: true,
+            repeat: 3,
+            onComplete: () => {
+              btnRect.setFillStyle(btnFill);
+              btnRect.x = thisBx;
+              kanaText.x = thisBx;
+              romajiText.x = thisBx;
+            },
+          });
+        }
+      });
+
+      bx += btnW + btnGap;
+    });
+  }
+
+  onArrival() {
+    const depth = 600;
+    const panelW = 240;
+    const panelH = 66;
+    const headerSafeY = this.getHeaderSafeY() + 60;
+    const minX = panelW / 2 + 10;
+    const maxX = 768 - panelW / 2 - 10;
+    const minY = headerSafeY + panelH / 2;
+    const maxY = 480 - panelH / 2 - 10;
+    const candidates = [
+      { x: 384, y: maxY },
+      { x: minX, y: maxY },
+      { x: maxX, y: maxY },
+      { x: 384, y: minY },
+    ];
+    const overlapsAny = (rect, rects) => rects.some((r) => (
+      rect.x < r.x + r.width && rect.x + rect.width > r.x && rect.y < r.y + r.height && rect.y + rect.height > r.y
+    ));
+    let cx = candidates[0].x;
+    let cy = candidates[0].y;
+    for (const candidate of candidates) {
+      const rect = { x: candidate.x - panelW / 2, y: candidate.y - panelH / 2, width: panelW, height: panelH };
+      if (!overlapsAny(rect, this.propExclusionRects)) {
+        cx = candidate.x;
+        cy = candidate.y;
+        break;
+      }
+    }
+    const panel = this.drawCutCornerPanel(cx, cy, panelW, panelH, 0x2b2864, DIRMAP_COLORS.terracotta, 2, 8)
+      .setDepth(depth)
+      .setInteractive(new Phaser.Geom.Rectangle(cx - panelW / 2, cy - panelH / 2, panelW, panelH), Phaser.Geom.Rectangle.Contains);
+    this.addPixelText(cx, cy - 14, '駅に着きました！', {
+      fontFamily: DIRMAP_JP_FONT, fontSize: '15px', color: '#F2B45C',
+    }).setOrigin(0.5).setDepth(depth + 1);
+    this.addPixelText(cx, cy + 8, 'Eki ni tsukimashita! — Arrived!', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '8px', color: '#F3EFE6',
+    }).setOrigin(0.5).setDepth(depth + 1);
+    this.addPixelText(cx, cy + 22, '[Enter] back to the library', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '7px', color: '#9d97c9',
+    }).setOrigin(0.5).setDepth(depth + 1);
+
+    const goBack = () => {
+      this.scene.stop('DirectionMapScene');
+      this.scene.resume('LibraryScene');
+    };
+    this.input.keyboard.once('keydown-ENTER', goBack);
+    panel.on('pointerdown', goBack);
+  }
+}
+
 const n5PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'phaserGame',
   width: 768,
   height: 480,
+  // Without this, Phaser defaults to bilinear texture filtering + a
+  // smoothed canvas — fine for photos, but it blurs every pixel-art
+  // sprite in the game, especially anything scaled up by Scale.FIT
+  // stretching the 768x480 canvas to fill a larger viewport. pixelArt: true turns off
+  // antialiasing, forces nearest-neighbor texture sampling, snaps sprite
+  // positions to whole pixels (roundPixels), and sets the canvas' own
+  // CSS image-rendering to pixelated — the standard fix for "why is my
+  // retro game blurry" in Phaser, and confirmed working for sprites.
+  //
+  // IMPORTANT GOTCHA — this setting also applies nearest-neighbor
+  // filtering to every Text object's texture, which is wrong for text:
+  // sprites need nearest (no smoothing) when magnified, but Text glyphs
+  // are drawn at a small native size and need to be sampled smoothly
+  // (LINEAR) or they alias into illegible mush — confirmed by directly
+  // inspecting a live Text object's WebGL texture (magFilter/minFilter
+  // were 9728 = gl.NEAREST). Neither a top-level `resolution` field nor
+  // `scale.zoom` fixed this (both tested live — neither actually changed
+  // the canvas' real pixel buffer size, g.canvas.width stayed 768 either
+  // way). The actual fix is per-object: every Text this game creates
+  // must call `.texture.setFilter(Phaser.Textures.FilterMode.LINEAR)`
+  // right after creation to override this default back to smooth
+  // sampling — see DirectionMapScene's addPixelText() for the pattern.
+  pixelArt: true,
   physics: {
     default: 'arcade',
     arcade: { debug: false },
@@ -4512,7 +6050,7 @@ const n5PhaserGame = new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [CatSelectScene, LibraryScene],
+  scene: [CatSelectScene, LibraryScene, DirectionMapScene],
 });
 
 window.__n5Game = n5PhaserGame;

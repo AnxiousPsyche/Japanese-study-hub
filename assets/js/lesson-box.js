@@ -7,6 +7,15 @@
 // passed to open() — no in-box tab switcher (confirmed explicitly: a
 // LessonBox only ever renders whichever lessonType the clicked shelf is).
 //
+// Keyboard controls (global, every page/lessonType): Enter/Space/E or the
+// right arrow/D advance a page (advance() — gated on 'try-it' pages until
+// answered); the left arrow/A go back a page (back() — never gated,
+// re-visiting a 'try-it' this way re-locks it since render() always
+// resets state.tryItSatisfied); Escape closes. All of this is skipped
+// while a text input inside the box has focus except Enter/Escape, so
+// typing an answer that happens to contain "a"/"d" or moving the text
+// cursor with arrow keys works normally.
+//
 // Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, startIndex, onComplete, onClose })
 //   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score', ...fields }
 //   startIndex: optional page index to open directly on (clamped to a
@@ -16,6 +25,11 @@
 //     including on natural completion (closedIndex === totalPages - 1
 //     there) — the caller uses this to save/clear a per-lesson resume
 //     position (see n5-phaser-game.js's lessonPage save/load).
+//   page.wireDiagram(container): optional, any page type — called right
+//     after render with the page's rendered content element, for
+//     diagramSvg markup that needs live click interactivity (not just
+//     static HTML) — see shelf-08's buildDirectionsDiagram/
+//     buildPlacesMapDiagram in n5-phaser-game.js for the pattern.
 //   'quiz-review'/'quiz-answers'/'quiz-score' are a 3-page group: the
 //     review page captures MC/fill answers with no inline grading, the
 //     answers page reveals + grades them against the SAME questions array
@@ -744,6 +758,17 @@
     // stale "already typed" pass from a previous open()).
     state.tryItSatisfied = false;
     renderContent(page);
+    // Opt-in hook for any page (currently only 'grammar-intro' diagram
+    // pages use it) whose diagramSvg markup needs live JS interactivity
+    // beyond static HTML — e.g. shelf-08's clickable direction/map
+    // diagrams. Called with the rendered content container so the
+    // callback can query its own markup and attach listeners; every
+    // listener it adds MUST stopPropagation() on click (see
+    // wireTryItDragDrop's comment) or it'll bubble to els.box's
+    // click-to-advance handler.
+    if (typeof page.wireDiagram === 'function') {
+      page.wireDiagram(els.content);
+    }
     if (page.type === 'try-it' && page.choices) {
       els.continue.classList.add('lesson-box__continue--locked');
       const hint = els.content.querySelector('.lesson-box__try-it-hint');
@@ -858,6 +883,19 @@
     }
   }
 
+  // Unlike advance(), never gated — re-reading an earlier page doesn't
+  // require completing anything. Re-visiting a 'try-it' page this way
+  // re-locks it (render() always resets state.tryItSatisfied to false),
+  // so the player has to redo it before advancing past it again, same as
+  // any other visit to that page.
+  function back() {
+    if (!state) return;
+    if (state.index > 0) {
+      state.index -= 1;
+      render();
+    }
+  }
+
   function open(pages, options) {
     ensureDom();
     if (!root || !pages || !pages.length) return;
@@ -880,8 +918,10 @@
       pulseIntervals: [],
       // Captured by 'quiz-review' pages, read (and graded) by the
       // following 'quiz-answers' page — lives for the whole lesson-open
-      // session since LessonBox has no back-navigation, so a question's
-      // answer is only ever written once per open().
+      // session. Navigating back to quiz-review and changing an answer
+      // just overwrites the relevant entry here, which quiz-answers picks
+      // up correctly on the next visit (re-grading against whatever was
+      // last selected, not the first attempt).
       quizReviewAnswers: {},
     };
     root.hidden = false;
@@ -919,15 +959,21 @@
   function handleKey(e) {
     if (!state) return;
     // While a text input inside the box has focus (try-it name field,
-    // quiz blanks), typing letters like "e" or a space must reach the
-    // input normally, not get hijacked as an advance shortcut — only
-    // Enter (submit-like) and Escape (bail out) still act as box
-    // controls while typing.
+    // quiz blanks), typing letters like "e"/"a"/"d" or moving the text
+    // cursor with the arrow keys must reach the input normally, not get
+    // hijacked as page-navigation — only Enter (submit-like) and Escape
+    // (bail out) still act as box controls while typing.
     const isTyping = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA');
     if (isTyping && e.key !== 'Enter' && e.key !== 'Escape') return;
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'e' || e.key === 'E') {
       e.preventDefault();
       advance();
+    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+      e.preventDefault();
+      advance();
+    } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      back();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       close();
@@ -935,5 +981,10 @@
   }
   document.addEventListener('keydown', handleKey);
 
-  window.LessonBox = { open, close, advance, isOpen };
+  // spriteStyle is exposed so page.wireDiagram callbacks (n5-phaser-game.js)
+  // can reuse the same spritesheet-background-position animation helper
+  // this file already uses for the portrait/ambient cat, instead of
+  // duplicating that math — see shelf-08's wireRouteDiagram for the
+  // pattern (a moving cat marker playing directional walk rows).
+  window.LessonBox = { open, close, advance, back, isOpen, spriteStyle };
 })();

@@ -920,6 +920,446 @@
         "17205"
       ],
       "port": 17205
+    },
+    {
+      "name": "jp-library-static-shelf08-places",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17306"
+      ],
+      "port": 17306
+    },
+    {
+      "name": "jp-library-static-shelf08-fix1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17407"
+      ],
+      "port": 17407
+    },
+    {
+      "name": "jp-library-static-shelf08-movement",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17508"
+      ],
+      "port": 17508
+    },
+    {
+      "name": "jp-library-static-shelf08-arimasu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17609"
+      ],
+      "port": 17609
+    },
+    {
+      "name": "jp-library-static-spacegrotesk",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17710"
+      ],
+      "port": 17710
+    },
+    {
+      "name": "jp-library-static-keynav",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17811"
+      ],
+      "port": 17811
+    },
+    {
+      "name": "jp-library-static-catroute",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17912"
+      ],
+      "port": 17912
+    },
+    {
+      "name": "jp-library-static-dirmap",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18013"
+      ],
+      "port": 18013
+    },
+    {
+      "name": "jp-library-static-dirmap-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18114"
+      ],
+      "port": 18114
+    },
+    {
+      "name": "jp-library-static-pixelart-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18215"
+      ],
+      "port": 18215
+    },
+    {
+      "name": "jp-library-static-text-res-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18316"
+      ],
+      "port": 18316
+    },
+    {
+      "name": "jp-library-static-game-resolution",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18417"
+      ],
+      "port": 18417
+    },
+    {
+      "name": "jp-library-static-zoom-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18518"
+      ],
+      "port": 18518
+    },
+    {
+      "name": "jp-library-static-scalezoom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18619"
+      ],
+      "port": 18619
+    },
+    {
+      "name": "jp-library-static-textfilter-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18720"
+      ],
+      "port": 18720
+    },
+    {
+      "name": "jp-library-static-jpfont-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18821"
+      ],
+      "port": 18821
+    },
+    {
+      "name": "jp-library-static-datatype-font",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "18922"
+      ],
+      "port": 18922
+    },
+    {
+      "name": "jp-library-static-prop-collision",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19023"
+      ],
+      "port": 19023
+    },
+    {
+      "name": "jp-library-static-prop-collision2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19124"
+      ],
+      "port": 19124
+    },
+    {
+      "name": "jp-library-static-prop-collision3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19225"
+      ],
+      "port": 19225
+    },
+    {
+      "name": "jp-library-static-prop-collision4",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19326"
+      ],
+      "port": 19326
+    },
+    {
+      "name": "jp-library-static-prop-collision5",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19427"
+      ],
+      "port": 19427
+    },
+    {
+      "name": "jp-library-static-fontrace-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19528"
+      ],
+      "port": 19528
+    },
+    {
+      "name": "jp-library-static-resize-recheck",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19629"
+      ],
+      "port": 19629
+    },
+    {
+      "name": "jp-library-static-tree-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19730"
+      ],
+      "port": 19730
+    },
+    {
+      "name": "jp-library-static-tree-fix2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19831"
+      ],
+      "port": 19831
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "19932"
+      ],
+      "port": 19932
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20033"
+      ],
+      "port": 20033
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20134"
+      ],
+      "port": 20134
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild4",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20235"
+      ],
+      "port": 20235
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild5",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20336"
+      ],
+      "port": 20336
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild6",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20437"
+      ],
+      "port": 20437
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild7",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20538"
+      ],
+      "port": 20538
+    },
+    {
+      "name": "jp-library-static-dirmap-rebuild8",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20639"
+      ],
+      "port": 20639
+    },
+    {
+      "name": "jp-library-static-realroad-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20740"
+      ],
+      "port": 20740
+    },
+    {
+      "name": "jp-library-static-realroad-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20841"
+      ],
+      "port": 20841
+    },
+    {
+      "name": "jp-library-static-realroad-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "20942"
+      ],
+      "port": 20942
+    },
+    {
+      "name": "jp-library-static-realroad-v4",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21043"
+      ],
+      "port": 21043
+    },
+    {
+      "name": "jp-library-static-realroad-v5",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21144"
+      ],
+      "port": 21144
+    },
+    {
+      "name": "jp-library-static-realroad-v6",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21245"
+      ],
+      "port": 21245
+    },
+    {
+      "name": "jp-library-static-realroad-v7",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21346"
+      ],
+      "port": 21346
+    },
+    {
+      "name": "jp-library-static-realroad-v8",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21447"
+      ],
+      "port": 21447
+    },
+    {
+      "name": "jp-library-static-clickquiz-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21548"
+      ],
+      "port": 21548
+    },
+    {
+      "name": "jp-library-static-clickquiz-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21649"
+      ],
+      "port": 21649
     }
   ],
   "autoVerify": true
