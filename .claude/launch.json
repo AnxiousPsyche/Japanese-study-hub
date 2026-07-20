@@ -1360,6 +1360,16 @@
         "21649"
       ],
       "port": 21649
+    },
+    {
+      "name": "jp-library-static-clickquiz-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21750"
+      ],
+      "port": 21750
     }
   ],
   "autoVerify": true

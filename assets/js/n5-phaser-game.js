@@ -5411,14 +5411,19 @@ const DIRMAP_COLORS = {
 const DIRMAP_JP_FONT = '"DotGothic16", sans-serif';
 const DIRMAP_LATIN_FONT = '"Datatype", monospace';
 
-// One continuous road, four real junctions, three vocabulary words total
-// (migi appears twice). Each waypoint's `correct` is the word needed to
-// leave it; the last waypoint (Eki) has none — arriving there just ends
-// the route. Geometry verified via heading vectors (not just labeled by
-// guess): WP0->WP1 heads west (hidari from an assumed north-facing
-// start), WP1->WP2 heads north (migi from west), WP2->WP3 continues north
-// (massugu), WP3->WP4 heads east (migi from north) — straight into Eki.
+// One continuous road, five real junctions, three vocabulary words total
+// (massugu and migi each appear twice). The FIRST leg is massugu, not a
+// turn — starting on a turn instruction reads as confusing when the cat
+// is already facing that way; a short straight stretch first gives the
+// player something to confirm before the route asks for any turns. Each
+// waypoint's `correct` is the word needed to leave it; the last waypoint
+// (Eki) has none. Geometry verified via heading vectors (not just labeled
+// by guess): WP0->WP1 continues the assumed north-facing start (massugu),
+// WP1->WP2 heads west (hidari from north), WP2->WP3 heads north (migi
+// from west), WP3->WP4 continues north (massugu), WP4->WP5 heads east
+// (migi from north) — straight into Eki.
 const DIRECTION_ROUTE = [
+  { x: 620, y: 420, correct: 'massugu' },
   { x: 620, y: 380, correct: 'hidari' },
   { x: 260, y: 380, correct: 'migi' },
   { x: 260, y: 220, correct: 'massugu' },
@@ -5466,11 +5471,11 @@ const DIRMAP_ASSET_FILES = {
 // to the road shoulder so they read as storefronts lining an actual street
 // rather than floating off it.
 const DIRMAP_BUILDINGS = [
-  { key: 'restaurant', label: 'レストラン', segment: 0, t: 0.18, side: -1, scale: 0.05 },
-  { key: 'hospital', label: '病院', segment: 0, t: 0.58, side: 1, scale: 0.05 },
-  { key: 'school', label: '学校', segment: 1, t: 0.5, side: -1, scale: 0.05 },
-  { key: 'church', label: '教会', segment: 2, t: 0.5, side: 1, scale: 0.05 },
-  { key: 'building', label: 'ビル', segment: 3, t: 0.5, side: -1, scale: 0.055 },
+  { key: 'restaurant', label: 'レストラン', segment: 1, t: 0.18, side: -1, scale: 0.05 },
+  { key: 'hospital', label: '病院', segment: 1, t: 0.58, side: 1, scale: 0.05 },
+  { key: 'school', label: '学校', segment: 2, t: 0.5, side: -1, scale: 0.05 },
+  { key: 'church', label: '教会', segment: 3, t: 0.5, side: 1, scale: 0.05 },
+  { key: 'building', label: 'ビル', segment: 4, t: 0.5, side: -1, scale: 0.055 },
 ];
 // Offset from the road centerline, in px — clears the road's own ~11px
 // half-width plus a small margin so buildings sit close to the street
@@ -5678,9 +5683,9 @@ class DirectionMapScene extends Phaser.Scene {
   // width so the compass (top-right corner) still has a clear spot beside
   // it instead of the two fighting over the same strip.
   placeHeaderBanner() {
-    const y = this.getHeaderSafeY() + 20;
+    const y = this.getHeaderSafeY() + 22;
     const text = 'Help Neko reach Eki by clicking the correct road!';
-    const style = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '11px' };
+    const style = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '13px' };
     const measure = this.addPixelText(0, 0, text, style).setVisible(false);
     const w = measure.width;
     const h = measure.height;
@@ -5699,16 +5704,20 @@ class DirectionMapScene extends Phaser.Scene {
   // The house the cat starts from — drawn BELOW WP0 (not centered on it),
   // since the player sprite sits exactly at WP0 and a house drawn at the
   // same point was fully hidden behind the cat (measured/reported).
+  // Scaled down from the other buildings and the "START" tag placed
+  // BESIDE it (not below) — WP0 now sits close to the canvas bottom edge
+  // to make room for the massugu lead-in leg above it, leaving little
+  // vertical room below for anything stacked under the house.
   placeHouse() {
     const start = DIRECTION_ROUTE[0];
-    const houseY = start.y + 42;
-    const img = this.add.image(start.x, houseY, 'dirmap-house').setScale(0.05).setDepth(5);
-    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 7, '家', {
-      fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#3D3875',
+    const houseY = start.y + 15;
+    const img = this.add.image(start.x, houseY, 'dirmap-house').setScale(0.04).setDepth(5);
+    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 5, '家', {
+      fontFamily: DIRMAP_JP_FONT, fontSize: '11px', color: '#3D3875',
     }).setOrigin(0.5).setDepth(6);
-    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 20, 'START HERE', {
-      fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#8FA68E',
-    }).setOrigin(0.5).setDepth(6);
+    this.addPixelText(start.x + img.displayWidth / 2 + 12, houseY, 'START', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '11px', color: '#8FA68E',
+    }).setOrigin(0, 0.5).setDepth(6);
   }
 
   // Larger than every other building (matches the size bump the game
@@ -5725,8 +5734,8 @@ class DirectionMapScene extends Phaser.Scene {
     this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 8, '駅', {
       fontFamily: DIRMAP_JP_FONT, fontSize: '16px', color: '#3D3875',
     }).setOrigin(0.5).setDepth(9);
-    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 26, 'GOAL', {
-      fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#C97B63',
+    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 28, 'GOAL', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '11px', color: '#C97B63',
     }).setOrigin(0.5).setDepth(9);
   }
 
@@ -5862,15 +5871,23 @@ class DirectionMapScene extends Phaser.Scene {
   // never lands on a building.
   showJunction(wp, onCorrect) {
     const depth = 500;
-    const promptStyle = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '9px', color: '#9d97c9' };
+    const promptStyle = { fontFamily: DIRMAP_LATIN_FONT, fontSize: '12px', color: '#9d97c9' };
     const promptText = 'Which way now?';
     const measurePrompt = this.addPixelText(0, 0, promptText, promptStyle).setVisible(false);
     const promptW = measurePrompt.width;
     const promptH = measurePrompt.height;
     measurePrompt.destroy();
 
-    const btnW = 76;
-    const btnH = 44;
+    // Button/prompt text sizes were bumped up from an earlier 8-9px pass —
+    // measured directly against the live game (not just re-checking the
+    // fontFamily string): at 8-9px the Latin lines came out as illegible
+    // mush once actually displayed through the canvas/WebGL texture
+    // pipeline at normal viewport scale, even though the SAME font/string
+    // rendered perfectly in an isolated plain-canvas test at the same
+    // size. Small pixel-adjacent fonts need a genuinely readable size,
+    // not just the right font-family (same lesson LessonBox learned).
+    const btnW = 86;
+    const btnH = 52;
     const btnGap = 8;
     const padding = 10;
     const rowGap = 6;
@@ -5922,11 +5939,11 @@ class DirectionMapScene extends Phaser.Scene {
         .setStrokeStyle(2, DIRMAP_COLORS.terracotta)
         .setDepth(depth + 1)
         .setInteractive({ useHandCursor: true });
-      const kanaText = this.addPixelText(thisBx, by - 9, choice.kana, {
-        fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#F2B45C',
+      const kanaText = this.addPixelText(thisBx, by - 11, choice.kana, {
+        fontFamily: DIRMAP_JP_FONT, fontSize: '16px', color: '#F2B45C',
       }).setOrigin(0.5).setDepth(depth + 2);
-      const romajiText = this.addPixelText(thisBx, by + 11, choice.romaji, {
-        fontFamily: DIRMAP_LATIN_FONT, fontSize: '8px', color: '#F3EFE6',
+      const romajiText = this.addPixelText(thisBx, by + 13, choice.romaji, {
+        fontFamily: DIRMAP_LATIN_FONT, fontSize: '12px', color: '#F3EFE6',
       }).setOrigin(0.5).setDepth(depth + 2);
       buttons.push(btnRect);
       texts.push(kanaText, romajiText);
@@ -5966,8 +5983,10 @@ class DirectionMapScene extends Phaser.Scene {
 
   onArrival() {
     const depth = 600;
-    const panelW = 240;
-    const panelH = 66;
+    // Sized up along with the junction panel — 8-9px Latin text measured
+    // illegible once actually displayed (see showJunction's comment).
+    const panelW = 300;
+    const panelH = 92;
     const headerSafeY = this.getHeaderSafeY() + 60;
     const minX = panelW / 2 + 10;
     const maxX = 768 - panelW / 2 - 10;
@@ -5995,14 +6014,14 @@ class DirectionMapScene extends Phaser.Scene {
     const panel = this.drawCutCornerPanel(cx, cy, panelW, panelH, 0x2b2864, DIRMAP_COLORS.terracotta, 2, 8)
       .setDepth(depth)
       .setInteractive(new Phaser.Geom.Rectangle(cx - panelW / 2, cy - panelH / 2, panelW, panelH), Phaser.Geom.Rectangle.Contains);
-    this.addPixelText(cx, cy - 14, '駅に着きました！', {
-      fontFamily: DIRMAP_JP_FONT, fontSize: '15px', color: '#F2B45C',
+    this.addPixelText(cx, cy - 24, '駅に着きました！', {
+      fontFamily: DIRMAP_JP_FONT, fontSize: '17px', color: '#F2B45C',
     }).setOrigin(0.5).setDepth(depth + 1);
-    this.addPixelText(cx, cy + 8, 'Eki ni tsukimashita! — Arrived!', {
-      fontFamily: DIRMAP_LATIN_FONT, fontSize: '8px', color: '#F3EFE6',
+    this.addPixelText(cx, cy + 6, 'Eki ni tsukimashita! — Arrived!', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '12px', color: '#F3EFE6',
     }).setOrigin(0.5).setDepth(depth + 1);
-    this.addPixelText(cx, cy + 22, '[Enter] back to the library', {
-      fontFamily: DIRMAP_LATIN_FONT, fontSize: '7px', color: '#9d97c9',
+    this.addPixelText(cx, cy + 28, '[Enter] back to the library', {
+      fontFamily: DIRMAP_LATIN_FONT, fontSize: '10px', color: '#9d97c9',
     }).setOrigin(0.5).setDepth(depth + 1);
 
     const goBack = () => {
