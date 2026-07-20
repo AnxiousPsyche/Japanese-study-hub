@@ -870,6 +870,56 @@
         "16700"
       ],
       "port": 16700
+    },
+    {
+      "name": "jp-library-static-explain-spacing",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16801"
+      ],
+      "port": 16801
+    },
+    {
+      "name": "jp-library-static-qdiagram-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "16902"
+      ],
+      "port": 16902
+    },
+    {
+      "name": "jp-library-static-color-retrofit",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17003"
+      ],
+      "port": 17003
+    },
+    {
+      "name": "jp-library-static-shelf07-numbers",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17104"
+      ],
+      "port": 17104
+    },
+    {
+      "name": "jp-library-static-page-resume",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "17205"
+      ],
+      "port": 17205
     }
   ],
   "autoVerify": true

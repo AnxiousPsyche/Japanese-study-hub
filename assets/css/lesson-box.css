@@ -55,6 +55,21 @@
   --lb-role-adjective-fg: #3a123a;
   --lb-role-neutral-bg: #746fa8;
   --lb-role-neutral-fg: #efeeff;
+
+  /* Strict subject/predicate/particle/copula color system — replaces
+     word-CLASS coloring (noun/verb/adjective, which colored これ and ほん
+     the same "noun" blue despite being grammatically different) with
+     sentence-POSITION coloring: subject and predicate now always differ
+     even when both are nouns, since which one is which is what the
+     learner actually needs to track. --lb-role-particle-bg (yellow) is
+     shared as-is — は and か were already the same color, no change
+     needed there. */
+  --lb-role-subject-bg: #6fb3e6;
+  --lb-role-subject-fg: #0b2438;
+  --lb-role-predicate-bg: #e2685f;
+  --lb-role-predicate-fg: #2e0e0b;
+  --lb-role-copula-bg: #ffffff;
+  --lb-role-copula-fg: #201d54;
 }
 
 /* Shared stepped-pixel-corner clip path, parameterized by --jr-step-a/b
@@ -243,6 +258,19 @@
   animation: lesson-box-blink 900ms steps(1) infinite;
 }
 
+/* Small "N / total" readout, top-right of the panel — readable default
+   font (not VT323) since it's caption-sized, per the established
+   small-text-stays-readable rule. */
+.lesson-box__page-indicator {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 12px;
+  color: var(--jr-text);
+  opacity: 0.55;
+  letter-spacing: 0.02em;
+}
+
 @keyframes lesson-box-blink {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
@@ -352,6 +380,39 @@
   image-rendering: pixelated;
 }
 
+/* Color-role legend — shown automatically (see lesson-box.js's render())
+   above the FIRST word-tile row on any page that has one, not opted into
+   per-page, same "global feature" pattern as the pulse animation/chime.
+   Subject/predicate/particle/copula, always these 4 colors, everywhere —
+   the whole point is the learner never has to re-learn what a color means
+   from one lesson to the next. */
+.lesson-box__color-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px dashed var(--jr-text-dim);
+  border-radius: 4px;
+  margin-bottom: 14px;
+  clear: both;
+}
+
+.lesson-box__color-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__color-legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 /* -- type: sentence --------------------------------------------------------- */
 /* Inline/underlined word treatment (not filled tiles) — explicit
    preference after comparing both against a filled-chip alternative:
@@ -421,6 +482,9 @@
 .lesson-box__word-tile-text.role-particle { color: var(--lb-role-particle-bg); border-color: var(--lb-role-particle-bg); }
 .lesson-box__word-tile-text.role-verb { color: var(--lb-role-verb-bg); border-color: var(--lb-role-verb-bg); }
 .lesson-box__word-tile-text.role-adjective { color: var(--lb-role-adjective-bg); border-color: var(--lb-role-adjective-bg); }
+.lesson-box__word-tile-text.role-subject { color: var(--lb-role-subject-bg); border-color: var(--lb-role-subject-bg); }
+.lesson-box__word-tile-text.role-predicate { color: var(--lb-role-predicate-bg); border-color: var(--lb-role-predicate-bg); }
+.lesson-box__word-tile-text.role-copula { color: var(--lb-role-copula-bg); border-color: var(--lb-role-copula-bg); }
 
 /* "NEW" badge for a word the player hasn't seen in an earlier example on
    this shelf yet — set per-tile via page data, not inferred, since only
@@ -558,6 +622,9 @@
 .lesson-box__content .role-particle { color: var(--lb-role-particle-bg); }
 .lesson-box__content .role-verb { color: var(--lb-role-verb-bg); }
 .lesson-box__content .role-adjective { color: var(--lb-role-adjective-bg); }
+.lesson-box__content .role-subject { color: var(--lb-role-subject-bg); }
+.lesson-box__content .role-predicate { color: var(--lb-role-predicate-bg); }
+.lesson-box__content .role-copula { color: var(--lb-role-copula-bg); }
 
 .lesson-box__explain-text {
   font-family: "VT323", "DotGothic16", monospace;
@@ -567,7 +634,7 @@
 }
 
 .lesson-box__explain-text + .lesson-box__explain-text {
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
 /* "You already know this" recap badges — replaces a prose sentence with
@@ -609,6 +676,9 @@
 .lesson-box__term-name.role-noun { color: var(--lb-role-noun-bg); }
 .lesson-box__term-name.role-particle { color: var(--lb-role-particle-bg); }
 .lesson-box__term-name.role-verb { color: var(--lb-role-verb-bg); }
+.lesson-box__term-name.role-subject { color: var(--lb-role-subject-bg); }
+.lesson-box__term-name.role-predicate { color: var(--lb-role-predicate-bg); }
+.lesson-box__term-name.role-copula { color: var(--lb-role-copula-bg); }
 
 .lesson-box__term-desc {
   color: var(--jr-text-dim);
@@ -973,8 +1043,8 @@
 .lesson-box__qdiagram-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 .lesson-box__qdiagram-row:last-child {
@@ -982,9 +1052,9 @@
 }
 
 .lesson-box__qdiagram-label {
-  width: 74px;
+  width: 100px;
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: 14px;
   font-family: monospace;
   color: var(--jr-text-dim);
   letter-spacing: 0.04em;
@@ -994,14 +1064,14 @@
 .lesson-box__qdiagram-cells {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
   position: relative;
   flex-wrap: wrap;
 }
 
 .lesson-box__qdiagram-cat {
-  width: 42px;
-  height: 42px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   background-repeat: no-repeat;
   background-size: 300% 100%;
@@ -1013,24 +1083,29 @@
 
 .lesson-box__qdiagram-tile {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 18px;
-  padding-bottom: 2px;
+  font-size: 28px;
+  padding-bottom: 3px;
   border-bottom: 3px solid;
 }
 
+.lesson-box__qdiagram-tile.role-subject { color: var(--lb-role-subject-bg); border-color: var(--lb-role-subject-bg); }
+.lesson-box__qdiagram-tile.role-predicate { color: var(--lb-role-predicate-bg); border-color: var(--lb-role-predicate-bg); }
+.lesson-box__qdiagram-tile.role-particle { color: var(--lb-role-particle-bg); border-color: var(--lb-role-particle-bg); }
+.lesson-box__qdiagram-tile.role-copula { color: var(--lb-role-copula-bg); border-color: var(--lb-role-copula-bg); }
+
 .lesson-box__qdiagram-tile.is-highlight {
-  border-radius: 5px;
+  border-radius: 6px;
   border: 2px solid #fff6da;
-  padding: 1px 6px;
-  box-shadow: 0 0 10px rgba(240, 198, 116, 0.6);
+  padding: 2px 10px;
+  box-shadow: 0 0 14px rgba(240, 198, 116, 0.6);
 }
 
 .lesson-box__qdiagram-qmark {
   position: absolute;
-  top: -20px;
-  left: 8px;
+  top: -30px;
+  left: 10px;
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 15px;
+  font-size: 22px;
   color: var(--lb-role-particle-bg);
   transform: rotate(-8deg);
 }

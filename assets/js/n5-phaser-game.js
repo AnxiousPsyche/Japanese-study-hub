@@ -538,10 +538,10 @@ const LESSON_CONTENT = {
       analogy: 'Think of は like a spotlight and です like a stamp of approval: は swings the spotlight onto whatever you\'re about to talk about, and です stamps "yep, that\'s what it is" at the end.',
       terms: [
         { role: 'particle', name: 'は (wa)', desc: 'Points the spotlight at A — "as for A..."' },
-        { role: 'verb', name: 'です (desu)', desc: 'Stamps it as true, politely — "...it\'s B." Also carries the tense.' },
+        { role: 'copula', name: 'です (desu)', desc: 'Stamps it as true, politely — "...it\'s B." Also carries the tense.' },
       ],
       pattern: [
-        { text: 'A', role: 'noun' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'noun' }, { text: 'です', role: 'verb' },
+        { text: 'A', role: 'subject' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'predicate' }, { text: 'です', role: 'copula' },
       ],
       explain: [
         'です changes shape to move the tense — swap it for でした and the whole sentence slides from now to before, nothing else changes:',
@@ -565,7 +565,7 @@ const LESSON_CONTENT = {
               <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-particle-bg)"></path>
             </marker>
             <marker id="lb-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-verb-bg)"></path>
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-copula-bg)"></path>
             </marker>
           </defs>
           <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
@@ -580,18 +580,18 @@ const LESSON_CONTENT = {
           <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
           <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="var(--lb-role-particle-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
           <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
-          <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="var(--lb-role-verb-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
-          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-verb-bg)" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
+          <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="var(--lb-role-copula-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
+          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-copula-bg)" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
           <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
           <g font-family="VT323, DotGothic16, monospace" font-size="16">
-            <rect x="10" y="160" width="90" height="34" rx="3" fill="var(--lb-role-noun-bg)"></rect>
-            <text x="55" y="182" text-anchor="middle" fill="var(--lb-role-noun-fg)">わたし</text>
+            <rect x="10" y="160" width="90" height="34" rx="3" fill="var(--lb-role-subject-bg)"></rect>
+            <text x="55" y="182" text-anchor="middle" fill="var(--lb-role-subject-fg)">わたし</text>
             <rect x="108" y="160" width="46" height="34" rx="3" fill="var(--lb-role-particle-bg)"></rect>
             <text x="131" y="182" text-anchor="middle" fill="var(--lb-role-particle-fg)">は</text>
-            <rect x="162" y="160" width="110" height="34" rx="3" fill="var(--lb-role-noun-bg)"></rect>
-            <text x="217" y="182" text-anchor="middle" fill="var(--lb-role-noun-fg)">せんせい</text>
-            <rect x="280" y="160" width="70" height="34" rx="3" fill="var(--lb-role-verb-bg)"></rect>
-            <text x="315" y="182" text-anchor="middle" fill="var(--lb-role-verb-fg)">です</text>
+            <rect x="162" y="160" width="110" height="34" rx="3" fill="var(--lb-role-predicate-bg)"></rect>
+            <text x="217" y="182" text-anchor="middle" fill="var(--lb-role-predicate-fg)">せんせい</text>
+            <rect x="280" y="160" width="70" height="34" rx="3" fill="var(--lb-role-copula-bg)"></rect>
+            <text x="315" y="182" text-anchor="middle" fill="var(--lb-role-copula-fg)">です</text>
           </g>
           <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="var(--jr-text-dim)">
             <text x="55" y="208" text-anchor="middle">subject</text>
@@ -612,30 +612,30 @@ const LESSON_CONTENT = {
         {
           tag: '"I am a student."',
           tiles: [
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'わたし', role: 'subject', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'がくせい', role: 'noun', gloss: 'student' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'がくせい', role: 'predicate', gloss: 'student' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Watashi wa gakusei desu.',
         },
         {
           tag: '"This is a book."',
           tiles: [
-            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'これ', role: 'subject', gloss: 'this' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ほん', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Kore wa hon desu.',
         },
         {
           tag: '"I was a student."',
           tiles: [
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'わたし', role: 'subject', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'がくせい', role: 'noun', gloss: 'student' },
-            { text: 'でした', role: 'verb', gloss: 'was (past)' },
+            { text: 'がくせい', role: 'predicate', gloss: 'student' },
+            { text: 'でした', role: 'copula', gloss: 'was (past)' },
           ],
           translation: 'Watashi wa gakusei deshita.',
         },
@@ -653,10 +653,10 @@ const LESSON_CONTENT = {
       type: 'sentence',
       label: 'Example 1',
       tiles: [
-        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'がくせい', role: 'noun', gloss: 'student (predicate)' },
-        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)' },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
       ],
       translation: 'Watashi wa gakusei desu. — "I am a student."',
     },
@@ -665,10 +665,10 @@ const LESSON_CONTENT = {
       label: 'Example 2',
       newWordFlag: 'New word: これ (kore)',
       tiles: [
-        { text: 'これ', role: 'noun', gloss: 'this (thing near me)', isNew: true },
+        { text: 'これ', role: 'subject', gloss: 'this (thing near me)', isNew: true },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'ほん', role: 'noun', gloss: 'book (predicate)' },
-        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+        { text: 'ほん', role: 'predicate', gloss: 'book (predicate)' },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
       ],
       translation: 'Kore wa hon desu. — "This is a book."',
     },
@@ -677,10 +677,10 @@ const LESSON_CONTENT = {
       label: 'Example 3',
       newWordFlag: 'New word: ペン (pen)',
       tiles: [
-        { text: 'これ', role: 'noun', gloss: 'this (thing near me)' },
+        { text: 'これ', role: 'subject', gloss: 'this (thing near me)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'ペン', role: 'noun', gloss: 'pen (predicate)', isNew: true },
-        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+        { text: 'ペン', role: 'predicate', gloss: 'pen (predicate)', isNew: true },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
       ],
       translation: 'Kore wa pen desu. — "This is a pen."',
       note: 'Same これ from before, just a different B. Swap in any noun you know and the pattern still works.',
@@ -690,10 +690,10 @@ const LESSON_CONTENT = {
       label: 'Example 4',
       newWordFlag: 'New word: でした (deshita)',
       tiles: [
-        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'がくせい', role: 'noun', gloss: 'student (predicate)' },
-        { text: 'でした', role: 'verb', gloss: 'was (copula, polite past)', isNew: true },
+        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)' },
+        { text: 'でした', role: 'copula', gloss: 'was (copula, polite past)', isNew: true },
       ],
       translation: 'Watashi wa gakusei deshita. — "I was a student."',
       note: 'でした is just です pushed into the past — same politeness, same job, only the tense changes. Nothing else about the sentence pattern moves.',
@@ -703,10 +703,10 @@ const LESSON_CONTENT = {
       label: 'Example 5',
       newWordFlag: 'New word: せんせい (sensei)',
       tiles: [
-        { text: 'わたし', role: 'noun', gloss: 'I / me (subject)' },
+        { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'せんせい', role: 'noun', gloss: 'teacher (predicate)', isNew: true },
-        { text: 'です', role: 'verb', gloss: 'am / is / are (copula, polite)' },
+        { text: 'せんせい', role: 'predicate', gloss: 'teacher (predicate)', isNew: true },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
       ],
       translation: 'Watashi wa sensei desu. — "I am a teacher."',
       note: 'Filipino lines up word-for-word almost perfectly: <b>Ako</b> (watashi) <b>ay</b> (wa) <b>guro/Teacher</b> (sensei) <b>po</b> (desu). ay plays は\'s role, po plays です\'s role.',
@@ -773,12 +773,12 @@ const LESSON_CONTENT = {
       analogy: 'It\'s like a knock-knock joke — everyone already knows the shape, so you just fill in your own punchline (your name) in the middle.',
       recapChips: ['はじめまして (greet)', 'A は B です (name)', 'よろしくお願いします (close)'],
       terms: [
-        { role: 'noun', name: '1. Greet', desc: 'はじめまして — said only at a first meeting.' },
-        { role: 'particle', name: '2. Name', desc: 'わたしは [name] です — the pattern from the last shelf, put to work.' },
-        { role: 'verb', name: '3. Close', desc: 'よろしくお願いします — closes politely, every time.' },
+        { role: 'particle', name: '1. Greet', desc: 'はじめまして — said only at a first meeting.' },
+        { role: 'subject', name: '2. Name', desc: 'わたしは [name] です — the pattern from the last shelf, put to work.' },
+        { role: 'predicate', name: '3. Close', desc: 'よろしくお願いします — closes politely, every time.' },
       ],
       explain: [
-        'Quick reminder of the pattern from the last shelf: <b><span class="role-noun">わたし</span><span class="role-particle">は</span> Neko <span class="role-verb">です</span></b> — "as for me, Neko."',
+        'Quick reminder of the pattern from the last shelf: <b><span class="role-subject">わたし</span><span class="role-particle">は</span> <span class="role-predicate">Neko</span> <span class="role-copula">です</span></b> — "as for me, Neko."',
       ],
       cultureNotes: [
         'Jikoshoukai isn\'t just small talk — it\'s treated like a small ritual. You give it standing up, often with a slight bow, on your first day at a new school or job, or when meeting someone through a mutual connection.',
@@ -798,7 +798,7 @@ const LESSON_CONTENT = {
       turns: [
         {
           speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
-          text: 'はじめまして。<span class="role-noun">お名前</span><span class="role-particle">は</span><span class="role-noun">何</span><span class="role-verb">です</span><span class="role-particle">か</span>。',
+          text: 'はじめまして。<span class="role-subject">お名前</span><span class="role-particle">は</span><span class="role-predicate">何</span><span class="role-copula">です</span><span class="role-particle">か</span>。',
           romaji: 'Hajimemashite. O-namae wa nan desu ka. — "How do you do. What is your name?"',
         },
         {
@@ -895,9 +895,9 @@ const LESSON_CONTENT = {
       analogy: 'It\'s like a 3-ring dartboard centered on YOU, the speaker: the bullseye ring is yours, the middle ring belongs to whoever you\'re talking to, and everything outside that is "over there," full stop.',
       recapChips: ['これ (this — already known)'],
       terms: [
-        { role: 'noun', name: 'これ / この', desc: 'Close to YOU, the speaker.' },
-        { role: 'particle', name: 'それ / その', desc: 'Close to the person you\'re talking to.' },
-        { role: 'verb', name: 'あれ / あの', desc: 'Far from both of you.' },
+        { role: 'subject', name: 'これ / この', desc: 'Close to YOU, the speaker.' },
+        { role: 'subject', name: 'それ / その', desc: 'Close to the person you\'re talking to.' },
+        { role: 'subject', name: 'あれ / あの', desc: 'Far from both of you.' },
       ],
       explain: [
         'Two shapes per distance: これ/それ/あれ stand alone ("this one"), while この/その/あの attach directly in front of a noun ("this ___").',
@@ -925,30 +925,30 @@ const LESSON_CONTENT = {
         {
           tag: '"This is a book." (near you)',
           tiles: [
-            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'これ', role: 'subject', gloss: 'this' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ほん', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Kore wa hon desu.',
         },
         {
           tag: '"That is a pen." (near the listener)',
           tiles: [
-            { text: 'それ', role: 'particle', gloss: 'that', isNew: true },
+            { text: 'それ', role: 'subject', gloss: 'that', isNew: true },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ペン', role: 'predicate', gloss: 'pen' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Sore wa pen desu.',
         },
         {
           tag: '"That over there is a book." (far from both)',
           tiles: [
-            { text: 'あれ', role: 'verb', gloss: 'that over there', smallGloss: true, isNew: true },
+            { text: 'あれ', role: 'subject', gloss: 'that over there', smallGloss: true, isNew: true },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ほん', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Are wa hon desu.',
         },
@@ -967,32 +967,32 @@ const LESSON_CONTENT = {
         {
           tag: '"this book"',
           tiles: [
-            { text: 'この', role: 'noun', gloss: 'this ~', isNew: true },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'この', role: 'subject', gloss: 'this ~', isNew: true },
+            { text: 'ほん', role: 'subject', gloss: 'book' },
           ],
           translation: 'kono hon',
         },
         {
           tag: '"that pen" (near the listener)',
           tiles: [
-            { text: 'その', role: 'particle', gloss: 'that ~', isNew: true },
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'その', role: 'subject', gloss: 'that ~', isNew: true },
+            { text: 'ペン', role: 'subject', gloss: 'pen' },
           ],
           translation: 'sono pen',
         },
         {
           tag: '"that teacher over there"',
           tiles: [
-            { text: 'あの', role: 'verb', gloss: 'that ~ over there', isNew: true },
-            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+            { text: 'あの', role: 'subject', gloss: 'that ~ over there', isNew: true },
+            { text: 'せんせい', role: 'subject', gloss: 'teacher' },
           ],
           translation: 'ano sensei',
         },
         {
           tag: '"which student?"',
           tiles: [
-            { text: 'どの', role: 'adjective', gloss: 'which ~', isNew: true },
-            { text: 'がくせい', role: 'noun', gloss: 'student' },
+            { text: 'どの', role: 'subject', gloss: 'which ~', isNew: true },
+            { text: 'がくせい', role: 'subject', gloss: 'student' },
           ],
           translation: 'dono gakusei',
         },
@@ -1019,22 +1019,22 @@ const LESSON_CONTENT = {
         {
           tag: '"This is a pen." — これ alone is the subject',
           tiles: [
-            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'これ', role: 'subject', gloss: 'this' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ペン', role: 'predicate', gloss: 'pen' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Kore wa pen desu.',
         },
         {
           tag: '"This pen is mine." — この+pen together are the subject',
           tiles: [
-            { text: 'この', role: 'noun', gloss: 'this ~' },
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'この', role: 'subject', gloss: 'this ~' },
+            { text: 'ペン', role: 'subject', gloss: 'pen' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'わたし', role: 'predicate', gloss: 'I / me' },
             { text: 'の', role: 'particle', gloss: '\'s / mine (possessive)', smallGloss: true, isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Kono pen wa watashi no desu.',
         },
@@ -1053,40 +1053,40 @@ const LESSON_CONTENT = {
         {
           tag: '"The book is here." (near you)',
           tiles: [
-            { text: 'ほん', role: 'noun', gloss: 'book' },
+            { text: 'ほん', role: 'subject', gloss: 'book' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ここ', role: 'noun', gloss: 'here', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ここ', role: 'predicate', gloss: 'here', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Hon wa koko desu.',
         },
         {
           tag: '"The pen is there." (near the listener)',
           tiles: [
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
+            { text: 'ペン', role: 'subject', gloss: 'pen' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'そこ', role: 'particle', gloss: 'there', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'そこ', role: 'predicate', gloss: 'there', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Pen wa soko desu.',
         },
         {
           tag: '"The teacher is over there." (far from both)',
           tiles: [
-            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+            { text: 'せんせい', role: 'subject', gloss: 'teacher' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'あそこ', role: 'verb', gloss: 'over there', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'あそこ', role: 'predicate', gloss: 'over there', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Sensei wa asoko desu.',
         },
         {
           tag: '"Where is the cat?"',
           tiles: [
-            { text: 'ねこ', role: 'noun', gloss: 'cat' },
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'どこ', role: 'adjective', gloss: 'where', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'どこ', role: 'predicate', gloss: 'where', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker' },
           ],
           translation: 'Neko wa doko desu ka?',
@@ -1108,40 +1108,40 @@ const LESSON_CONTENT = {
         {
           tag: '"This is Tanaka-san." (polite, introducing someone near you)',
           tiles: [
-            { text: 'こちら', role: 'noun', gloss: 'this (polite)', isNew: true },
+            { text: 'こちら', role: 'subject', gloss: 'this (polite)', isNew: true },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'たなかさん', role: 'noun', gloss: 'Mr. / Ms. Tanaka' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'たなかさん', role: 'predicate', gloss: 'Mr. / Ms. Tanaka' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Kochira wa Tanaka-san desu.',
         },
         {
           tag: '"The restroom is that way." (near the listener)',
           tiles: [
-            { text: 'おてあらい', role: 'noun', gloss: 'restroom' },
+            { text: 'おてあらい', role: 'subject', gloss: 'restroom' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'そちら', role: 'particle', gloss: 'that way (polite)', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'そちら', role: 'predicate', gloss: 'that way (polite)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Otearai wa sochira desu.',
         },
         {
           tag: '"The exit is over there." (far from both, polite)',
           tiles: [
-            { text: 'でぐち', role: 'noun', gloss: 'exit' },
+            { text: 'でぐち', role: 'subject', gloss: 'exit' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'あちら', role: 'verb', gloss: 'over there (polite)', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'あちら', role: 'predicate', gloss: 'over there (polite)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Deguchi wa achira desu.',
         },
         {
           tag: '"Which way is the station?"',
           tiles: [
-            { text: 'えき', role: 'noun', gloss: 'station' },
+            { text: 'えき', role: 'subject', gloss: 'station' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'どちら', role: 'adjective', gloss: 'which way', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'どちら', role: 'predicate', gloss: 'which way', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker' },
           ],
           translation: 'Eki wa dochira desu ka?',
@@ -1156,12 +1156,12 @@ const LESSON_CONTENT = {
       turns: [
         {
           speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
-          text: '<span class="role-particle">それ</span>はなんですか？',
+          text: '<span class="role-subject">それ</span>はなんですか？',
           romaji: 'Sore wa nan desu ka? — "What is that (by you)?"',
         },
         {
           speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
-          text: '<span class="role-noun">これ</span>はほんです。',
+          text: '<span class="role-subject">これ</span>はほんです。',
           romaji: 'Kore wa hon desu. — "This is a book."',
         },
         {
@@ -1278,18 +1278,24 @@ const LESSON_CONTENT = {
         { role: 'particle', name: 'か (ka)', desc: 'Added to the very end of a sentence — turns a statement into a question.' },
       ],
       pattern: [
-        { text: '[statement]', role: 'noun' }, { text: 'か', role: 'particle' },
+        { text: '[statement]', role: 'subject' }, { text: 'か', role: 'particle' },
       ],
     },
     {
       // Page 3/14: the fuller explanation + the one-thing-to-remember
-      // takeaway, on their own page.
+      // takeaway, on their own page — split into 2 short paragraphs (was
+      // 1 dense wall of text) with inline role-colored spans on the
+      // example words, matching the colorful, "alive" look every other
+      // page already has (samples/diagram/word-tiles) instead of reading
+      // as flat white text.
       type: 'grammar-intro',
+      sectionLabel: 'Putting it together',
       dividedIntro: true,
       explain: [
-        'か works two ways: tack it onto a plain yes/no statement (これはほんです → これはほんですか, "Is this a book?"), or onto a sentence that already has a question word in it (せんせいはどこです → せんせいはどこですか, "Where is the teacher?", reusing どこ from shelf 5). Either way, word order never changes — か always goes at the very end.',
+        'The first way: tack it onto a plain yes/no statement. <span class="role-subject">これ</span><span class="role-particle">は</span><span class="role-predicate">ほん</span><span class="role-copula">です</span> becomes <span class="role-subject">これ</span><span class="role-particle">は</span><span class="role-predicate">ほん</span><span class="role-copula">です</span><b class="role-particle">か</b> — "Is this a book?"',
+        'The second way: tack it onto a sentence that already has a question word in it. <span class="role-subject">せんせい</span><span class="role-particle">は</span><span class="role-predicate">どこ</span><span class="role-copula">です</span> becomes ...どこです<b class="role-particle">か</b> — "Where is the teacher?" (reusing どこ from shelf 5).',
       ],
-      takeaway: 'Add か to the end of any statement — that\'s a question. No question mark needed.',
+      takeaway: 'Either way, word order never changes — か always goes at the very end.',
     },
     {
       // Page 4/14: statement -> question diagram — real cat-face pips
@@ -1310,10 +1316,10 @@ const LESSON_CONTENT = {
         {
           tag: '"Is this a book?"',
           tiles: [
-            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'これ', role: 'subject', gloss: 'this' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ほん', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true, isNew: true },
           ],
           translation: 'Kore wa hon desu ka?',
@@ -1321,18 +1327,18 @@ const LESSON_CONTENT = {
         {
           tag: '"Yes, that\'s right."',
           tiles: [
-            { text: 'はい', role: 'verb', gloss: 'yes', isNew: true },
-            { text: 'そうです', role: 'verb', gloss: 'that\'s right', isNew: true },
+            { text: 'はい', role: 'subject', gloss: 'yes', isNew: true },
+            { text: 'そうです', role: 'subject', gloss: 'that\'s right', isNew: true },
           ],
           translation: 'Hai, sou desu.',
         },
         {
           tag: '"Is that a pen?"',
           tiles: [
-            { text: 'それ', role: 'noun', gloss: 'that' },
+            { text: 'それ', role: 'subject', gloss: 'that' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'ペン', role: 'noun', gloss: 'pen' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'ペン', role: 'predicate', gloss: 'pen' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Sore wa pen desu ka?',
@@ -1340,10 +1346,10 @@ const LESSON_CONTENT = {
         {
           tag: '"No, that\'s wrong. It\'s a book."',
           tiles: [
-            { text: 'いいえ', role: 'verb', gloss: 'no', isNew: true },
-            { text: 'ちがいます', role: 'verb', gloss: 'that\'s wrong', smallGloss: true, isNew: true },
-            { text: 'ほん', role: 'noun', gloss: 'book' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'いいえ', role: 'predicate', gloss: 'no', isNew: true },
+            { text: 'ちがいます', role: 'predicate', gloss: 'that\'s wrong', smallGloss: true, isNew: true },
+            { text: 'ほん', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Iie, chigaimasu. Hon desu.',
         },
@@ -1357,12 +1363,12 @@ const LESSON_CONTENT = {
         'These attach the same way どこ/どの/どちら did on shelf 5 — swap in whichever question word fits, keep everything else the same.',
       ],
       terms: [
-        { role: 'noun', name: 'だれ (dare)', desc: 'Who' },
-        { role: 'particle', name: 'いつ (itsu)', desc: 'When' },
-        { role: 'verb', name: 'どうして (doushite)', desc: 'Why — neutral, spoken' },
-        { role: 'verb', name: 'なぜ (naze)', desc: 'Why — more formal, written' },
-        { role: 'adjective', name: 'いくつ (ikutsu)', desc: 'How many (small countable things)' },
-        { role: 'adjective', name: 'いくら (ikura)', desc: 'How much (price)' },
+        { role: 'predicate', name: 'だれ (dare)', desc: 'Who' },
+        { role: 'predicate', name: 'いつ (itsu)', desc: 'When' },
+        { role: 'predicate', name: 'どうして (doushite)', desc: 'Why — neutral, spoken' },
+        { role: 'predicate', name: 'なぜ (naze)', desc: 'Why — more formal, written' },
+        { role: 'predicate', name: 'いくつ (ikutsu)', desc: 'How many (small countable things)' },
+        { role: 'predicate', name: 'いくら (ikura)', desc: 'How much (price)' },
       ],
     },
     {
@@ -1374,10 +1380,10 @@ const LESSON_CONTENT = {
         {
           tag: '"Who is the teacher?"',
           tiles: [
-            { text: 'せんせい', role: 'noun', gloss: 'teacher' },
+            { text: 'せんせい', role: 'subject', gloss: 'teacher' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'だれ', role: 'noun', gloss: 'who', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'だれ', role: 'predicate', gloss: 'who', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Sensei wa dare desu ka?',
@@ -1385,10 +1391,10 @@ const LESSON_CONTENT = {
         {
           tag: '"When is your birthday?"',
           tiles: [
-            { text: 'たんじょうび', role: 'noun', gloss: 'birthday' },
+            { text: 'たんじょうび', role: 'subject', gloss: 'birthday' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'いつ', role: 'particle', gloss: 'when', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'いつ', role: 'predicate', gloss: 'when', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Tanjoubi wa itsu desu ka?',
@@ -1403,8 +1409,8 @@ const LESSON_CONTENT = {
         {
           tag: '"Why?" (casual, spoken)',
           tiles: [
-            { text: 'どうして', role: 'verb', gloss: 'why (casual)', smallGloss: true, isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'どうして', role: 'predicate', gloss: 'why (casual)', smallGloss: true, isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Doushite desu ka?',
@@ -1412,8 +1418,8 @@ const LESSON_CONTENT = {
         {
           tag: '"Why?" (formal, written)',
           tiles: [
-            { text: 'なぜ', role: 'verb', gloss: 'why (formal)', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'なぜ', role: 'predicate', gloss: 'why (formal)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Naze desu ka?',
@@ -1421,10 +1427,10 @@ const LESSON_CONTENT = {
         {
           tag: '"How many apples?"',
           tiles: [
-            { text: 'りんご', role: 'noun', gloss: 'apple' },
+            { text: 'りんご', role: 'subject', gloss: 'apple' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'いくつ', role: 'adjective', gloss: 'how many', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'いくつ', role: 'predicate', gloss: 'how many', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Ringo wa ikutsu desu ka?',
@@ -1432,10 +1438,10 @@ const LESSON_CONTENT = {
         {
           tag: '"How much is this?"',
           tiles: [
-            { text: 'これ', role: 'noun', gloss: 'this' },
+            { text: 'これ', role: 'subject', gloss: 'this' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'いくら', role: 'adjective', gloss: 'how much (price)', isNew: true },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
+            { text: 'いくら', role: 'predicate', gloss: 'how much (price)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
             { text: 'か', role: 'particle', gloss: 'question marker', smallGloss: true },
           ],
           translation: 'Kore wa ikura desu ka?',
@@ -1532,6 +1538,452 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  'shelf-07': [
+    {
+      // Page 1/22: hook — numbers build compositionally, plus a heads-up
+      // that counters/time each get their own quick walkthrough below
+      // (matches shelf-06's "light first page, not a wall of fields").
+      type: 'grammar-intro',
+      sectionLabel: 'Numbers & Counters',
+      dividedIntro: true,
+      bigIdea: 'Japanese numbers are built like Lego blocks — learn 1 through 10, and you can build every number up to 100 just by combining them.',
+      analogy: 'にじゅう (20) is just に (2) + じゅう (10) stuck together — "two tens." さんじゅう (30) is さん (3) + じゅう (10) — "three tens." Once you know the blocks, the rest is just snapping them together.',
+      explain: [
+        'One more thing: a few numbers have two different readings depending on context (4, 7, 9), and when you attach a "counter" word to count specific things — animals, objects, time — the sounds sometimes shift a little. Don\'t worry, each new pattern gets its own quick walkthrough below.',
+      ],
+    },
+    {
+      // Page 2/22: base numbers 1-10, both readings shown where they exist.
+      type: 'grammar-intro',
+      sectionLabel: 'Numbers 1–10',
+      terms: [
+        { role: 'predicate', name: 'いち (ichi)', desc: '1' },
+        { role: 'predicate', name: 'に (ni)', desc: '2' },
+        { role: 'predicate', name: 'さん (san)', desc: '3' },
+        { role: 'predicate', name: 'よん・し (yon / shi)', desc: '4 — よん is the everyday reading; し is avoided since it sounds like the word for "death"' },
+        { role: 'predicate', name: 'ご (go)', desc: '5' },
+        { role: 'predicate', name: 'ろく (roku)', desc: '6' },
+        { role: 'predicate', name: 'なな・しち (nana / shichi)', desc: '7 — なな is the everyday reading; しち shows up in a few fixed words (like time, later on this shelf)' },
+        { role: 'predicate', name: 'はち (hachi)', desc: '8' },
+        { role: 'predicate', name: 'きゅう・く (kyuu / ku)', desc: '9 — きゅう is the everyday reading; く shows up in a few fixed words' },
+        { role: 'predicate', name: 'じゅう (juu)', desc: '10' },
+      ],
+    },
+    {
+      // Page 3/22: tens 20-100 — fully regular (digit + じゅう), so just a
+      // one-line explain instead of a dividedIntro breakdown.
+      type: 'grammar-intro',
+      sectionLabel: 'Tens: 20 to 100',
+      explain: ['Every tens number is just [digit] + じゅう ("ten") stuck together — no surprises here.'],
+      terms: [
+        { role: 'predicate', name: 'にじゅう (nijuu)', desc: '20' },
+        { role: 'predicate', name: 'さんじゅう (sanjuu)', desc: '30' },
+        { role: 'predicate', name: 'よんじゅう (yonjuu)', desc: '40' },
+        { role: 'predicate', name: 'ごじゅう (gojuu)', desc: '50' },
+        { role: 'predicate', name: 'ろくじゅう (rokujuu)', desc: '60' },
+        { role: 'predicate', name: 'ななじゅう (nanajuu)', desc: '70' },
+        { role: 'predicate', name: 'はちじゅう (hachijuu)', desc: '80' },
+        { role: 'predicate', name: 'きゅうじゅう (kyuujuu)', desc: '90' },
+        { role: 'predicate', name: 'ひゃく (hyaku)', desc: '100' },
+      ],
+    },
+    {
+      // Page 4/22: general counter つ — intro.
+      type: 'grammar-intro',
+      sectionLabel: 'Counting general things: つ',
+      dividedIntro: true,
+      bigIdea: 'When you count everyday objects — apples, boxes, cups, anything without its own special counter — Japanese uses an entirely different, older set of number words ending in つ.',
+      explain: ['This "つ series" only goes up to 10 — for 11 and higher, people just switch back to the plain numbers you already learned.'],
+      takeaway: 'ひとつ, ふたつ, みっつ... these don\'t look like いち, に, さん at all — they\'re their own set to memorize.',
+    },
+    {
+      // Page 5/22: つ counter full 1-10 table.
+      type: 'grammar-intro',
+      sectionLabel: 'The つ counter, 1–10',
+      terms: [
+        { role: 'predicate', name: 'ひとつ (hitotsu)', desc: '1 (general things)' },
+        { role: 'predicate', name: 'ふたつ (futatsu)', desc: '2' },
+        { role: 'predicate', name: 'みっつ (mittsu)', desc: '3' },
+        { role: 'predicate', name: 'よっつ (yottsu)', desc: '4' },
+        { role: 'predicate', name: 'いつつ (itsutsu)', desc: '5' },
+        { role: 'predicate', name: 'むっつ (muttsu)', desc: '6' },
+        { role: 'predicate', name: 'ななつ (nanatsu)', desc: '7' },
+        { role: 'predicate', name: 'やっつ (yattsu)', desc: '8' },
+        { role: 'predicate', name: 'ここのつ (kokonotsu)', desc: '9' },
+        { role: 'predicate', name: 'とお (too)', desc: '10 — irregular, not じゅっつ' },
+      ],
+    },
+    {
+      // Page 6/22: つ samples — reuses りんご (established context noun,
+      // already used on shelf-06's いくつ samples).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"There is one apple." (lit. "As for the apple, [it\'s] one.")',
+          tiles: [
+            { text: 'りんご', role: 'subject', gloss: 'apple' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'ひとつ', role: 'predicate', gloss: 'one (things)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ringo wa hitotsu desu.',
+        },
+        {
+          tag: '"There are three apples."',
+          tiles: [
+            { text: 'りんご', role: 'subject', gloss: 'apple' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'みっつ', role: 'predicate', gloss: 'three (things)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ringo wa mittsu desu.',
+        },
+        {
+          tag: '"There are ten apples."',
+          tiles: [
+            { text: 'りんご', role: 'subject', gloss: 'apple' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'とお', role: 'predicate', gloss: 'ten (things)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ringo wa too desu.',
+        },
+      ],
+    },
+    {
+      // Page 7/22: animal counter 匹 — intro.
+      type: 'grammar-intro',
+      sectionLabel: 'Counting animals: 匹',
+      dividedIntro: true,
+      bigIdea: 'Small animals — cats, dogs, fish, bugs — get their own counter, 匹 (hiki), attached directly after the number.',
+      explain: ['匹\'s sound shifts depending on the number before it — it reads ひき, びき, or ぴき depending on what comes right before, the same way English "a" becomes "an" before a vowel. You don\'t have to reason it out — just memorize the full list below.'],
+      takeaway: 'One cat is いっぴき, not いちひき — the sound genuinely changes, so learn each one by ear.',
+    },
+    {
+      // Page 8/22: 匹 counter full 1-10 table.
+      type: 'grammar-intro',
+      sectionLabel: 'The 匹 counter, 1–10',
+      terms: [
+        { role: 'predicate', name: 'いっぴき (ippiki)', desc: '1 animal' },
+        { role: 'predicate', name: 'にひき (nihiki)', desc: '2 animals' },
+        { role: 'predicate', name: 'さんびき (sanbiki)', desc: '3 animals' },
+        { role: 'predicate', name: 'よんひき (yonhiki)', desc: '4 animals' },
+        { role: 'predicate', name: 'ごひき (gohiki)', desc: '5 animals' },
+        { role: 'predicate', name: 'ろっぴき (roppiki)', desc: '6 animals' },
+        { role: 'predicate', name: 'ななひき (nanahiki)', desc: '7 animals' },
+        { role: 'predicate', name: 'はっぴき (happiki)', desc: '8 animals' },
+        { role: 'predicate', name: 'きゅうひき (kyuuhiki)', desc: '9 animals' },
+        { role: 'predicate', name: 'じゅっぴき (juppiki)', desc: '10 animals' },
+      ],
+    },
+    {
+      // Page 9/22: 匹 samples — reuses ねこ (the player's own species in
+      // this game).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"There is one cat."',
+          tiles: [
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'いっぴき', role: 'predicate', gloss: 'one (animal)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Neko wa ippiki desu.',
+        },
+        {
+          tag: '"There are three cats."',
+          tiles: [
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'さんびき', role: 'predicate', gloss: 'three (animals)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Neko wa sanbiki desu.',
+        },
+        {
+          tag: '"There are ten cats."',
+          tiles: [
+            { text: 'ねこ', role: 'subject', gloss: 'cat' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'じゅっぴき', role: 'predicate', gloss: 'ten (animals)', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Neko wa juppiki desu.',
+        },
+      ],
+    },
+    {
+      // Page 10/22: telling time (hour) — intro.
+      type: 'grammar-intro',
+      sectionLabel: 'Telling time: 時 (hour)',
+      dividedIntro: true,
+      bigIdea: 'To say "o\'clock," attach 時 (じ) directly after the number.',
+      explain: ['Most hours use the plain number readings you already know — but 4, 7, and 9 o\'clock swap to special readings instead: よじ (not よんじ), しちじ (not ななじ), and くじ (not きゅうじ).'],
+      takeaway: 'Almost everything follows the pattern — just memorize the 3 exceptions: よじ, しちじ, くじ.',
+    },
+    {
+      // Page 11/22: 時 1-12 full table.
+      type: 'grammar-intro',
+      sectionLabel: 'Hours, 1–12',
+      terms: [
+        { role: 'predicate', name: 'いちじ (ichiji)', desc: '1:00' },
+        { role: 'predicate', name: 'にじ (niji)', desc: '2:00' },
+        { role: 'predicate', name: 'さんじ (sanji)', desc: '3:00' },
+        { role: 'predicate', name: 'よじ (yoji)', desc: '4:00 — irregular, not よんじ' },
+        { role: 'predicate', name: 'ごじ (goji)', desc: '5:00' },
+        { role: 'predicate', name: 'ろくじ (rokuji)', desc: '6:00' },
+        { role: 'predicate', name: 'しちじ (shichiji)', desc: '7:00 — irregular, not ななじ' },
+        { role: 'predicate', name: 'はちじ (hachiji)', desc: '8:00' },
+        { role: 'predicate', name: 'くじ (kuji)', desc: '9:00 — irregular, not きゅうじ' },
+        { role: 'predicate', name: 'じゅうじ (juuji)', desc: '10:00' },
+        { role: 'predicate', name: 'じゅういちじ (juuichiji)', desc: '11:00' },
+        { role: 'predicate', name: 'じゅうにじ (juuniji)', desc: '12:00' },
+      ],
+    },
+    {
+      // Page 12/22: 時 samples — いま (now) introduced as a one-off context
+      // noun (same precedent as shelf-06's たんじょうび/りんご).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"It\'s 4 o\'clock now."',
+          tiles: [
+            { text: 'いま', role: 'subject', gloss: 'now', isNew: true },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'よじ', role: 'predicate', gloss: '4:00', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ima wa yoji desu.',
+        },
+        {
+          tag: '"It\'s 9 o\'clock now."',
+          tiles: [
+            { text: 'いま', role: 'subject', gloss: 'now' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'くじ', role: 'predicate', gloss: '9:00', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ima wa kuji desu.',
+        },
+        {
+          tag: '"It\'s 12 o\'clock now."',
+          tiles: [
+            { text: 'いま', role: 'subject', gloss: 'now' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'じゅうにじ', role: 'predicate', gloss: '12:00', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ima wa juuniji desu.',
+        },
+      ],
+    },
+    {
+      // Page 13/22: telling time (minute) — intro.
+      type: 'grammar-intro',
+      sectionLabel: 'Telling time: 分 (minute)',
+      dividedIntro: true,
+      bigIdea: 'Minutes attach the same way hours do — but 分\'s sound shifts around even more than 匹\'s did.',
+      explain: ['Depending on the number before it, 分 reads ふん or ぷん (and a couple of numbers change shape too, just like 匹). "What minute? / how many minutes?" is 何分 (なんぷん).'],
+      takeaway: 'There\'s no shortcut here either — learn the common ones below by ear, the same way you did for 匹.',
+    },
+    {
+      // Page 14/22: 分 — representative set covering every sound-change
+      // pattern (っぷん / ふん), not an exhaustive 1-10 drill, to keep this
+      // already-long lesson from ballooning further.
+      type: 'grammar-intro',
+      sectionLabel: 'Minutes — the ones that shift',
+      terms: [
+        { role: 'predicate', name: 'いっぷん (ippun)', desc: '1 minute' },
+        { role: 'predicate', name: 'にふん (nifun)', desc: '2 minutes' },
+        { role: 'predicate', name: 'さんぷん (sanpun)', desc: '3 minutes' },
+        { role: 'predicate', name: 'よんぷん (yonpun)', desc: '4 minutes' },
+        { role: 'predicate', name: 'ごふん (gofun)', desc: '5 minutes' },
+        { role: 'predicate', name: 'ろっぷん (roppun)', desc: '6 minutes' },
+        { role: 'predicate', name: 'はっぷん (happun)', desc: '8 minutes' },
+        { role: 'predicate', name: 'じゅっぷん (juppun)', desc: '10 minutes' },
+        { role: 'predicate', name: 'なんぷん (nanpun)', desc: 'how many minutes? / what minute?' },
+      ],
+    },
+    {
+      // Page 15/22: combined 時+分 samples.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"It\'s 3:10 now."',
+          tiles: [
+            { text: 'いま', role: 'subject', gloss: 'now' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'さんじ', role: 'predicate', gloss: '3:00' },
+            { text: 'じゅっぷん', role: 'predicate', gloss: '10 minutes', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ima wa sanji juppun desu.',
+        },
+        {
+          tag: '"It\'s 9:02 now."',
+          tiles: [
+            { text: 'いま', role: 'subject', gloss: 'now' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'くじ', role: 'predicate', gloss: '9:00' },
+            { text: 'にふん', role: 'predicate', gloss: '2 minutes', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+          ],
+          translation: 'Ima wa kuji nifun desu.',
+        },
+      ],
+    },
+    {
+      // Page 16/22: conversation — combines the time question with なんびき
+      // (何 + 匹, a logically-composed new word glossed inline via romaji,
+      // same treatment as shelf-06's そうですか).
+      type: 'conversation',
+      turns: [
+        {
+          speaker: 'player', name: 'You', action: 'tailwagRight', actionLabel: '*tail wags*',
+          text: 'すみません、いまなんじですか？',
+          romaji: 'Sumimasen, ima nanji desu ka? — "Excuse me, what time is it now?"',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'いまさんじじゅっぷんです。',
+          romaji: 'Ima sanji juppun desu. — "It\'s 3:10 now."',
+        },
+        {
+          speaker: 'player', name: 'You', action: 'tailwagLeft', actionLabel: '*tail wags*',
+          text: 'ありがとうございます！ねこはなんびきですか？',
+          romaji: 'Arigatou gozaimasu! Neko wa nanbiki desu ka? — "Thank you! How many cats are there?"',
+        },
+        {
+          speaker: 'sensei', name: 'Neko-sensei', action: 'meow', actionLabel: '*meows*',
+          text: 'ねこはさんびきです。',
+          romaji: 'Neko wa sanbiki desu. — "There are three cats."',
+        },
+      ],
+    },
+    {
+      // Page 17/22: drag-and-drop mini-check — tens.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "90":',
+      before: '', after: '',
+      choices: ['はちじゅう', 'きゅうじゅう', 'ろくじゅう'],
+      answer: 'きゅうじゅう',
+    },
+    {
+      // Page 18/22: drag-and-drop mini-check — つ vs 匹 counter distinction,
+      // distractor みっつ/さんつ specifically tests whether the player
+      // confuses the general-things counter with the animal counter.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "three cats" — pick the right counter:',
+      before: 'ねこは', after: 'です。',
+      choices: ['さんびき', 'みっつ', 'さんつ'],
+      answer: 'さんびき',
+    },
+    {
+      // Page 19/22: drag-and-drop mini-check — 時's irregular reading.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It\'s 9 o\'clock":',
+      before: 'いまは', after: 'です。',
+      choices: ['きゅうじ', 'くじ', 'ごじ'],
+      answer: 'くじ',
+    },
+    {
+      // Page 20/22: new-words recap, part 1 — base numbers + tens.
+      type: 'summary',
+      title: 'New Words: Numbers 1–100',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'いち', romaji: 'ichi', meaning: '1' },
+        { kana: 'に', romaji: 'ni', meaning: '2' },
+        { kana: 'さん', romaji: 'san', meaning: '3' },
+        { kana: 'よん・し', romaji: 'yon / shi', meaning: '4' },
+        { kana: 'ご', romaji: 'go', meaning: '5' },
+        { kana: 'ろく', romaji: 'roku', meaning: '6' },
+        { kana: 'なな・しち', romaji: 'nana / shichi', meaning: '7' },
+        { kana: 'はち', romaji: 'hachi', meaning: '8' },
+        { kana: 'きゅう・く', romaji: 'kyuu / ku', meaning: '9' },
+        { kana: 'じゅう', romaji: 'juu', meaning: '10' },
+        { kana: 'にじゅう', romaji: 'nijuu', meaning: '20' },
+        { kana: 'さんじゅう', romaji: 'sanjuu', meaning: '30' },
+        { kana: 'よんじゅう', romaji: 'yonjuu', meaning: '40' },
+        { kana: 'ごじゅう', romaji: 'gojuu', meaning: '50' },
+        { kana: 'ろくじゅう', romaji: 'rokujuu', meaning: '60' },
+        { kana: 'ななじゅう', romaji: 'nanajuu', meaning: '70' },
+        { kana: 'はちじゅう', romaji: 'hachijuu', meaning: '80' },
+        { kana: 'きゅうじゅう', romaji: 'kyuujuu', meaning: '90' },
+        { kana: 'ひゃく', romaji: 'hyaku', meaning: '100' },
+      ],
+    },
+    {
+      // Page 21/22: new-words recap, part 2 — counters (つ/匹) + time
+      // (時/分). Split into 2 summary pages (rather than 1 giant table)
+      // so neither page is overwhelming, matching the "keep it digestible"
+      // lesson from shelf-06's decluttering pass.
+      type: 'summary',
+      title: 'New Words: Counters & Time',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'ひとつ', romaji: 'hitotsu', meaning: '1 (general things)' },
+        { kana: 'ふたつ', romaji: 'futatsu', meaning: '2' },
+        { kana: 'みっつ', romaji: 'mittsu', meaning: '3' },
+        { kana: 'よっつ', romaji: 'yottsu', meaning: '4' },
+        { kana: 'いつつ', romaji: 'itsutsu', meaning: '5' },
+        { kana: 'むっつ', romaji: 'muttsu', meaning: '6' },
+        { kana: 'ななつ', romaji: 'nanatsu', meaning: '7' },
+        { kana: 'やっつ', romaji: 'yattsu', meaning: '8' },
+        { kana: 'ここのつ', romaji: 'kokonotsu', meaning: '9' },
+        { kana: 'とお', romaji: 'too', meaning: '10 (general things)' },
+        { kana: 'いっぴき', romaji: 'ippiki', meaning: '1 animal' },
+        { kana: 'にひき', romaji: 'nihiki', meaning: '2 animals' },
+        { kana: 'さんびき', romaji: 'sanbiki', meaning: '3 animals' },
+        { kana: 'よんひき', romaji: 'yonhiki', meaning: '4 animals' },
+        { kana: 'ごひき', romaji: 'gohiki', meaning: '5 animals' },
+        { kana: 'ろっぴき', romaji: 'roppiki', meaning: '6 animals' },
+        { kana: 'ななひき', romaji: 'nanahiki', meaning: '7 animals' },
+        { kana: 'はっぴき', romaji: 'happiki', meaning: '8 animals' },
+        { kana: 'きゅうひき', romaji: 'kyuuhiki', meaning: '9 animals' },
+        { kana: 'じゅっぴき', romaji: 'juppiki', meaning: '10 animals' },
+        { kana: 'いちじ', romaji: 'ichiji', meaning: '1:00' },
+        { kana: 'にじ', romaji: 'niji', meaning: '2:00' },
+        { kana: 'さんじ', romaji: 'sanji', meaning: '3:00' },
+        { kana: 'よじ', romaji: 'yoji', meaning: '4:00' },
+        { kana: 'ごじ', romaji: 'goji', meaning: '5:00' },
+        { kana: 'ろくじ', romaji: 'rokuji', meaning: '6:00' },
+        { kana: 'しちじ', romaji: 'shichiji', meaning: '7:00' },
+        { kana: 'はちじ', romaji: 'hachiji', meaning: '8:00' },
+        { kana: 'くじ', romaji: 'kuji', meaning: '9:00' },
+        { kana: 'じゅうじ', romaji: 'juuji', meaning: '10:00' },
+        { kana: 'じゅういちじ', romaji: 'juuichiji', meaning: '11:00' },
+        { kana: 'じゅうにじ', romaji: 'juuniji', meaning: '12:00' },
+        { kana: 'いっぷん', romaji: 'ippun', meaning: '1 minute' },
+        { kana: 'にふん', romaji: 'nifun', meaning: '2 minutes' },
+        { kana: 'さんぷん', romaji: 'sanpun', meaning: '3 minutes' },
+        { kana: 'よんぷん', romaji: 'yonpun', meaning: '4 minutes' },
+        { kana: 'ごふん', romaji: 'gofun', meaning: '5 minutes' },
+        { kana: 'ろっぷん', romaji: 'roppun', meaning: '6 minutes' },
+        { kana: 'はっぷん', romaji: 'happun', meaning: '8 minutes' },
+        { kana: 'じゅっぷん', romaji: 'juppun', meaning: '10 minutes' },
+        { kana: 'なんぷん', romaji: 'nanpun', meaning: 'how many minutes?' },
+      ],
+    },
+    {
+      // Page 22/22: fill-in-the-blank check — non-blocking, same pattern
+      // as every other shelf's closing quiz.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check: Numbers & Counters',
+      intro: 'Fill in the blanks:',
+      questions: [
+        { before: '', after: ' (say "90")', answer: 'きゅうじゅう', altAnswers: ['kyuujuu'], hint: '(9 + 10)' },
+        { before: 'りんごは', after: 'です。 (say "three apples")', answer: 'みっつ', altAnswers: ['mittsu'], hint: '(general-things counter)' },
+        { before: 'ねこは', after: 'です。 (say "one cat")', answer: 'いっぴき', altAnswers: ['ippiki'], hint: '(animal counter — sound shifts!)' },
+        { before: 'いまは', after: 'です。 (say "4 o\'clock")', answer: 'よじ', altAnswers: ['yoji'], hint: '(irregular — not よんじ)' },
+        { before: 'いまは', after: 'です。 (say "9 o\'clock")', answer: 'くじ', altAnswers: ['kuji'], hint: '(irregular — not きゅうじ)' },
+      ],
+    },
+  ],
   // "Foundations Review" — review-1, gates shelf-05. First review pile to
   // actually open LessonBox content (previously all review piles were
   // instant-complete with nothing to read — see openRetroMenu's
@@ -1596,7 +2048,7 @@ const LESSON_CONTENT = {
       type: 'grammar-intro',
       sectionLabel: 'Recap: A は B です',
       pattern: [
-        { text: 'A', role: 'noun' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'noun' }, { text: 'です', role: 'verb' },
+        { text: 'A', role: 'subject' }, { text: 'は', role: 'particle' }, { text: 'B', role: 'predicate' }, { text: 'です', role: 'copula' },
       ],
       explain: [
         'は marks the topic ("as for A..."), です stamps it as true and carries the tense — swap です for でした and the sentence slides from present to past.',
@@ -1631,24 +2083,24 @@ const LESSON_CONTENT = {
         {
           tag: 'A complete self-introduction',
           tiles: [
-            { text: 'はじめまして', role: 'noun', gloss: 'how do you do (greet)', smallGloss: true },
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'はじめまして', role: 'subject', gloss: 'how do you do (greet)', smallGloss: true },
+            { text: 'わたし', role: 'subject', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'レイヤ', role: 'noun', gloss: 'name' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
-            { text: 'よろしくお願いします', role: 'particle', gloss: 'please treat me kindly (close)', smallGloss: true },
+            { text: 'レイヤ', role: 'predicate', gloss: 'name' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+            { text: 'よろしくお願いします', role: 'predicate', gloss: 'please treat me kindly (close)', smallGloss: true },
           ],
           translation: 'Hajimemashite. Watashi wa Reya desu. Yoroshiku onegaishimasu.',
         },
         {
           tag: 'Another version (swap in any name)',
           tiles: [
-            { text: 'はじめまして', role: 'noun', gloss: 'greet', smallGloss: true },
-            { text: 'わたし', role: 'noun', gloss: 'I / me' },
+            { text: 'はじめまして', role: 'subject', gloss: 'greet', smallGloss: true },
+            { text: 'わたし', role: 'subject', gloss: 'I / me' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'タロウ', role: 'noun', gloss: 'name' },
-            { text: 'です', role: 'verb', gloss: 'am / is / are' },
-            { text: 'よろしくお願いします', role: 'particle', gloss: 'close', smallGloss: true },
+            { text: 'タロウ', role: 'predicate', gloss: 'name' },
+            { text: 'です', role: 'copula', gloss: 'am / is / are' },
+            { text: 'よろしくお願いします', role: 'predicate', gloss: 'close', smallGloss: true },
           ],
           translation: 'Hajimemashite. Watashi wa Tarou desu. Yoroshiku onegaishimasu.',
         },
@@ -1747,19 +2199,19 @@ function buildDemonstrativesDiagram(playerColorId, senseiColorId) {
       <div class="lesson-box__demo-head">LISTENER</div>
       <div class="lesson-box__demo-head">FAR AWAY</div>
 
-      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-noun-bg);">これ</div>
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-subject-bg);">これ</div>
       <div class="lesson-box__demo-cell">${track}${pip(youPath)}${item}</div>
       <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}</div>
       <div class="lesson-box__demo-cell">${track}</div>
       <div class="lesson-box__demo-row-note">kore — the item is right there <b>with you</b>.</div>
 
-      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-particle-bg);">それ</div>
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-subject-bg);">それ</div>
       <div class="lesson-box__demo-cell">${track}${pip(youPath)}</div>
       <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}${item}</div>
       <div class="lesson-box__demo-cell">${track}</div>
       <div class="lesson-box__demo-row-note">sore — the item is over <b>with the listener</b>.</div>
 
-      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-verb-bg);">あれ</div>
+      <div class="lesson-box__demo-row-word" style="color:var(--lb-role-subject-bg);">あれ</div>
       <div class="lesson-box__demo-cell">${track}${pip(youPath)}</div>
       <div class="lesson-box__demo-cell">${track}${pip(listenerPath)}</div>
       <div class="lesson-box__demo-cell">${track}${item}</div>
@@ -1786,7 +2238,7 @@ function buildQuestionParticleDiagram(playerColorId, senseiColorId) {
         <div class="lesson-box__qdiagram-label">Statement</div>
         <div class="lesson-box__qdiagram-cells">
           ${pip(youPath)}
-          ${tile('これ', 'noun')}${tile('は', 'particle')}${tile('ほん', 'noun')}${tile('です', 'verb')}
+          ${tile('これ', 'subject')}${tile('は', 'particle')}${tile('ほん', 'predicate')}${tile('です', 'copula')}
         </div>
       </div>
       <div class="lesson-box__qdiagram-row">
@@ -1794,7 +2246,7 @@ function buildQuestionParticleDiagram(playerColorId, senseiColorId) {
         <div class="lesson-box__qdiagram-cells">
           <span class="lesson-box__qdiagram-qmark">?</span>
           ${pip(senseiPath)}
-          ${tile('これ', 'noun')}${tile('は', 'particle')}${tile('ほん', 'noun')}${tile('です', 'verb')}${tile('か', 'particle', 'is-highlight')}
+          ${tile('これ', 'subject')}${tile('は', 'particle')}${tile('ほん', 'predicate')}${tile('です', 'copula')}${tile('か', 'particle', 'is-highlight')}
         </div>
       </div>
     </div>
@@ -1892,6 +2344,7 @@ const DESK_ITEMS = [
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
 const FAVORITES_KEY = 'nekoBunko.n5.favorites';
+const LESSON_PAGE_KEY = 'nekoBunko.n5.lessonPage';
 const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
 // Idle + 4-directional walk, all 3 colors, confirmed present for exactly
 // these 3 colors (see design spec) — CalicoCatIdle.png/tuxedoIdle.png
@@ -2021,6 +2474,29 @@ function loadFavorites() {
 function saveFavorites(favorites) {
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  } catch (e) {
+    // localStorage unavailable — degrade to session-only, same pattern
+    // as saveProgress().
+  }
+}
+
+// { [shelfOrPileId]: pageIndex } — the page a lesson was left on when the
+// player closed LessonBox mid-way (Escape), read by openRetroMenu() to
+// offer "Continue Reading" and by startLesson() to reopen at that page.
+// Cleared for a lesson once it's actually completed (see startLesson's
+// onClose) — only ever holds partial-progress positions.
+function loadLessonPage() {
+  try {
+    const raw = localStorage.getItem(LESSON_PAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveLessonPage(lessonPage) {
+  try {
+    localStorage.setItem(LESSON_PAGE_KEY, JSON.stringify(lessonPage));
   } catch (e) {
     // localStorage unavailable — degrade to session-only, same pattern
     // as saveProgress().
@@ -2578,6 +3054,7 @@ class LibraryScene extends Phaser.Scene {
     this.interactives = []; // { id, kind, sprite, glow, stamp, x, y, prereq/requires }
     this.progress = loadProgress();
     this.favorites = loadFavorites();
+    this.lessonPage = loadLessonPage();
     this.furnitureSprites = {};
     registerCatAnimations(this);
 
@@ -3584,12 +4061,29 @@ class LibraryScene extends Phaser.Scene {
     // (see the favorite-disk icon wiring in buildShelves), not something
     // review piles have a slot for.
     const hasContent = !!LESSON_CONTENT[entry.id];
+    // Page count for the subtitle — computed via appendGreetingSummary
+    // alone (not the full resolveConversationTurns/resolveDynamicDiagrams
+    // pipeline) since only appendGreetingSummary can change page COUNT;
+    // the other two only resolve per-page content and don't depend on
+    // catColorId, so this stays accurate without needing a color.
+    const totalPages = hasContent ? appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title).length : 0;
+    const savedIndex = hasContent ? this.lessonPage[entry.id] : undefined;
+    // A saved index only means something to resume if it's strictly
+    // between the start and the last page — index 0 is indistinguishable
+    // from "never started" and isn't worth a resume prompt, and the last
+    // page is never saved (startLesson's onClose clears it on completion).
+    const hasResume = typeof savedIndex === 'number' && savedIndex > 0 && savedIndex < totalPages - 1;
     const startAction = hasContent
       ? () => this.startLesson(entry)
       : () => this.completeInteraction(entry);
     const options = hasContent
       ? [
-        { label: 'Start/Continue?', onSelect: startAction },
+        ...(hasResume
+          ? [
+            { label: `Continue (pg ${savedIndex + 1})`, onSelect: () => this.startLesson(entry, savedIndex) },
+            { label: 'Start Over', onSelect: startAction },
+          ]
+          : [{ label: 'Start Lesson', onSelect: startAction }]),
         ...(entry.kind === 'shelf' ? [{ label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) }] : []),
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ]
@@ -3598,7 +4092,8 @@ class LibraryScene extends Phaser.Scene {
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ];
     void state; // available vs completed doesn't change the option set — both are "revisit" actions
-    this.buildRetroMenu(entry.title, options);
+    const subtitle = hasContent ? `${totalPages} pages` : undefined;
+    this.buildRetroMenu(entry.title, options, subtitle);
   }
 
   // Opens the DOM LessonBox (assets/js/lesson-box.js) for shelves that
@@ -3607,7 +4102,7 @@ class LibraryScene extends Phaser.Scene {
   // lesson (freezes player movement, same as the retro menu does), and
   // marks progress complete only once the player reaches the last page —
   // matching completeInteraction's own save/refresh/close sequence.
-  startLesson(entry) {
+  startLesson(entry, resumeIndex) {
     this.closeRetroMenu();
     this.panelOpen = true;
     // Appends a lesson-end recap table of every 'greeting' page seen so
@@ -3623,14 +4118,25 @@ class LibraryScene extends Phaser.Scene {
       speaker: 'Neko-sensei',
       catImagePath: catColor.path,
       talkImagePath: TALK_COLOR_PATHS[this.catColorId],
+      startIndex: resumeIndex,
       onComplete: () => {
         this.progress[entry.id] = true;
         saveProgress(this.progress);
         this.refreshAllStates();
         this.panelOpen = false;
       },
-      onClose: () => {
+      // Fires on every close, including natural completion (closedIndex
+      // is then the last page) — save a resume position only when the
+      // player actually left mid-lesson, clear it otherwise (finished,
+      // or closed right at the start).
+      onClose: (closedIndex, totalPages) => {
         this.panelOpen = false;
+        if (typeof closedIndex === 'number' && totalPages && closedIndex < totalPages - 1) {
+          this.lessonPage[entry.id] = closedIndex;
+        } else {
+          delete this.lessonPage[entry.id];
+        }
+        saveLessonPage(this.lessonPage);
       },
     });
   }
@@ -3701,12 +4207,15 @@ class LibraryScene extends Phaser.Scene {
     }
   }
 
-  buildRetroMenu(title, options) {
+  // subtitle: optional non-interactive line under the title (e.g. a page
+  // count) — doesn't count toward options/keyboard nav.
+  buildRetroMenu(title, options, subtitle) {
     this.closeRetroMenu();
     const cam = this.cameras.main;
     const cx = cam.width / 2;
     const cy = cam.height / 2;
-    const boxHeight = 76 + options.length * 32;
+    const hasSubtitle = !!subtitle;
+    const boxHeight = (hasSubtitle ? 96 : 76) + options.length * 32;
     const boxTop = cy - boxHeight / 2;
 
     const bg = this.add.rectangle(cx, cy, 300, boxHeight, 0x1a1410)
@@ -3714,14 +4223,18 @@ class LibraryScene extends Phaser.Scene {
     const titleText = this.add.text(cx, boxTop + 26, title, {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#F0C674',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(2001);
-    const optionTexts = options.map((opt, i) => this.add.text(cx - 118, boxTop + 58 + i * 32, '', {
+    const subtitleText = hasSubtitle ? this.add.text(cx, boxTop + 46, subtitle, {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8a7a5a',
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001) : null;
+    const optionsStartY = boxTop + (hasSubtitle ? 78 : 58);
+    const optionTexts = options.map((opt, i) => this.add.text(cx - 118, optionsStartY + i * 32, '', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#B08D57',
     }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(2001)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.highlightRetroMenu(i))
       .on('pointerup', () => { if (this.retroMenu && this.retroMenu.selectedIndex === i) this.selectRetroMenuOption(); }));
 
-    this.retroMenu = { bg, titleText, optionTexts, options, selectedIndex: 0 };
+    this.retroMenu = { bg, titleText, subtitleText, optionTexts, options, selectedIndex: 0 };
     this.panelOpen = true;
     this.highlightRetroMenu(0);
   }
@@ -3761,6 +4274,7 @@ class LibraryScene extends Phaser.Scene {
     if (this.retroMenu) {
       this.retroMenu.bg.destroy();
       this.retroMenu.titleText.destroy();
+      if (this.retroMenu.subtitleText) this.retroMenu.subtitleText.destroy();
       this.retroMenu.optionTexts.forEach((t) => t.destroy());
       this.retroMenu = null;
     }

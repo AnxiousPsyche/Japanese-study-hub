@@ -7,8 +7,15 @@
 // passed to open() — no in-box tab switcher (confirmed explicitly: a
 // LessonBox only ever renders whichever lessonType the clicked shelf is).
 //
-// Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, onComplete, onClose })
+// Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, startIndex, onComplete, onClose })
 //   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score', ...fields }
+//   startIndex: optional page index to open directly on (clamped to a
+//     valid range) — lets a caller resume a lesson left mid-way; a
+//     "N / total" page indicator is always shown top-right of the panel.
+//   onClose(closedIndex, totalPages): called whenever the box closes,
+//     including on natural completion (closedIndex === totalPages - 1
+//     there) — the caller uses this to save/clear a per-lesson resume
+//     position (see n5-phaser-game.js's lessonPage save/load).
 //   'quiz-review'/'quiz-answers'/'quiz-score' are a 3-page group: the
 //     review page captures MC/fill answers with no inline grading, the
 //     answers page reveals + grades them against the SAME questions array
@@ -43,6 +50,20 @@
     tailwagRight: { frameCount: 5, duration: '0.9s' },
   };
 
+  // Strict, game-wide color-role legend — auto-prepended (see
+  // renderContent()'s 'sentence' branch and grammar-intro's samples
+  // block) above the first row of word tiles on any page that has one,
+  // not opted into per page, so the colors always mean the same thing
+  // everywhere without the caller needing to remember to show it.
+  const COLOR_LEGEND_HTML = `
+    <div class="lesson-box__color-legend">
+      <div class="lesson-box__color-legend-item"><span class="lesson-box__color-legend-swatch" style="background:var(--lb-role-subject-bg);"></span>Subject</div>
+      <div class="lesson-box__color-legend-item"><span class="lesson-box__color-legend-swatch" style="background:var(--lb-role-predicate-bg);"></span>Predicate</div>
+      <div class="lesson-box__color-legend-item"><span class="lesson-box__color-legend-swatch" style="background:var(--lb-role-particle-bg);"></span>Particle (は, か, ...)</div>
+      <div class="lesson-box__color-legend-item"><span class="lesson-box__color-legend-swatch" style="background:var(--lb-role-copula-bg);"></span>です / でした</div>
+    </div>
+  `;
+
   let root = null;
   let els = null;
   let state = null; // { pages, index, onComplete, onClose }
@@ -67,6 +88,7 @@
         <div class="lesson-box__mid jr-stepped">
           <div class="lesson-box__panel jr-stepped">
             <div class="lesson-box__ambient-cat"></div>
+            <div class="lesson-box__page-indicator"></div>
             <div class="lesson-box__portrait jr-stepped">
               <div class="lesson-box__portrait-mid jr-stepped">
                 <div class="lesson-box__portrait-inner jr-stepped">
@@ -86,6 +108,7 @@
       portrait: root.querySelector('.lesson-box__portrait'),
       portraitSprite: root.querySelector('.lesson-box__portrait-sprite'),
       ambientCat: root.querySelector('.lesson-box__ambient-cat'),
+      pageIndicator: root.querySelector('.lesson-box__page-indicator'),
       speaker: root.querySelector('.lesson-box__speaker'),
       content: root.querySelector('.lesson-box__content'),
       continue: root.querySelector('.lesson-box__continue'),
@@ -328,6 +351,7 @@
       const note = page.note ? `<div class="lesson-box__sentence-note">${page.note}</div>` : '';
       c.innerHTML = `
         ${label}${newWordFlag}
+        ${COLOR_LEGEND_HTML}
         <div class="lesson-box__sentence-row">${tiles}</div>
         <div class="lesson-box__sentence-translation">${page.translation}</div>
         ${note}
@@ -414,6 +438,7 @@
       ` : '';
       const samplesHtml = page.samples ? `
         <div class="lesson-box__mini-label">${page.samplesLabel || 'Samples'}</div>
+        ${COLOR_LEGEND_HTML}
         ${page.samples.map((s) => `
           <div class="lesson-box__sample-block">
             <div class="lesson-box__sample-tag">${s.tag}</div>
@@ -711,6 +736,9 @@
     els.portrait.style.display = isConversation ? 'none' : '';
     els.speaker.style.display = isConversation ? 'none' : '';
     els.speaker.textContent = state.speaker;
+    if (els.pageIndicator) {
+      els.pageIndicator.textContent = `${state.index + 1} / ${state.pages.length}`;
+    }
     // Reset per-page gate state before rendering — 'try-it' always starts
     // locked on a fresh view of that page (re-visiting doesn't keep a
     // stale "already typed" pass from a previous open()).
@@ -833,9 +861,17 @@
   function open(pages, options) {
     ensureDom();
     if (!root || !pages || !pages.length) return;
+    // startIndex lets the caller resume a lesson left mid-way (see
+    // n5-phaser-game.js's lessonPage save/resume, keyed off the index
+    // close() reports below) — clamped so a stale/out-of-range saved
+    // index (e.g. lesson content shrank) can never open past the end.
+    const rawStart = options && options.startIndex;
+    const startIndex = typeof rawStart === 'number'
+      ? Math.min(Math.max(rawStart, 0), pages.length - 1)
+      : 0;
     state = {
       pages,
-      index: 0,
+      index: startIndex,
       speaker: (options && options.speaker) || 'Neko-sensei',
       catImagePath: options && options.catImagePath,
       talkImagePath: options && options.talkImagePath,
@@ -866,8 +902,14 @@
     clearPulseIntervals();
     root.hidden = true;
     const onClose = state && state.onClose;
+    // Reported even on natural completion (advance() calls close() before
+    // onComplete) — index will equal pages.length - 1 there, which the
+    // caller uses to distinguish "finished" from "left mid-lesson" and
+    // clear vs. save the resume position accordingly.
+    const closedIndex = state ? state.index : undefined;
+    const closedTotal = state ? state.pages.length : undefined;
     state = null;
-    if (onClose) onClose();
+    if (onClose) onClose(closedIndex, closedTotal);
   }
 
   function isOpen() {
