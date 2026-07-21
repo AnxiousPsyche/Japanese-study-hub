@@ -1500,6 +1500,86 @@
         "23093"
       ],
       "port": 23093
+    },
+    {
+      "name": "jp-library-static-shelf10-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23194"
+      ],
+      "port": 23194
+    },
+    {
+      "name": "jp-library-static-shelf10-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23295"
+      ],
+      "port": 23295
+    },
+    {
+      "name": "jp-library-static-shelf10-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23396"
+      ],
+      "port": 23396
+    },
+    {
+      "name": "jp-library-static-shelf11-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23497"
+      ],
+      "port": 23497
+    },
+    {
+      "name": "jp-library-static-shelf11-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23598"
+      ],
+      "port": 23598
+    },
+    {
+      "name": "jp-library-static-shelf12-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23699"
+      ],
+      "port": 23699
+    },
+    {
+      "name": "jp-library-static-shelf13-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23790"
+      ],
+      "port": 23790
+    },
+    {
+      "name": "jp-library-static-shelf13-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23891"
+      ],
+      "port": 23891
     }
   ],
   "autoVerify": true

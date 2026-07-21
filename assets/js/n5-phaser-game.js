@@ -3404,6 +3404,985 @@ const LESSON_CONTENT = {
       takeaway: 'Lost? Just come back and ask me again — I\'m not going anywhere.',
     },
   ],
+  'shelf-10': [
+    {
+      // Page 1/16: い vs な overview — the whole lesson hinges on this
+      // split, so it gets its own page before any vocab.
+      type: 'grammar-intro',
+      sectionLabel: 'Two families of describing words',
+      bigIdea: 'Japanese adjectives split into two groups that conjugate differently.',
+      terms: [
+        { role: 'predicate', name: `い-adjective`, desc: `ends in い (${furigana('大きい', 'おおきい')}, ${furigana('赤い', 'あかい')}) — conjugates on its own, です is just politeness` },
+        { role: 'subject', name: `な-adjective`, desc: `doesn't end in い (${furigana('静か', 'しずか')}, ${furigana('好き', 'すき')}) — behaves like a noun, needs です to attach` },
+      ],
+      explain: [
+        'Both families still slot into the same [Noun]は[adjective]です pattern you already know — the difference only shows up when you negate them, which this lesson covers for each family in turn.',
+      ],
+    },
+    {
+      // Page 2/16: い-adjective affirmative pattern.
+      type: 'grammar-intro',
+      sectionLabel: `い-adjectives: [Noun]は[い-adj]です`,
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: `[い-adjective]`, role: 'predicate' }, { text: 'です', role: 'copula' },
+      ],
+      explain: [
+        `An い-adjective already means "is [description]" on its own — です here only adds politeness, the same job it does after a noun.`,
+      ],
+    },
+    {
+      // Page 3/16: affirmative samples, introduces 小さい/新しい.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"The book is big."',
+          tiles: [
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '大きい', role: 'predicate', gloss: 'big' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Hon wa ookii desu.',
+        },
+        {
+          tag: '"This clock is new."',
+          tiles: [
+            { text: 'これ', role: 'subject', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '新しい', role: 'predicate', gloss: 'new', isNew: true },
+            { text: '時計', role: 'predicate', gloss: 'clock' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kore wa atarashii tokei desu.',
+        },
+      ],
+    },
+    {
+      // Page 4/16: い-adjective negation — the actual conjugation point.
+      type: 'grammar-intro',
+      sectionLabel: `い-adjective negation`,
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: '[stem]', role: 'predicate' }, { text: 'くないです', role: 'copula' },
+      ],
+      explain: [
+        `Drop the final い and add くないです — ${furigana('小さい', 'ちいさい')} (chiisai) becomes ${furigana('小さくない', 'ちいさくない')}です (chiisakunai desu, "is not small"). This is the one true い-adjective conjugation.`,
+        `${furigana('良い', 'いい')} is the one exception: it conjugates from its older form よい, not いい, so "not good" is よくないです (yokunai desu), never いくないです.`,
+      ],
+      // Word-formation diagram: 小さい splits into a kept stem + a
+      // dropped い + an added くない, static markup (no color dependency,
+      // no click interaction — this illustrates a spelling rule, not a
+      // scene) per explicit "create a diagram for dropping the i and
+      // adding the ku" request.
+      diagramSvg: `
+        <div class="lesson-box__ikunai-diagram">
+          <div class="lesson-box__ikunai-word">
+            <span class="lesson-box__ikunai-stem">小さ</span><span class="lesson-box__ikunai-drop">い</span>
+          </div>
+          <div class="lesson-box__ikunai-arrow">&#8594;</div>
+          <div class="lesson-box__ikunai-word">
+            <span class="lesson-box__ikunai-stem">小さ</span><span class="lesson-box__ikunai-add">くない</span>
+          </div>
+        </div>
+        <div class="lesson-box__ikunai-caption">chiisa<span class="lesson-box__ikunai-caption-drop">i</span> &#8594; chiisa<span class="lesson-box__ikunai-caption-add">kunai</span></div>
+      `,
+      diagramCaption: 'Keep the stem, drop い, add くない.',
+    },
+    {
+      // Page 5/16: negation samples, introduces 古い/高い.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"This book is not small."',
+          tiles: [
+            { text: 'この本', role: 'subject', gloss: 'this book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '小さくない', role: 'predicate', gloss: 'not small' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kono hon wa chiisakunai desu.',
+        },
+        {
+          tag: '"That desk is not old."',
+          tiles: [
+            { text: 'あの机', role: 'subject', gloss: 'that desk' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '古くない', role: 'predicate', gloss: 'not old', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Ano tsukue wa furukunai desu.',
+        },
+      ],
+    },
+    {
+      // Page 6/16: remaining い-adjectives as a glossary table.
+      type: 'grammar-intro',
+      sectionLabel: `More い-adjectives`,
+      terms: [
+        { role: 'predicate', name: `${furigana('高い', 'たかい')} (takai)`, desc: 'expensive / tall' },
+        { role: 'predicate', name: `${furigana('安い', 'やすい')} (yasui)`, desc: 'cheap' },
+        { role: 'predicate', name: `${furigana('楽しい', 'たのしい')} (tanoshii)`, desc: 'fun / enjoyable' },
+        { role: 'predicate', name: `${furigana('良い', 'いい')} (ii)`, desc: 'good' },
+      ],
+    },
+    {
+      // Page 7/16: interactive diagram — click a color/size word, the
+      // book on the desk changes to match. See buildAdjectiveDiagram/
+      // wireAdjectiveDiagram in this file. All 5 words here (赤い/青い/
+      // 大きい/小さい/古い) were already introduced above.
+      type: 'grammar-intro',
+      diagramSvg: buildAdjectiveDiagram,
+      wireDiagram: wireAdjectiveDiagram,
+      diagramCaption: 'Click a word — the book changes to match, and the sentence below updates.',
+    },
+    {
+      // Page 7.5/16: the classic gotcha — a handful of words END in い
+      // but are actually な-adjectives underneath (no くない conjugation,
+      // they take じゃないです like everything else in this section).
+      // Placed right before the な-adjective section starts, once the
+      // player has a solid い-adjective mental model to contrast against.
+      // Introduces きらい (new) alongside きれい/有名, which the player
+      // will meet properly again on the coming な-adjective pages.
+      type: 'grammar-intro',
+      sectionLabel: 'Watch out: these LOOK like い-adjectives',
+      bigIdea: 'A few words end in い by coincidence, not because they\'re い-adjectives.',
+      explain: [
+        `These three trip up almost everyone at this stage — they end in い just like ${furigana('赤い', 'あかい')} or ${furigana('大きい', 'おおきい')}, but they're actually な-adjectives: negate them with じゃないです, never くない.`,
+      ],
+      terms: [
+        { role: 'subject', name: 'きれい (kirei)', desc: 'pretty / clean — NOT きれくない, it\'s きれいじゃないです' },
+        { role: 'subject', name: 'きらい (kirai)', desc: 'dislike / hate — NOT きらくない, it\'s きらいじゃないです', },
+        { role: 'subject', name: `${furigana('有名', 'ゆうめい')} (yuumei)`, desc: 'famous — NOT ゆうめくない, it\'s ゆうめいじゃないです' },
+      ],
+      takeaway: 'When in doubt, checking whether a word is on a な-adjective vocab list beats guessing from spelling alone.',
+    },
+    {
+      // Page 8/16: な-adjective affirmative pattern.
+      type: 'grammar-intro',
+      sectionLabel: `な-adjectives: [Noun]は[な-adj]です`,
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: `[な-adjective]`, role: 'predicate' }, { text: 'です', role: 'copula' },
+      ],
+      explain: [
+        `A な-adjective on its own is just a description with no "is/am/are" built in — it needs です the same way a plain noun does. The な only shows up when the adjective sits directly in front of a noun (${furigana('静かな図書館', 'しずかなとしょかん')}, "a quiet library"), not before です.`,
+      ],
+    },
+    {
+      // Page 9/16: な-adjective affirmative samples, introduces 好き/元気.
+      type: 'grammar-intro',
+      recapChips: [`${furigana('元気', 'げんき')} (genki, shelf 2)`],
+      samples: [
+        {
+          tag: '"The library is quiet."',
+          tiles: [
+            { text: '図書館', role: 'subject', gloss: 'library' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '静か', role: 'predicate', gloss: 'quiet' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Toshokan wa shizuka desu.',
+        },
+        {
+          tag: '"I like this book."',
+          tiles: [
+            { text: 'この本', role: 'subject', gloss: 'this book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '好き', role: 'predicate', gloss: 'like', isNew: true },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kono hon wa suki desu.',
+        },
+      ],
+    },
+    {
+      // Page 10/16: な-adjective negation — attaches じゃないです, same
+      // shape as a plain noun's negation, not くない.
+      type: 'grammar-intro',
+      sectionLabel: `な-adjective negation`,
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: '[な-adjective]', role: 'predicate' }, { text: 'じゃないです', role: 'copula' },
+      ],
+      explain: [
+        `な-adjectives negate exactly like nouns do — just attach じゃないです (or the more formal では ありません). No くない here, that's い-adjectives only.`,
+      ],
+    },
+    {
+      // Page 11/16: な negation samples, introduces 便利/有名.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"This isn\'t convenient."',
+          tiles: [
+            { text: 'これ', role: 'subject', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '便利', role: 'predicate', gloss: 'convenient', isNew: true },
+            { text: 'じゃないです', role: 'copula', gloss: 'is not' },
+          ],
+          translation: 'Kore wa benri ja nai desu.',
+        },
+        {
+          tag: '"That teacher isn\'t famous."',
+          tiles: [
+            { text: 'あの先生', role: 'subject', gloss: 'that teacher' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '有名', role: 'predicate', gloss: 'famous', isNew: true },
+            { text: 'じゃないです', role: 'copula', gloss: 'is not' },
+          ],
+          translation: 'Ano sensei wa yuumei ja nai desu.',
+        },
+      ],
+    },
+    {
+      // Page 12/16: remaining な-adjectives as a glossary table.
+      type: 'grammar-intro',
+      sectionLabel: `More な-adjectives`,
+      terms: [
+        { role: 'subject', name: `${furigana('大切', 'たいせつ')} (taisetsu)`, desc: 'important' },
+        { role: 'subject', name: 'きれい (kirei)', desc: 'pretty / clean' },
+        { role: 'subject', name: `${furigana('大変', 'たいへん')} (taihen)`, desc: 'tough / serious' },
+      ],
+    },
+    {
+      // Page 13/16: drag-and-drop mini-check — い-adjective negation.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "the desk is not old":',
+      before: '机は', after: 'です。',
+      choices: ['古くない', '古い', '古じゃない'],
+      answer: '古くない',
+    },
+    {
+      // Page 14/16: drag-and-drop mini-check — な-adjective negation.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "this is not convenient":',
+      before: 'これは', after: '。',
+      choices: ['便利じゃないです', '便利くないです', '便利ないです'],
+      answer: '便利じゃないです',
+    },
+    {
+      type: 'summary',
+      title: 'New Words: Adjectives',
+      rows: [
+        { kana: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
+        { kana: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'small' },
+        { kana: '赤い', reading: 'あかい', romaji: 'akai', meaning: 'red' },
+        { kana: '青い', reading: 'あおい', romaji: 'aoi', meaning: 'blue' },
+        { kana: '新しい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'new' },
+        { kana: '古い', reading: 'ふるい', romaji: 'furui', meaning: 'old' },
+        { kana: '高い', reading: 'たかい', romaji: 'takai', meaning: 'expensive / tall' },
+        { kana: '安い', reading: 'やすい', romaji: 'yasui', meaning: 'cheap' },
+        { kana: '楽しい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'fun / enjoyable' },
+        { kana: '良い', reading: 'いい', romaji: 'ii', meaning: 'good' },
+        { kana: '静か', reading: 'しずか', romaji: 'shizuka', meaning: 'quiet' },
+        { kana: '好き', reading: 'すき', romaji: 'suki', meaning: 'like' },
+        { kana: '元気', reading: 'げんき', romaji: 'genki', meaning: 'energetic' },
+        { kana: '便利', reading: 'べんり', romaji: 'benri', meaning: 'convenient' },
+        { kana: '有名', reading: 'ゆうめい', romaji: 'yuumei', meaning: 'famous' },
+        { kana: '大切', reading: 'たいせつ', romaji: 'taisetsu', meaning: 'important' },
+        { kana: 'きれい', romaji: 'kirei', meaning: 'pretty / clean' },
+        { kana: 'きらい', romaji: 'kirai', meaning: 'dislike / hate' },
+        { kana: '大変', reading: 'たいへん', romaji: 'taihen', meaning: 'tough / serious' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '本は', after: 'です。', answer: '大きい', altAnswers: ['おおきい'], hint: '"The book is big."' },
+        { before: 'これは', after: '時計です。', answer: '新しい', altAnswers: ['あたらしい'], hint: '"This is a new clock."' },
+        { before: 'この本は', after: 'です。', answer: '小さくない', altAnswers: ['ちいさくない'], hint: '"This book is not small."' },
+        { before: '図書館は', after: 'です。', answer: '静か', altAnswers: ['しずか'], hint: '"The library is quiet."' },
+        { before: 'これは', after: '。', answer: '便利じゃないです', hint: '"This is not convenient."' },
+        { before: 'この時計は', after: 'です。', answer: '高い', altAnswers: ['たかい'], hint: '"This clock is expensive."' },
+        { before: '図書館は', after: '。', answer: 'きれいじゃないです', hint: '"The library is not clean." (きれい looks like an い-adjective, but it isn\'t)' },
+      ],
+    },
+  ],
+  'shelf-11': [
+    {
+      // Page 1/14: intro — verbs finally let sentences do something,
+      // and which "group" a verb belongs to decides how it conjugates.
+      type: 'grammar-intro',
+      sectionLabel: 'Verbs have groups',
+      bigIdea: 'A verb\'s dictionary form always ends in an u-sound (る, く, す, む, ぶ, つ, う...) — but which group it belongs to decides how it changes for polite speech.',
+      explain: [
+        'This shelf covers the polite present/future form, ます, for all three verb groups: ichidan (る-verbs), godan (everything else), and する-verbs.',
+      ],
+    },
+    {
+      // Page 2/14: ichidan rule + samples (起きる, 食べる) — drop る, add ます.
+      type: 'grammar-intro',
+      sectionLabel: 'Group 1: ichidan (る-verbs)',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'る', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'ます', role: 'predicate' },
+      ],
+      explain: [
+        `Most verbs ending in る where the sound right before it is an い or え row sound are ichidan — just drop る and add ます. ${furigana('起きる', 'おきる')} (okiru) becomes ${furigana('起き', 'おき')}ます (okimasu).`,
+      ],
+      samples: [
+        {
+          tag: '"I wake up."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '起きます', role: 'copula', gloss: 'wake up (polite)', isNew: true },
+          ],
+          translation: 'Watashi wa okimasu.',
+        },
+        {
+          tag: '"I eat."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '食べます', role: 'copula', gloss: 'eat (polite)', isNew: true },
+          ],
+          translation: 'Watashi wa tabemasu.',
+        },
+      ],
+    },
+    {
+      // Page 3/14: godan rule + samples (行く with に, 話す with と) —
+      // reuses already-taught particles rather than introducing new ones.
+      type: 'grammar-intro',
+      sectionLabel: 'Group 2: godan (everything else)',
+      pattern: [
+        { text: '[i-stem]', role: 'subject' }, { text: 'ます', role: 'predicate' },
+      ],
+      explain: [
+        `Every other verb is godan — swap the final u-sound for its matching i-sound, then add ます. ${furigana('行く', 'いく')} (iku, "go") becomes ${furigana('行き', 'いき')}ます (ikimasu); ${furigana('話す', 'はなす')} (hanasu, "speak") becomes ${furigana('話し', 'はなし')}ます (hanashimasu).`,
+      ],
+      samples: [
+        {
+          tag: '"I go to school."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '学校', role: 'predicate', gloss: 'school' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: '行きます', role: 'copula', gloss: 'go (polite)', isNew: true },
+          ],
+          translation: 'Watashi wa gakkou ni ikimasu.',
+        },
+        {
+          tag: '"I speak with the teacher."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '先生', role: 'predicate', gloss: 'teacher' },
+            { text: 'と', role: 'particle', gloss: 'with' },
+            { text: '話します', role: 'copula', gloss: 'speak (polite)', isNew: true },
+          ],
+          translation: 'Watashi wa sensei to hanashimasu.',
+        },
+      ],
+    },
+    {
+      // Page 4/14: the 帰る gotcha — mirrors shelf-10's "looks like X but
+      // isn't" exception page. 帰る ends in える, which normally signals
+      // ichidan (like 食べる/起きる above), but it's actually godan.
+      type: 'grammar-intro',
+      sectionLabel: 'Watch out: 帰る LOOKS like an ichidan verb',
+      recapChips: ['きれい・きらい・有名 (shelf 10 - the same "looks like X but isn\'t" trap)'],
+      bigIdea: `${furigana('帰る', 'かえる')} (kaeru, "to go home") ends in える, just like ${furigana('起きる', 'おきる')} — but it's godan, not ichidan.`,
+      explain: [
+        `Drop る and add ます the ichidan way and you'd get 帰ますwhich is wrong. The real form is ${furigana('帰り', 'かえり')}ます (kaerimasu) — treat the り as part of the stem, godan-style.`,
+      ],
+    },
+    {
+      // Page 5/14: する-verbs — simplest group, covers every する-compound
+      // verb from the reference list (勉強する, 電話する, 掃除する, etc.)
+      // via one rule instead of listing them all individually.
+      type: 'grammar-intro',
+      sectionLabel: 'Group 3: する-verbs',
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'する', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[Noun]', role: 'subject' }, { text: 'します', role: 'predicate' },
+      ],
+      explain: [
+        `する-verbs are a noun plus する ("to do") — swap する for します and every one of them conjugates the same way: ${furigana('勉強する', 'べんきょうする')} → ${furigana('勉強', 'べんきょう')}します, ${furigana('電話する', 'でんわする')} → ${furigana('電話', 'でんわ')}します.`,
+      ],
+      samples: [
+        {
+          tag: '"I study."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '勉強します', role: 'copula', gloss: 'study (polite)', isNew: true },
+          ],
+          translation: 'Watashi wa benkyoushimasu.',
+        },
+      ],
+    },
+    {
+      // Page 6/14: を, the object marker — a genuinely new particle,
+      // introduced here because it's the natural next thing a verb
+      // sentence needs (previous shelves only ever needed は/の/に/と/か).
+      type: 'grammar-intro',
+      sectionLabel: 'を, the object marker',
+      pattern: [
+        { text: '[Object]', role: 'subject' }, { text: 'を', role: 'particle' }, { text: '[Verb]ます', role: 'predicate' },
+      ],
+      explain: [
+        'を marks the thing a verb acts on — the object being bought, read, written. It never means anything on its own; it just points at what comes right before it.',
+      ],
+      samples: [
+        {
+          tag: '"I buy a bag."',
+          tiles: [
+            { text: 'かばん', role: 'subject', gloss: 'bag' },
+            { text: 'を', role: 'particle', gloss: 'object marker', isNew: true },
+            { text: '買います', role: 'copula', gloss: 'buy (polite)', isNew: true },
+          ],
+          translation: 'Kaban wo kaimasu.',
+        },
+        {
+          tag: '"I read a book."',
+          tiles: [
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'を', role: 'particle', gloss: 'object marker' },
+            { text: '読みます', role: 'copula', gloss: 'read (polite)', isNew: true },
+          ],
+          translation: 'Hon wo yomimasu.',
+        },
+      ],
+    },
+    {
+      // Page 7/14: adverbs — where they sit (before the verb), full
+      // 8-word glossary on one page since they're short and simple.
+      type: 'grammar-intro',
+      sectionLabel: 'Adverbs: describing the verb',
+      bigIdea: 'An adverb sits right before the verb it\'s describing, same spot every time.',
+      terms: [
+        { role: 'predicate', name: 'よく (yoku)', desc: 'often / well' },
+        { role: 'predicate', name: 'いつも (itsumo)', desc: 'always' },
+        { role: 'predicate', name: 'ときどき (tokidoki)', desc: 'sometimes' },
+        { role: 'predicate', name: 'あまり (amari)', desc: 'not much (pairs with a negative verb)' },
+        { role: 'predicate', name: 'すぐに (sugu ni)', desc: 'right away' },
+        { role: 'predicate', name: 'まだ (mada)', desc: 'still / not yet' },
+        { role: 'predicate', name: 'もう (mou)', desc: 'already' },
+        { role: 'predicate', name: 'とても (totemo)', desc: 'very' },
+      ],
+    },
+    {
+      // Page 8/14: adverb samples, reusing 静か from shelf-10.
+      type: 'grammar-intro',
+      recapChips: [`${furigana('静か', 'しずか')} (shizuka, shelf 10)`],
+      samples: [
+        {
+          tag: '"I often read books."',
+          tiles: [
+            { text: '私', role: 'subject', gloss: 'I' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'よく', role: 'predicate', gloss: 'often' },
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'を', role: 'particle', gloss: 'object marker' },
+            { text: '読みます', role: 'copula', gloss: 'read (polite)' },
+          ],
+          translation: 'Watashi wa yoku hon wo yomimasu.',
+        },
+        {
+          tag: '"The library is always quiet."',
+          tiles: [
+            { text: '図書館', role: 'subject', gloss: 'library' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'いつも', role: 'predicate', gloss: 'always' },
+            { text: '静か', role: 'predicate', gloss: 'quiet' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Toshokan wa itsumo shizuka desu.',
+        },
+      ],
+    },
+    {
+      // Page 9/14: interactive diagram — click a verb, watch its
+      // dictionary form -> ます-form word-formation panel rebuild. See
+      // buildVerbMasuDiagram/wireVerbMasuDiagram in this file. All 5
+      // verbs were already introduced above, one per group.
+      type: 'grammar-intro',
+      diagramSvg: buildVerbMasuDiagram,
+      wireDiagram: wireVerbMasuDiagram,
+      diagramCaption: 'Click a verb — the ます-form rebuilds, and the sentence below updates.',
+    },
+    {
+      // Page 10/14: remaining verbs as a glossary table (10 more,
+      // beyond the 8 already introduced via pattern/diagram pages).
+      type: 'grammar-intro',
+      sectionLabel: 'More verbs',
+      terms: [
+        { role: 'predicate', name: `${furigana('書く', 'かく')} (kaku)`, desc: 'to write' },
+        { role: 'predicate', name: `${furigana('聞く', 'きく')} (kiku)`, desc: 'to listen / to ask' },
+        { role: 'predicate', name: `${furigana('会う', 'あう')} (au)`, desc: 'to meet' },
+        { role: 'predicate', name: `${furigana('立つ', 'たつ')} (tatsu)`, desc: 'to stand' },
+        { role: 'predicate', name: `${furigana('座る', 'すわる')} (suwaru)`, desc: 'to sit' },
+        { role: 'predicate', name: `${furigana('働く', 'はたらく')} (hataraku)`, desc: 'to work' },
+        { role: 'predicate', name: `${furigana('休む', 'やすむ')} (yasumu)`, desc: 'to rest' },
+        { role: 'predicate', name: `${furigana('遊ぶ', 'あそぶ')} (asobu)`, desc: 'to play' },
+        { role: 'predicate', name: `${furigana('分かる', 'わかる')} (wakaru)`, desc: 'to understand' },
+        { role: 'predicate', name: `${furigana('歌う', 'うたう')} (utau)`, desc: 'to sing' },
+      ],
+    },
+    {
+      // Page 11/14: samples using 2 more remaining verbs, still only
+      // taught particles (と, の already established).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"I meet a friend."',
+          tiles: [
+            { text: '友達', role: 'subject', gloss: 'friend' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: '会います', role: 'copula', gloss: 'meet (polite)' },
+          ],
+          translation: 'Tomodachi ni aimasu.',
+        },
+        {
+          tag: '"I sing with a friend."',
+          tiles: [
+            { text: '友達', role: 'subject', gloss: 'friend' },
+            { text: 'と', role: 'particle', gloss: 'with' },
+            { text: '歌います', role: 'copula', gloss: 'sing (polite)' },
+          ],
+          translation: 'Tomodachi to utaimasu.',
+        },
+      ],
+    },
+    {
+      // Page 12/14: drag-and-drop mini-check — verb group recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I go to school" (school = 学校):',
+      before: '学校に', after: '。',
+      choices: ['行きます', '行る', '行す'],
+      answer: '行きます',
+    },
+    {
+      // Page 13/14: drag-and-drop mini-check — を particle recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I read a book":',
+      before: '本', after: '読みます。',
+      choices: ['を', 'は', 'の'],
+      answer: 'を',
+    },
+    {
+      type: 'summary',
+      title: 'New Words: Adverbs & Verbs',
+      rows: [
+        { kana: '起きる', reading: 'おきる', romaji: 'okiru', meaning: 'to wake up' },
+        { kana: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat' },
+        { kana: '行く', reading: 'いく', romaji: 'iku', meaning: 'to go' },
+        { kana: '話す', reading: 'はなす', romaji: 'hanasu', meaning: 'to speak' },
+        { kana: '帰る', reading: 'かえる', romaji: 'kaeru', meaning: 'to go home' },
+        { kana: '勉強する', reading: 'べんきょうする', romaji: 'benkyousuru', meaning: 'to study' },
+        { kana: '読む', reading: 'よむ', romaji: 'yomu', meaning: 'to read' },
+        { kana: '買う', reading: 'かう', romaji: 'kau', meaning: 'to buy' },
+        { kana: '書く', reading: 'かく', romaji: 'kaku', meaning: 'to write' },
+        { kana: '聞く', reading: 'きく', romaji: 'kiku', meaning: 'to listen / to ask' },
+        { kana: '会う', reading: 'あう', romaji: 'au', meaning: 'to meet' },
+        { kana: '立つ', reading: 'たつ', romaji: 'tatsu', meaning: 'to stand' },
+        { kana: '座る', reading: 'すわる', romaji: 'suwaru', meaning: 'to sit' },
+        { kana: '働く', reading: 'はたらく', romaji: 'hataraku', meaning: 'to work' },
+        { kana: '休む', reading: 'やすむ', romaji: 'yasumu', meaning: 'to rest' },
+        { kana: '遊ぶ', reading: 'あそぶ', romaji: 'asobu', meaning: 'to play' },
+        { kana: '分かる', reading: 'わかる', romaji: 'wakaru', meaning: 'to understand' },
+        { kana: '歌う', reading: 'うたう', romaji: 'utau', meaning: 'to sing' },
+        { kana: 'よく', romaji: 'yoku', meaning: 'often / well' },
+        { kana: 'いつも', romaji: 'itsumo', meaning: 'always' },
+        { kana: 'ときどき', romaji: 'tokidoki', meaning: 'sometimes' },
+        { kana: 'あまり', romaji: 'amari', meaning: 'not much (+ negative)' },
+        { kana: 'すぐに', romaji: 'sugu ni', meaning: 'right away' },
+        { kana: 'まだ', romaji: 'mada', meaning: 'still / not yet' },
+        { kana: 'もう', romaji: 'mou', meaning: 'already' },
+        { kana: 'とても', romaji: 'totemo', meaning: 'very' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '私は', after: '。', answer: '起きます', hint: '"I wake up."' },
+        { before: '私は学校に', after: '。', answer: '行きます', hint: '"I go to school."' },
+        { before: 'かばん', after: '買います。', answer: 'を', hint: '"I buy a bag." (object marker)' },
+        { before: '私は', after: '本を読みます。', answer: 'よく', hint: '"I often read books."' },
+        { before: '図書館は', after: '静かです。', answer: 'いつも', hint: '"The library is always quiet."' },
+        { before: '私は先生と', after: '。', answer: '話します', hint: '"I speak with the teacher."' },
+      ],
+    },
+  ],
+  'shelf-12': [
+    {
+      // Page 1/13: intro — two ways to suggest doing something together,
+      // both built from the ます-stem shelf-11 already established.
+      type: 'grammar-intro',
+      sectionLabel: 'Two ways to suggest doing something together',
+      recapChips: [`${furigana('行き', 'いき')}ます, ${furigana('食べ', 'たべ')}ます (ます-stem, shelf 11)`],
+      bigIdea: 'Both patterns here build on the same ます-stem you already know — just swap what comes after it.',
+      explain: [
+        'ましょう ("let\'s...") and ませんか ("won\'t you...?") both attach directly to the ます-stem, no new conjugation to learn beyond what shelf 11 already covered.',
+      ],
+    },
+    {
+      // Page 2/13: ましょう pattern + sample.
+      type: 'grammar-intro',
+      sectionLabel: '〜ましょう: "Let\'s..."',
+      pattern: [
+        { text: '[ます-stem]', role: 'subject' }, { text: 'ましょう', role: 'predicate' },
+      ],
+      explain: [
+        `Drop ます, add ましょう — ${furigana('行き', 'いき')}ます becomes ${furigana('行き', 'いき')}ましょう ("let's go"). A confident, ready-to-act suggestion.`,
+      ],
+      samples: [
+        {
+          tag: '"Let\'s go to the library."',
+          tiles: [
+            { text: '図書館', role: 'predicate', gloss: 'library' },
+            { text: 'に', role: 'particle', gloss: 'location marker' },
+            { text: '行きましょう', role: 'copula', gloss: 'let\'s go', isNew: true },
+          ],
+          translation: 'Toshokan ni ikimashou.',
+        },
+      ],
+    },
+    {
+      // Page 3/13: ませんか pattern + sample.
+      type: 'grammar-intro',
+      sectionLabel: '〜ませんか: "Won\'t you...?"',
+      pattern: [
+        { text: '[ます-stem]', role: 'subject' }, { text: 'ませんか', role: 'predicate' },
+      ],
+      explain: [
+        `The negative-question shape ${furigana('行き', 'いき')}ませんか literally asks "won't you go?" — softer and more polite than ましょう, since it leaves room for the other person to say no.`,
+      ],
+      samples: [
+        {
+          tag: '"Won\'t you eat with me?"',
+          tiles: [
+            { text: '一緒に', role: 'predicate', gloss: 'together' },
+            { text: '食べませんか', role: 'copula', gloss: 'won\'t you eat?', isNew: true },
+          ],
+          translation: 'Issho ni tabemasenka.',
+        },
+      ],
+    },
+    {
+      // Page 4/13: nuance contrast + ましょうか bonus pattern (offering
+      // to do something FOR someone, distinct from inviting them along).
+      type: 'grammar-intro',
+      sectionLabel: 'One more: 〜ましょうか',
+      pattern: [
+        { text: '[ます-stem]', role: 'subject' }, { text: 'ましょうか', role: 'predicate' },
+      ],
+      explain: [
+        'ましょう assumes everyone\'s in; ませんか politely checks first; ましょうか offers to do something FOR the other person rather than inviting them along.',
+      ],
+      samples: [
+        {
+          tag: '"Shall I help?" (offering)',
+          tiles: [
+            { text: '手伝い', role: 'predicate', gloss: 'help' },
+            { text: 'ましょうか', role: 'copula', gloss: 'shall I...?', isNew: true },
+          ],
+          translation: 'Tetsudaimashou ka.',
+        },
+      ],
+    },
+    {
+      // Page 5/13: interactive diagram — click a verb, both ましょう/
+      // ませんか forms build from the same ます-stem. See
+      // buildVolitionalDiagram/wireVolitionalDiagram in this file.
+      type: 'grammar-intro',
+      diagramSvg: buildVolitionalDiagram,
+      wireDiagram: wireVolitionalDiagram,
+      diagramCaption: 'Click a verb — both forms rebuild from its ます-stem.',
+    },
+    {
+      // Page 6/13: more samples using remaining shelf-11 verbs. で
+      // (a genuinely new particle) gets its own short explain line
+      // before the sample that uses it, same courtesy を got in
+      // shelf-11 — not a full grammar page since it's one line of new
+      // information riding along with vocab review, not the shelf's
+      // main point.
+      type: 'grammar-intro',
+      explain: [
+        'One new particle along the way: で marks WHERE an action happens (playing, working, eating) — a different job from に, which marks a destination or where something simply exists.',
+      ],
+      samples: [
+        {
+          tag: '"Let\'s rest a little."',
+          tiles: [
+            { text: '少し', role: 'predicate', gloss: 'a little', isNew: true },
+            { text: '休みましょう', role: 'copula', gloss: 'let\'s rest' },
+          ],
+          translation: 'Sukoshi yasumimashou.',
+        },
+        {
+          tag: '"Won\'t you play at the park?"',
+          tiles: [
+            { text: '公園', role: 'predicate', gloss: 'park', isNew: true },
+            { text: 'で', role: 'particle', gloss: 'at / in', isNew: true },
+            { text: '遊びませんか', role: 'copula', gloss: 'won\'t you play?' },
+          ],
+          translation: 'Kouen de asobimasenka.',
+        },
+      ],
+    },
+    {
+      // Page 7/13: drag-and-drop mini-check — ましょう recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "let\'s go to school" (school = 学校):',
+      before: '学校に', after: '。',
+      choices: ['行きましょう', '行きます', '行きません'],
+      answer: '行きましょう',
+    },
+    {
+      // Page 8/13: drag-and-drop mini-check — ませんか recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Politely ask "won\'t you eat together?":',
+      before: '一緒に', after: '。',
+      choices: ['食べませんか', '食べましょう', '食べます'],
+      answer: '食べませんか',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Invitations',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ましょう', romaji: '~mashou', meaning: 'Let\'s...' },
+        { kana: '〜ませんか', romaji: '~masenka', meaning: 'Won\'t you...? (softer invitation)' },
+        { kana: '〜ましょうか', romaji: '~mashou ka', meaning: 'Shall I...? (offering)' },
+        { kana: '行きましょう', romaji: 'ikimashou', meaning: 'Let\'s go' },
+        { kana: '食べませんか', romaji: 'tabemasenka', meaning: 'Won\'t you eat?' },
+        { kana: '休みましょう', romaji: 'yasumimashou', meaning: 'Let\'s rest' },
+        { kana: '遊びませんか', romaji: 'asobimasenka', meaning: 'Won\'t you play?' },
+        { kana: '歌いましょう', romaji: 'utaimashou', meaning: 'Let\'s sing' },
+        { kana: '少し', romaji: 'sukoshi', meaning: 'a little' },
+        { kana: '公園', reading: 'こうえん', romaji: 'kouen', meaning: 'park' },
+        { kana: 'で', romaji: 'de', meaning: 'particle: where an action happens' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '図書館に', after: '。', answer: '行きましょう', hint: '"Let\'s go to the library."' },
+        { before: '一緒に', after: '。', answer: '食べませんか', hint: '"Won\'t you eat together?"' },
+        { before: '少し', after: '。', answer: '休みましょう', hint: '"Let\'s rest a little."' },
+        { before: '公園で', after: '。', answer: '遊びませんか', hint: '"Won\'t you play at the park?"' },
+        { before: '手伝い', after: '。', answer: 'ましょうか', hint: '"Shall I help?"' },
+      ],
+    },
+  ],
+  'shelf-13': [
+    {
+      // Page 1/16: intro — motivate て-form before drilling the rules.
+      type: 'grammar-intro',
+      sectionLabel: 'The て-form: one shape, many jobs',
+      recapChips: [`${furigana('起き', 'おき')}ます, ${furigana('話し', 'はなし')}ます (ます-stem, shelf 11)`],
+      bigIdea: 'て-form doesn\'t mean anything by itself — it\'s a connector shape that plugs into other patterns.',
+      explain: [
+        'It links two actions together ("do X, then Y"), and it\'s the shape a polite request needs — <b>[て-form] + ください</b> means "please do this." Getting the form right is most of this shelf.',
+      ],
+    },
+    {
+      // Page 2/16: ichidan て-form (same drop-る shape as ます).
+      type: 'grammar-intro',
+      sectionLabel: 'Ichidan: drop る, add て',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'る', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'て', role: 'predicate' },
+      ],
+      explain: [
+        `Same shape as the ます-stem you already know — just add て instead. ${furigana('食べる', 'たべる')} → ${furigana('食べ', 'たべ')}て, ${furigana('起きる', 'おきる')} → ${furigana('起き', 'おき')}て.`,
+      ],
+    },
+    {
+      // Page 3/16: する te-form.
+      type: 'grammar-intro',
+      sectionLabel: 'する-verbs: する → して',
+      explain: [
+        `Every する-verb swaps する for して, the same way it swaps to します — ${furigana('勉強する', 'べんきょうする')} → ${furigana('勉強', 'べんきょう')}して.`,
+      ],
+    },
+    {
+      // Page 4/16: godan group 1: う/つ/る -> って.
+      type: 'grammar-intro',
+      sectionLabel: 'Godan group 1: う・つ・る → って',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'う／つ／る', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'って', role: 'predicate' },
+      ],
+      explain: [
+        `${furigana('買う', 'かう')} → ${furigana('買', 'か')}って, ${furigana('立つ', 'たつ')} → ${furigana('立', 'た')}って, ${furigana('分かる', 'わかる')} → ${furigana('分か', 'わか')}って — three different endings, same って result.`,
+      ],
+    },
+    {
+      // Page 5/16: godan group 2: む/ぶ -> んで.
+      type: 'grammar-intro',
+      sectionLabel: 'Godan group 2: む・ぶ → んで',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'む／ぶ', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'んで', role: 'predicate' },
+      ],
+      explain: [
+        `${furigana('読む', 'よむ')} → ${furigana('読', 'よ')}んで, ${furigana('休む', 'やすむ')} → ${furigana('休', 'やす')}んで, ${furigana('遊ぶ', 'あそぶ')} → ${furigana('遊', 'あそ')}んで.`,
+      ],
+    },
+    {
+      // Page 6/16: godan group 3: く -> いて.
+      type: 'grammar-intro',
+      sectionLabel: 'Godan group 3: く → いて',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'く', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'いて', role: 'predicate' },
+      ],
+      explain: [
+        `${furigana('書く', 'かく')} → ${furigana('書', 'か')}いて, ${furigana('働く', 'はたらく')} → ${furigana('働', 'はたら')}いて.`,
+      ],
+    },
+    {
+      // Page 7/16: the 行く exception — mirrors shelf-10/11's "watch
+      // out" exception pages. 行く LOOKS like a く-group verb but takes
+      // って instead of いて.
+      type: 'grammar-intro',
+      sectionLabel: 'Watch out: 行く breaks its own group',
+      recapChips: ['きれい・きらい・有名 (shelf 10), 帰る (shelf 11) — this project\'s recurring "looks like X but isn\'t" trap'],
+      bigIdea: `${furigana('行く', 'いく')} ends in く, so you'd expect ${furigana('行', 'い')}いて — but the real form is ${furigana('行', 'い')}って, borrowed from the う・つ・る group instead.`,
+      explain: [
+        'This is the single most common て-form mistake — worth memorizing 行って on its own rather than trusting the く-group rule here.',
+      ],
+    },
+    {
+      // Page 8/16: the payoff pattern — て-form + ください, recapping
+      // ください itself from shelf-02.
+      type: 'grammar-intro',
+      sectionLabel: '[て-form] + ください: "Please..."',
+      recapChips: [`ください (shelf 2)`],
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'ください', role: 'predicate' },
+      ],
+      explain: [
+        'The ください you already know for requesting objects works the same way after a て-form, to request an action instead.',
+      ],
+      samples: [
+        {
+          tag: '"Please write it."',
+          tiles: [
+            { text: '書いて', role: 'subject', gloss: 'write (て-form)', isNew: true },
+            { text: 'ください', role: 'predicate', gloss: 'please' },
+          ],
+          translation: 'Kaite kudasai.',
+        },
+        {
+          tag: '"Please sit."',
+          tiles: [
+            { text: '座って', role: 'predicate', gloss: 'sit (て-form)', isNew: true },
+            { text: 'ください', role: 'predicate', gloss: 'please' },
+          ],
+          translation: 'Suwatte kudasai.',
+        },
+      ],
+    },
+    {
+      // Page 9/16: interactive diagram — click a verb, its て-form
+      // rebuilds. Spans every rule group above, including the 行く
+      // exception. See buildTeformDiagram/wireTeformDiagram.
+      type: 'grammar-intro',
+      diagramSvg: buildTeformDiagram,
+      wireDiagram: wireTeformDiagram,
+      diagramCaption: 'Click a verb — its て-form rebuilds, and the rule it follows is named below.',
+    },
+    {
+      // Page 10/16: more samples, connecting two actions with て-form
+      // (its OTHER job, beyond ください requests).
+      type: 'grammar-intro',
+      sectionLabel: 'Connecting two actions',
+      explain: [
+        'て-form also chains actions together in order, without needing a separate word for "and."',
+      ],
+      samples: [
+        {
+          tag: '"I wake up and eat."',
+          tiles: [
+            { text: '起きて', role: 'subject', gloss: 'wake up (て-form)' },
+            { text: '食べます', role: 'copula', gloss: 'eat (polite)' },
+          ],
+          translation: 'Okite tabemasu.',
+        },
+      ],
+    },
+    {
+      // Page 11/16: drag-and-drop mini-check — group 1 recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "please buy it":',
+      before: '', after: 'ください。',
+      choices: ['買って', '買いて', '買くて'],
+      answer: '買って',
+    },
+    {
+      // Page 12/16: drag-and-drop mini-check — the 行く exception.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "please go":',
+      before: '', after: 'ください。',
+      choices: ['行って', '行いて', '行くて'],
+      answer: '行って',
+    },
+    {
+      // Divider page — its sectionLabel doubles as the title for the
+      // 'conjugation' table right after it, since that page type has no
+      // title field of its own (see the comment there).
+      type: 'grammar-intro',
+      sectionLabel: 'て-form reference: every verb from shelf 11',
+      bigIdea: 'Here\'s every rule from this shelf applied to the full verb list at once.',
+    },
+    {
+      // type: 'conjugation', not 'summary' — the 'summary' renderer is
+      // hardcoded to a single furigana(kana,reading)+romaji+meaning
+      // shape (see lesson-box.js) and can't show a dictionary-form ->
+      // て-form transformation in one row. 'conjugation' renders
+      // [Form, Romaji, Label] as plain text instead, which is exactly
+      // this table's shape: this shelf's whole point is the arrow, and
+      // it has no title field of its own (see the divider page above).
+      type: 'conjugation',
+      rows: [
+        { kana: '起きる → 起きて', romaji: 'okite', label: 'wake up' },
+        { kana: '食べる → 食べて', romaji: 'tabete', label: 'eat' },
+        { kana: '行く → 行って', romaji: 'itte', label: 'go (exception!)' },
+        { kana: '話す → 話して', romaji: 'hanashite', label: 'speak' },
+        { kana: '帰る → 帰って', romaji: 'kaette', label: 'go home' },
+        { kana: '勉強する → 勉強して', romaji: 'benkyoushite', label: 'study' },
+        { kana: '読む → 読んで', romaji: 'yonde', label: 'read' },
+        { kana: '買う → 買って', romaji: 'katte', label: 'buy' },
+        { kana: '書く → 書いて', romaji: 'kaite', label: 'write' },
+        { kana: '聞く → 聞いて', romaji: 'kiite', label: 'listen / ask' },
+        { kana: '会う → 会って', romaji: 'atte', label: 'meet' },
+        { kana: '立つ → 立って', romaji: 'tatte', label: 'stand' },
+        { kana: '座る → 座って', romaji: 'suwatte', label: 'sit' },
+        { kana: '働く → 働いて', romaji: 'hataraite', label: 'work' },
+        { kana: '休む → 休んで', romaji: 'yasunde', label: 'rest' },
+        { kana: '遊ぶ → 遊んで', romaji: 'asonde', label: 'play' },
+        { kana: '分かる → 分かって', romaji: 'wakatte', label: 'understand' },
+        { kana: '歌う → 歌って', romaji: 'utatte', label: 'sing' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '', after: 'ください。', answer: '書いて', hint: '"Please write it."' },
+        { before: '', after: 'ください。', answer: '座って', hint: '"Please sit."' },
+        { before: '', after: 'ください。', answer: '行って', hint: '"Please go." (the exception!)' },
+        { before: '', after: 'ください。', answer: '読んで', hint: '"Please read it."' },
+        { before: '起きて', after: '。', answer: '食べます', hint: '"I wake up and eat."' },
+      ],
+    },
+  ],
 };
 
 // Builds the lesson-end recap page (LessonBox type: 'summary') from
@@ -4033,6 +5012,253 @@ function wirePronounNotepadDiagram(container) {
     select(el.dataset.pronoun);
   }));
   select('anata');
+}
+
+// -- shelf-10 interactive adjective diagram -----------------------------
+// Click a color/size adjective — a single book (a plain CSS div, same
+// "hand-drawn box" technique as shelf-08's dirdiagram-box, no new image
+// asset needed) changes color or size to match, and the sentence below
+// rebuilds. All 5 words here were already introduced on earlier pages
+// (大きい/小さい via the い-adjective pattern page, 赤い/青い/古い via
+// vocab) so the diagram reinforces rather than teaches new words. No
+// color dependency, so diagramSvg/wireDiagram are both attached directly.
+// Cover backgrounds are 2-stop gradients (not flat fills) so every color
+// still reads as a slightly domed book cover, matching the shared
+// ::before sheen/::after title-plate furniture in lesson-box.css. furui
+// ("old") additionally gets isWorn: true, toggled as the .is-worn class
+// (torn corner + grime, see CSS) — per explicit "looks like Midori, make
+// it a believable old book" feedback; a flat khaki fill read as a plain
+// modern notebook, not age.
+const ADJDIAGRAM_WORDS = [
+  { id: 'akai', kana: '赤い', reading: 'あかい', romaji: 'akai', gloss: 'red', css: { background: 'linear-gradient(160deg, #e87b71, #c14a3f)', width: '60px', height: '76px' } },
+  { id: 'aoi', kana: '青い', reading: 'あおい', romaji: 'aoi', gloss: 'blue', css: { background: 'linear-gradient(160deg, #7fc0ee, #4a86bd)', width: '60px', height: '76px' } },
+  { id: 'ookii', kana: '大きい', reading: 'おおきい', romaji: 'ookii', gloss: 'big', css: { background: 'linear-gradient(160deg, #e87b71, #c14a3f)', width: '84px', height: '100px' } },
+  { id: 'chiisai', kana: '小さい', reading: 'ちいさい', romaji: 'chiisai', gloss: 'small', css: { background: 'linear-gradient(160deg, #e87b71, #c14a3f)', width: '36px', height: '48px' } },
+  { id: 'furui', kana: '古い', reading: 'ふるい', romaji: 'furui', gloss: 'old', isWorn: true, css: { background: 'linear-gradient(160deg, #8a6a45, #4d3a22)', width: '58px', height: '74px' } },
+];
+
+function buildAdjectiveDiagram() {
+  const buttons = ADJDIAGRAM_WORDS.map((w) => `
+    <button class="lesson-box__adjdiagram-btn" data-adj="${w.id}">${furigana(w.kana, w.reading)} (${w.gloss})</button>
+  `).join('');
+  return `
+    <div class="lesson-box__adjdiagram">
+      <div class="lesson-box__adjdiagram-stage"><div class="lesson-box__adjdiagram-book" data-book></div></div>
+      <div class="lesson-box__adjdiagram-btn-list">${buttons}</div>
+    </div>
+    <div class="lesson-box__adjdiagram-sentence" data-adj-sentence></div>
+  `;
+}
+
+function wireAdjectiveDiagram(container) {
+  const book = container.querySelector('[data-book]');
+  const sentence = container.querySelector('[data-adj-sentence]');
+  const buttons = Array.from(container.querySelectorAll('[data-adj]'));
+  if (!book || !sentence) return;
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.adj === id));
+    const w = ADJDIAGRAM_WORDS.find((x) => x.id === id);
+    Object.assign(book.style, w.css);
+    book.classList.toggle('is-worn', !!w.isWorn);
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-subject">本</div><div class="lesson-box__word-tile-gloss">book</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">は</div><div class="lesson-box__word-tile-gloss">topic marker</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${furigana(w.kana, w.reading)}</div><div class="lesson-box__word-tile-gloss">${w.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-copula">です</div><div class="lesson-box__word-tile-gloss">to be</div></div>
+      </div>
+      <div class="lesson-box__sentence-translation">Hon wa ${w.romaji} desu. — "The book is ${w.gloss}."</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.adj);
+  }));
+  select('akai');
+}
+
+// -- shelf-11 interactive ます-form diagram -------------------------------
+// Click a verb — a small dictionary-form -> ます-form word-formation
+// panel rebuilds (same "stem kept, ending swapped" visual language as
+// shelf-10's ikunai diagram) and the sentence below updates. All 5 verbs
+// here were already introduced on earlier pages, one per verb group
+// (ichidan/godan/する), so this reinforces the group rules rather than
+// teaching new ones. No color dependency, so diagramSvg/wireDiagram are
+// both attached directly.
+const VERBMASU_WORDS = [
+  { id: 'okiru', kana: '起きる', reading: 'おきる', stem: '起き', ending: 'る', add: 'ます', romaji: 'okimasu', gloss: 'wake up', sentenceTiles: [{ t: '私', r: 'subject', g: 'I' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: '起きます', r: 'copula', g: 'wake up (polite)' }], romajiLine: 'Watashi wa okimasu. — "I wake up."' },
+  { id: 'taberu', kana: '食べる', reading: 'たべる', stem: '食べ', ending: 'る', add: 'ます', romaji: 'tabemasu', gloss: 'eat', sentenceTiles: [{ t: '私', r: 'subject', g: 'I' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: '食べます', r: 'copula', g: 'eat (polite)' }], romajiLine: 'Watashi wa tabemasu. — "I eat." (object dropped, same as everyday spoken Japanese)' },
+  { id: 'iku', kana: '行く', reading: 'いく', stem: '行', ending: 'く', add: 'きます', romaji: 'ikimasu', gloss: 'go', sentenceTiles: [{ t: '私', r: 'subject', g: 'I' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: '学校', r: 'predicate', g: 'school' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '行きます', r: 'copula', g: 'go (polite)' }], romajiLine: 'Watashi wa gakkou ni ikimasu. — "I go to school."' },
+  { id: 'hanasu', kana: '話す', reading: 'はなす', stem: '話', ending: 'す', add: 'します', romaji: 'hanashimasu', gloss: 'speak', sentenceTiles: [{ t: '私', r: 'subject', g: 'I' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: '先生', r: 'predicate', g: 'teacher' }, { t: 'と', r: 'particle', g: 'with' }, { t: '話します', r: 'copula', g: 'speak (polite)' }], romajiLine: 'Watashi wa sensei to hanashimasu. — "I speak with the teacher."' },
+  { id: 'benkyousuru', kana: '勉強する', reading: 'べんきょうする', stem: '勉強', ending: 'する', add: 'します', romaji: 'benkyoushimasu', gloss: 'study', sentenceTiles: [{ t: '私', r: 'subject', g: 'I' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: '勉強します', r: 'copula', g: 'study (polite)' }], romajiLine: 'Watashi wa benkyoushimasu. — "I study."' },
+];
+
+function buildVerbMasuDiagram() {
+  const buttons = VERBMASU_WORDS.map((w) => `
+    <button class="lesson-box__adjdiagram-btn" data-verb="${w.id}">${furigana(w.kana, w.reading)} (${w.gloss})</button>
+  `).join('');
+  return `
+    <div class="lesson-box__adjdiagram">
+      <div class="lesson-box__ikunai-diagram" data-masu-form></div>
+      <div class="lesson-box__adjdiagram-btn-list">${buttons}</div>
+    </div>
+    <div class="lesson-box__adjdiagram-sentence" data-verb-sentence></div>
+  `;
+}
+
+function wireVerbMasuDiagram(container) {
+  const form = container.querySelector('[data-masu-form]');
+  const sentence = container.querySelector('[data-verb-sentence]');
+  const buttons = Array.from(container.querySelectorAll('[data-verb]'));
+  if (!form || !sentence) return;
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.verb === id));
+    const w = VERBMASU_WORDS.find((x) => x.id === id);
+    form.innerHTML = `
+      <div class="lesson-box__ikunai-word">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__ikunai-drop">${w.ending}</span>
+      </div>
+      <div class="lesson-box__ikunai-arrow">&#8594;</div>
+      <div class="lesson-box__ikunai-word">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__ikunai-add">${w.add}</span>
+      </div>
+    `;
+    const tilesHtml = w.sentenceTiles.map((t) => `
+      <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-${t.r}">${t.t}</div><div class="lesson-box__word-tile-gloss">${t.g}</div></div>
+    `).join('');
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">${tilesHtml}</div>
+      <div class="lesson-box__sentence-translation">${w.romajiLine}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.verb);
+  }));
+  select('okiru');
+}
+
+// -- shelf-12 interactive volitional/invitation diagram -------------------
+// Click a verb — both its ましょう and ませんか forms build from the same
+// ます-stem shelf-11 already taught, shown side by side, plus one sample
+// sentence. All 5 verbs were already introduced in shelf-11, so this
+// reinforces the existing ます-stem, not new vocab. No color dependency,
+// so diagramSvg/wireDiagram are both attached directly.
+const VOLITIONAL_WORDS = [
+  { id: 'iku', kana: '行く', reading: 'いく', stem: '行き', romaji: 'iki', gloss: 'go', sentenceTiles: [{ t: '図書館', r: 'predicate', g: 'library' }, { t: 'に', r: 'particle', g: 'location marker' }, { t: '行きましょう', r: 'copula', g: 'let\'s go' }], romajiLine: 'Toshokan ni ikimashou. — "Let\'s go to the library."' },
+  { id: 'taberu', kana: '食べる', reading: 'たべる', stem: '食べ', romaji: 'tabe', gloss: 'eat', sentenceTiles: [{ t: '一緒に', r: 'predicate', g: 'together' }, { t: '食べましょう', r: 'copula', g: 'let\'s eat' }], romajiLine: 'Issho ni tabemashou. — "Let\'s eat together."' },
+  { id: 'yasumu', kana: '休む', reading: 'やすむ', stem: '休み', romaji: 'yasumi', gloss: 'rest', sentenceTiles: [{ t: '少し', r: 'predicate', g: 'a little' }, { t: '休みましょう', r: 'copula', g: 'let\'s rest' }], romajiLine: 'Sukoshi yasumimashou. — "Let\'s rest a little."' },
+  { id: 'asobu', kana: '遊ぶ', reading: 'あそぶ', stem: '遊び', romaji: 'asobi', gloss: 'play', sentenceTiles: [{ t: '公園', r: 'predicate', g: 'park' }, { t: 'で', r: 'particle', g: 'at / in' }, { t: '遊びましょう', r: 'copula', g: 'let\'s play' }], romajiLine: 'Kouen de asobimashou. — "Let\'s play at the park."' },
+  { id: 'utau', kana: '歌う', reading: 'うたう', stem: '歌い', romaji: 'utai', gloss: 'sing', sentenceTiles: [{ t: '一緒に', r: 'predicate', g: 'together' }, { t: '歌いましょう', r: 'copula', g: 'let\'s sing' }], romajiLine: 'Issho ni utaimashou. — "Let\'s sing together."' },
+];
+
+function buildVolitionalDiagram() {
+  const buttons = VOLITIONAL_WORDS.map((w) => `
+    <button class="lesson-box__adjdiagram-btn" data-vol="${w.id}">${furigana(w.kana, w.reading)} (${w.gloss})</button>
+  `).join('');
+  return `
+    <div class="lesson-box__adjdiagram">
+      <div class="lesson-box__voldiagram-forms" data-vol-forms></div>
+      <div class="lesson-box__adjdiagram-btn-list">${buttons}</div>
+    </div>
+    <div class="lesson-box__adjdiagram-sentence" data-vol-sentence></div>
+  `;
+}
+
+function wireVolitionalDiagram(container) {
+  const forms = container.querySelector('[data-vol-forms]');
+  const sentence = container.querySelector('[data-vol-sentence]');
+  const buttons = Array.from(container.querySelectorAll('[data-vol]'));
+  if (!forms || !sentence) return;
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.vol === id));
+    const w = VOLITIONAL_WORDS.find((x) => x.id === id);
+    forms.innerHTML = `
+      <div class="lesson-box__voldiagram-row">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__ikunai-add">ましょう</span>
+        <span class="lesson-box__voldiagram-gloss">"Let's ${w.gloss}"</span>
+      </div>
+      <div class="lesson-box__voldiagram-row">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__voldiagram-add-alt">ませんか</span>
+        <span class="lesson-box__voldiagram-gloss">"Won't you ${w.gloss}?"</span>
+      </div>
+    `;
+    const tilesHtml = w.sentenceTiles.map((t) => `
+      <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-${t.r}">${t.t}</div><div class="lesson-box__word-tile-gloss">${t.g}</div></div>
+    `).join('');
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">${tilesHtml}</div>
+      <div class="lesson-box__sentence-translation">${w.romajiLine}</div>
+    `;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.vol);
+  }));
+  select('iku');
+}
+
+// -- shelf-13 interactive て-form diagram ----------------------------------
+// Click a verb — its て-form word-formation panel rebuilds (same stem/
+// drop/add visual language as shelf-10/11's diagrams). The 6 verbs here
+// deliberately span every て-form subgroup taught on this shelf (ichidan,
+// う/つ/る, む/ぶ, く, and the 行く exception) so the diagram doubles as a
+// quick self-test across all the rules, not just one. No color
+// dependency, so diagramSvg/wireDiagram are both attached directly.
+const TEFORM_WORDS = [
+  { id: 'taberu', kana: '食べる', reading: 'たべる', stem: '食べ', ending: 'る', add: 'て', romaji: 'tabete', gloss: 'eat', group: 'ichidan' },
+  { id: 'kau', kana: '買う', reading: 'かう', stem: '買', ending: 'う', add: 'って', romaji: 'katte', gloss: 'buy', group: 'う/つ/る group' },
+  { id: 'yomu', kana: '読む', reading: 'よむ', stem: '読', ending: 'む', add: 'んで', romaji: 'yonde', gloss: 'read', group: 'む/ぶ group' },
+  { id: 'kaku', kana: '書く', reading: 'かく', stem: '書', ending: 'く', add: 'いて', romaji: 'kaite', gloss: 'write', group: 'く group' },
+  { id: 'hanasu', kana: '話す', reading: 'はなす', stem: '話', ending: 'す', add: 'して', romaji: 'hanashite', gloss: 'speak', group: 'す group' },
+  { id: 'iku', kana: '行く', reading: 'いく', stem: '行', ending: 'く', add: 'って', romaji: 'itte', gloss: 'go', group: 'exception!' },
+];
+
+function buildTeformDiagram() {
+  const buttons = TEFORM_WORDS.map((w) => `
+    <button class="lesson-box__adjdiagram-btn" data-tef="${w.id}">${furigana(w.kana, w.reading)} (${w.gloss})</button>
+  `).join('');
+  return `
+    <div class="lesson-box__adjdiagram">
+      <div class="lesson-box__ikunai-diagram" data-tef-form></div>
+      <div class="lesson-box__adjdiagram-btn-list">${buttons}</div>
+    </div>
+    <div class="lesson-box__adjdiagram-sentence" data-tef-group></div>
+  `;
+}
+
+function wireTeformDiagram(container) {
+  const form = container.querySelector('[data-tef-form]');
+  const group = container.querySelector('[data-tef-group]');
+  const buttons = Array.from(container.querySelectorAll('[data-tef]'));
+  if (!form || !group) return;
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.tef === id));
+    const w = TEFORM_WORDS.find((x) => x.id === id);
+    form.innerHTML = `
+      <div class="lesson-box__ikunai-word">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__ikunai-drop">${w.ending}</span>
+      </div>
+      <div class="lesson-box__ikunai-arrow">&#8594;</div>
+      <div class="lesson-box__ikunai-word">
+        <span class="lesson-box__ikunai-stem">${w.stem}</span><span class="lesson-box__ikunai-add">${w.add}</span>
+      </div>
+    `;
+    group.innerHTML = `<div class="lesson-box__voldiagram-gloss">Rule: ${w.group}${w.group === 'exception!' ? ' — memorize this one on its own' : ''}</div>`;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.tef);
+  }));
+  select('taberu');
 }
 
 // Resolves any 'grammar-intro' page whose diagramSvg is a function (not a

@@ -1483,6 +1483,206 @@
   margin-top: 14px;
 }
 
+/* -- shelf-10 interactive adjective diagram, built by
+   buildAdjectiveDiagram/wireAdjectiveDiagram in n5-phaser-game.js. The
+   "book" is a plain div (same technique as .lesson-box__dirdiagram-box)
+   whose background/width/height are set inline per adjective on click
+   instead of swapping images. */
+.lesson-box__adjdiagram {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.lesson-box__adjdiagram-stage {
+  width: 140px;
+  height: 130px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Base book shape: cover gradient/size set inline per adjective (see
+   ADJDIAGRAM_WORDS), but the "furniture" of a book — spine, title
+   plate, a diagonal sheen — stays constant so every color still reads
+   as a book, not a colored rectangle. is-worn (古い only) adds a torn
+   top-right corner + grime vignette on top of that shared furniture,
+   toggled as a class (not inline style) so it composes cleanly with
+   whatever cover gradient is currently set. */
+.lesson-box__adjdiagram-book {
+  position: relative;
+  border-radius: 3px 8px 8px 3px;
+  border-left: 6px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 0 14px rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease, width 0.2s ease, height 0.2s ease, clip-path 0.2s ease;
+  overflow: hidden;
+}
+
+/* Diagonal sheen — a fixed highlight band regardless of cover color,
+   suggesting a curved/worn cloth surface rather than flat paint. */
+.lesson-box__adjdiagram-book::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.16) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.22) 100%);
+  pointer-events: none;
+}
+
+/* Worn parchment title plate, like an old library book's spine label. */
+.lesson-box__adjdiagram-book::after {
+  content: '';
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 38%;
+  height: 22%;
+  background: rgba(238, 227, 199, 0.85);
+  border: 1px solid rgba(60, 46, 20, 0.4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.lesson-box__adjdiagram-book.is-worn {
+  clip-path: polygon(0 0, 82% 0, 100% 18%, 100% 100%, 0 100%);
+  filter: saturate(0.75);
+}
+
+.lesson-box__adjdiagram-book.is-worn::before {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.4) 100%),
+    radial-gradient(circle at 30% 85%, rgba(0, 0, 0, 0.3) 0%, transparent 40%);
+}
+
+/* -- shelf-10 い→くない word-formation diagram, static markup authored
+   directly in n5-phaser-game.js's LESSON_CONTENT (see the い-adjective
+   negation page) — illustrates the spelling rule itself (stem kept /
+   い dropped / くない added), not a scene, so no build/wire function
+   pair like the other diagrams on this shelf. */
+.lesson-box__ikunai-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.lesson-box__ikunai-word {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.lesson-box__ikunai-stem {
+  color: var(--jr-text);
+}
+
+.lesson-box__ikunai-drop {
+  color: var(--lb-role-predicate-bg);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.55;
+}
+
+.lesson-box__ikunai-add {
+  color: #201d54;
+  background: var(--lb-role-particle-bg);
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.lesson-box__ikunai-arrow {
+  font-size: 24px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__ikunai-caption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  margin-top: 4px;
+}
+
+.lesson-box__ikunai-caption-drop {
+  color: var(--lb-role-predicate-bg);
+  text-decoration: line-through;
+}
+
+.lesson-box__ikunai-caption-add {
+  color: var(--lb-role-particle-bg);
+}
+
+/* -- shelf-12 volitional/invitation diagram, built by
+   buildVolitionalDiagram/wireVolitionalDiagram in n5-phaser-game.js.
+   Reuses .lesson-box__ikunai-stem/-add from the shelf-10 word-formation
+   diagram for the stem/ましょう styling; ませんか gets its own softer
+   accent color to visually distinguish "let's" from "won't you". */
+.lesson-box__voldiagram-forms {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.lesson-box__voldiagram-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lesson-box__voldiagram-add-alt {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 34px;
+  color: #201d54;
+  background: var(--lb-role-subject-bg);
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.lesson-box__voldiagram-gloss {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__adjdiagram-btn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 170px;
+}
+
+.lesson-box__adjdiagram-btn {
+  font-family: "Datatype", "DotGothic16", monospace;
+  font-size: 14px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: var(--jr-text-dim);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lesson-box__adjdiagram-btn:hover {
+  border-color: var(--lb-role-particle-bg);
+}
+
+.lesson-box__adjdiagram-btn.is-active {
+  background: var(--lb-role-predicate-bg);
+  border-color: var(--lb-role-predicate-bg);
+  color: var(--lb-role-predicate-fg);
+}
+
+.lesson-box__adjdiagram-sentence {
+  margin-top: 14px;
+  width: 100%;
+}
+
 /* -- shelf-08 interactive movement diagram, built by
    buildMovementDiagram/wireMovementDiagram in n5-phaser-game.js. A single
    arrow rotates in place to point straight/right/left instead of a
