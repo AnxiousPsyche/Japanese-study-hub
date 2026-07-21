@@ -1450,6 +1450,56 @@
         "22558"
       ],
       "port": 22558
+    },
+    {
+      "name": "jp-library-static-shelf09-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22669"
+      ],
+      "port": 22669
+    },
+    {
+      "name": "jp-library-static-vocab-audit-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22780"
+      ],
+      "port": 22780
+    },
+    {
+      "name": "jp-library-static-sensei-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22891"
+      ],
+      "port": 22891
+    },
+    {
+      "name": "jp-library-static-sensei-static-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22992"
+      ],
+      "port": 22992
+    },
+    {
+      "name": "jp-library-static-sensei-portrait-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23093"
+      ],
+      "port": 23093
     }
   ],
   "autoVerify": true

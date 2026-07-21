@@ -1428,6 +1428,61 @@
   clear: both;
 }
 
+/* -- shelf-09 interactive pronoun-notepad diagram, built by
+   buildPronounNotepadDiagram/wirePronounNotepadDiagram in
+   n5-phaser-game.js. Real asset: assets/images/lesson/
+   drawing-pad-2-Original.png (pixel-art spiral notebook) — pronouns are
+   positioned as "handwritten" entries on the blank page area instead of
+   a floating icon/shape, per explicit request. */
+.lesson-box__notepaddiagram-pad {
+  position: relative;
+  width: 380px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  background-image: url('../images/lesson/drawing-pad-2-Original.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.lesson-box__notepaddiagram-entries {
+  position: absolute;
+  left: 25%;
+  right: 10%;
+  top: 24%;
+  bottom: 16%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.lesson-box__notepaddiagram-entry {
+  font-size: 19px;
+  color: #3a3320;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.lesson-box__notepaddiagram-romaji {
+  font-size: 11px;
+  color: #8a7f5c;
+  margin-left: 8px;
+}
+
+.lesson-box__notepaddiagram-entry:hover {
+  background: rgba(58, 51, 32, 0.08);
+}
+
+.lesson-box__notepaddiagram-entry.is-active {
+  background: rgba(232, 176, 79, 0.4);
+}
+
+.lesson-box__notepaddiagram-sentence {
+  margin-top: 14px;
+}
+
 /* -- shelf-08 interactive movement diagram, built by
    buildMovementDiagram/wireMovementDiagram in n5-phaser-game.js. A single
    arrow rotates in place to point straight/right/left instead of a

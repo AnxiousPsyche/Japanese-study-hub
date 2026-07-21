@@ -528,6 +528,102 @@ const LESSON_CONTENT = {
       usage: 'Said ONLY the very first time you meet someone — never used again with that same person afterward. Usually followed immediately by your name, then by "yoroshiku onegaishimasu".',
     },
     {
+      // Divider before the second half of the shelf: situational phrases
+      // above, small filler/connector words + name suffixes below — a
+      // different flavor of "everyday expression" (the glue words that
+      // show up in almost every conversation) rather than one tied to a
+      // specific moment like a meal or an arrival.
+      type: 'grammar-intro',
+      sectionLabel: 'Filler words & connectors',
+      explain: [
+        'Not every everyday expression is tied to a specific moment like eating or leaving. These small words glue conversations together — reacting, hesitating, connecting one thought to the next.',
+      ],
+    },
+    {
+      type: 'greeting', kana: 'どうも', romaji: 'Doumo', pronunciation: '(doh-moh)', meaning: 'Thanks / general all-purpose greeting',
+      usage: 'A shorter, more casual "thanks" than ありがとうございます — also works alone as a quick greeting ("hey") or apology, depending on tone and context.',
+    },
+    {
+      type: 'greeting', kana: 'どうぞ', romaji: 'Douzo', pronunciation: '(doh-zoh)', meaning: 'Please (go ahead)',
+      usage: 'Said when offering or inviting someone to do something — handing over an item, gesturing someone through a door first, or inviting them to start eating.',
+    },
+    {
+      type: 'greeting', kana: 'はい', romaji: 'Hai', pronunciation: '(hai)', meaning: 'Yes',
+      usage: 'The standard, polite way to say "yes" or acknowledge being called — also doubles as "here" when answering a roll call.',
+    },
+    {
+      type: 'greeting', kana: 'ええ', romaji: 'Ee', pronunciation: '(eh)', meaning: 'Yes (softer, conversational)',
+      usage: 'A softer, more conversational "yes" than はい — common in casual replies between friends rather than in formal settings.',
+    },
+    {
+      type: 'greeting', kana: 'さあ', romaji: 'Saa', pronunciation: '(sah)', meaning: 'Well... (hesitation)',
+      usage: 'An interjection for hesitation or uncertainty ("well, I\'m not sure...") — or, with a different tone, a rallying "well then, let\'s go."',
+    },
+    {
+      type: 'greeting', kana: 'それでは', romaji: 'Soredewa', pronunciation: '(soh-reh-deh-wah)', meaning: 'Well then / In that case',
+      usage: 'A formal transition word — used to move into a new topic, or to close out a conversation or meeting before parting ways.',
+    },
+    {
+      type: 'greeting', kana: '多分', romaji: 'Tabun', pronunciation: '(tah-boon)', meaning: 'Probably / perhaps',
+      usage: 'Softens a statement into a guess rather than a certainty — placed before the rest of the sentence, e.g. "tabun sou desu" ("that\'s probably right").',
+    },
+    {
+      type: 'greeting', kana: 'あ', romaji: 'A', pronunciation: '(ah)', meaning: 'Ah! / Oh!',
+      usage: 'A short interjection for sudden realization or noticing something — like snapping your fingers when you remember something.',
+    },
+    {
+      type: 'greeting', kana: 'ああ', romaji: 'Aa', pronunciation: '(ah-ah)', meaning: 'Ah, yes',
+      usage: 'A softer acknowledgment than あ — used when recalling or confirming something ("ah, right, that\'s the one").',
+    },
+    {
+      type: 'greeting', kana: 'できるだけ', romaji: 'Dekiru dake', pronunciation: '(deh-kee-roo dah-keh)', meaning: 'As much as possible',
+      usage: 'Attached before a request or plan to add "if at all possible" — e.g. "dekiru dake hayaku" ("as soon as possible").',
+    },
+    {
+      type: 'greeting', kana: 'これから', romaji: 'Kore kara', pronunciation: '(koh-reh kah-rah)', meaning: 'From now on / after this',
+      usage: 'Marks a point going forward from right now — "kore kara ganbarimasu" ("I\'ll do my best from here on").',
+    },
+    {
+      type: 'greeting', kana: 'まず', romaji: 'Mazu', pronunciation: '(mah-zoo)', meaning: 'First of all',
+      usage: 'Opens a list of steps or points — "mazu, kore wo shimasu" ("first, I\'ll do this").',
+    },
+    {
+      type: 'greeting', kana: 'もし', romaji: 'Moshi', pronunciation: '(moh-shee)', meaning: 'If / in case',
+      usage: 'Sets up a hypothetical at the start of a sentence — also doubled as もしもし, the standard way to say "hello?" when answering the phone.',
+    },
+    {
+      type: 'greeting', kana: 'なるほど', romaji: 'Naruhodo', pronunciation: '(nah-roo-hoh-doh)', meaning: 'I see / now I understand',
+      usage: 'A reaction showing you just understood or been convinced by something someone said — close to English "I see" or "ahh, got it."',
+    },
+    {
+      type: 'greeting', kana: 'それで', romaji: 'Sorede', pronunciation: '(soh-reh-deh)', meaning: 'And then / because of that',
+      usage: 'Links a reason or event to what comes next — either continuing a story ("and then...") or explaining a cause ("because of that...").',
+    },
+    {
+      type: 'greeting', kana: 'それほど', romaji: 'Sorehodo', pronunciation: '(soh-reh-hoh-doh)', meaning: 'To that extent / not that much',
+      usage: 'Usually paired with a negative ending — "sorehodo muzukashikunai" ("it\'s not THAT difficult") — to downplay a degree.',
+    },
+    {
+      type: 'greeting', kana: 'やっぱり', romaji: 'Yappari', pronunciation: '(yahp-pah-ree)', meaning: 'As I thought / after all',
+      usage: 'Said when something confirms a suspicion or when you change your mind back to your original choice — "yappari, kore ga ii" ("actually, this one\'s better after all").',
+    },
+    {
+      type: 'greeting', kana: '全然', romaji: 'Zenzen', pronunciation: '(zen-zen)', meaning: 'Not at all',
+      usage: 'Almost always paired with a negative verb ending — "zenzen wakarimasen" ("I don\'t understand at all"). Casually, it can also mean "totally" in a positive sentence.',
+    },
+    {
+      type: 'greeting', kana: 'ちゃん', romaji: 'Chan', pronunciation: '(chahn)', meaning: 'Familiar name suffix (affectionate)',
+      usage: 'Attached to a name for children, close female friends, or pets — carries warmth and familiarity, never used with someone you\'d address formally.',
+    },
+    {
+      type: 'greeting', kana: '君', romaji: 'Kun', pronunciation: '(koon)', meaning: 'Familiar name suffix (for boys/young men)',
+      usage: 'Attached to a name for boys, younger men, or by a senior addressing a junior — the male-leaning counterpart to ちゃん. (Same kanji as きみ, "you" — different reading, different job, as a suffix vs. a standalone pronoun.)',
+    },
+    {
+      type: 'greeting', kana: '用', romaji: 'You', pronunciation: '(yoh)', meaning: 'Business / errand / use',
+      usage: 'A short way to refer to something you need to do — "you ga arimasu" ("I have some business/errand [to attend to]").',
+    },
+    {
       // Two NPC cats using shelf-02 vocab (plus one already-known
       // shelf-01 phrase, reinforcing retention) in a natural exchange,
       // same pattern as shelf-01's closing conversation page.
@@ -572,6 +668,22 @@ const LESSON_CONTENT = {
       before: '', after: '',
       choices: ['では、また。', 'じゃ、また。', 'じゃあ(ね)。'],
       answer: 'じゃあ(ね)。',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'A reaction that means "I see, now I understand":',
+      before: '', after: '',
+      choices: ['なるほど', 'やっぱり', 'それほど'],
+      answer: 'なるほど',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Setting up a hypothetical ("...if it rains"), you\'d start with:',
+      before: '', after: '',
+      choices: ['もし', 'たぶん', 'それで'],
+      answer: 'もし',
     },
   ],
   // shelf-03 and shelf-04 were swapped (A は B です moved from shelf-04 to
@@ -2517,8 +2629,10 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Recap 2/4: Everyday Expressions — same 14 phrases shelf-02
-      // teaches, in the same order they're introduced there.
+      // Recap 2/4: Everyday Expressions — same 35 phrases shelf-02 now
+      // teaches (14 situational phrases + 21 filler/connector words and
+      // name suffixes added later), in the same order they're introduced
+      // there.
       type: 'summary',
       title: 'Recap: Everyday Expressions',
       headers: ['Phrase', 'Romaji', 'Meaning'],
@@ -2537,6 +2651,27 @@ const LESSON_CONTENT = {
         { kana: 'お邪魔します', romaji: 'Ojama shimasu', meaning: 'Excuse me for intruding' },
         { kana: 'よろしくお願いします', romaji: 'Yoroshiku onegaishimasu', meaning: 'Please treat me kindly' },
         { kana: 'はじめまして', romaji: 'Hajimemashite', meaning: 'How do you do' },
+        { kana: 'どうも', romaji: 'Doumo', meaning: 'Thanks / general greeting' },
+        { kana: 'どうぞ', romaji: 'Douzo', meaning: 'Please (go ahead)' },
+        { kana: 'はい', romaji: 'Hai', meaning: 'Yes' },
+        { kana: 'ええ', romaji: 'Ee', meaning: 'Yes (softer)' },
+        { kana: 'さあ', romaji: 'Saa', meaning: 'Well... (hesitation)' },
+        { kana: 'それでは', romaji: 'Soredewa', meaning: 'Well then / in that case' },
+        { kana: '多分', romaji: 'Tabun', meaning: 'Probably / perhaps' },
+        { kana: 'あ', romaji: 'A', meaning: 'Ah! / oh!' },
+        { kana: 'ああ', romaji: 'Aa', meaning: 'Ah, yes' },
+        { kana: 'できるだけ', romaji: 'Dekiru dake', meaning: 'As much as possible' },
+        { kana: 'これから', romaji: 'Kore kara', meaning: 'From now on / after this' },
+        { kana: 'まず', romaji: 'Mazu', meaning: 'First of all' },
+        { kana: 'もし', romaji: 'Moshi', meaning: 'If / in case' },
+        { kana: 'なるほど', romaji: 'Naruhodo', meaning: 'I see / now I understand' },
+        { kana: 'それで', romaji: 'Sorede', meaning: 'And then / because of that' },
+        { kana: 'それほど', romaji: 'Sorehodo', meaning: 'To that extent / not that much' },
+        { kana: 'やっぱり', romaji: 'Yappari', meaning: 'As I thought / after all' },
+        { kana: '全然', romaji: 'Zenzen', meaning: 'Not at all' },
+        { kana: 'ちゃん', romaji: 'Chan', meaning: 'Familiar name suffix (affectionate)' },
+        { kana: '君', romaji: 'Kun', meaning: 'Familiar name suffix (for boys)' },
+        { kana: '用', romaji: 'You', meaning: 'Business / errand / use' },
       ],
     },
     {
@@ -2859,6 +2994,414 @@ const LESSON_CONTENT = {
       // auto-picks a retro-cat reaction line from the score percentage.
       type: 'quiz-score',
       title: 'Everyday Vocabulary Review — Score',
+    },
+  ],
+  'shelf-09': [
+    {
+      // Page 1/14: intro — names the noun/pronoun distinction, then
+      // teases the notepad diagram coming up.
+      type: 'grammar-intro',
+      sectionLabel: 'Nouns & pronouns',
+      bigIdea: 'A noun names a person, place, or thing. A pronoun stands in for a noun so you don\'t have to repeat it.',
+      explain: [
+        `A <b>noun</b> (めいし) names a person, place, or thing: ${furigana('本', 'ほん')} <span class="dim">(hon, book)</span>, ${furigana('友達', 'ともだち')} <span class="dim">(tomodachi, friend)</span>.`,
+        `A <b>pronoun</b> stands in for a noun, like ${furigana('私', 'わたし')} <span class="dim">(watashi, I)</span> instead of your own name. Let's meet the rest of the pronoun family, jotted down on a notepad.`,
+      ],
+    },
+    {
+      // Page 2/14: the 4 new pronouns as a glossary table, before the
+      // interactive diagram puts them into sentences — same "table, then
+      // diagram" order shelf-08 used for its direction words.
+      type: 'grammar-intro',
+      sectionLabel: 'New pronouns',
+      recapChips: [`${furigana('私', 'わたし')} (watashi, shelf 3)`],
+      terms: [
+        { role: 'subject', name: 'あなた (anata)', desc: 'you' },
+        { role: 'subject', name: `${furigana('彼', 'かれ')} (kare)`, desc: 'he / him' },
+        { role: 'subject', name: `${furigana('彼女', 'かのじょ')} (kanojo)`, desc: 'she / her' },
+        { role: 'subject', name: `${furigana('私たち', 'わたしたち')} (watashi-tachi)`, desc: 'we / us' },
+      ],
+    },
+    {
+      // Page 3/14: interactive notepad diagram — click a pronoun, the
+      // sentence below rebuilds with it as the subject. See
+      // buildPronounNotepadDiagram/wirePronounNotepadDiagram in this
+      // file.
+      type: 'grammar-intro',
+      diagramSvg: buildPronounNotepadDiagram,
+      wireDiagram: wirePronounNotepadDiagram,
+      diagramCaption: 'Click a pronoun on the notepad — the sentence below updates to match.',
+    },
+    {
+      // Page 4/14: 2 more pronoun samples using vocab the diagram didn't
+      // cover (みなさん as a bonus greeting-context pronoun).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"Everyone, good morning."',
+          tiles: [
+            { text: 'みなさん', role: 'subject', gloss: 'everyone', isNew: true },
+            { text: '、', role: 'particle', gloss: '' },
+            { text: 'おはようございます', role: 'copula', gloss: 'good morning' },
+          ],
+          translation: 'Mina-san, ohayou gozaimasu.',
+        },
+        {
+          tag: '"Are you a teacher?"',
+          tiles: [
+            { text: 'あなた', role: 'subject', gloss: 'you' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'せんせい', role: 'predicate', gloss: 'teacher' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+            { text: 'か', role: 'particle', gloss: 'question marker' },
+          ],
+          translation: 'Anata wa sensei desu ka?',
+        },
+      ],
+    },
+    {
+      // Page 5/14: people nouns as a glossary table.
+      type: 'grammar-intro',
+      sectionLabel: 'People',
+      recapChips: [`${furigana('学生', 'がくせい')} / ${furigana('先生', 'せんせい')} (shelf 3-4)`],
+      terms: [
+        { role: 'predicate', name: `${furigana('人', 'ひと')} (hito)`, desc: 'person' },
+        { role: 'predicate', name: `${furigana('子供', 'こども')} (kodomo)`, desc: 'child' },
+        { role: 'predicate', name: `${furigana('友達', 'ともだち')} (tomodachi)`, desc: 'friend' },
+        { role: 'predicate', name: `${furigana('家族', 'かぞく')} (kazoku)`, desc: 'family' },
+      ],
+    },
+    {
+      // Page 6/14: people-noun samples.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"That person is my friend."',
+          tiles: [
+            { text: 'あの', role: 'predicate', gloss: 'that (over there)' },
+            { text: '人', role: 'subject', gloss: 'person' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '私の', role: 'predicate', gloss: 'my' },
+            { text: '友達', role: 'predicate', gloss: 'friend' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Ano hito wa watashi no tomodachi desu.',
+        },
+        {
+          tag: '"This child is my family."',
+          tiles: [
+            { text: 'この', role: 'predicate', gloss: 'this' },
+            { text: '子供', role: 'subject', gloss: 'child' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '私の', role: 'predicate', gloss: 'my' },
+            { text: '家族', role: 'predicate', gloss: 'family' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kono kodomo wa watashi no kazoku desu.',
+        },
+      ],
+    },
+    {
+      // Page 7/14: everyday object nouns as a glossary table.
+      type: 'grammar-intro',
+      sectionLabel: 'Everyday objects',
+      terms: [
+        { role: 'predicate', name: `${furigana('本', 'ほん')} (hon)`, desc: 'book' },
+        { role: 'predicate', name: 'かばん (kaban)', desc: 'bag' },
+        { role: 'predicate', name: `${furigana('時計', 'とけい')} (tokei)`, desc: 'clock / watch' },
+      ],
+    },
+    {
+      // Page 8/14: object-noun samples, reusing shelf-05's これ/それ/あれ
+      // demonstratives so the objects have something to point at.
+      type: 'grammar-intro',
+      recapChips: ['これ・それ・あれ (shelf 5)'],
+      samples: [
+        {
+          tag: '"This is my book."',
+          tiles: [
+            { text: 'これ', role: 'subject', gloss: 'this' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '私の', role: 'predicate', gloss: 'my' },
+            { text: '本', role: 'predicate', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kore wa watashi no hon desu.',
+        },
+        {
+          tag: '"That bag is not his."',
+          tiles: [
+            { text: 'その', role: 'predicate', gloss: 'that' },
+            { text: 'かばん', role: 'subject', gloss: 'bag' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '彼の', role: 'predicate', gloss: 'his' },
+            { text: 'じゃないです', role: 'copula', gloss: 'is not' },
+          ],
+          translation: 'Sono kaban wa kare no ja nai desu.',
+        },
+      ],
+    },
+    {
+      // Page 9/14: は spelled out as a pattern one more time, now with a
+      // plain noun subject instead of a pronoun or demonstrative —
+      // closes the loop on every subject type this lesson used.
+      type: 'grammar-intro',
+      sectionLabel: '[Noun] は [description] です, one more time',
+      pattern: [
+        { text: '[Noun]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: '[description]', role: 'predicate' }, { text: 'です', role: 'copula' },
+      ],
+      explain: [
+        'Any noun or pronoun can be the subject of this pattern — a person\'s name, かれ/かのじょ, or a plain object like かばん all slot into the same [Noun]は spot.',
+      ],
+    },
+    {
+      // Page 9.1: casual alternatives to the pronouns already taught —
+      // 僕/君 as the casual, gendered counterparts to わたし/あなた, 彼ら
+      // as the plural of 彼.
+      type: 'grammar-intro',
+      sectionLabel: 'Casual pronouns',
+      recapChips: [`${furigana('私', 'わたし')} / あなた (shelf 3, this shelf)`, `${furigana('彼', 'かれ')} (this shelf)`],
+      terms: [
+        { role: 'subject', name: `${furigana('僕', 'ぼく')} (boku)`, desc: 'I / me (casual, used by males)' },
+        { role: 'subject', name: `${furigana('君', 'きみ')} (kimi)`, desc: 'you (casual)' },
+        { role: 'subject', name: `${furigana('彼ら', 'かれら')} (karera)`, desc: 'they / them' },
+      ],
+      explain: [
+        `${furigana('僕', 'ぼく')} and ${furigana('君', 'きみ')} are casual, everyday versions of ${furigana('私', 'わたし')} and あなた — used with friends and family, not in polite/formal speech.`,
+      ],
+    },
+    {
+      // Page 9.2: samples using the casual pronouns, reusing already-
+      // taught vocab (せんせい, 家族, 元気ですか from shelf-02).
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"I am a teacher." (casual, male speaker)',
+          tiles: [
+            { text: '僕', role: 'subject', gloss: 'I (casual)' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'せんせい', role: 'predicate', gloss: 'teacher' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Boku wa sensei desu.',
+        },
+        {
+          tag: '"Is your family doing well?"',
+          tiles: [
+            { text: '君の', role: 'predicate', gloss: 'your (casual)' },
+            { text: '家族', role: 'subject', gloss: 'family' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '元気ですか', role: 'copula', gloss: 'doing well?' },
+          ],
+          translation: 'Kimi no kazoku wa genki desu ka.',
+        },
+        {
+          tag: '"They are friends."',
+          tiles: [
+            { text: '彼ら', role: 'subject', gloss: 'they' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: '友達', role: 'predicate', gloss: 'friends' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Karera wa tomodachi desu.',
+        },
+      ],
+    },
+    {
+      // Page 9.3: あんな/こんな/そんな/どんな — "what kind of" modifiers,
+      // parallel in shape to shelf-05's この/その/あの/どの but asking
+      // about KIND rather than pointing at a specific thing. 色んな
+      // grouped here as the same grammatical category (attaches directly
+      // before a noun).
+      type: 'grammar-intro',
+      sectionLabel: 'What kind of...?',
+      recapChips: [`${furigana('この', 'この')}・その・あの・どの (shelf 5)`],
+      explain: [
+        'これらの言葉 also attach directly before a noun, but ask about KIND instead of pointing at a specific thing — こんな本 ("this kind of book") vs. この本 ("this [specific] book").',
+      ],
+      terms: [
+        { role: 'predicate', name: 'こんな (konna)', desc: 'this kind of...' },
+        { role: 'predicate', name: 'そんな (sonna)', desc: 'that kind of...' },
+        { role: 'predicate', name: 'あんな (anna)', desc: 'that kind of... (over there)' },
+        { role: 'predicate', name: 'どんな (donna)', desc: 'what kind of...?' },
+        { role: 'predicate', name: `${furigana('色んな', 'いろんな')} (ironna)`, desc: 'various' },
+      ],
+    },
+    {
+      // Page 9.4: samples for the "what kind of" set, kept to
+      // already-taught vocab (本, 人, です, か) to avoid needing new
+      // grammar this lesson didn't otherwise introduce.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"It\'s this kind of book."',
+          tiles: [
+            { text: 'こんな', role: 'predicate', gloss: 'this kind of' },
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Konna hon desu.',
+        },
+        {
+          tag: '"What kind of person is it?"',
+          tiles: [
+            { text: 'どんな', role: 'predicate', gloss: 'what kind of' },
+            { text: '人', role: 'subject', gloss: 'person' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+            { text: 'か', role: 'particle', gloss: 'question marker' },
+          ],
+          translation: 'Donna hito desu ka.',
+        },
+      ],
+    },
+    {
+      // Page 9.5: 2 extra pronoun/adverb words that don't fit neatly
+      // into either group above — glossary-only (no forced sample
+      // sentence) since a natural example needs particles/verbs this
+      // lesson hasn't taught yet (が, います with a bare subject, etc.).
+      type: 'grammar-intro',
+      sectionLabel: 'A few more',
+      terms: [
+        { role: 'subject', name: `${furigana('誰か', 'だれか')} (dareka)`, desc: 'someone / somebody' },
+        { role: 'subject', name: `${furigana('自分', 'じぶん')} (jibun)`, desc: 'myself / yourself / oneself' },
+        { role: 'predicate', name: 'こう (kou)', desc: 'this way (doing something)' },
+      ],
+      explain: [
+        `${furigana('自分', 'じぶん')} can point back to whoever the sentence is already about — "自分の${furigana('家族', 'かぞく')}" means "my own family" if you're speaking, or "their own family" if the sentence is about someone else.`,
+      ],
+    },
+    {
+      // Page 10/14: drag-and-drop mini-check — pronoun recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "she is a student":',
+      before: '', after: 'は がくせいです。',
+      choices: ['彼女', '彼', 'あなた'],
+      answer: '彼女',
+    },
+    {
+      // Page 11/14: drag-and-drop mini-check — people/object nouns.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "this is my family":',
+      before: 'これは私の', after: 'です。',
+      choices: ['家族', '友達', '子供'],
+      answer: '家族',
+    },
+    {
+      // Page 11.1: drag-and-drop mini-check — casual pronoun recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I am a teacher" (casual, male speaker):',
+      before: '', after: 'は せんせいです。',
+      choices: ['僕', '君', '彼ら'],
+      answer: '僕',
+    },
+    {
+      // Page 11.2: drag-and-drop mini-check — "what kind of" recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Ask "what kind of person is it?":',
+      before: '', after: '人ですか。',
+      choices: ['どんな', 'こんな', 'そんな'],
+      answer: 'どんな',
+    },
+    {
+      type: 'summary',
+      title: 'New Words: Nouns & Pronouns',
+      rows: [
+        { kana: 'あなた', romaji: 'anata', meaning: 'you' },
+        { kana: '彼', reading: 'かれ', romaji: 'kare', meaning: 'he / him' },
+        { kana: '彼女', reading: 'かのじょ', romaji: 'kanojo', meaning: 'she / her' },
+        { kana: '私たち', reading: 'わたしたち', romaji: 'watashi-tachi', meaning: 'we / us' },
+        { kana: 'みなさん', romaji: 'mina-san', meaning: 'everyone' },
+        { kana: '人', reading: 'ひと', romaji: 'hito', meaning: 'person' },
+        { kana: '子供', reading: 'こども', romaji: 'kodomo', meaning: 'child' },
+        { kana: '友達', reading: 'ともだち', romaji: 'tomodachi', meaning: 'friend' },
+        { kana: '家族', reading: 'かぞく', romaji: 'kazoku', meaning: 'family' },
+        { kana: '本', reading: 'ほん', romaji: 'hon', meaning: 'book' },
+        { kana: 'かばん', romaji: 'kaban', meaning: 'bag' },
+        { kana: '時計', reading: 'とけい', romaji: 'tokei', meaning: 'clock / watch' },
+        { kana: '僕', reading: 'ぼく', romaji: 'boku', meaning: 'I / me (casual, male)' },
+        { kana: '君', reading: 'きみ', romaji: 'kimi', meaning: 'you (casual)' },
+        { kana: '彼ら', reading: 'かれら', romaji: 'karera', meaning: 'they / them' },
+        { kana: 'こんな', romaji: 'konna', meaning: 'this kind of...' },
+        { kana: 'そんな', romaji: 'sonna', meaning: 'that kind of...' },
+        { kana: 'あんな', romaji: 'anna', meaning: 'that kind of... (over there)' },
+        { kana: 'どんな', romaji: 'donna', meaning: 'what kind of...?' },
+        { kana: '色んな', reading: 'いろんな', romaji: 'ironna', meaning: 'various' },
+        { kana: '誰か', reading: 'だれか', romaji: 'dareka', meaning: 'someone / somebody' },
+        { kana: '自分', reading: 'じぶん', romaji: 'jibun', meaning: 'myself / yourself / oneself' },
+        { kana: 'こう', romaji: 'kou', meaning: 'this way (doing something)' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '', after: 'は がくせいですか。', answer: 'あなた', hint: '"Are you a student?"' },
+        { before: '', after: 'は せんせいです。', answer: '彼', altAnswers: ['かれ'], hint: '"He is a teacher."' },
+        { before: '', after: 'は ともだちです。', answer: '私たち', altAnswers: ['わたしたち'], hint: '"We are friends."' },
+        { before: 'あの', after: 'は 私の友達です。', answer: '人', altAnswers: ['ひと'], hint: '"That person is my friend."' },
+        { before: 'これは私の', after: 'です。', answer: '本', altAnswers: ['ほん'], hint: '"This is my book."' },
+        { before: '', after: '本です。', answer: 'こんな', hint: '"It\'s this kind of book."' },
+        { before: '', after: '人ですか。', answer: 'どんな', hint: '"What kind of person is it?"' },
+      ],
+    },
+  ],
+  // Neko-sensei's reception-desk guide — an always-available, ungated
+  // conversation (kind: 'npc' in buildReceptionSensei/openInteraction),
+  // not a lesson tied to any shelf. Plain-English instructions only, no
+  // Japanese vocab to teach, so every page skips furigana/terms-as-
+  // glossary in favor of just explaining the game itself.
+  'sensei-guide': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Welcome, Explorer!',
+      bigIdea: 'I\'m Neko-sensei — ask me anytime you\'re not sure what to do next.',
+      explain: [
+        'Move around the library with the arrow keys or WASD. You can also just click anywhere on the floor and I\'ll walk you there automatically.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Talking to things',
+      explain: [
+        'Click directly on a shelf, a pile, or me — or walk up close and press E (or Enter/Space) — to open it. Click somewhere far away instead and you\'ll walk over first, then it\'ll open on its own.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'What the shelves do',
+      bigIdea: 'Each shelf is one lesson.',
+      explain: [
+        'A glowing shelf is unlocked and ready — step up and choose "Start Lesson." A dimmed shelf is locked until you finish what comes before it. A checkmark means you\'ve already completed it, but you\'re always welcome to revisit.',
+        'Click the star on a shelf\'s plaque to mark it as a favorite, if you\'d like to find it again quickly later.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Review piles',
+      explain: [
+        'Every few shelves, a review pile gathers everything you\'ve learned so far into one recap, then a short quiz. Clear it to unlock the next stretch of shelves.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'The staircase',
+      explain: [
+        'At the far end waits the final quiz — it only unlocks once every shelf and review pile is done. Pass it, and N4 is next.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Everything else',
+      explain: [
+        'The sofas, plants, rug, and my desk are just here to make the library feel lived-in — there\'s nothing to click on them. Your progress saves automatically, so feel free to close the game any time and pick up right where you left off.',
+      ],
+      takeaway: 'Lost? Just come back and ask me again — I\'m not going anywhere.',
     },
   ],
 };
@@ -3434,6 +3977,64 @@ function buildCompassDiagram() {
   `;
 }
 
+// -- shelf-09 interactive pronoun-notepad diagram -----------------------------
+// Click a pronoun jotted on the notebook page (real asset:
+// assets/images/lesson/drawing-pad-2-Original.png) — the entry highlights
+// and the sentence below rebuilds using that pronoun as the subject of a
+// は...です line, same "click word, sentence updates" mechanic as
+// wirePlacesMapDiagram/wireMovementDiagram, just with a notepad graphic
+// standing in for the map/arrow stage. No color dependency, so
+// diagramSvg/wireDiagram are both attached directly (diagramSvg still
+// needs to be a function reference, not called eagerly, since
+// PRONOUN_NOTEPAD_WORDS is declared below LESSON_CONTENT — same
+// temporal-dead-zone reasoning as buildPlacesMapDiagram).
+const PRONOUN_NOTEPAD_WORDS = [
+  { id: 'anata', kana: 'あなた', romaji: 'anata', gloss: 'you', sentenceTiles: [{ t: 'あなた', r: 'subject', g: 'you' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: 'がくせい', r: 'predicate', g: 'student' }, { t: 'です', r: 'copula', g: 'to be' }, { t: 'か', r: 'particle', g: 'question marker' }], romajiLine: 'Anata wa gakusei desu ka? — "Are you a student?"' },
+  { id: 'kare', kana: '彼', reading: 'かれ', romaji: 'kare', gloss: 'he / him', sentenceTiles: [{ t: '彼', r: 'subject', g: 'he' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: 'せんせい', r: 'predicate', g: 'teacher' }, { t: 'です', r: 'copula', g: 'to be' }], romajiLine: 'Kare wa sensei desu. — "He is a teacher."' },
+  { id: 'kanojo', kana: '彼女', reading: 'かのじょ', romaji: 'kanojo', gloss: 'she / her', sentenceTiles: [{ t: '彼女', r: 'subject', g: 'she' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: 'がくせい', r: 'predicate', g: 'student' }, { t: 'です', r: 'copula', g: 'to be' }], romajiLine: 'Kanojo wa gakusei desu. — "She is a student."' },
+  { id: 'watashitachi', kana: '私たち', reading: 'わたしたち', romaji: 'watashi-tachi', gloss: 'we / us', sentenceTiles: [{ t: '私たち', r: 'subject', g: 'we' }, { t: 'は', r: 'particle', g: 'topic marker' }, { t: 'ともだち', r: 'predicate', g: 'friends' }, { t: 'です', r: 'copula', g: 'to be' }], romajiLine: 'Watashi-tachi wa tomodachi desu. — "We are friends."' },
+];
+
+function buildPronounNotepadDiagram() {
+  const entries = PRONOUN_NOTEPAD_WORDS.map((w) => `
+    <div class="lesson-box__notepaddiagram-entry" data-pronoun="${w.id}">
+      ${furigana(w.kana, w.reading)} <span class="lesson-box__notepaddiagram-romaji">${w.romaji}</span>
+    </div>
+  `).join('');
+  return `
+    <div class="lesson-box__notepaddiagram">
+      <div class="lesson-box__notepaddiagram-pad">
+        <div class="lesson-box__notepaddiagram-entries">${entries}</div>
+      </div>
+    </div>
+    <div class="lesson-box__notepaddiagram-sentence" data-notepad-sentence></div>
+  `;
+}
+
+function wirePronounNotepadDiagram(container) {
+  const entries = Array.from(container.querySelectorAll('[data-pronoun]'));
+  const sentence = container.querySelector('[data-notepad-sentence]');
+  if (!sentence) return;
+
+  function select(id) {
+    entries.forEach((el) => el.classList.toggle('is-active', el.dataset.pronoun === id));
+    const w = PRONOUN_NOTEPAD_WORDS.find((x) => x.id === id);
+    const tilesHtml = w.sentenceTiles.map((t) => `
+      <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-${t.r}">${t.t}</div><div class="lesson-box__word-tile-gloss">${t.g}</div></div>
+    `).join('');
+    sentence.innerHTML = `
+      <div class="lesson-box__sentence-row">${tilesHtml}</div>
+      <div class="lesson-box__sentence-translation">${w.romajiLine}</div>
+    `;
+  }
+
+  entries.forEach((el) => el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(el.dataset.pronoun);
+  }));
+  select('anata');
+}
+
 // Resolves any 'grammar-intro' page whose diagramSvg is a function (not a
 // plain string) into real markup using this lesson's actual cat colors —
 // mirrors resolveConversationTurns' player/sensei color derivation so a
@@ -3551,6 +4152,19 @@ const TALK_COLOR_PATHS = {
   orange: '../../assets/images/avatars/talk-orange-64x64.png',
   black: '../../assets/images/avatars/talk-black-64x64.png',
   white: '../../assets/images/avatars/talk-white-64x64.png',
+};
+// Neko-sensei's own LessonBox portrait (used only for the 'sensei-guide'
+// conversation — see startLesson's isSenseiGuide branch), built offline
+// from the same alpha-scanned single pose buildReceptionSensei crops out
+// of calico-sensei-idle.png — NOT the raw 3-pose sheet, which has the
+// misaligned-frame problem documented in preload(). Both files are
+// pre-built to the exact layouts spriteStyle()/LessonBox expects (idle:
+// 14 cols x 13 rows @ 64px, only row 12 populated; talk: 3 cols x 1 row
+// @ 64px), each cell just the one clean pose centered — so cycling
+// through "frames" shows zero motion instead of a shifted duplicate.
+const SENSEI_PORTRAIT_PATHS = {
+  idle: '../../assets/images/avatars/calico-sensei-idle-sheet.png',
+  talk: '../../assets/images/avatars/calico-sensei-talk.png',
 };
 // Per-action, per-color sprite strips for LessonBox 'conversation' pages
 // (see resolveConversationTurns below) — all cropped from the same
@@ -4228,6 +4842,17 @@ class LibraryScene extends Phaser.Scene {
     // to strip this source file's ~40% transparent padding.
     this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
     this.load.image('finishFlagIcon', '../../assets/images/ui/finish-line-Original.png');
+    // Calico sensei — a stationary NPC sitting at the reception desk.
+    // Loaded as a plain image, not a spritesheet: the source PNG (decoded
+    // from the .aseprite file, no exported PNG existed yet) holds 3
+    // separate ~28px-wide poses spaced 64px apart with big transparent
+    // gaps between them, NOT a clean 3-across grid — slicing it into
+    // even frameWidth:52 chunks cut through those gaps at the wrong
+    // spot, so each "frame" showed the cat progressively shifted right
+    // (visually: sliding sideways when animated). Cropped down to one
+    // static pose in buildReceptionSensei via cropToTexture instead, at
+    // its actual alpha-scanned bounds (x:0, w:28) — see that function.
+    this.load.image('calicoSenseiRaw', '../../assets/images/avatars/calico-sensei-idle.png');
     loadCatSpritesheets(this);
   }
 
@@ -5032,11 +5657,16 @@ class LibraryScene extends Phaser.Scene {
       .image(originX - (rugW - deskW) / 2, originY + 10 + deskH + 6, rugKey).setOrigin(0, 0)
       .setDisplaySize(rugW, rugH).setDepth(0);
     // Chair nudged further back each pass (further into the notch, away
-    // from the desk) — was -22, then -30, now -45 — and sized down
+    // from the desk) — was -22, then -30, then -45 — and sized down
     // (64->46) per explicit "the yellow chair must be smaller and move
-    // it back some more" feedback.
+    // it back some more" feedback. Brought forward again to -30 per
+    // "move the chair a little forward so it'll be close to the table" —
+    // the chair's own transparent padding left a visible gap to the desk
+    // even though the two bounding boxes already touched at -45.
+    const chairX = originX + deskW / 2 - chairW / 2;
+    const chairY = originY - 30;
     this.furnitureSprites.receptionChair = this.add
-      .image(originX + deskW / 2 - chairW / 2, originY - 45, chairKey).setOrigin(0, 0)
+      .image(chairX, chairY, chairKey).setOrigin(0, 0)
       .setDisplaySize(chairW, chairH).setDepth(1);
     // Non-solid, same reasoning as every other decor piece this round.
 
@@ -5046,6 +5676,46 @@ class LibraryScene extends Phaser.Scene {
     // desk itself uses, so the whole cluster moves with the desk if its
     // position/size is ever retuned.
     this.buildDeskItems(originX, originY + 10, deskW / ASSET_RECTS.receptionDesk.w);
+
+    this.buildReceptionSensei(chairX + chairW / 2, chairY + chairH / 2);
+  }
+
+  // Calico sensei — sits in the reception chair, idling while she waits
+  // for a student to come ask about the library (per explicit request).
+  // A real interactive (kind: 'npc'), reusing the same LessonBox dialogue
+  // pipeline as shelves/piles (see openInteraction's 'npc' branch and
+  // startLesson) instead of the locked/available/completed shelf-menu
+  // flow, since she's an always-available guide, not gated content.
+  buildReceptionSensei(centerX, centerY) {
+    // Single static pose, alpha-scanned out of calicoSenseiRaw at its
+    // real bounds (x:0-27, y:0-31 — verified by per-column opacity scan,
+    // not guessed) via the project's standard cropToTexture utility. She
+    // sits still, per explicit "just sitting, not moving sideways"
+    // feedback — see the preload() comment for why animating the raw
+    // sheet's 3 poses broke (misaligned frame slicing).
+    const senseiKey = cropToTexture(this, 'calicoSenseiRaw', { x: 0, y: 0, w: 28, h: 32 }, 'calicoSenseiTex');
+    // setScale (not setDisplaySize) deliberately — update()'s proximity
+    // pulse calls entry.sprite.setScale(entry.baseScale * ...) on every
+    // frame she's the nearest interactive, which would silently override
+    // a setDisplaySize-derived scale and snap her back to native size
+    // the moment the player walked up. baseScale below must match.
+    const senseiScale = 1.3;
+    // Anchored by her feet (origin 0.5, 1) a few px above the chair's
+    // vertical center so she reads as sitting IN the seat rather than
+    // floating above it or sunk into the desk.
+    const sensei = this.add.image(centerX, centerY + 6, senseiKey)
+      .setOrigin(0.5, 1)
+      .setScale(senseiScale)
+      .setDepth(2);
+
+    const senseiEntry = {
+      id: 'sensei-guide', kind: 'npc', title: 'Neko-sensei',
+      sprite: sensei, x: centerX, y: centerY,
+      baseScale: senseiScale,
+    };
+    sensei.setInteractive({ useHandCursor: true });
+    sensei.on('pointerdown', () => this.handleInteractiveClick(senseiEntry));
+    this.interactives.push(senseiEntry);
   }
 
   // -- Player + camera -----------------------------------------------------
@@ -5205,6 +5875,14 @@ class LibraryScene extends Phaser.Scene {
   // same retro in-canvas menu engine (below).
 
   openInteraction(entry) {
+    // Neko-sensei: an always-available guide NPC, not gated content —
+    // skip the shelf/pile locked/available/completed machinery entirely
+    // and jump straight into her dialogue (no "Start Lesson" menu; she's
+    // not a lesson, just a conversation).
+    if (entry.kind === 'npc') {
+      this.startLesson(entry);
+      return;
+    }
     const state = entry.kind === 'shelf'
       ? getState(entry.id, entry.prereq, this.progress)
       : (this.progress[entry.id] ? 'completed'
@@ -5298,11 +5976,19 @@ class LibraryScene extends Phaser.Scene {
     let pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
     pages = resolveConversationTurns(pages, this.catColorId);
     pages = resolveDynamicDiagrams(pages, this.catColorId);
-    const catColor = CAT_COLORS[this.catColorId];
+    // Neko-sensei's own reception-desk guide shows HER portrait (the
+    // calico prof), not the player's chosen cat color — every other
+    // lesson still narrates as "Neko-sensei" but visually shows the
+    // player's own cat (see the module doc comment on CAT_COLORS/
+    // TALK_COLOR_PATHS), which would look wrong for a conversation that's
+    // explicitly framed as talking WITH her specifically.
+    const isSenseiGuide = entry.kind === 'npc';
+    const catImagePath = isSenseiGuide ? SENSEI_PORTRAIT_PATHS.idle : CAT_COLORS[this.catColorId].path;
+    const talkImagePath = isSenseiGuide ? SENSEI_PORTRAIT_PATHS.talk : TALK_COLOR_PATHS[this.catColorId];
     window.LessonBox.open(pages, {
       speaker: 'Neko-sensei',
-      catImagePath: catColor.path,
-      talkImagePath: TALK_COLOR_PATHS[this.catColorId],
+      catImagePath,
+      talkImagePath,
       startIndex: resumeIndex,
       onComplete: () => {
         this.progress[entry.id] = true;
@@ -5480,6 +6166,11 @@ class LibraryScene extends Phaser.Scene {
 
   refreshAllStates() {
     this.interactives.forEach((entry) => {
+      // Neko-sensei has no locked/available/completed states — she's
+      // always there, always fully visible (no glow/stamp/dim sprites
+      // exist for her — see buildReceptionSensei), so skip the rest of
+      // this per-entry visual-state logic entirely.
+      if (entry.kind === 'npc') return;
       const state = entry.kind === 'shelf'
         ? getState(entry.id, entry.prereq, this.progress)
         : (this.progress[entry.id] ? 'completed'
