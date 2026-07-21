@@ -40,6 +40,19 @@
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block"
           rel="stylesheet">
 
+    <!-- M PLUS 1 Code: Japanese text font for the DirectionMapScene road
+         map (Phaser Canvas text). Requested at a single fixed weight
+         (wght@400, not a range) so Google serves a STATIC instance, not
+         the variable font — Canvas 2D's ctx.fillText() does not apply
+         font-variation-settings the way DOM layout does, so a variable
+         font's un-varied default instance can render individual glyphs
+         wrong in canvas even though the exact same font renders correctly
+         in normal DOM text (confirmed live: this is what broke Datatype
+         for this scene's buttons — 'm' rendered as a different glyph in
+         canvas only, never in DOM, at any size). -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400&display=block"
+          rel="stylesheet">
+
     <!-- VT323 (LessonBox running text) is no longer loaded from Google
          Fonts here — it's self-hosted instead (assets/fonts/VT323-
          Regular.woff2, @font-face declared in lesson-box.css). Depending

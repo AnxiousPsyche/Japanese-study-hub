@@ -175,6 +175,24 @@
   transform-origin: center;
 }
 
+/* Furigana — plain native <ruby>/<rt>, scoped to .lesson-box so any
+   diagram or table can just write <ruby>漢字<rt>かんじ</rt></ruby>
+   without a per-usage class. No custom positioning: ruby-position:over is
+   the browser's own furigana layout, which is exactly what's needed here
+   (small reading directly above the kanji). rt uses the same JP font as
+   the kanji it annotates, just small and dimmed — readings are a
+   supporting caption, not the focal text. */
+.lesson-box ruby {
+  ruby-position: over;
+}
+
+.lesson-box rt {
+  font-family: "DotGothic16", sans-serif;
+  font-size: 0.5em;
+  color: var(--jr-text-dim);
+  user-select: none;
+}
+
 /* CRT-power-on pop-in, played once each time a lesson opens (not on
    every page turn — see lesson-box.js's open(), which (re)adds this
    class). Squashes to a bright horizontal line, holds it, then
@@ -1156,7 +1174,13 @@
 
 .lesson-box__dirdiagram-stages {
   display: flex;
-  gap: 32px;
+  /* Narrower than the original 32px — the side-view stage now holds three
+     objects (cat, table, box) instead of two, so it needs more of the
+     row's width; shrinking this gap pulls the whole (centered) group
+     narrower, which shifts the compass stage further left and leaves the
+     side-view stage more room instead of the two stages crowding each
+     other in the middle. */
+  gap: 18px;
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 18px;
@@ -1227,15 +1251,55 @@
 .lesson-box__dirdiagram-side-row {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 16px;
 }
 
+/* Box sits apart from the cat+table group (extra margin on top of the
+   row's own 16px gap) — it's the odd one out here (naka/soto are the
+   last two buttons in the row, after ue/shita), so the visual grouping
+   matches the click order instead of reading as three equal objects. */
 .lesson-box__dirdiagram-box {
   width: 46px;
   height: 40px;
+  margin-left: 14px;
   border: 2px solid var(--jr-text-dim);
   border-radius: 3px;
   position: relative;
+}
+
+/* Side-view table (tabletop + two legs) — the anchor for ue/shita
+   (above/below). Unlike the cat, a table has no front/back of its own, so
+   it demonstrates a plain vertical position without risking the player
+   reading "above/below" as somehow related to the cat-facing words
+   (mae/ushiro). Drawn as a flat top bar (::before) plus two legs (the
+   element itself + a box-shadow-offset copy in ::after) rather than an
+   image, matching the box's plain-CSS-shape treatment right next to it. */
+.lesson-box__dirdiagram-table {
+  width: 50px;
+  height: 34px;
+  position: relative;
+}
+
+.lesson-box__dirdiagram-table::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: var(--jr-text-dim);
+  border-radius: 2px;
+}
+
+.lesson-box__dirdiagram-table::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 5px;
+  width: 4px;
+  height: 28px;
+  background: var(--jr-text-dim);
+  box-shadow: 36px 0 0 0 var(--jr-text-dim);
 }
 
 .lesson-box__dirdiagram-controls {

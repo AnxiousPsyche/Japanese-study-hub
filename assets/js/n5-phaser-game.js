@@ -306,6 +306,61 @@ const REVIEW_1_QUIZ_QUESTIONS = [
   },
 ];
 
+// Same pattern as REVIEW_1_QUIZ_QUESTIONS above — one shared array
+// referenced by both review-2's 'quiz-review' and 'quiz-answers' pages so
+// they can't drift out of sync. Roughly 2-3 questions per shelf-05..08,
+// in shelf order.
+const REVIEW_2_QUIZ_QUESTIONS = [
+  {
+    kind: 'mc', prompt: 'What does それ mean?',
+    choices: ['This', 'That (near listener)', 'That over there', 'Which one'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"Which one" (polite, no noun):',
+    before: '', after: '', answer: 'どれ', altAnswers: ['dore'],
+  },
+  {
+    kind: 'mc', prompt: 'What does どこ mean?',
+    choices: ['Who', 'When', 'Where', 'Why'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: 'Turn a statement into a question by adding this to the end:',
+    before: 'これはほんです', after: '', answer: 'か', altAnswers: ['ka'],
+  },
+  {
+    kind: 'mc', prompt: 'What does いくつ mean?',
+    choices: ['How much (price)', 'How many', 'When', 'Who'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"100" in Japanese:',
+    before: '', after: '', answer: 'ひゃく', altAnswers: ['hyaku'],
+  },
+  {
+    kind: 'mc', prompt: 'Which counter is used for small animals?',
+    choices: ['つ', '匹', '時', '分'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"The cat is under the chair" — living/animate existence verb:',
+    before: 'ねこはいすの下に', after: '。', answer: 'います', altAnswers: ['imasu'],
+  },
+  {
+    kind: 'mc', prompt: 'What does 右 mean?',
+    choices: ['Left', 'Right', 'In front of', 'Behind'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"Go straight":',
+    before: '', after: '', answer: 'まっすぐ', altAnswers: ['massugu'],
+  },
+  {
+    kind: 'mc', prompt: 'Which word means "to turn"?',
+    choices: ['行きます', '曲がります', 'あります', 'います'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"North":',
+    before: '', after: '', answer: '北', altAnswers: ['kita'],
+  },
+];
+
 // Real lesson content, keyed by LESSON_DATA id, rendered through
 // LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
 // option is selected. Each entry is an array of "pages" the player clicks/
@@ -2359,11 +2414,15 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Words: Places',
       headers: ['Word', 'Romaji', 'Meaning'],
+      // kanji + reading for the four words actually shown as kanji
+      // elsewhere in this shelf (the places-map diagram); the rest were
+      // only ever taught in kana in this lesson, so they stay kana-only
+      // here too rather than introducing an unfamiliar kanji form.
       rows: [
-        { kana: 'がっこう', romaji: 'gakkou', meaning: 'school' },
-        { kana: 'えき', romaji: 'eki', meaning: 'station' },
-        { kana: 'としょかん', romaji: 'toshokan', meaning: 'library' },
-        { kana: 'びょういん', romaji: 'byouin', meaning: 'hospital' },
+        { kana: '学校', reading: 'がっこう', romaji: 'gakkou', meaning: 'school' },
+        { kana: '駅', reading: 'えき', romaji: 'eki', meaning: 'station' },
+        { kana: '図書館', reading: 'としょかん', romaji: 'toshokan', meaning: 'library' },
+        { kana: '病院', reading: 'びょういん', romaji: 'byouin', meaning: 'hospital' },
         { kana: 'レストラン', romaji: 'resutoran', meaning: 'restaurant' },
         { kana: 'こうえん', romaji: 'kouen', meaning: 'park' },
         { kana: 'ほんや', romaji: 'honya', meaning: 'bookstore' },
@@ -2383,27 +2442,27 @@ const LESSON_CONTENT = {
       rows: [
         { kana: 'あります', romaji: 'arimasu', meaning: 'there is (things, places)' },
         { kana: 'います', romaji: 'imasu', meaning: 'there is (people, animals)' },
-        { kana: '前', romaji: 'mae', meaning: 'in front of' },
-        { kana: '後ろ', romaji: 'ushiro', meaning: 'behind' },
-        { kana: '右', romaji: 'migi', meaning: 'right of' },
-        { kana: '左', romaji: 'hidari', meaning: 'left of' },
-        { kana: '隣', romaji: 'tonari', meaning: 'next to' },
-        { kana: '近く', romaji: 'chikaku', meaning: 'near' },
-        { kana: '上', romaji: 'ue', meaning: 'above' },
-        { kana: '下', romaji: 'shita', meaning: 'below' },
-        { kana: '中', romaji: 'naka', meaning: 'inside' },
-        { kana: '外', romaji: 'soto', meaning: 'outside' },
+        { kana: '前', reading: 'まえ', romaji: 'mae', meaning: 'in front of' },
+        { kana: '後ろ', reading: 'うしろ', romaji: 'ushiro', meaning: 'behind' },
+        { kana: '右', reading: 'みぎ', romaji: 'migi', meaning: 'right of' },
+        { kana: '左', reading: 'ひだり', romaji: 'hidari', meaning: 'left of' },
+        { kana: '隣', reading: 'となり', romaji: 'tonari', meaning: 'next to' },
+        { kana: '近く', reading: 'ちかく', romaji: 'chikaku', meaning: 'near' },
+        { kana: '上', reading: 'うえ', romaji: 'ue', meaning: 'above' },
+        { kana: '下', reading: 'した', romaji: 'shita', meaning: 'below' },
+        { kana: '中', reading: 'なか', romaji: 'naka', meaning: 'inside' },
+        { kana: '外', reading: 'そと', romaji: 'soto', meaning: 'outside' },
         { kana: 'まっすぐ', romaji: 'massugu', meaning: 'straight ahead' },
-        { kana: '曲がります', romaji: 'magarimasu', meaning: 'to turn' },
-        { kana: '行きます', romaji: 'ikimasu', meaning: 'to go' },
+        { kana: '曲がります', reading: 'まがります', romaji: 'magarimasu', meaning: 'to turn' },
+        { kana: '行きます', reading: 'いきます', romaji: 'ikimasu', meaning: 'to go' },
         { kana: 'あっち', romaji: 'acchi', meaning: 'that way (casual)' },
         { kana: 'こっち', romaji: 'kocchi', meaning: 'this way (casual)' },
         { kana: 'どっち', romaji: 'docchi', meaning: 'which way (casual)' },
-        { kana: '北', romaji: 'kita', meaning: 'north' },
-        { kana: '南', romaji: 'minami', meaning: 'south' },
-        { kana: '東', romaji: 'higashi', meaning: 'east' },
-        { kana: '西', romaji: 'nishi', meaning: 'west' },
-        { kana: '木', romaji: 'ki', meaning: 'tree' },
+        { kana: '北', reading: 'きた', romaji: 'kita', meaning: 'north' },
+        { kana: '南', reading: 'みなみ', romaji: 'minami', meaning: 'south' },
+        { kana: '東', reading: 'ひがし', romaji: 'higashi', meaning: 'east' },
+        { kana: '西', reading: 'にし', romaji: 'nishi', meaning: 'west' },
+        { kana: '木', reading: 'き', romaji: 'ki', meaning: 'tree' },
       ],
     },
     {
@@ -2573,6 +2632,235 @@ const LESSON_CONTENT = {
       title: 'Foundations Review — Score',
     },
   ],
+  // Everyday Vocabulary Review — same shape as review-1: intro, one
+  // 'summary' recap per shelf reusing that shelf's own vocab tables
+  // verbatim (not re-authored, so they can't drift out of sync with the
+  // real lessons), 2 short grammar-pattern recaps for the trickier
+  // points (か and あります/います), then quiz-review → quiz-answers →
+  // quiz-score off one shared REVIEW_2_QUIZ_QUESTIONS array.
+  'review-2': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Everyday Vocabulary Review',
+      bigIdea: 'Before Nouns & Pronouns, let\'s make sure Demonstratives through Places and Directions actually stuck.',
+      explain: [
+        'This review recaps Demonstratives, Questions (か), Numbers & Counters, and Places and Directions — then closes with a 12-question quiz (multiple choice + fill-in-the-blank). The quiz doesn\'t grade as you go: answer everything first, then the next page shows the answer key so you can self-check, followed by your score.',
+      ],
+      takeaway: 'Skim each recap, then take the quiz at the end — no pressure, you can revisit this pile any time.',
+    },
+    {
+      // Recap 1/6: Demonstratives — the same 16 rows shelf-05's own
+      // "New Words: Demonstratives" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Demonstratives',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'それ', romaji: 'sore', meaning: 'that (near listener)' },
+        { kana: 'あれ', romaji: 'are', meaning: 'that over there' },
+        { kana: 'どれ', romaji: 'dore', meaning: 'which one' },
+        { kana: 'この', romaji: 'kono', meaning: 'this ~ (+noun)' },
+        { kana: 'その', romaji: 'sono', meaning: 'that ~ (+noun)' },
+        { kana: 'あの', romaji: 'ano', meaning: 'that ~ over there (+noun)' },
+        { kana: 'どの', romaji: 'dono', meaning: 'which ~ (+noun)' },
+        { kana: 'ここ', romaji: 'koko', meaning: 'here (near you)' },
+        { kana: 'そこ', romaji: 'soko', meaning: 'there (near listener)' },
+        { kana: 'あそこ', romaji: 'asoko', meaning: 'over there (far from both)' },
+        { kana: 'どこ', romaji: 'doko', meaning: 'where' },
+        { kana: 'こちら', romaji: 'kochira', meaning: 'this (polite) / this way' },
+        { kana: 'そちら', romaji: 'sochira', meaning: 'that (polite) / that way' },
+        { kana: 'あちら', romaji: 'achira', meaning: 'that over there (polite)' },
+        { kana: 'どちら', romaji: 'dochira', meaning: 'which way (polite)' },
+        { kana: 'の', romaji: 'no', meaning: '\'s / mine (possessive)' },
+      ],
+    },
+    {
+      // Recap 2/6: Questions (か) — the same 11 rows shelf-06's own
+      // "New Words: Questions (か)" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Questions (か)',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+        { kana: 'だれ', romaji: 'dare', meaning: 'who' },
+        { kana: 'いつ', romaji: 'itsu', meaning: 'when' },
+        { kana: 'どうして', romaji: 'doushite', meaning: 'why (casual)' },
+        { kana: 'なぜ', romaji: 'naze', meaning: 'why (formal)' },
+        { kana: 'いくつ', romaji: 'ikutsu', meaning: 'how many' },
+        { kana: 'いくら', romaji: 'ikura', meaning: 'how much (price)' },
+        { kana: 'はい', romaji: 'hai', meaning: 'yes' },
+        { kana: 'いいえ', romaji: 'iie', meaning: 'no' },
+        { kana: 'そうです', romaji: 'sou desu', meaning: 'that\'s right' },
+        { kana: 'ちがいます', romaji: 'chigaimasu', meaning: 'that\'s wrong' },
+      ],
+    },
+    {
+      // か's whole job in one line: it goes at the very end and turns a
+      // statement into a question — nothing else about the sentence
+      // changes (no word order shuffle, no verb change), matching
+      // review-1's "A は B です" recap treatment.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: The か Question Marker',
+      pattern: [
+        { text: '[statement]', role: 'subject' }, { text: 'か', role: 'particle' },
+      ],
+      explain: [
+        'か goes at the very end of a sentence and turns it into a question — nothing else about the sentence changes.',
+      ],
+    },
+    {
+      // Recap 3/6: Numbers 1–100 — the same 19 rows shelf-07's own
+      // "New Words: Numbers 1–100" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Numbers 1–100',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'いち', romaji: 'ichi', meaning: '1' },
+        { kana: 'に', romaji: 'ni', meaning: '2' },
+        { kana: 'さん', romaji: 'san', meaning: '3' },
+        { kana: 'よん・し', romaji: 'yon / shi', meaning: '4' },
+        { kana: 'ご', romaji: 'go', meaning: '5' },
+        { kana: 'ろく', romaji: 'roku', meaning: '6' },
+        { kana: 'なな・しち', romaji: 'nana / shichi', meaning: '7' },
+        { kana: 'はち', romaji: 'hachi', meaning: '8' },
+        { kana: 'きゅう・く', romaji: 'kyuu / ku', meaning: '9' },
+        { kana: 'じゅう', romaji: 'juu', meaning: '10' },
+        { kana: 'にじゅう', romaji: 'nijuu', meaning: '20' },
+        { kana: 'さんじゅう', romaji: 'sanjuu', meaning: '30' },
+        { kana: 'よんじゅう', romaji: 'yonjuu', meaning: '40' },
+        { kana: 'ごじゅう', romaji: 'gojuu', meaning: '50' },
+        { kana: 'ろくじゅう', romaji: 'rokujuu', meaning: '60' },
+        { kana: 'ななじゅう', romaji: 'nanajuu', meaning: '70' },
+        { kana: 'はちじゅう', romaji: 'hachijuu', meaning: '80' },
+        { kana: 'きゅうじゅう', romaji: 'kyuujuu', meaning: '90' },
+        { kana: 'ひゃく', romaji: 'hyaku', meaning: '100' },
+      ],
+    },
+    {
+      // Recap 4/6: Counters & Time — the source table (shelf-07's own
+      // "New Words: Counters & Time") is 39 rows; trimmed here to the
+      // 1–10 base forms of つ and 匹 plus a handful of hour/minute
+      // examples, keeping every sound-shift form (ろっぴき, じゅっぴき,
+      // いっぷん/さんぷん/ろっぷん/じゅっぷん) since those are the
+      // actually tricky part — a review pile doesn't need all 39 rows to
+      // jog the same memory.
+      type: 'summary',
+      title: 'Recap: Counters & Time',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'ひとつ', romaji: 'hitotsu', meaning: '1 (general things)' },
+        { kana: 'ふたつ', romaji: 'futatsu', meaning: '2' },
+        { kana: 'みっつ', romaji: 'mittsu', meaning: '3' },
+        { kana: 'よっつ', romaji: 'yottsu', meaning: '4' },
+        { kana: 'いつつ', romaji: 'itsutsu', meaning: '5' },
+        { kana: 'むっつ', romaji: 'muttsu', meaning: '6' },
+        { kana: 'ななつ', romaji: 'nanatsu', meaning: '7' },
+        { kana: 'やっつ', romaji: 'yattsu', meaning: '8' },
+        { kana: 'ここのつ', romaji: 'kokonotsu', meaning: '9' },
+        { kana: 'とお', romaji: 'too', meaning: '10 (general things)' },
+        { kana: 'いっぴき', romaji: 'ippiki', meaning: '1 animal' },
+        { kana: 'にひき', romaji: 'nihiki', meaning: '2 animals' },
+        { kana: 'さんびき', romaji: 'sanbiki', meaning: '3 animals' },
+        { kana: 'よんひき', romaji: 'yonhiki', meaning: '4 animals' },
+        { kana: 'ごひき', romaji: 'gohiki', meaning: '5 animals' },
+        { kana: 'ろっぴき', romaji: 'roppiki', meaning: '6 animals' },
+        { kana: 'ななひき', romaji: 'nanahiki', meaning: '7 animals' },
+        { kana: 'はっぴき', romaji: 'happiki', meaning: '8 animals' },
+        { kana: 'きゅうひき', romaji: 'kyuuhiki', meaning: '9 animals' },
+        { kana: 'じゅっぴき', romaji: 'juppiki', meaning: '10 animals' },
+        { kana: 'よじ', romaji: 'yoji', meaning: '4:00 (irregular — not よんじ)' },
+        { kana: 'くじ', romaji: 'kuji', meaning: '9:00 (irregular — not きゅうじ)' },
+        { kana: 'いっぷん', romaji: 'ippun', meaning: '1 minute' },
+        { kana: 'さんぷん', romaji: 'sanpun', meaning: '3 minutes' },
+        { kana: 'ろっぷん', romaji: 'roppun', meaning: '6 minutes' },
+        { kana: 'じゅっぷん', romaji: 'juppun', meaning: '10 minutes' },
+      ],
+    },
+    {
+      // Recap 5/6: Places — the same 10 rows shelf-08's own "New Words:
+      // Places" summary page uses, verbatim (including the furigana
+      // reading fields added there for the four kanji words).
+      type: 'summary',
+      title: 'Recap: Places',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '学校', reading: 'がっこう', romaji: 'gakkou', meaning: 'school' },
+        { kana: '駅', reading: 'えき', romaji: 'eki', meaning: 'station' },
+        { kana: '図書館', reading: 'としょかん', romaji: 'toshokan', meaning: 'library' },
+        { kana: '病院', reading: 'びょういん', romaji: 'byouin', meaning: 'hospital' },
+        { kana: 'レストラン', romaji: 'resutoran', meaning: 'restaurant' },
+        { kana: 'こうえん', romaji: 'kouen', meaning: 'park' },
+        { kana: 'ほんや', romaji: 'honya', meaning: 'bookstore' },
+        { kana: 'ぎんこう', romaji: 'ginkou', meaning: 'bank' },
+        { kana: 'うち', romaji: 'uchi', meaning: 'home' },
+        { kana: 'はこ', romaji: 'hako', meaning: 'box' },
+      ],
+    },
+    {
+      // Recap 6/6: Directions & Grammar — the same 23 rows shelf-08's own
+      // "New Words: Directions & Grammar" summary page uses, verbatim
+      // (including furigana readings).
+      type: 'summary',
+      title: 'Recap: Directions & Grammar',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'あります', romaji: 'arimasu', meaning: 'there is (things, places)' },
+        { kana: 'います', romaji: 'imasu', meaning: 'there is (people, animals)' },
+        { kana: '前', reading: 'まえ', romaji: 'mae', meaning: 'in front of' },
+        { kana: '後ろ', reading: 'うしろ', romaji: 'ushiro', meaning: 'behind' },
+        { kana: '右', reading: 'みぎ', romaji: 'migi', meaning: 'right of' },
+        { kana: '左', reading: 'ひだり', romaji: 'hidari', meaning: 'left of' },
+        { kana: '隣', reading: 'となり', romaji: 'tonari', meaning: 'next to' },
+        { kana: '近く', reading: 'ちかく', romaji: 'chikaku', meaning: 'near' },
+        { kana: '上', reading: 'うえ', romaji: 'ue', meaning: 'above' },
+        { kana: '下', reading: 'した', romaji: 'shita', meaning: 'below' },
+        { kana: '中', reading: 'なか', romaji: 'naka', meaning: 'inside' },
+        { kana: '外', reading: 'そと', romaji: 'soto', meaning: 'outside' },
+        { kana: 'まっすぐ', romaji: 'massugu', meaning: 'straight ahead' },
+        { kana: '曲がります', reading: 'まがります', romaji: 'magarimasu', meaning: 'to turn' },
+        { kana: '行きます', reading: 'いきます', romaji: 'ikimasu', meaning: 'to go' },
+        { kana: 'あっち', romaji: 'acchi', meaning: 'that way (casual)' },
+        { kana: 'こっち', romaji: 'kocchi', meaning: 'this way (casual)' },
+        { kana: 'どっち', romaji: 'docchi', meaning: 'which way (casual)' },
+        { kana: '北', reading: 'きた', romaji: 'kita', meaning: 'north' },
+        { kana: '南', reading: 'みなみ', romaji: 'minami', meaning: 'south' },
+        { kana: '東', reading: 'ひがし', romaji: 'higashi', meaning: 'east' },
+        { kana: '西', reading: 'にし', romaji: 'nishi', meaning: 'west' },
+        { kana: '木', reading: 'き', romaji: 'ki', meaning: 'tree' },
+      ],
+    },
+    {
+      // います is for things that can move on their own (people,
+      // animals) — あります is for everything else, including plants
+      // (alive, but can't walk away).
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: あります / います',
+      pattern: [
+        { text: '[Thing]', role: 'subject' }, { text: 'は', role: 'particle' },
+        { text: '[Place]', role: 'predicate' }, { text: 'に', role: 'particle' },
+        { text: 'あります・います', role: 'copula' },
+      ],
+      explain: [
+        'います is for things that can move on their own (people, animals) — あります is for everything else, including plants (alive, but can\'t walk away).',
+      ],
+    },
+    {
+      type: 'quiz-review',
+      sectionLabel: 'Everyday Vocabulary Review Quiz',
+      intro: 'Answer each question, then continue to see the answer key. 12 questions across the 4 lessons.',
+      questions: REVIEW_2_QUIZ_QUESTIONS,
+    },
+    {
+      type: 'quiz-answers',
+      sectionLabel: 'Answer Key',
+      questions: REVIEW_2_QUIZ_QUESTIONS,
+    },
+    {
+      // note omitted deliberately — quizScoreMessage in lesson-box.js
+      // auto-picks a retro-cat reaction line from the score percentage.
+      type: 'quiz-score',
+      title: 'Everyday Vocabulary Review — Score',
+    },
+  ],
 };
 
 // Builds the lesson-end recap page (LessonBox type: 'summary') from
@@ -2694,15 +2982,18 @@ function buildQuestionParticleDiagram(playerColorId, senseiColorId) {
 
 // -- shelf-08 interactive direction diagram ---------------------------------
 // "Around the cat" (bird's-eye compass: mae/ushiro/migi/hidari/tonari,
-// plus chikaku as a dashed proximity ring) — all relative to the
-// player's own cat — and a "box & cat" side view for ue/shita (still cat-
-// relative) and naka/soto (a cat isn't a container, so those two get a
-// drawn box as their reference instead). diagramSvg is a function
-// (playerColorId) => string, resolved once by resolveDynamicDiagrams like
-// buildQuestionParticleDiagram/buildDemonstrativesDiagram above.
-// wireDirectionsDiagram has no color dependency, so it's attached
-// directly as page.wireDiagram (see lesson-box.js render()'s hook) rather
-// than going through that resolver.
+// plus chikaku as a dashed proximity ring) — all relative to the player's
+// own cat — and a "table & box" side view for ue/shita (a table has no
+// front/back of its own, so "above/below" can't be mistaken for the cat-
+// facing mae/ushiro) and naka/soto (a cat isn't a container, so those two
+// get a drawn box instead). No cat appears in the side-view panel — every
+// word there anchors to the table or the box, never the cat, so one
+// wasn't needed and previously just read as unexplained. diagramSvg is a
+// function (playerColorId) => string, resolved once by
+// resolveDynamicDiagrams like buildQuestionParticleDiagram/
+// buildDemonstrativesDiagram above. wireDirectionsDiagram has no color
+// dependency, so it's attached directly as page.wireDiagram (see
+// lesson-box.js render()'s hook) rather than going through that resolver.
 function buildDirectionsDiagram(playerColorId) {
   const catPath = TALK_COLOR_PATHS[playerColorId];
   return `
@@ -2726,11 +3017,17 @@ function buildDirectionsDiagram(playerColorId) {
           </div>
         </div>
         <div>
-          <div class="lesson-box__dirdiagram-stage-label">Box &amp; cat (side view)</div>
+          <div class="lesson-box__dirdiagram-stage-label">Table &amp; box (side view)</div>
           <div class="lesson-box__dirdiagram-sideview">
             <div class="lesson-box__dirdiagram-cell"></div>
+            <!-- No cat here — every side-view word (ue/shita on the
+                 table, naka/soto on the box) is anchored to the table or
+                 box, never the cat, so a second cat had no actual
+                 purpose in this panel and just read as confusing. Box
+                 set apart from table (extra margin) since naka/soto are
+                 the last two buttons in the row, after ue/shita. -->
             <div class="lesson-box__dirdiagram-side-row">
-              <div class="lesson-box__dirdiagram-cat" data-anchor="cat-side" style="background-image:url('${catPath}');"></div>
+              <div class="lesson-box__dirdiagram-table" data-anchor="table"></div>
               <div class="lesson-box__dirdiagram-box" data-anchor="box"></div>
             </div>
             <div class="lesson-box__dirdiagram-cell"></div>
@@ -2767,8 +3064,11 @@ const DIRDIAGRAM_OFFSETS = {
   hidari: { anchor: 'cat-compass', dx: -50, dy: 0 },
   tonari: { anchor: 'cat-compass', dx: -48, dy: -48 },
   chikaku: { anchor: 'cat-compass', dx: 34, dy: -34, ring: true },
-  ue: { anchor: 'cat-side', dx: 0, dy: -42 },
-  shita: { anchor: 'cat-side', dx: 0, dy: 42 },
+  // ue/shita point at the table, not the cat — a table has no front/back
+  // of its own, so "above"/"below" reads as a plain vertical position
+  // instead of risking confusion with the cat-relative mae/ushiro.
+  ue: { anchor: 'table', dx: 0, dy: -35 },
+  shita: { anchor: 'table', dx: 0, dy: 35 },
   naka: { anchor: 'box', dx: 0, dy: 0 },
   soto: { anchor: 'box', dx: 46, dy: 0 },
 };
@@ -2780,8 +3080,8 @@ const DIRDIAGRAM_SENTENCES = {
   hidari: { ref: 'ねこの', refGloss: "cat's", word: '左', gloss: 'left of', romaji: 'Hon wa neko no hidari ni arimasu.' },
   tonari: { ref: 'ねこの', refGloss: "cat's", word: '隣', gloss: 'next to', romaji: 'Hon wa neko no tonari ni arimasu.' },
   chikaku: { ref: 'ねこの', refGloss: "cat's", word: '近く', gloss: 'near', romaji: 'Hon wa neko no chikaku ni arimasu.' },
-  ue: { ref: 'ねこの', refGloss: "cat's", word: '上', gloss: 'above', romaji: 'Hon wa neko no ue ni arimasu.' },
-  shita: { ref: 'ねこの', refGloss: "cat's", word: '下', gloss: 'below', romaji: 'Hon wa neko no shita ni arimasu.' },
+  ue: { ref: 'テーブルの', refGloss: "table's", word: '上', gloss: 'above', romaji: 'Hon wa teeburu no ue ni arimasu.' },
+  shita: { ref: 'テーブルの', refGloss: "table's", word: '下', gloss: 'below', romaji: 'Hon wa teeburu no shita ni arimasu.' },
   naka: { ref: 'はこの', refGloss: "box's", word: '中', gloss: 'inside', romaji: 'Hon wa hako no naka ni arimasu.' },
   soto: { ref: 'はこの', refGloss: "box's", word: '外', gloss: 'outside', romaji: 'Hon wa hako no soto ni arimasu.' },
 };
@@ -2791,8 +3091,8 @@ function wireDirectionsDiagram(container) {
   if (!wrap) return;
   const anchors = {
     'cat-compass': wrap.querySelector('[data-anchor="cat-compass"]'),
-    'cat-side': wrap.querySelector('[data-anchor="cat-side"]'),
     box: wrap.querySelector('[data-anchor="box"]'),
+    table: wrap.querySelector('[data-anchor="table"]'),
   };
   const target = wrap.querySelector('[data-target]');
   const near = wrap.querySelector('[data-near]');
@@ -2833,6 +3133,16 @@ function wireDirectionsDiagram(container) {
   select('mae');
 }
 
+// Shared furigana helper — wraps a kanji string with its kana reading as
+// native <ruby>/<rt> (styled in lesson-box.css, scoped to .lesson-box), so
+// every diagram/table that shows a kanji word can add its reading with
+// one call instead of hand-writing the ruby markup each time. Falls back
+// to the bare word when no reading is given (kana-only words like レストラン
+// don't need one).
+function furigana(word, reading) {
+  return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
+}
+
 // -- shelf-08 interactive town-map diagram -----------------------------------
 // Reuses this shelf's own places vocab + direction words together (駅 as a
 // fixed anchor building, 3 others positioned around it) so the "map" pays
@@ -2848,28 +3158,28 @@ function wireDirectionsDiagram(container) {
 // is attached directly as page.wireDiagram (that hook is never resolved
 // early, so no such ordering constraint there).
 const MAPDIAGRAM_PLACES = [
-  { id: 'eki', kana: '駅', gloss: 'station', x: 108, y: 78, icon: '\u{1F686}' },
-  { id: 'toshokan', kana: '図書館', gloss: 'library', x: 16, y: 12, icon: '\u{1F4DA}' },
-  { id: 'gakkou', kana: '学校', gloss: 'school', x: 196, y: 12, icon: '\u{1F3EB}' },
-  { id: 'byouin', kana: '病院', gloss: 'hospital', x: 196, y: 140, icon: '\u{1F3E5}' },
+  { id: 'eki', kana: '駅', reading: 'えき', gloss: 'station', x: 108, y: 78, icon: '\u{1F686}' },
+  { id: 'toshokan', kana: '図書館', reading: 'としょかん', gloss: 'library', x: 16, y: 12, icon: '\u{1F4DA}' },
+  { id: 'gakkou', kana: '学校', reading: 'がっこう', gloss: 'school', x: 196, y: 12, icon: '\u{1F3EB}' },
+  { id: 'byouin', kana: '病院', reading: 'びょういん', gloss: 'hospital', x: 196, y: 140, icon: '\u{1F3E5}' },
 ];
 
 const MAPDIAGRAM_PAIRS = {
-  toshokan: { near: 'eki', word: '近く', gloss: 'near', romaji: 'Toshokan wa eki no chikaku ni arimasu.' },
-  gakkou: { near: 'eki', word: '右', gloss: 'right of', romaji: 'Gakkou wa eki no migi ni arimasu.' },
-  byouin: { near: 'eki', word: '左', gloss: 'left of', romaji: 'Byouin wa eki no hidari ni arimasu.' },
+  toshokan: { near: 'eki', word: '近く', reading: 'ちかく', gloss: 'near', romaji: 'Toshokan wa eki no chikaku ni arimasu.' },
+  gakkou: { near: 'eki', word: '右', reading: 'みぎ', gloss: 'right of', romaji: 'Gakkou wa eki no migi ni arimasu.' },
+  byouin: { near: 'eki', word: '左', reading: 'ひだり', gloss: 'left of', romaji: 'Byouin wa eki no hidari ni arimasu.' },
 };
 
 function buildPlacesMapDiagram() {
   const buildings = MAPDIAGRAM_PLACES.map((p) => `
     <div class="lesson-box__mapdiagram-building${p.id === 'eki' ? ' is-anchor' : ''}" data-building="${p.id}" style="left:${p.x}px; top:${p.y}px;">
       <div>${p.icon}</div>
-      <div class="lesson-box__mapdiagram-building-label">${p.kana}</div>
+      <div class="lesson-box__mapdiagram-building-label">${furigana(p.kana, p.reading)}</div>
     </div>
   `).join('');
   const buttons = Object.keys(MAPDIAGRAM_PAIRS).map((id) => {
     const p = MAPDIAGRAM_PLACES.find((x) => x.id === id);
-    return `<button class="lesson-box__mapdiagram-btn" data-place="${id}">${p.kana} (${p.gloss})</button>`;
+    return `<button class="lesson-box__mapdiagram-btn" data-place="${id}">${furigana(p.kana, p.reading)} (${p.gloss})</button>`;
   }).join('');
   return `
     <div class="lesson-box__mapdiagram">
@@ -2896,10 +3206,10 @@ function wirePlacesMapDiagram(container) {
     const ref = MAPDIAGRAM_PLACES.find((x) => x.id === pair.near);
     sentence.innerHTML = `
       <div class="lesson-box__sentence-row">
-        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-subject">${p.kana}</div><div class="lesson-box__word-tile-gloss">${p.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-subject">${furigana(p.kana, p.reading)}</div><div class="lesson-box__word-tile-gloss">${p.gloss}</div></div>
         <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">は</div><div class="lesson-box__word-tile-gloss">topic marker</div></div>
-        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${ref.kana}の</div><div class="lesson-box__word-tile-gloss">${ref.gloss}'s</div></div>
-        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${pair.word}</div><div class="lesson-box__word-tile-gloss">${pair.gloss}</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${furigana(ref.kana, ref.reading)}の</div><div class="lesson-box__word-tile-gloss">${ref.gloss}'s</div></div>
+        <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-predicate">${furigana(pair.word, pair.reading)}</div><div class="lesson-box__word-tile-gloss">${pair.gloss}</div></div>
         <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-particle">に</div><div class="lesson-box__word-tile-gloss">location marker</div></div>
         <div class="lesson-box__word-tile"><div class="lesson-box__word-tile-text role-copula">あります</div><div class="lesson-box__word-tile-gloss">there is</div></div>
       </div>
@@ -5408,8 +5718,17 @@ const DIRMAP_COLORS = {
   indigo: 0x3d3875,
   indigoLight: 0x6a5fa8,
 };
-const DIRMAP_JP_FONT = '"DotGothic16", sans-serif';
-const DIRMAP_LATIN_FONT = '"Datatype", monospace';
+// Datatype was dropped for this scene — root-caused live: Canvas 2D's
+// ctx.fillText() does not apply font-variation-settings the way DOM
+// layout does, so a variable font's un-varied default instance can
+// render individual glyphs wrong in canvas even though the identical
+// font renders correctly in normal DOM text at any size (confirmed:
+// Datatype's 'm' rendered as a different glyph only via ctx.fillText,
+// reproduced outside Phaser entirely with a bare canvas). VT323 is a
+// static (non-variable) font — already self-hosted for LessonBox — and
+// was verified glyph-correct in canvas before switching to it here.
+const DIRMAP_JP_FONT = '"M PLUS 1 Code", "DotGothic16", sans-serif';
+const DIRMAP_LATIN_FONT = '"VT323", monospace';
 
 // One continuous road, five real junctions, three vocabulary words total
 // (massugu and migi each appear twice). The FIRST leg is massugu, not a
@@ -5612,7 +5931,8 @@ class DirectionMapScene extends Phaser.Scene {
   async ensureDirmapFontsReady() {
     try {
       await Promise.all([
-        document.fonts.load('16px "Datatype"'),
+        document.fonts.load('16px "VT323"'),
+        document.fonts.load('16px "M PLUS 1 Code"'),
         document.fonts.load('16px "DotGothic16"'),
         document.fonts.ready,
       ]);
@@ -5633,7 +5953,7 @@ class DirectionMapScene extends Phaser.Scene {
     DIRMAP_BUILDINGS.forEach((b) => {
       const pos = resolveDirmapPropPosition(b);
       const img = this.add.image(pos.x, pos.y, `dirmap-${b.key}`).setScale(b.scale).setDepth(5);
-      this.addPixelText(pos.x, pos.y + img.displayHeight / 2 + 8, b.label, {
+      this.addPixelText(pos.x, pos.y + img.displayHeight / 2 + 11, b.label, {
         fontFamily: DIRMAP_JP_FONT, fontSize: '13px', color: '#3D3875',
       }).setOrigin(0.5).setDepth(6);
     });
@@ -5712,7 +6032,7 @@ class DirectionMapScene extends Phaser.Scene {
     const start = DIRECTION_ROUTE[0];
     const houseY = start.y + 15;
     const img = this.add.image(start.x, houseY, 'dirmap-house').setScale(0.04).setDepth(5);
-    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 5, '家', {
+    this.addPixelText(start.x, houseY + img.displayHeight / 2 + 9, '家', {
       fontFamily: DIRMAP_JP_FONT, fontSize: '11px', color: '#3D3875',
     }).setOrigin(0.5).setDepth(6);
     this.addPixelText(start.x + img.displayWidth / 2 + 12, houseY, 'START', {
@@ -5731,7 +6051,7 @@ class DirectionMapScene extends Phaser.Scene {
     pin.fillStyle(DIRMAP_COLORS.terracotta, 1);
     pin.fillCircle(goal.x, pinY, 8);
     pin.fillTriangle(goal.x - 6, pinY + 6, goal.x + 6, pinY + 6, goal.x, pinY + 18);
-    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 8, '駅', {
+    this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 11, '駅', {
       fontFamily: DIRMAP_JP_FONT, fontSize: '16px', color: '#3D3875',
     }).setOrigin(0.5).setDepth(9);
     this.addPixelText(goal.x, goal.y + img.displayHeight / 2 + 28, 'GOAL', {

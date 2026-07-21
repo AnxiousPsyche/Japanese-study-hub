@@ -1370,6 +1370,86 @@
         "21750"
       ],
       "port": 21750
+    },
+    {
+      "name": "jp-library-static-debug-font-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21851"
+      ],
+      "port": 21851
+    },
+    {
+      "name": "jp-library-static-debug-font-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "21952"
+      ],
+      "port": 21952
+    },
+    {
+      "name": "jp-library-static-debug-font-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22053"
+      ],
+      "port": 22053
+    },
+    {
+      "name": "jp-library-static-tablediagram-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22154"
+      ],
+      "port": 22154
+    },
+    {
+      "name": "jp-library-static-tablediagram-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22255"
+      ],
+      "port": 22255
+    },
+    {
+      "name": "jp-library-static-tablediagram-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22356"
+      ],
+      "port": 22356
+    },
+    {
+      "name": "jp-library-static-furigana-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22457"
+      ],
+      "port": 22457
+    },
+    {
+      "name": "jp-library-static-review2-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "22558"
+      ],
+      "port": 22558
     }
   ],
   "autoVerify": true

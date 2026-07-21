@@ -593,10 +593,15 @@
       // Lesson-end recap — the caller (n5-phaser-game.js) builds this
       // page from whatever 'greeting'/other pages came before it, so it
       // stays generic here rather than hardcoded to any one lesson.
+      // Rows with a kanji word carry an optional `reading` field — when
+      // present, furigana() (defined in n5-phaser-game.js, safe to call
+      // here since this page only ever loads alongside it) wraps the
+      // word as native <ruby>/<rt> instead of showing bare kanji with no
+      // pronunciation hint.
       const title = page.title ? `<div class="lesson-box__summary-title">${page.title}</div>` : '';
       c.innerHTML = title + renderDataTable(
         page.headers || ['Phrase', 'Romaji', 'Meaning'],
-        page.rows.map((r) => [r.kana, r.romaji, r.meaning]),
+        page.rows.map((r) => [furigana(r.kana, r.reading), r.romaji, r.meaning]),
       );
     } else if (page.type === 'quiz-review') {
       // Mixed multiple-choice + fill-in-the-blank review quiz — unlike
