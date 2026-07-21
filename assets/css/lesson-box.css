@@ -1649,6 +1649,122 @@
   color: var(--jr-text-dim);
 }
 
+/* -- shelf-10 な-adjective attributive vs predicative comparison,
+   static markup authored directly in LESSON_CONTENT (no build/wire
+   function pair — illustrates a structural contrast, not a scene).
+   Two rows, one shared divider between them, generous internal
+   spacing per explicit "concise but easy on the eyes... proper
+   spacing and divider" request. */
+.lesson-box__nacompare {
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-box__nacompare-row {
+  padding: 14px 4px;
+}
+
+.lesson-box__nacompare-divider {
+  border-top: 1px dashed rgba(255, 255, 255, 0.18);
+  margin: 2px 0;
+}
+
+.lesson-box__nacompare-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jr-text-dim);
+  margin-bottom: 8px;
+}
+
+.lesson-box__nacompare-phrase {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.lesson-box__nacompare-phrase .role-predicate { color: var(--lb-role-predicate-bg); }
+.lesson-box__nacompare-phrase .role-particle { color: var(--lb-role-particle-bg); }
+.lesson-box__nacompare-phrase .role-subject { color: var(--lb-role-subject-bg); }
+.lesson-box__nacompare-phrase .role-copula { color: var(--lb-role-copula-bg); }
+
+.lesson-box__nacompare-romaji {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.lesson-box__nacompare-note {
+  font-size: 14px;
+  color: var(--jr-text);
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+/* -- explicit "stem + drop + add = result" formula rows, used wherever
+   a conjugation is best shown as literal arithmetic (adjective ->
+   adverb, い-adjective past tense) rather than the two-box "before ->
+   after" shape .lesson-box__ikunai-diagram uses elsewhere. Multiple
+   rows can stack inside a shared wrapper with dividers between them. */
+.lesson-box__formula-block + .lesson-box__formula-block {
+  border-top: 1px dashed rgba(255, 255, 255, 0.18);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.lesson-box__formula-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.lesson-box__formula-stem {
+  color: var(--jr-text);
+}
+
+.lesson-box__formula-drop {
+  color: var(--lb-role-predicate-bg);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.55;
+}
+
+.lesson-box__formula-op {
+  font-size: 20px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__formula-add {
+  color: #201d54;
+  background: var(--lb-role-particle-bg);
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.lesson-box__formula-result {
+  color: var(--lb-role-subject-bg);
+}
+
+.lesson-box__formula-romaji {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  margin-top: 6px;
+}
+
+.lesson-box__formula-note {
+  font-size: 14px;
+  color: var(--jr-text);
+  line-height: 1.5;
+  max-width: 60ch;
+  margin-top: 4px;
+}
+
 .lesson-box__adjdiagram-btn-list {
   display: flex;
   flex-direction: column;

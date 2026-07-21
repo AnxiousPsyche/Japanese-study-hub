@@ -232,10 +232,12 @@ const LAYOUT = {
 // 17-lesson roster (expanded from Round 2's 15, reconciling with
 // N5_Library_Map_Spec.md): Foundations (8) unchanged, Sentence Builder
 // grows from 4 to 6 lessons (adds "Volitional & Invitations" after
-// "Adverbs and Verbs" and "Past & Negative Tense" after "Conjugations"),
+// "Verbs" and "Past & Negative Tense" after "Conjugations"),
 // Final stretch (3) unchanged in content, renumbered 15-17. Walk-order
 // layout is now 4 upper-left / 4 upper-right / 6 lower-left /
-// 3 lower-right — see buildShelves().
+// 3 lower-right — see buildShelves(). shelf-11 was "Adverbs and Verbs"
+// until its adverb content moved to shelf-10 (Adjectives) — see that
+// shelf's LESSON_CONTENT comments.
 const LESSON_DATA = [
   { id: 'shelf-01', title: 'Basic Greetings' },
   { id: 'shelf-02', title: 'Everyday Expressions' },
@@ -247,7 +249,7 @@ const LESSON_DATA = [
   { id: 'shelf-08', title: 'Places and Directions' },
   { id: 'shelf-09', title: 'Nouns & Pronouns' },
   { id: 'shelf-10', title: 'Adjectives' },
-  { id: 'shelf-11', title: 'Adverbs and Verbs' },
+  { id: 'shelf-11', title: 'Verbs' },
   { id: 'shelf-12', title: 'Volitional & Invitations (〜ましょう・〜ませんか)' },
   { id: 'shelf-13', title: 'Conjugations' },
   { id: 'shelf-14', title: 'Past & Negative Tense' },
@@ -3558,7 +3560,7 @@ const LESSON_CONTENT = {
       takeaway: 'When in doubt, checking whether a word is on a な-adjective vocab list beats guessing from spelling alone.',
     },
     {
-      // Page 8/16: な-adjective affirmative pattern.
+      // Page 8/19: な-adjective affirmative pattern.
       type: 'grammar-intro',
       sectionLabel: `な-adjectives: [Noun]は[な-adj]です`,
       pattern: [
@@ -3566,11 +3568,44 @@ const LESSON_CONTENT = {
         { text: `[な-adjective]`, role: 'predicate' }, { text: 'です', role: 'copula' },
       ],
       explain: [
-        `A な-adjective on its own is just a description with no "is/am/are" built in — it needs です the same way a plain noun does. The な only shows up when the adjective sits directly in front of a noun (${furigana('静かな図書館', 'しずかなとしょかん')}, "a quiet library"), not before です.`,
+        'A な-adjective on its own is just a description with no "is/am/are" built in — it needs です the same way a plain noun does.',
       ],
     },
     {
-      // Page 9/16: な-adjective affirmative samples, introduces 好き/元気.
+      // Page 8.5/19: な-adjectives actually have TWO sentence shapes —
+      // this page exists specifically to keep them from blurring
+      // together, per explicit "explain that there's two sentence
+      // construction" + "put spaces in words and particles so they
+      // won't be confused" request. Static comparison diagram (no
+      // color dependency, no interactivity — a structural contrast,
+      // not a scene), spaced romaji throughout.
+      type: 'grammar-intro',
+      sectionLabel: 'な-adjectives have two sentence shapes',
+      bigIdea: 'The SAME word, 静か, plugs into a sentence two different ways depending on where it sits.',
+      diagramSvg: `
+        <div class="lesson-box__nacompare">
+          <div class="lesson-box__nacompare-row">
+            <div class="lesson-box__nacompare-label">Before a noun (attributive)</div>
+            <div class="lesson-box__nacompare-phrase"><span class="role-predicate">静か</span><span class="role-particle">な</span><span class="role-subject">図書館</span></div>
+            <div class="lesson-box__nacompare-romaji">shizuka na toshokan</div>
+            <div class="lesson-box__nacompare-note">"a quiet library" — な glues the adjective straight onto the noun. No です here.</div>
+          </div>
+          <div class="lesson-box__nacompare-divider"></div>
+          <div class="lesson-box__nacompare-row">
+            <div class="lesson-box__nacompare-label">As the predicate</div>
+            <div class="lesson-box__nacompare-phrase"><span class="role-subject">図書館</span><span class="role-particle">は</span><span class="role-predicate">静か</span><span class="role-copula">です</span></div>
+            <div class="lesson-box__nacompare-romaji">toshokan wa shizuka desu</div>
+            <div class="lesson-box__nacompare-note">"The library is quiet." — です does the "is" job here, and な disappears entirely.</div>
+          </div>
+        </div>
+      `,
+      explain: [
+        'な only ever shows up in the FIRST shape, gluing the adjective onto a noun that follows it. The moment です takes over as the sentence\'s ending, な has no job left to do.',
+      ],
+      takeaway: 'One way to remember it: な belongs to the noun that comes after it, not to です.',
+    },
+    {
+      // Page 9/19: な-adjective affirmative samples, introduces 好き/元気.
       type: 'grammar-intro',
       recapChips: [`${furigana('元気', 'げんき')} (genki, shelf 2)`],
       samples: [
@@ -3636,7 +3671,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 12/16: remaining な-adjectives as a glossary table.
+      // Page 12/19: remaining な-adjectives as a glossary table.
       type: 'grammar-intro',
       sectionLabel: `More な-adjectives`,
       terms: [
@@ -3646,7 +3681,166 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 13/16: drag-and-drop mini-check — い-adjective negation.
+      // Page 13/19: adverbs — moved here from shelf-11 per explicit
+      // request (adverbs pair naturally with adjectives: とても大きい,
+      // あまり高くない). Full 8-word glossary on one page, same
+      // "short and simple, no need to split" reasoning as before.
+      type: 'grammar-intro',
+      sectionLabel: 'Adverbs: how much, how often',
+      bigIdea: 'An adverb sits right before the word it\'s describing — usually an adjective or a verb.',
+      terms: [
+        { role: 'predicate', name: 'よく (yoku)', desc: 'often / well' },
+        { role: 'predicate', name: 'いつも (itsumo)', desc: 'always' },
+        { role: 'predicate', name: 'ときどき (tokidoki)', desc: 'sometimes' },
+        { role: 'predicate', name: 'あまり (amari)', desc: 'not much (pairs with a negative)' },
+        { role: 'predicate', name: 'すぐに (sugu ni)', desc: 'right away' },
+        { role: 'predicate', name: 'まだ (mada)', desc: 'still / not yet' },
+        { role: 'predicate', name: 'もう (mou)', desc: 'already' },
+        { role: 'predicate', name: 'とても (totemo)', desc: 'very' },
+      ],
+    },
+    {
+      // Page 14/19: adverb samples, paired with adjectives already
+      // taught this shelf.
+      type: 'grammar-intro',
+      samples: [
+        {
+          tag: '"This book is very big."',
+          tiles: [
+            { text: 'この本', role: 'subject', gloss: 'this book' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'とても', role: 'predicate', gloss: 'very' },
+            { text: '大きい', role: 'predicate', gloss: 'big' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kono hon wa totemo ookii desu.',
+        },
+        {
+          tag: '"This clock isn\'t very expensive."',
+          tiles: [
+            { text: 'この時計', role: 'subject', gloss: 'this clock' },
+            { text: 'は', role: 'particle', gloss: 'topic marker' },
+            { text: 'あまり', role: 'predicate', gloss: 'not much' },
+            { text: '高くない', role: 'predicate', gloss: 'not expensive' },
+            { text: 'です', role: 'copula', gloss: 'to be' },
+          ],
+          translation: 'Kono tokei wa amari takakunai desu.',
+        },
+      ],
+    },
+    {
+      // Page 14.5/19: adjectives can turn INTO adverbs too — a
+      // different thing from the 8 standalone adverbs just taught.
+      // Written as explicit stem + drop + add = result formulas per
+      // explicit "make a formula some kind of" request, including the
+      // よい irregular spelled out the same way (yoi -> yo(i) + ku =
+      // yoku) instead of just described in prose.
+      type: 'grammar-intro',
+      sectionLabel: 'Bonus: adjectives can BECOME adverbs',
+      bigIdea: 'Beyond the 8 standalone adverbs above, い- and な-adjectives can turn into adverbs themselves — each family has its own one-step formula.',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">大き</span><span class="lesson-box__formula-drop">い</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">く</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">大きく</span>
+          </div>
+          <div class="lesson-box__formula-romaji">ookii &#8594; ooki(i) + ku = ookiku</div>
+          <div class="lesson-box__formula-note">Regular い-adjective &#8594; adverb: drop い, add く. "big" &#8594; "greatly / in a big way".</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">よ</span><span class="lesson-box__formula-drop">い</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">く</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">よく</span>
+          </div>
+          <div class="lesson-box__formula-romaji">yoi &#8594; yo(i) + ku = yoku</div>
+          <div class="lesson-box__formula-note">The irregular one: ${furigana('良い', 'いい')} conjugates from its old root よい (yoi), never from いい — same root the negation よくないです already used.</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">静か</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">に</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">静かに</span>
+          </div>
+          <div class="lesson-box__formula-romaji">shizuka + ni = shizuka ni</div>
+          <div class="lesson-box__formula-note">な-adjective &#8594; adverb: nothing to drop, just add に. "quiet" &#8594; "quietly".</div>
+        </div>
+      `,
+    },
+    {
+      // Page 14.6/19: い-adjectives have their own PAST tense, built the
+      // same drop-い-add-X way as everything else on this shelf — です/
+      // くない only ever covered the present. Same formula-block style
+      // as the adverb-formation page above, extended to a 4-cell grid
+      // (present/past x affirmative/negative) so the full picture is in
+      // one place.
+      type: 'grammar-intro',
+      sectionLabel: 'い-adjectives have their own past tense',
+      recapChips: [`${furigana('大きい', 'おおきい')}です, ${furigana('大きくない', 'おおきくない')}です (present, this shelf)`],
+      bigIdea: 'Two more formulas complete the set: い-adjectives build their OWN past tense, never です/でした.',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">大き</span><span class="lesson-box__formula-drop">い</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">かった</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">大きかった</span>
+          </div>
+          <div class="lesson-box__formula-romaji">ookii &#8594; ooki(i) + katta = ookikatta (+ desu)</div>
+          <div class="lesson-box__formula-note">Past affirmative: drop い, add かった. ${furigana('大きかったです', 'おおきかったです')} — "it was big."</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">大き</span><span class="lesson-box__formula-drop">い</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">くなかった</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">大きくなかった</span>
+          </div>
+          <div class="lesson-box__formula-romaji">ookii &#8594; ooki(i) + kunakatta = ookikunakatta (+ desu)</div>
+          <div class="lesson-box__formula-note">Past negative: drop い, add くなかった. ${furigana('大きくなかったです', 'おおきくなかったです')} — "it was not big."</div>
+        </div>
+      `,
+      explain: [
+        `です/でした never attach directly to an い-adjective the way they do to a な-adjective or noun — the tense always lives INSIDE the い-adjective itself. です just adds politeness on top, same as it always has.`,
+      ],
+    },
+    {
+      // Page 14.7/19: the full な-adjective/noun copula family — です
+      // handles present, but past and the more formal negatives need
+      // their own words. Reference table (type: 'conjugation', same
+      // [Form, Romaji, Label] renderer shelf-13's て-form table used —
+      // these are whole separate words, not a stem+suffix formula, so a
+      // plain table fits better than another formula-block).
+      type: 'grammar-intro',
+      sectionLabel: 'な-adjectives (and nouns) have a 4-way copula family',
+      recapChips: ['では・じゃ (shelf 2 - じゃ is the casual contraction of では)'],
+      bigIdea: 'Unlike い-adjectives, な-adjectives and nouns lean entirely on です/でした/じゃ for tense and negation.',
+      explain: [
+        `You already know 静かです and 静かじゃないです — じゃありません is the same negative, just more neutral/formal than じゃないです (both correct, じゃないです leans slightly casual). でした and じゃありませんでした fill in the two past forms.`,
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: '静かです', romaji: 'shizuka desu', label: 'is quiet (present)' },
+        { kana: '静かじゃないです', romaji: 'shizuka ja nai desu', label: 'is not quiet (present, casual)' },
+        { kana: '静かじゃありません', romaji: 'shizuka ja arimasen', label: 'is not quiet (present, neutral)' },
+        { kana: '静かでした', romaji: 'shizuka deshita', label: 'was quiet (past)' },
+        { kana: '静かじゃなかったです', romaji: 'shizuka ja nakatta desu', label: 'was not quiet (past, casual)' },
+        { kana: '静かじゃありませんでした', romaji: 'shizuka ja arimasen deshita', label: 'was not quiet (past, neutral)' },
+      ],
+    },
+    {
+      // Page 15/19: drag-and-drop mini-check — い-adjective negation.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "the desk is not old":',
@@ -3655,7 +3849,7 @@ const LESSON_CONTENT = {
       answer: '古くない',
     },
     {
-      // Page 14/16: drag-and-drop mini-check — な-adjective negation.
+      // Page 16/19: drag-and-drop mini-check — な-adjective negation.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "this is not convenient":',
@@ -3664,8 +3858,17 @@ const LESSON_CONTENT = {
       answer: '便利じゃないです',
     },
     {
+      // Page 17/19: drag-and-drop mini-check — adverb + adjective recall.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "this book is very big":',
+      before: 'この本は', after: '大きいです。',
+      choices: ['とても', 'あまり', 'もう'],
+      answer: 'とても',
+    },
+    {
       type: 'summary',
-      title: 'New Words: Adjectives',
+      title: 'New Words: Adjectives & Adverbs',
       rows: [
         { kana: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
         { kana: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'small' },
@@ -3686,6 +3889,14 @@ const LESSON_CONTENT = {
         { kana: 'きれい', romaji: 'kirei', meaning: 'pretty / clean' },
         { kana: 'きらい', romaji: 'kirai', meaning: 'dislike / hate' },
         { kana: '大変', reading: 'たいへん', romaji: 'taihen', meaning: 'tough / serious' },
+        { kana: 'よく', romaji: 'yoku', meaning: 'often / well' },
+        { kana: 'いつも', romaji: 'itsumo', meaning: 'always' },
+        { kana: 'ときどき', romaji: 'tokidoki', meaning: 'sometimes' },
+        { kana: 'あまり', romaji: 'amari', meaning: 'not much (+ negative)' },
+        { kana: 'すぐに', romaji: 'sugu ni', meaning: 'right away' },
+        { kana: 'まだ', romaji: 'mada', meaning: 'still / not yet' },
+        { kana: 'もう', romaji: 'mou', meaning: 'already' },
+        { kana: 'とても', romaji: 'totemo', meaning: 'very' },
       ],
     },
     {
@@ -3700,12 +3911,15 @@ const LESSON_CONTENT = {
         { before: 'これは', after: '。', answer: '便利じゃないです', hint: '"This is not convenient."' },
         { before: 'この時計は', after: 'です。', answer: '高い', altAnswers: ['たかい'], hint: '"This clock is expensive."' },
         { before: '図書館は', after: '。', answer: 'きれいじゃないです', hint: '"The library is not clean." (きれい looks like an い-adjective, but it isn\'t)' },
+        { before: 'この本は', after: '大きいです。', answer: 'とても', hint: '"This book is very big."' },
+        { before: '本は', after: '。', answer: '大きかったです', hint: '"The book was big." (past)' },
+        { before: '図書館は', after: '。', answer: '静かでした', hint: '"The library was quiet." (past)' },
       ],
     },
   ],
   'shelf-11': [
     {
-      // Page 1/14: intro — verbs finally let sentences do something,
+      // Page 1/12: intro — verbs finally let sentences do something,
       // and which "group" a verb belongs to decides how it conjugates.
       type: 'grammar-intro',
       sectionLabel: 'Verbs have groups',
@@ -3715,7 +3929,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 2/14: ichidan rule + samples (起きる, 食べる) — drop る, add ます.
+      // Page 2/12: ichidan rule + samples (起きる, 食べる) — drop る, add ます.
       type: 'grammar-intro',
       sectionLabel: 'Group 1: ichidan (る-verbs)',
       pattern: [
@@ -3746,7 +3960,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 3/14: godan rule + samples (行く with に, 話す with と) —
+      // Page 3/12: godan rule + samples (行く with に, 話す with と) —
       // reuses already-taught particles rather than introducing new ones.
       type: 'grammar-intro',
       sectionLabel: 'Group 2: godan (everything else)',
@@ -3782,7 +3996,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 4/14: the 帰る gotcha — mirrors shelf-10's "looks like X but
+      // Page 4/12: the 帰る gotcha — mirrors shelf-10's "looks like X but
       // isn't" exception page. 帰る ends in える, which normally signals
       // ichidan (like 食べる/起きる above), but it's actually godan.
       type: 'grammar-intro',
@@ -3794,7 +4008,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 5/14: する-verbs — simplest group, covers every する-compound
+      // Page 5/12: する-verbs — simplest group, covers every する-compound
       // verb from the reference list (勉強する, 電話する, 掃除する, etc.)
       // via one rule instead of listing them all individually.
       type: 'grammar-intro',
@@ -3818,7 +4032,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 6/14: を, the object marker — a genuinely new particle,
+      // Page 6/12: を, the object marker — a genuinely new particle,
       // introduced here because it's the natural next thing a verb
       // sentence needs (previous shelves only ever needed は/の/に/と/か).
       type: 'grammar-intro',
@@ -3851,64 +4065,20 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 7/14: adverbs — where they sit (before the verb), full
-      // 8-word glossary on one page since they're short and simple.
-      type: 'grammar-intro',
-      sectionLabel: 'Adverbs: describing the verb',
-      bigIdea: 'An adverb sits right before the verb it\'s describing, same spot every time.',
-      terms: [
-        { role: 'predicate', name: 'よく (yoku)', desc: 'often / well' },
-        { role: 'predicate', name: 'いつも (itsumo)', desc: 'always' },
-        { role: 'predicate', name: 'ときどき (tokidoki)', desc: 'sometimes' },
-        { role: 'predicate', name: 'あまり (amari)', desc: 'not much (pairs with a negative verb)' },
-        { role: 'predicate', name: 'すぐに (sugu ni)', desc: 'right away' },
-        { role: 'predicate', name: 'まだ (mada)', desc: 'still / not yet' },
-        { role: 'predicate', name: 'もう (mou)', desc: 'already' },
-        { role: 'predicate', name: 'とても (totemo)', desc: 'very' },
-      ],
-    },
-    {
-      // Page 8/14: adverb samples, reusing 静か from shelf-10.
-      type: 'grammar-intro',
-      recapChips: [`${furigana('静か', 'しずか')} (shizuka, shelf 10)`],
-      samples: [
-        {
-          tag: '"I often read books."',
-          tiles: [
-            { text: '私', role: 'subject', gloss: 'I' },
-            { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'よく', role: 'predicate', gloss: 'often' },
-            { text: '本', role: 'subject', gloss: 'book' },
-            { text: 'を', role: 'particle', gloss: 'object marker' },
-            { text: '読みます', role: 'copula', gloss: 'read (polite)' },
-          ],
-          translation: 'Watashi wa yoku hon wo yomimasu.',
-        },
-        {
-          tag: '"The library is always quiet."',
-          tiles: [
-            { text: '図書館', role: 'subject', gloss: 'library' },
-            { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'いつも', role: 'predicate', gloss: 'always' },
-            { text: '静か', role: 'predicate', gloss: 'quiet' },
-            { text: 'です', role: 'copula', gloss: 'to be' },
-          ],
-          translation: 'Toshokan wa itsumo shizuka desu.',
-        },
-      ],
-    },
-    {
-      // Page 9/14: interactive diagram — click a verb, watch its
+      // Page 7/12: interactive diagram — click a verb, watch its
       // dictionary form -> ます-form word-formation panel rebuild. See
       // buildVerbMasuDiagram/wireVerbMasuDiagram in this file. All 5
       // verbs were already introduced above, one per group.
+      // (Adverbs used to live on this shelf as their own two pages —
+      // moved to shelf-10 per explicit request, since they pair more
+      // naturally with adjectives (とても大きい) than with verbs alone.)
       type: 'grammar-intro',
       diagramSvg: buildVerbMasuDiagram,
       wireDiagram: wireVerbMasuDiagram,
       diagramCaption: 'Click a verb — the ます-form rebuilds, and the sentence below updates.',
     },
     {
-      // Page 10/14: remaining verbs as a glossary table (10 more,
+      // Page 8/12: remaining verbs as a glossary table (10 more,
       // beyond the 8 already introduced via pattern/diagram pages).
       type: 'grammar-intro',
       sectionLabel: 'More verbs',
@@ -3926,7 +4096,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 11/14: samples using 2 more remaining verbs, still only
+      // Page 9/12: samples using 2 more remaining verbs, still only
       // taught particles (と, の already established).
       type: 'grammar-intro',
       samples: [
@@ -3951,7 +4121,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 12/14: drag-and-drop mini-check — verb group recall.
+      // Page 10/12: drag-and-drop mini-check — verb group recall.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I go to school" (school = 学校):',
@@ -3960,7 +4130,7 @@ const LESSON_CONTENT = {
       answer: '行きます',
     },
     {
-      // Page 13/14: drag-and-drop mini-check — を particle recall.
+      // Page 11/12: drag-and-drop mini-check — を particle recall.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I read a book":',
@@ -3970,7 +4140,7 @@ const LESSON_CONTENT = {
     },
     {
       type: 'summary',
-      title: 'New Words: Adverbs & Verbs',
+      title: 'New Words: Verbs',
       rows: [
         { kana: '起きる', reading: 'おきる', romaji: 'okiru', meaning: 'to wake up' },
         { kana: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat' },
@@ -3990,14 +4160,6 @@ const LESSON_CONTENT = {
         { kana: '遊ぶ', reading: 'あそぶ', romaji: 'asobu', meaning: 'to play' },
         { kana: '分かる', reading: 'わかる', romaji: 'wakaru', meaning: 'to understand' },
         { kana: '歌う', reading: 'うたう', romaji: 'utau', meaning: 'to sing' },
-        { kana: 'よく', romaji: 'yoku', meaning: 'often / well' },
-        { kana: 'いつも', romaji: 'itsumo', meaning: 'always' },
-        { kana: 'ときどき', romaji: 'tokidoki', meaning: 'sometimes' },
-        { kana: 'あまり', romaji: 'amari', meaning: 'not much (+ negative)' },
-        { kana: 'すぐに', romaji: 'sugu ni', meaning: 'right away' },
-        { kana: 'まだ', romaji: 'mada', meaning: 'still / not yet' },
-        { kana: 'もう', romaji: 'mou', meaning: 'already' },
-        { kana: 'とても', romaji: 'totemo', meaning: 'very' },
       ],
     },
     {
@@ -4008,9 +4170,9 @@ const LESSON_CONTENT = {
         { before: '私は', after: '。', answer: '起きます', hint: '"I wake up."' },
         { before: '私は学校に', after: '。', answer: '行きます', hint: '"I go to school."' },
         { before: 'かばん', after: '買います。', answer: 'を', hint: '"I buy a bag." (object marker)' },
-        { before: '私は', after: '本を読みます。', answer: 'よく', hint: '"I often read books."' },
-        { before: '図書館は', after: '静かです。', answer: 'いつも', hint: '"The library is always quiet."' },
+        { before: '私は本を', after: '。', answer: '読みます', hint: '"I read a book."' },
         { before: '私は先生と', after: '。', answer: '話します', hint: '"I speak with the teacher."' },
+        { before: '友達に', after: '。', answer: '会います', hint: '"I meet a friend."' },
       ],
     },
   ],
@@ -7324,20 +7486,38 @@ class LibraryScene extends Phaser.Scene {
     const cx = cam.width / 2;
     const cy = cam.height / 2;
     const hasSubtitle = !!subtitle;
-    const boxHeight = (hasSubtitle ? 96 : 76) + options.length * 32;
+    const boxWidth = 300;
+
+    // Longer shelf titles (e.g. "Volitional & Invitations (〜ましょう・
+    // 〜ませんか)") overflowed this fixed-width box under the old flat
+    // single-line-height assumption, clipping past both edges. Word-wrap
+    // the title and measure its ACTUAL rendered height so the box,
+    // subtitle, and options all shift down to make room instead.
+    // "Press Start 2P" has no Japanese glyphs at all, so any 〜ましょう/
+    // 〜ませんか-style text in a title fell back to the canvas's generic
+    // default font — visibly different weight/style from the pixel
+    // English text right next to it. DotGothic16 (already used as the
+    // project's standard Japanese canvas-text fallback elsewhere) fills
+    // in those glyphs only; the Latin text is unaffected since Press
+    // Start 2P still wins for every character it actually has.
+    const titleText = this.add.text(0, 0, title, {
+      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '12px', color: '#F0C674',
+      align: 'center', wordWrap: { width: boxWidth - 40, useAdvancedWrap: true },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001);
+    const titleExtra = Math.max(0, titleText.height - 16);
+
+    const boxHeight = (hasSubtitle ? 96 : 76) + titleExtra + options.length * 32;
     const boxTop = cy - boxHeight / 2;
 
-    const bg = this.add.rectangle(cx, cy, 300, boxHeight, 0x1a1410)
+    const bg = this.add.rectangle(cx, cy, boxWidth, boxHeight, 0x1a1410)
       .setStrokeStyle(3, 0x8a6a3a).setScrollFactor(0).setDepth(2000);
-    const titleText = this.add.text(cx, boxTop + 26, title, {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#F0C674',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001);
-    const subtitleText = hasSubtitle ? this.add.text(cx, boxTop + 46, subtitle, {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#8a7a5a',
+    titleText.setPosition(cx, boxTop + 26 + titleExtra / 2);
+    const subtitleText = hasSubtitle ? this.add.text(cx, boxTop + 46 + titleExtra, subtitle, {
+      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '8px', color: '#8a7a5a',
     }).setOrigin(0.5).setScrollFactor(0).setDepth(2001) : null;
-    const optionsStartY = boxTop + (hasSubtitle ? 78 : 58);
+    const optionsStartY = boxTop + (hasSubtitle ? 78 : 58) + titleExtra;
     const optionTexts = options.map((opt, i) => this.add.text(cx - 118, optionsStartY + i * 32, '', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#B08D57',
+      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '10px', color: '#B08D57',
     }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(2001)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.highlightRetroMenu(i))

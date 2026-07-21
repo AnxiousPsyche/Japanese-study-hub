@@ -1580,6 +1580,46 @@
         "23891"
       ],
       "port": 23891
+    },
+    {
+      "name": "jp-library-static-restructure-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "23992"
+      ],
+      "port": 23992
+    },
+    {
+      "name": "jp-library-static-fontfix-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24093"
+      ],
+      "port": 24093
+    },
+    {
+      "name": "jp-library-static-formulas-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24194"
+      ],
+      "port": 24194
+    },
+    {
+      "name": "jp-library-static-formulas-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24295"
+      ],
+      "port": 24295
     }
   ],
   "autoVerify": true
