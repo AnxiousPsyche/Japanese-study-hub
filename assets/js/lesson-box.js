@@ -113,6 +113,7 @@
             <div class="lesson-box__speaker"></div>
             <div class="lesson-box__content"></div>
             <div class="lesson-box__continue">&#9660;</div>
+            <div class="lesson-box__print-link" hidden></div>
           </div>
         </div>
       </div>
@@ -126,7 +127,14 @@
       speaker: root.querySelector('.lesson-box__speaker'),
       content: root.querySelector('.lesson-box__content'),
       continue: root.querySelector('.lesson-box__continue'),
+      printLink: root.querySelector('.lesson-box__print-link'),
     };
+    // Bottom-left "print the full list" affordance — stops a click on it
+    // from bubbling to els.box's click-to-advance listener (same
+    // suppressNextBoxClick-adjacent reasoning as every other interactive
+    // element inside the box), since a tap here should open a PDF, not
+    // also flip the page underneath it.
+    els.printLink.addEventListener('click', (e) => e.stopPropagation());
     els.box.addEventListener('click', () => {
       if (suppressNextBoxClick) {
         suppressNextBoxClick = false;
@@ -929,6 +937,21 @@
       // last selected, not the first attempt).
       quizReviewAnswers: {},
     };
+    // Optional "print the full list" links (e.g. shelf-09's Nouns &
+    // Pronouns PDFs, curated in-game to a digestible subset but with
+    // the complete reference vocab list available on request) — lives
+    // for the whole lesson-open session, same as printLinks scope,
+    // not per-page. options.printLinks: [{ label, href }, ...].
+    const printLinks = (options && options.printLinks) || [];
+    if (printLinks.length) {
+      els.printLink.innerHTML = `<span class="lesson-box__print-icon">&#128424;</span> Print full list: ${
+        printLinks.map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join(' &middot; ')
+      }`;
+      els.printLink.hidden = false;
+    } else {
+      els.printLink.hidden = true;
+      els.printLink.innerHTML = '';
+    }
     root.hidden = false;
     render();
     // CRT power-on pop-in, once per lesson open (not on every page

@@ -125,6 +125,14 @@ const ASSET_RECTS = {
   // just below the couch in the sheet — showing as a stray dark line
   // under the couch once rendered in-game.
   sofaCouch2: { x: 24, y: 167, w: 56, h: 25 },
+  // furniture03.png — TV cabinet (antenna, purple screen, 3-slot drawer
+  // below), per the user's reference screenshot. Isolated with a manual
+  // grid-scan crop rather than pure alpha-flood: the plant shelf directly
+  // to its left touches it with zero transparent gap, so a flood fill
+  // seeded inside the screen merges the two into one region — the flood
+  // result was used only to find the item, then trimmed by eye against a
+  // 2px reference grid to the TV unit's own tight bounds.
+  tvCabinet: { x: 195, y: 43, w: 28, h: 40 },
 };
 
 // Round 2 feedback item 1 (Option A — extend the map). World is much
@@ -145,7 +153,10 @@ const GRID_COLS = 56;
 // widen enough to fit a FULL-SIZE (110px, matching every other header)
 // wall below shelves 1/2/5/6, instead of the undersized 30px one that
 // only fit because decorRow3Gap was still at its old value.
-const GRID_ROWS = 161;
+// Was 161 — shrunk by 12 tiles (~1 shelf row) to close the gap left by
+// removing shelf-17's solo row (see zone1RowY below), keeping the same
+// margin between spawn and the bottom border as before.
+const GRID_ROWS = 149;
 const TILE_SIZE = 16;
 const WORLD_W = GRID_COLS * TILE_SIZE;
 const WORLD_H = GRID_ROWS * TILE_SIZE;
@@ -195,8 +206,10 @@ const receptionGap = 40 * SHELF_SCALE;
 const spawnGap = 180 * SHELF_SCALE;
 
 const zone1Row0 = 560; // unchanged anchor — same distance below the top wall band as before scaling
-const zone1RowY = [zone1Row0, zone1Row0 + shelfRowGap, zone1Row0 + shelfRowGap * 2];
-const zone2Row0 = zone1RowY[2] + zoneTransitionGap;
+// 2 rows only (was 3) — shelf-17's solo row is gone, so zone 1 now holds
+// exactly 8 shelves (9-16) across 2 full rows, same shape as zone 2.
+const zone1RowY = [zone1Row0, zone1Row0 + shelfRowGap];
+const zone2Row0 = zone1RowY[1] + zoneTransitionGap;
 const zone2RowY = [zone2Row0, zone2Row0 + zone2RowGap];
 const decorRow3Y = zone2RowY[1] + decorRow3Gap;
 const carpetGlobeY = decorRow3Y + carpetGlobeGap;
@@ -220,7 +233,7 @@ const LAYOUT = {
     WORLD_W - 64 - shelfW * 2 - shelfPairGap,
     WORLD_W - 64 - shelfW,
   ],
-  zone1RowY, // shelves 9-17 (nearest stairs -> nearest zone 2)
+  zone1RowY, // shelves 9-16 (nearest stairs -> nearest zone 2)
   zone2RowY, // shelves 1-8 (nearest zone 1 -> nearest spawn)
   decorRow3Y, // P / T&C / P — pure decor, nearest the carpet/globe
   carpetGlobeY, // red carpet / globe / red carpet
@@ -255,7 +268,11 @@ const LESSON_DATA = [
   { id: 'shelf-14', title: 'Past & Negative Tense' },
   { id: 'shelf-15', title: 'Sentence Construction' },
   { id: 'shelf-16', title: 'Particle Mastery' },
-  { id: 'shelf-17', title: 'Existence (あります・います)' },
+  // shelf-17 ("Existence Recap") removed entirely per explicit request —
+  // あります/います already got a full treatment in shelf-08, and the
+  // recap-only shelf wasn't earning its physical slot. Zone 1 is back to
+  // a clean 16-shelf, 2-row layout (see zone1RowY) instead of the old
+  // 3rd "solo row" this shelf used to occupy nearest the staircase.
 ];
 
 // review-1's quiz questions ("Foundations Review", gates shelf-05) — a
@@ -360,6 +377,61 @@ const REVIEW_2_QUIZ_QUESTIONS = [
   {
     kind: 'fill', prompt: '"North":',
     before: '', after: '', answer: '北', altAnswers: ['kita'],
+  },
+];
+
+// Same pattern as REVIEW_1_QUIZ_QUESTIONS/REVIEW_2_QUIZ_QUESTIONS above —
+// one shared array referenced by both review-3's 'quiz-review' and
+// 'quiz-answers' pages so they can't drift out of sync. ~3 questions per
+// shelf-09..12, in shelf order.
+const REVIEW_3_QUIZ_QUESTIONS = [
+  {
+    kind: 'mc', prompt: 'What does あなた mean?',
+    choices: ['you', 'he / him', 'we / us', 'everyone'], correctIndex: 0,
+  },
+  {
+    kind: 'fill', prompt: '"This kind of book":',
+    before: '', after: '本', answer: 'こんな', altAnswers: ['konna'],
+  },
+  {
+    kind: 'mc', prompt: 'What does 彼女 mean?',
+    choices: ['friend', 'family', 'she / her', 'child'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: '"The library is quiet.":',
+    before: '図書館は', after: 'です。', answer: '静か', altAnswers: ['しずか', 'shizuka'],
+  },
+  {
+    kind: 'mc', prompt: 'Which is the correct negative of 大きい ("not big")?',
+    choices: ['大きいじゃない', '大きくない', '大きいない', '大きかった'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"This book is very big.":',
+    before: 'この本は', after: '大きいです。', answer: 'とても', altAnswers: ['totemo'],
+  },
+  {
+    kind: 'mc', prompt: 'What does 起きる mean?',
+    choices: ['to eat', 'to wake up', 'to go home', 'to study'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"I go to school.":',
+    before: '私は学校に', after: '。', answer: '行きます', altAnswers: ['ikimasu'],
+  },
+  {
+    kind: 'mc', prompt: 'Which particle marks the object in 本を買います ("I buy a book")?',
+    choices: ['は', 'を', 'に', 'で'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"Let\'s go to the library.":',
+    before: '図書館に', after: '。', answer: '行きましょう', altAnswers: ['ikimashou'],
+  },
+  {
+    kind: 'mc', prompt: 'What does 〜ませんか politely ask?',
+    choices: ['"Let\'s...!"', '"I already did..."', '"Won\'t you...?"', '"Shall I...?"'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: '"Won\'t you eat together?":',
+    before: '一緒に', after: '。', answer: '食べませんか', altAnswers: ['tabemasenka'],
   },
 ];
 
@@ -2998,6 +3070,180 @@ const LESSON_CONTENT = {
       title: 'Everyday Vocabulary Review — Score',
     },
   ],
+  // Core Grammar Review — same shape as review-1/review-2: intro, one
+  // 'summary' recap per shelf reusing that shelf's own vocab tables
+  // verbatim, 2 short grammar-pattern recaps for the trickier points (い-
+  // adjective negation, ましょう/ませんか), then quiz-review → quiz-
+  // answers → quiz-score off one shared REVIEW_3_QUIZ_QUESTIONS array.
+  'review-3': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Core Grammar Review',
+      bigIdea: 'Before Conjugations, let\'s make sure Nouns & Pronouns through Volitional & Invitations actually stuck.',
+      explain: [
+        'This review recaps Nouns & Pronouns, Adjectives, Verbs, and Volitional & Invitations — then closes with a 12-question quiz (multiple choice + fill-in-the-blank). The quiz doesn\'t grade as you go: answer everything first, then the next page shows the answer key so you can self-check, followed by your score.',
+      ],
+      takeaway: 'Skim each recap, then take the quiz at the end — no pressure, you can revisit this pile any time.',
+    },
+    {
+      // Recap 1/4: Nouns & Pronouns — the same 22 rows shelf-09's own
+      // "New Words: Nouns & Pronouns" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Nouns & Pronouns',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'あなた', romaji: 'anata', meaning: 'you' },
+        { kana: '彼', reading: 'かれ', romaji: 'kare', meaning: 'he / him' },
+        { kana: '彼女', reading: 'かのじょ', romaji: 'kanojo', meaning: 'she / her' },
+        { kana: '私たち', reading: 'わたしたち', romaji: 'watashi-tachi', meaning: 'we / us' },
+        { kana: 'みなさん', romaji: 'mina-san', meaning: 'everyone' },
+        { kana: '人', reading: 'ひと', romaji: 'hito', meaning: 'person' },
+        { kana: '子供', reading: 'こども', romaji: 'kodomo', meaning: 'child' },
+        { kana: '友達', reading: 'ともだち', romaji: 'tomodachi', meaning: 'friend' },
+        { kana: '家族', reading: 'かぞく', romaji: 'kazoku', meaning: 'family' },
+        { kana: '本', reading: 'ほん', romaji: 'hon', meaning: 'book' },
+        { kana: 'かばん', romaji: 'kaban', meaning: 'bag' },
+        { kana: '時計', reading: 'とけい', romaji: 'tokei', meaning: 'clock / watch' },
+        { kana: '僕', reading: 'ぼく', romaji: 'boku', meaning: 'I / me (casual, male)' },
+        { kana: '君', reading: 'きみ', romaji: 'kimi', meaning: 'you (casual)' },
+        { kana: '彼ら', reading: 'かれら', romaji: 'karera', meaning: 'they / them' },
+        { kana: 'こんな', romaji: 'konna', meaning: 'this kind of...' },
+        { kana: 'そんな', romaji: 'sonna', meaning: 'that kind of...' },
+        { kana: 'あんな', romaji: 'anna', meaning: 'that kind of... (over there)' },
+        { kana: 'どんな', romaji: 'donna', meaning: 'what kind of...?' },
+        { kana: '色んな', reading: 'いろんな', romaji: 'ironna', meaning: 'various' },
+        { kana: '誰か', reading: 'だれか', romaji: 'dareka', meaning: 'someone / somebody' },
+        { kana: '自分', reading: 'じぶん', romaji: 'jibun', meaning: 'myself / yourself / oneself' },
+        { kana: 'こう', romaji: 'kou', meaning: 'this way (doing something)' },
+      ],
+    },
+    {
+      // Recap 2/4: Adjectives & Adverbs — the same 27 rows shelf-10's own
+      // "New Words: Adjectives & Adverbs" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Adjectives & Adverbs',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
+        { kana: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'small' },
+        { kana: '赤い', reading: 'あかい', romaji: 'akai', meaning: 'red' },
+        { kana: '青い', reading: 'あおい', romaji: 'aoi', meaning: 'blue' },
+        { kana: '新しい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'new' },
+        { kana: '古い', reading: 'ふるい', romaji: 'furui', meaning: 'old' },
+        { kana: '高い', reading: 'たかい', romaji: 'takai', meaning: 'expensive / tall' },
+        { kana: '安い', reading: 'やすい', romaji: 'yasui', meaning: 'cheap' },
+        { kana: '楽しい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'fun / enjoyable' },
+        { kana: '良い', reading: 'いい', romaji: 'ii', meaning: 'good' },
+        { kana: '静か', reading: 'しずか', romaji: 'shizuka', meaning: 'quiet' },
+        { kana: '好き', reading: 'すき', romaji: 'suki', meaning: 'like' },
+        { kana: '元気', reading: 'げんき', romaji: 'genki', meaning: 'energetic' },
+        { kana: '便利', reading: 'べんり', romaji: 'benri', meaning: 'convenient' },
+        { kana: '有名', reading: 'ゆうめい', romaji: 'yuumei', meaning: 'famous' },
+        { kana: '大切', reading: 'たいせつ', romaji: 'taisetsu', meaning: 'important' },
+        { kana: 'きれい', romaji: 'kirei', meaning: 'pretty / clean' },
+        { kana: 'きらい', romaji: 'kirai', meaning: 'dislike / hate' },
+        { kana: '大変', reading: 'たいへん', romaji: 'taihen', meaning: 'tough / serious' },
+        { kana: 'よく', romaji: 'yoku', meaning: 'often / well' },
+        { kana: 'いつも', romaji: 'itsumo', meaning: 'always' },
+        { kana: 'ときどき', romaji: 'tokidoki', meaning: 'sometimes' },
+        { kana: 'あまり', romaji: 'amari', meaning: 'not much (+ negative)' },
+        { kana: 'すぐに', romaji: 'sugu ni', meaning: 'right away' },
+        { kana: 'まだ', romaji: 'mada', meaning: 'still / not yet' },
+        { kana: 'もう', romaji: 'mou', meaning: 'already' },
+        { kana: 'とても', romaji: 'totemo', meaning: 'very' },
+      ],
+    },
+    {
+      // い-adjectives conjugate on their own (drop い, add the ending) —
+      // な-adjectives/nouns lean on です/だ instead, same distinction
+      // shelf-10 itself opens with.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: い-adjective negation',
+      pattern: [
+        { text: '[stem]', role: 'subject' }, { text: 'い → く', role: 'particle' },
+        { text: 'ない', role: 'predicate' },
+      ],
+      explain: [
+        'Drop the final い, add くない — 大きい becomes 大きくない ("not big"). な-adjectives don\'t conjugate this way at all; they just take じゃないです/じゃありません instead, the same as a noun+です sentence.',
+      ],
+    },
+    {
+      // Recap 3/4: Verbs — the same 18 rows shelf-11's own "New Words:
+      // Verbs" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Verbs',
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '起きる', reading: 'おきる', romaji: 'okiru', meaning: 'to wake up' },
+        { kana: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat' },
+        { kana: '行く', reading: 'いく', romaji: 'iku', meaning: 'to go' },
+        { kana: '話す', reading: 'はなす', romaji: 'hanasu', meaning: 'to speak' },
+        { kana: '帰る', reading: 'かえる', romaji: 'kaeru', meaning: 'to go home' },
+        { kana: '勉強する', reading: 'べんきょうする', romaji: 'benkyousuru', meaning: 'to study' },
+        { kana: '読む', reading: 'よむ', romaji: 'yomu', meaning: 'to read' },
+        { kana: '買う', reading: 'かう', romaji: 'kau', meaning: 'to buy' },
+        { kana: '書く', reading: 'かく', romaji: 'kaku', meaning: 'to write' },
+        { kana: '聞く', reading: 'きく', romaji: 'kiku', meaning: 'to listen / to ask' },
+        { kana: '会う', reading: 'あう', romaji: 'au', meaning: 'to meet' },
+        { kana: '立つ', reading: 'たつ', romaji: 'tatsu', meaning: 'to stand' },
+        { kana: '座る', reading: 'すわる', romaji: 'suwaru', meaning: 'to sit' },
+        { kana: '働く', reading: 'はたらく', romaji: 'hataraku', meaning: 'to work' },
+        { kana: '休む', reading: 'やすむ', romaji: 'yasumu', meaning: 'to rest' },
+        { kana: '遊ぶ', reading: 'あそぶ', romaji: 'asobu', meaning: 'to play' },
+        { kana: '分かる', reading: 'わかる', romaji: 'wakaru', meaning: 'to understand' },
+        { kana: '歌う', reading: 'うたう', romaji: 'utau', meaning: 'to sing' },
+      ],
+    },
+    {
+      // Recap 4/4: Invitations — the same 11 rows shelf-12's own "New
+      // Patterns: Invitations" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Invitations',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ましょう', romaji: '~mashou', meaning: 'Let\'s...' },
+        { kana: '〜ませんか', romaji: '~masenka', meaning: 'Won\'t you...? (softer invitation)' },
+        { kana: '〜ましょうか', romaji: '~mashou ka', meaning: 'Shall I...? (offering)' },
+        { kana: '行きましょう', romaji: 'ikimashou', meaning: 'Let\'s go' },
+        { kana: '食べませんか', romaji: 'tabemasenka', meaning: 'Won\'t you eat?' },
+        { kana: '休みましょう', romaji: 'yasumimashou', meaning: 'Let\'s rest' },
+        { kana: '遊びませんか', romaji: 'asobimasenka', meaning: 'Won\'t you play?' },
+        { kana: '歌いましょう', romaji: 'utaimashou', meaning: 'Let\'s sing' },
+        { kana: '少し', romaji: 'sukoshi', meaning: 'a little' },
+        { kana: '公園', reading: 'こうえん', romaji: 'kouen', meaning: 'park' },
+        { kana: 'で', romaji: 'de', meaning: 'particle: where an action happens' },
+      ],
+    },
+    {
+      // ましょう assumes everyone's in; ませんか politely checks first —
+      // the same contrast shelf-12 itself draws.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: 〜ましょう / 〜ませんか',
+      pattern: [
+        { text: '[ます-stem]', role: 'subject' }, { text: 'ましょう・ませんか', role: 'predicate' },
+      ],
+      explain: [
+        'ましょう ("let\'s...") assumes everyone\'s in — ませんか ("won\'t you...?") politely checks first, leaving room for the other person to say no. Both attach directly to the ます-stem.',
+      ],
+    },
+    {
+      type: 'quiz-review',
+      sectionLabel: 'Core Grammar Review Quiz',
+      intro: 'Answer each question, then continue to see the answer key. 12 questions across the 4 lessons.',
+      questions: REVIEW_3_QUIZ_QUESTIONS,
+    },
+    {
+      type: 'quiz-answers',
+      sectionLabel: 'Answer Key',
+      questions: REVIEW_3_QUIZ_QUESTIONS,
+    },
+    {
+      // note omitted deliberately — quizScoreMessage in lesson-box.js
+      // auto-picks a retro-cat reaction line from the score percentage.
+      type: 'quiz-score',
+      title: 'Core Grammar Review — Score',
+    },
+  ],
   'shelf-09': [
     {
       // Page 1/14: intro — names the noun/pronoun distinction, then
@@ -3218,7 +3464,7 @@ const LESSON_CONTENT = {
       // before a noun).
       type: 'grammar-intro',
       sectionLabel: 'What kind of...?',
-      recapChips: [`${furigana('この', 'この')}・その・あの・どの (shelf 5)`],
+      recapChips: ['この・その・あの・どの (shelf 5)'],
       explain: [
         'これらの言葉 also attach directly before a noun, but ask about KIND instead of pointing at a specific thing — こんな本 ("this kind of book") vs. この本 ("this [specific] book").',
       ],
@@ -3837,6 +4083,28 @@ const LESSON_CONTENT = {
         { kana: '静かでした', romaji: 'shizuka deshita', label: 'was quiet (past)' },
         { kana: '静かじゃなかったです', romaji: 'shizuka ja nakatta desu', label: 'was not quiet (past, casual)' },
         { kana: '静かじゃありませんでした', romaji: 'shizuka ja arimasen deshita', label: 'was not quiet (past, neutral)' },
+      ],
+    },
+    {
+      // Page 14.75/19: the PLAIN-register counterpart to the です family
+      // above — used with friends/family instead of strangers/formal
+      // contexts. だ replaces です; じゃ/では still contract the same way
+      // they did in the polite forms.
+      type: 'grammar-intro',
+      sectionLabel: 'The plain (casual) register: だ instead of です',
+      explain: [
+        'Drop です down to plain speech and it becomes だ — everything else contracts the same way. じゃ isn\'t its own separate word here either: it only ever shows up glued to ない, never alone, so there\'s no bare "じゃ" that becomes "じゃかった" — the negative just conjugates as じゃなかった (or ではなかった), built the same drop-い-add-かった way an い-adjective would.',
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: '静かだ', romaji: 'shizuka da', label: 'is quiet (plain, present)' },
+        { kana: '静かだった', romaji: 'shizuka datta', label: 'was quiet (plain, past)' },
+        { kana: '静かじゃない', romaji: 'shizuka ja nai', label: 'is not quiet (plain, casual)' },
+        { kana: '静かではない', romaji: 'shizuka dewa nai', label: 'is not quiet (plain, neutral)' },
+        { kana: '静かじゃなかった', romaji: 'shizuka ja nakatta', label: 'was not quiet (plain, casual)' },
+        { kana: '静かではなかった', romaji: 'shizuka dewa nakatta', label: 'was not quiet (plain, neutral)' },
       ],
     },
     {
@@ -4542,6 +4810,174 @@ const LESSON_CONTENT = {
         { before: '', after: 'ください。', answer: '行って', hint: '"Please go." (the exception!)' },
         { before: '', after: 'ください。', answer: '読んで', hint: '"Please read it."' },
         { before: '起きて', after: '。', answer: '食べます', hint: '"I wake up and eat."' },
+      ],
+    },
+  ],
+  // The two reference-kiosk TVs (see buildFurniture's buildTV) — always-
+  // available content (kind: 'npc', not gated behind SHELF_PREREQ), out
+  // of shelf-numeric order deliberately, same reasoning as shelf-17 used
+  // to be. Both split their 46-character gojuon chart into 5 same-shaped
+  // 'conjugation' table pages (row-pairs of 10, except the last which is
+  // ra-row + ん alone) so no single table gets too tall to read
+  // comfortably — 'conjugation' has no title field of its own (see the
+  // renderDataTable comment above), so one grammar-intro page up front
+  // carries the section title for the whole run of tables instead of
+  // repeating a header on every page.
+  'tv-hiragana': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Hiragana Viewer',
+      bigIdea: 'The 46 base hiragana, in gojuon (五十音) order — flip through, then try the quick check at the end.',
+      pattern: [
+        { text: 'あ', role: 'subject' }, { text: 'い', role: 'subject' }, { text: 'う', role: 'subject' },
+        { text: 'え', role: 'subject' }, { text: 'お', role: 'subject' },
+      ],
+      explain: ['Read top to bottom, left to right — each table below is two rows of the chart.'],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'あ', romaji: 'a', label: 'a-row' }, { kana: 'い', romaji: 'i', label: 'a-row' },
+        { kana: 'う', romaji: 'u', label: 'a-row' }, { kana: 'え', romaji: 'e', label: 'a-row' },
+        { kana: 'お', romaji: 'o', label: 'a-row' },
+        { kana: 'か', romaji: 'ka', label: 'ka-row' }, { kana: 'き', romaji: 'ki', label: 'ka-row' },
+        { kana: 'く', romaji: 'ku', label: 'ka-row' }, { kana: 'け', romaji: 'ke', label: 'ka-row' },
+        { kana: 'こ', romaji: 'ko', label: 'ka-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'さ', romaji: 'sa', label: 'sa-row' }, { kana: 'し', romaji: 'shi', label: 'sa-row' },
+        { kana: 'す', romaji: 'su', label: 'sa-row' }, { kana: 'せ', romaji: 'se', label: 'sa-row' },
+        { kana: 'そ', romaji: 'so', label: 'sa-row' },
+        { kana: 'た', romaji: 'ta', label: 'ta-row' }, { kana: 'ち', romaji: 'chi', label: 'ta-row' },
+        { kana: 'つ', romaji: 'tsu', label: 'ta-row' }, { kana: 'て', romaji: 'te', label: 'ta-row' },
+        { kana: 'と', romaji: 'to', label: 'ta-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'な', romaji: 'na', label: 'na-row' }, { kana: 'に', romaji: 'ni', label: 'na-row' },
+        { kana: 'ぬ', romaji: 'nu', label: 'na-row' }, { kana: 'ね', romaji: 'ne', label: 'na-row' },
+        { kana: 'の', romaji: 'no', label: 'na-row' },
+        { kana: 'は', romaji: 'ha', label: 'ha-row' }, { kana: 'ひ', romaji: 'hi', label: 'ha-row' },
+        { kana: 'ふ', romaji: 'fu', label: 'ha-row' }, { kana: 'へ', romaji: 'he', label: 'ha-row' },
+        { kana: 'ほ', romaji: 'ho', label: 'ha-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'ま', romaji: 'ma', label: 'ma-row' }, { kana: 'み', romaji: 'mi', label: 'ma-row' },
+        { kana: 'む', romaji: 'mu', label: 'ma-row' }, { kana: 'め', romaji: 'me', label: 'ma-row' },
+        { kana: 'も', romaji: 'mo', label: 'ma-row' },
+        { kana: 'や', romaji: 'ya', label: 'ya-row' }, { kana: 'ゆ', romaji: 'yu', label: 'ya-row' },
+        { kana: 'よ', romaji: 'yo', label: 'ya-row' },
+        { kana: 'わ', romaji: 'wa', label: 'wa-row' }, { kana: 'を', romaji: 'wo', label: 'wa-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'ら', romaji: 'ra', label: 'ra-row' }, { kana: 'り', romaji: 'ri', label: 'ra-row' },
+        { kana: 'る', romaji: 'ru', label: 'ra-row' }, { kana: 'れ', romaji: 're', label: 'ra-row' },
+        { kana: 'ろ', romaji: 'ro', label: 'ra-row' },
+        { kana: 'ん', romaji: 'n', label: 'n' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Type the romaji for each character, then check your answers.',
+      questions: [
+        { before: 'あ = ', after: '', answer: 'a' },
+        { before: 'き = ', after: '', answer: 'ki' },
+        { before: 'す = ', after: '', answer: 'su' },
+        { before: 'ね = ', after: '', answer: 'ne' },
+        { before: 'ほ = ', after: '', answer: 'ho' },
+        { before: 'ゆ = ', after: '', answer: 'yu' },
+        { before: 'ん = ', after: '', answer: 'n' },
+      ],
+    },
+  ],
+  'tv-katakana': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Katakana Viewer',
+      bigIdea: 'The 46 base katakana, in gojuon (五十音) order — same sounds as hiragana, mostly used for loanwords and foreign names.',
+      pattern: [
+        { text: 'ア', role: 'subject' }, { text: 'イ', role: 'subject' }, { text: 'ウ', role: 'subject' },
+        { text: 'エ', role: 'subject' }, { text: 'オ', role: 'subject' },
+      ],
+      explain: ['Read top to bottom, left to right — each table below is two rows of the chart.'],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'ア', romaji: 'a', label: 'a-row' }, { kana: 'イ', romaji: 'i', label: 'a-row' },
+        { kana: 'ウ', romaji: 'u', label: 'a-row' }, { kana: 'エ', romaji: 'e', label: 'a-row' },
+        { kana: 'オ', romaji: 'o', label: 'a-row' },
+        { kana: 'カ', romaji: 'ka', label: 'ka-row' }, { kana: 'キ', romaji: 'ki', label: 'ka-row' },
+        { kana: 'ク', romaji: 'ku', label: 'ka-row' }, { kana: 'ケ', romaji: 'ke', label: 'ka-row' },
+        { kana: 'コ', romaji: 'ko', label: 'ka-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'サ', romaji: 'sa', label: 'sa-row' }, { kana: 'シ', romaji: 'shi', label: 'sa-row' },
+        { kana: 'ス', romaji: 'su', label: 'sa-row' }, { kana: 'セ', romaji: 'se', label: 'sa-row' },
+        { kana: 'ソ', romaji: 'so', label: 'sa-row' },
+        { kana: 'タ', romaji: 'ta', label: 'ta-row' }, { kana: 'チ', romaji: 'chi', label: 'ta-row' },
+        { kana: 'ツ', romaji: 'tsu', label: 'ta-row' }, { kana: 'テ', romaji: 'te', label: 'ta-row' },
+        { kana: 'ト', romaji: 'to', label: 'ta-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'ナ', romaji: 'na', label: 'na-row' }, { kana: 'ニ', romaji: 'ni', label: 'na-row' },
+        { kana: 'ヌ', romaji: 'nu', label: 'na-row' }, { kana: 'ネ', romaji: 'ne', label: 'na-row' },
+        { kana: 'ノ', romaji: 'no', label: 'na-row' },
+        { kana: 'ハ', romaji: 'ha', label: 'ha-row' }, { kana: 'ヒ', romaji: 'hi', label: 'ha-row' },
+        { kana: 'フ', romaji: 'fu', label: 'ha-row' }, { kana: 'ヘ', romaji: 'he', label: 'ha-row' },
+        { kana: 'ホ', romaji: 'ho', label: 'ha-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'マ', romaji: 'ma', label: 'ma-row' }, { kana: 'ミ', romaji: 'mi', label: 'ma-row' },
+        { kana: 'ム', romaji: 'mu', label: 'ma-row' }, { kana: 'メ', romaji: 'me', label: 'ma-row' },
+        { kana: 'モ', romaji: 'mo', label: 'ma-row' },
+        { kana: 'ヤ', romaji: 'ya', label: 'ya-row' }, { kana: 'ユ', romaji: 'yu', label: 'ya-row' },
+        { kana: 'ヨ', romaji: 'yo', label: 'ya-row' },
+        { kana: 'ワ', romaji: 'wa', label: 'wa-row' }, { kana: 'ヲ', romaji: 'wo', label: 'wa-row' },
+      ],
+    },
+    {
+      type: 'conjugation',
+      rows: [
+        { kana: 'ラ', romaji: 'ra', label: 'ra-row' }, { kana: 'リ', romaji: 'ri', label: 'ra-row' },
+        { kana: 'ル', romaji: 'ru', label: 'ra-row' }, { kana: 'レ', romaji: 're', label: 'ra-row' },
+        { kana: 'ロ', romaji: 'ro', label: 'ra-row' },
+        { kana: 'ン', romaji: 'n', label: 'n' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Type the romaji for each character, then check your answers.',
+      questions: [
+        { before: 'ア = ', after: '', answer: 'a' },
+        { before: 'キ = ', after: '', answer: 'ki' },
+        { before: 'ス = ', after: '', answer: 'su' },
+        { before: 'ネ = ', after: '', answer: 'ne' },
+        { before: 'ホ = ', after: '', answer: 'ho' },
+        { before: 'ユ = ', after: '', answer: 'yu' },
+        { before: 'ン = ', after: '', answer: 'n' },
       ],
     },
   ],
@@ -5439,11 +5875,13 @@ function resolveDynamicDiagrams(pages, playerColorId) {
 
 // Prerequisite for each shelf to become "available": null = always
 // available (first lesson); otherwise the id of the shelf/pile that
-// must be completed first. Reviews now gate every 4 lessons (one per
-// shelf column-block — see buildWallHeader's 4 calls, same grouping) —
-// shelf-05 gates on review-1 (1-4), shelf-09 on review-2 (5-8), shelf-13
-// on review-3 (9-12), shelf-17 on review-4 (13-16) — instead of the
-// earlier 2-checkpoint (8-then-6) split, per explicit request.
+// must be completed first. Reviews gate every 4 lessons (one per shelf
+// column-block — see buildWallHeader's 2 zone-1 calls + 2 zone-2 calls,
+// same grouping) — shelf-05 gates on review-1 (1-4), shelf-09 on
+// review-2 (5-8), shelf-13 on review-3 (9-12). review-4 (13-16) no
+// longer gates a 17th shelf (removed, see LESSON_DATA) — it now gates
+// the final-quiz staircase directly instead (see buildTopBand's
+// stairEntry.requires).
 const SHELF_PREREQ = {
   'shelf-01': null,
   'shelf-02': 'shelf-01', 'shelf-03': 'shelf-02', 'shelf-04': 'shelf-03',
@@ -5453,7 +5891,6 @@ const SHELF_PREREQ = {
   'shelf-10': 'shelf-09', 'shelf-11': 'shelf-10', 'shelf-12': 'shelf-11',
   'shelf-13': 'review-3',
   'shelf-14': 'shelf-13', 'shelf-15': 'shelf-14', 'shelf-16': 'shelf-15',
-  'shelf-17': 'review-4',
 };
 
 // 4 review book piles, one per 4-lesson column-block, each placed beside
@@ -5554,6 +5991,14 @@ const SENSEI_PORTRAIT_PATHS = {
   idle: '../../assets/images/avatars/calico-sensei-idle-sheet.png',
   talk: '../../assets/images/avatars/calico-sensei-talk.png',
 };
+// shelf-09's "print the full list" links (see startLesson's printLinks
+// branch) — the source reference PDFs, way more nouns/pronouns than the
+// curated in-game subset. encodeURI (not a hand-escaped literal) since
+// the real filenames have spaces AND parentheses in them.
+const SHELF09_PRINT_LINKS = [
+  { label: 'Nouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (NOUNS).pdf') },
+  { label: 'Pronouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (PRONOUNS).pdf') },
+];
 // Per-action, per-color sprite strips for LessonBox 'conversation' pages
 // (see resolveConversationTurns below) — all cropped from the same
 // "<color> cat with text.png" packs via a blob-center scan (fixed-grid
@@ -6245,6 +6690,42 @@ class LibraryScene extends Phaser.Scene {
   }
 
   create() {
+    // Phaser rasterizes each Text object onto its own canvas using
+    // whatever font is ACTUALLY available in the browser at that exact
+    // instant — if DotGothic16 hasn't finished loading yet (it's loaded
+    // via a Google Fonts <link>, not self-hosted), shelf plaque titles
+    // with Japanese in them (e.g. "Volitional & Invitations (〜ましょう・
+    // 〜ませんか)") bake in using the browser's fallback font, and Phaser
+    // never re-renders once the real font arrives later. Same root cause
+    // DirectionMapScene.ensureDirmapFontsReady already exists to fix —
+    // this scene just never got the same gate. A loading label covers
+    // the otherwise-blank screen while fonts resolve.
+    const loadingText = this.add.text(384, 240, 'Loading…', {
+      fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#e8d4a8',
+    }).setOrigin(0.5).setDepth(999);
+
+    this.ensureLibraryFontsReady().then(() => {
+      loadingText.destroy();
+      this.buildScene();
+    });
+  }
+
+  async ensureLibraryFontsReady() {
+    try {
+      await Promise.all([
+        document.fonts.load('16px "Press Start 2P"'),
+        document.fonts.load('16px "DotGothic16"'),
+        document.fonts.load('16px "VT323"'),
+        document.fonts.ready,
+      ]);
+    } catch (e) {
+      // Font Loading API unsupported or the load itself failed — proceed
+      // anyway rather than block the scene forever; worst case is the
+      // pre-fix fallback-font behavior, not a stuck loading screen.
+    }
+  }
+
+  buildScene() {
     this.interactives = []; // { id, kind, sprite, glow, stamp, x, y, prereq/requires }
     this.progress = loadProgress();
     this.favorites = loadFavorites();
@@ -6464,7 +6945,9 @@ class LibraryScene extends Phaser.Scene {
     const stairEntry = {
       id: 'final-quiz', kind: 'pile', title: 'Final Quiz',
       sprite: staircaseSprite, glow: stairGlow, stamp: stairStamp,
-      requires: ['shelf-15', 'shelf-16', 'shelf-17'],
+      // shelf-17 removed — review-4 (13-16) is now the direct gate
+      // instead, same role every other review pile plays for its block.
+      requires: ['shelf-15', 'shelf-16', 'review-4'],
       x: stairX + staircaseDisplayWidth / 2, y: staircaseDisplayHeight - 30,
       baseScale: stairScale,
       // Smaller than the default TRIGGER_RANGE (80): the staircase is a
@@ -6631,27 +7114,16 @@ class LibraryScene extends Phaser.Scene {
       addTableWithChairs(rightTableX, tableY, chairY);
       this.add.image(gapRight - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
     };
-    // Beside the RIGHT wall specifically — this row only has a shelf
-    // (shelf-17) on the right side (see the zone-1 call below), so that's
-    // the only side with an actual wall to sit against. Was dead-centered
-    // in the open gap, the one instance the "beside the wall" fix missed.
-    const buildSoloPlantRow = (y) => {
-      const plantY = y - ASSET_RECTS.plant.h / 2;
-      this.add.image(gapRight - 16 - ASSET_RECTS.plant.w, plantY, plantKey).setOrigin(0, 0).setDepth(1);
-    };
-
-    // Zone 1 (nearest stairs -> nearest zone 2): row[0] is shelf-17's
-    // solo row (no left shelf, so just a plant), row[1] gets a
-    // table+chair pair, row[2] hosts both review-3 (left side, gates
-    // shelf-13 — requires the left column's 9-12) and review-4 (right
-    // side, gates shelf-17 — requires the right column's 13-16) as the
-    // transition into zone 2. Table/review-row order swapped back per
-    // explicit feedback that they'd ended up flipped from where they
-    // should be.
-    buildSoloPlantRow(LAYOUT.zone1RowY[0]);
-    buildTableRow(LAYOUT.zone1RowY[1]);
-    buildReviewRow(LAYOUT.zone1RowY[2], 'review-3', 'left');
-    buildReviewRow(LAYOUT.zone1RowY[2], 'review-4', 'right');
+    // Zone 1 (nearest stairs -> nearest zone 2): row[0] (11,12/15,16) gets
+    // a table+chair pair, row[1] (9,10/13,14) hosts both review-3 (left
+    // side, gates shelf-13 — requires the left column's 9-12) and
+    // review-4 (right side, gates the final-quiz staircase — requires the
+    // right column's 13-16) as the transition into zone 2. shelf-17's old
+    // solo row (and its lone plant) is gone — zone 1 is a plain 2-row
+    // block now, same shape as zone 2.
+    buildTableRow(LAYOUT.zone1RowY[0]);
+    buildReviewRow(LAYOUT.zone1RowY[1], 'review-3', 'left');
+    buildReviewRow(LAYOUT.zone1RowY[1], 'review-4', 'right');
     // Zone 2 (nearest zone 1 -> nearest spawn): row[0] gets a table+chair
     // pair (transition from zone 1); row[1] hosts both review-1 (left
     // side, gates shelf-05 — requires the left column's 1-4) and
@@ -6724,6 +7196,40 @@ class LibraryScene extends Phaser.Scene {
       });
     });
 
+    // 2 interactive TVs — hiragana (left) / katakana (right) reference
+    // kiosks, per explicit request: "above the carpet in front of the
+    // sofa" reads as TV-then-rug-then-sofa stacked north to south (same
+    // arrangement a real living room uses), so each TV sits just above
+    // (north of) that side's accent rug, on the opposite side of the rug
+    // from its sofa pair. Always-available content (kind: 'npc', same
+    // pattern buildReceptionSensei uses for Neko-sensei) rather than
+    // gated shelf/pile content — no lock state, just click to open.
+    // setScale (not setDisplaySize), same reason as buildReceptionSensei:
+    // update()'s proximity pulse calls entry.sprite.setScale(entry.
+    // baseScale * ...) every frame while nearest, which would silently
+    // fight a setDisplaySize-derived size.
+    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'tvCabinetTex');
+    const tvScale = 1.3;
+    const tvDisplayW = ASSET_RECTS.tvCabinet.w * tvScale;
+    const tvDisplayH = ASSET_RECTS.tvCabinet.h * tvScale;
+    const carpetTopY = LAYOUT.carpetGlobeY - carpetH / 2;
+    const tvGap = 14;
+    const tvCenterY = carpetTopY - tvGap - tvDisplayH / 2;
+    const buildTV = (cx, id, title) => {
+      const tv = this.add.image(cx, tvCenterY, tvKey)
+        .setOrigin(0.5, 0.5).setScale(tvScale).setDepth(1);
+      const entry = {
+        id, kind: 'npc', title,
+        sprite: tv, x: cx, y: tvCenterY,
+        baseScale: tvScale,
+      };
+      tv.setInteractive({ useHandCursor: true });
+      tv.on('pointerdown', () => this.handleInteractiveClick(entry));
+      this.interactives.push(entry);
+    };
+    buildTV(leftShelfColCenterX, 'tv-hiragana', 'Hiragana Viewer');
+    buildTV(rightShelfColCenterX, 'tv-katakana', 'Katakana Viewer');
+
     // 2 shoe cabinets, symmetric, flanking the corridor between
     // reception and spawn — per the reference diagram's "CAB CAB". The
     // new cabinet art is tall and narrow (native 39x80, vs the old
@@ -6743,8 +7249,8 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
   }
 
-  // -- 17 lesson shelves, two zones (Round 4 relayout) --------------------
-  // Zone 2 (shelves 1-8) sits near spawn; Zone 1 (shelves 9-17) sits near
+  // -- 16 lesson shelves, two zones (Round 4 relayout) --------------------
+  // Zone 2 (shelves 1-8) sits near spawn; Zone 1 (shelves 9-16) sits near
   // the stairs — walking bottom-to-top through the room now walks
   // through the lessons in ascending order, ending at the stairs, per an
   // explicit request. Row Y values here are this pass's single source of
@@ -6758,8 +7264,9 @@ class LibraryScene extends Phaser.Scene {
     const leftColX = LAYOUT.leftColX;
     const rightColX = LAYOUT.rightColX;
 
-    // Zone 1 (9-17, near stairs): [0]=nearest stairs (shelf-17 solo),
-    // [1]=mid (11,12/15,16), [2]=nearest zone 2 (9,10/13,14).
+    // Zone 1 (9-16, near stairs): [0]=nearest stairs (11,12/15,16),
+    // [1]=nearest zone 2 (9,10/13,14). shelf-17's old solo row is gone —
+    // zone 1 is now the same 2-row shape as zone 2.
     const zone1RowY = LAYOUT.zone1RowY;
     // Zone 2 (1-8, near spawn): [0]=far/nearest zone 1 (3,4/7,8),
     // [1]=near/nearest spawn (1,2/5,6).
@@ -6769,8 +7276,10 @@ class LibraryScene extends Phaser.Scene {
     // each S/S group in the reference diagram) — a dark wood-panel bar
     // so the shelves visibly read as built into a wall, not floating in
     // open floor. One per column per zone, sized to that column's
-    // topmost shelf row (zone1's left column starts one row lower than
-    // its right column, since row[0] is shelf-17's solo row).
+    // topmost shelf row — both zone-1 columns now start at zone1RowY[0]
+    // (shelf-17's solo row, which used to push the right column's wall
+    // higher than the left column's, is gone), so both wall headers
+    // align flush with each other, same as every other zone.
     const colWidth = shelfW * 2 + 20;
     // Was a single flat-tiled crop of TopDownHouse_FloorsAndWalls.png (visible
     // repeat seams) — now a hand-drawn "real wall" mural (drawWallHeaderTexture):
@@ -6799,7 +7308,7 @@ class LibraryScene extends Phaser.Scene {
       this.physics.add.existing(block, true);
       this.wallGroup.add(block);
     };
-    buildWallHeader(leftColX[0], zone1RowY[1]);
+    buildWallHeader(leftColX[0], zone1RowY[0]);
     buildWallHeader(rightColX[0], zone1RowY[0]);
     buildWallHeader(leftColX[0], zone2RowY[0]);
     buildWallHeader(rightColX[0], zone2RowY[0]);
@@ -6824,17 +7333,16 @@ class LibraryScene extends Phaser.Scene {
     buildWallFooter(leftColX[0], zone2RowY[1] + shelfH, lastRowFooterH);
     buildWallFooter(rightColX[0], zone2RowY[1] + shelfH, lastRowFooterH);
 
-    // Matches LESSON_DATA's order (shelf-01..17) exactly.
+    // Matches LESSON_DATA's order (shelf-01..16) exactly.
     const positions = [
       [leftColX[0], zone2RowY[1]], [leftColX[1], zone2RowY[1]],
       [leftColX[0], zone2RowY[0]], [leftColX[1], zone2RowY[0]],
       [rightColX[0], zone2RowY[1]], [rightColX[1], zone2RowY[1]],
       [rightColX[0], zone2RowY[0]], [rightColX[1], zone2RowY[0]],
-      [leftColX[0], zone1RowY[2]], [leftColX[1], zone1RowY[2]],
       [leftColX[0], zone1RowY[1]], [leftColX[1], zone1RowY[1]],
-      [rightColX[0], zone1RowY[2]], [rightColX[1], zone1RowY[2]],
+      [leftColX[0], zone1RowY[0]], [leftColX[1], zone1RowY[0]],
       [rightColX[0], zone1RowY[1]], [rightColX[1], zone1RowY[1]],
-      [rightColX[0], zone1RowY[0]],
+      [rightColX[0], zone1RowY[0]], [rightColX[1], zone1RowY[0]],
     ];
 
     const filledVariants = ['shelfFilled1', 'shelfFilled2', 'shelfFilled3'];
@@ -7378,6 +7886,11 @@ class LibraryScene extends Phaser.Scene {
       catImagePath,
       talkImagePath,
       startIndex: resumeIndex,
+      // Nouns & Pronouns only teaches a curated subset in-canvas (per
+      // explicit "instead of adding it, just put a printer... link the
+      // pdf" request) — the full reference lists are one click away
+      // instead of cramming hundreds more words into the lesson itself.
+      printLinks: entry.id === 'shelf-09' ? SHELF09_PRINT_LINKS : undefined,
       onComplete: () => {
         this.progress[entry.id] = true;
         saveProgress(this.progress);
@@ -7628,6 +8141,11 @@ class LibraryScene extends Phaser.Scene {
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
 
   update() {
+    // create() returns immediately while buildScene() finishes asynchronously
+    // (gated behind font loading, see ensureLibraryFontsReady) — Phaser starts
+    // calling update() on the very next frame regardless, before this.player
+    // exists yet. Bail out until buildScene() has actually run.
+    if (!this.player) return;
     this.updatePlayerAnimation();
     if (this.panelOpen) {
       this.player.setVelocity(0, 0);

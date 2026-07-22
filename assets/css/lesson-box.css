@@ -326,6 +326,38 @@
   50%, 100% { opacity: 0; }
 }
 
+/* Bottom-left "print the full list" affordance — optional, per-lesson
+   (options.printLinks in lesson-box.js's open()), currently only shelf-09
+   uses it to point at the full Nouns/Pronouns PDF reference instead of
+   the game trying to teach every word from those PDFs in-canvas.
+   Caption-sized, so it stays on the readable default font (not VT323),
+   same rule every other small text in this file follows. */
+.lesson-box__print-link {
+  position: absolute;
+  left: 20px;
+  bottom: 14px;
+  font-size: 12px;
+  color: var(--jr-text-dim);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 4px 10px;
+  letter-spacing: 0.01em;
+}
+
+.lesson-box__print-icon {
+  margin-right: 2px;
+}
+
+.lesson-box__print-link a {
+  color: var(--lb-role-particle-bg);
+  text-decoration: underline;
+}
+
+.lesson-box__print-link a:hover {
+  color: var(--jr-text);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lesson-box__continue {
     animation: none;

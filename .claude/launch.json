@@ -1620,6 +1620,66 @@
         "24295"
       ],
       "port": 24295
+    },
+    {
+      "name": "jp-library-static-plaquefont-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24396"
+      ],
+      "port": 24396
+    },
+    {
+      "name": "jp-library-static-multifix-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24497"
+      ],
+      "port": 24497
+    },
+    {
+      "name": "jp-library-static-multifix-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24598"
+      ],
+      "port": 24598
+    },
+    {
+      "name": "jp-library-static-blackscreen-v1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24699"
+      ],
+      "port": 24699
+    },
+    {
+      "name": "jp-library-static-blackscreen-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24800"
+      ],
+      "port": 24800
+    },
+    {
+      "name": "jp-library-static-shelf17-tv-review3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "24901"
+      ],
+      "port": 24901
     }
   ],
   "autoVerify": true
