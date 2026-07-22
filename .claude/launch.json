@@ -1680,6 +1680,66 @@
         "24901"
       ],
       "port": 24901
+    },
+    {
+      "name": "jp-library-static-shelf14-16",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25002"
+      ],
+      "port": 25002
+    },
+    {
+      "name": "jp-library-static-shelf15-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25103"
+      ],
+      "port": 25103
+    },
+    {
+      "name": "jp-library-static-particletable-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25204"
+      ],
+      "port": 25204
+    },
+    {
+      "name": "jp-library-static-shelf16-rebuild",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25305"
+      ],
+      "port": 25305
+    },
+    {
+      "name": "jp-library-static-table-bg-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25406"
+      ],
+      "port": 25406
+    },
+    {
+      "name": "jp-library-static-smallgloss-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25507"
+      ],
+      "port": 25507
     }
   ],
   "autoVerify": true

@@ -1735,6 +1735,185 @@
   max-width: 60ch;
 }
 
+/* -- shelf-16 "where particles go" sentence skeleton — a row of labeled
+   slots (topic/subject, location, object, verb) with the particle(s)
+   that attach to each, so a learner can see at a glance where は/が,
+   に/で, を typically land in a sentence instead of only meeting each
+   particle in isolation. Static markup, authored directly in
+   LESSON_CONTENT (diagramSvg string), same as the formula-block pattern
+   above — no build/wire function pair needed. */
+.lesson-box__skeleton-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.lesson-box__skeleton-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 70px;
+}
+
+.lesson-box__skeleton-chip {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 22px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-align: center;
+  min-width: 60px;
+  line-height: 1.1;
+}
+
+.lesson-box__skeleton-slot.role-subject .lesson-box__skeleton-chip {
+  background: var(--lb-role-subject-bg);
+  color: var(--lb-role-subject-fg);
+}
+
+.lesson-box__skeleton-slot.role-particle .lesson-box__skeleton-chip {
+  background: var(--lb-role-particle-bg);
+  color: var(--lb-role-particle-fg);
+}
+
+.lesson-box__skeleton-slot.role-predicate .lesson-box__skeleton-chip {
+  background: var(--lb-role-predicate-bg);
+  color: var(--lb-role-predicate-fg);
+}
+
+.lesson-box__skeleton-slot.role-copula .lesson-box__skeleton-chip {
+  background: var(--lb-role-copula-bg);
+  color: var(--lb-role-copula-fg);
+}
+
+.lesson-box__skeleton-caption {
+  font-size: 11px;
+  color: var(--jr-text-dim);
+  text-align: center;
+}
+
+/* -- shelf-16 は/が "spotlight" comparison cards — two side-by-side
+   panels, each with a glow highlight on the particle itself, so the
+   contrast reads visually instead of only through a paragraph. Static
+   markup (diagramSvg string). */
+.lesson-box__spotlight-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lesson-box__spotlight-card {
+  flex: 1;
+  min-width: 220px;
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 8px;
+  padding: 14px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+/* is-a/is-b (not is-wa/is-ga) — kept generic so this same 2-card
+   comparison works for any minimal pair (は/が, に/で), not just the one
+   that motivated it. is-a = subject-blue, is-b = particle-gold. */
+.lesson-box__spotlight-card.is-a { border-color: var(--lb-role-subject-bg); }
+.lesson-box__spotlight-card.is-b { border-color: var(--lb-role-particle-bg); }
+
+.lesson-box__spotlight-badge {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.lesson-box__spotlight-card.is-a .lesson-box__spotlight-badge {
+  background: var(--lb-role-subject-bg);
+  color: var(--lb-role-subject-fg);
+}
+
+.lesson-box__spotlight-card.is-b .lesson-box__spotlight-badge {
+  background: var(--lb-role-particle-bg);
+  color: var(--lb-role-particle-fg);
+}
+
+.lesson-box__spotlight-sentence {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 26px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.lesson-box__spotlight-sentence .lesson-box__spotlight-glow {
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+.lesson-box__spotlight-card.is-a .lesson-box__spotlight-glow {
+  background: rgba(111, 179, 230, 0.35);
+  box-shadow: 0 0 0 2px var(--lb-role-subject-bg);
+}
+
+.lesson-box__spotlight-card.is-b .lesson-box__spotlight-glow {
+  background: rgba(240, 198, 116, 0.35);
+  box-shadow: 0 0 0 2px var(--lb-role-particle-bg);
+}
+
+.lesson-box__spotlight-use {
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  line-height: 1.55;
+}
+
+/* -- shelf-16 は/が comparison table — 4 columns (particle / job /
+   example / use-when), more than renderDataTable's fixed 3, so this is
+   its own static table markup (diagramSvg string) rather than reusing
+   the 'summary'/'conjugation' page types. */
+.lesson-box__particletable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.lesson-box__particletable th {
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  text-align: left;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__particletable td {
+  padding: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  vertical-align: top;
+  line-height: 1.5;
+  color: var(--jr-text);
+  /* The OS shell's global components.css sets an unscoped `td { background:
+     white }` (for the desktop UI's own tables) — LessonBox renders into
+     that same page, so without this override every cell here inherited a
+     white background under near-white text, reading as almost blank. */
+  background: transparent;
+}
+
+.lesson-box__particletable-particle {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 28px;
+  text-align: center;
+}
+
+.lesson-box__particletable-particle.is-a { color: var(--lb-role-subject-bg); }
+.lesson-box__particletable-particle.is-b { color: var(--lb-role-particle-bg); }
+
+.lesson-box__particletable-jp {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 19px;
+}
+
 /* -- explicit "stem + drop + add = result" formula rows, used wherever
    a conjugation is best shown as literal arithmetic (adjective ->
    adverb, い-adjective past tense) rather than the two-box "before ->

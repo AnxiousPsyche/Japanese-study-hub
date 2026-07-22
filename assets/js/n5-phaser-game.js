@@ -4813,6 +4813,778 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  'shelf-14': [
+    {
+      // Page 1/13: intro — four forms, all built from the same ます-stem.
+      type: 'grammar-intro',
+      sectionLabel: 'Four forms, one stem',
+      recapChips: [`${furigana('起き', 'おき')}ます, ${furigana('食べ', 'たべ')}ます (ます-stem, shelf 11)`],
+      bigIdea: 'You already know the present-tense ます form. Three more forms — present-negative, past, and past-negative — all attach to that exact same stem.',
+      explain: [
+        'No new vocabulary here, just new endings on verbs you already know.',
+      ],
+    },
+    {
+      // Page 2/13: group-agnostic good news — echoes shelf-12's framing.
+      type: 'grammar-intro',
+      sectionLabel: 'The good news: every group works the same way',
+      explain: [
+        'Ichidan, godan, and する-verbs all conjugate differently to REACH the ます-stem (shelf 11 covered that) — but once you have it, every one of these 4 endings attaches the exact same way, no matter which group the verb came from.',
+      ],
+    },
+    {
+      // Page 3/13: present negative formula.
+      type: 'grammar-intro',
+      sectionLabel: 'Present negative: 〜ません',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">起き</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">ません</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">起きません</span>
+          </div>
+          <div class="lesson-box__formula-romaji">okimasu &#8594; oki + masen = okimasen</div>
+          <div class="lesson-box__formula-note">Drop ます, add ません. "I don't wake up."</div>
+        </div>
+      `,
+      explain: ['Swap the ます ending for ません — that\'s the whole rule.'],
+    },
+    {
+      // Page 4/13: past affirmative formula.
+      type: 'grammar-intro',
+      sectionLabel: 'Past: 〜ました',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">起き</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">ました</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">起きました</span>
+          </div>
+          <div class="lesson-box__formula-romaji">okimasu &#8594; oki + mashita = okimashita</div>
+          <div class="lesson-box__formula-note">Swap ます for ました. "I woke up."</div>
+        </div>
+      `,
+      explain: ['Same swap, different ending — ました instead of ません.'],
+    },
+    {
+      // Page 5/13: past negative formula — built ON TOP of the present-
+      // negative form, not a fresh drop-ます step, per the actual rule.
+      type: 'grammar-intro',
+      sectionLabel: 'Past negative: 〜ませんでした',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">起き</span>
+            <span class="lesson-box__formula-add">ません</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">でした</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">起きませんでした</span>
+          </div>
+          <div class="lesson-box__formula-romaji">okimasen &#8594; okimasen + deshita = okimasendeshita</div>
+          <div class="lesson-box__formula-note">Just add でした onto the present-negative form you already built. "I didn't wake up."</div>
+        </div>
+      `,
+      explain: ['This one builds on ません rather than starting over — the same trick the adjective/copula tables used back in shelf 10.'],
+    },
+    {
+      // Page 6/13: samples, one per new form.
+      type: 'grammar-intro',
+      sectionLabel: 'All three in a sentence',
+      samples: [
+        {
+          tag: '"I don\'t read books."',
+          tiles: [
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'を', role: 'particle', gloss: 'object marker' },
+            { text: '読みません', role: 'copula', gloss: 'don\'t read', isNew: true },
+          ],
+          translation: 'Hon o yomimasen.',
+        },
+        {
+          tag: '"I met a friend."',
+          tiles: [
+            { text: '友達', role: 'subject', gloss: 'friend' },
+            { text: 'に', role: 'particle', gloss: 'target marker' },
+            { text: '会いました', role: 'copula', gloss: 'met', isNew: true },
+          ],
+          translation: 'Tomodachi ni aimashita.',
+        },
+        {
+          tag: '"I didn\'t work today."',
+          tiles: [
+            { text: '今日', role: 'subject', gloss: 'today', isNew: true },
+            { text: '働きませんでした', role: 'copula', gloss: 'didn\'t work', isNew: true },
+          ],
+          translation: 'Kyou hatarakimasendeshita.',
+        },
+      ],
+    },
+    {
+      // Page 7/13: usage note — present isn't just "right now" in
+      // Japanese, it also covers habitual/future action.
+      type: 'grammar-intro',
+      sectionLabel: 'When to use which',
+      explain: [
+        'The "present" ます form also covers habits and future plans, not just this instant — 毎日読みます means "I read every day," not just "I am reading right now." Use the past forms only for things that have already happened.',
+      ],
+    },
+    {
+      // Page 8/13: try-it — present negative.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I don\'t buy books" (books = 本, buy = 買います):',
+      before: '本を', after: '。',
+      choices: ['買いません', '買います', '買いました'],
+      answer: '買いません',
+    },
+    {
+      // Page 9/13: try-it — past affirmative.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I rested" (rest = 休みます):',
+      before: '', after: '。',
+      choices: ['休みました', '休みません', '休みませんでした'],
+      answer: '休みました',
+    },
+    {
+      // Page 10/13: try-it — past negative.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I didn\'t study" (study = 勉強します):',
+      before: '', after: '。',
+      choices: ['勉強しませんでした', '勉強しません', '勉強しました'],
+      answer: '勉強しませんでした',
+    },
+    {
+      // Page 11/13: interactive diagram — click a verb, all 4 forms
+      // rebuild from the same masu-stem. See buildPastNegDiagram/
+      // wirePastNegDiagram in this file.
+      type: 'grammar-intro',
+      diagramSvg: buildPastNegDiagram,
+      wireDiagram: wirePastNegDiagram,
+      diagramCaption: 'Click a verb — all 4 forms rebuild from its ます-stem.',
+    },
+    {
+      // 'summary' reads r.meaning for its 3rd column, not r.label (that
+      // field belongs to the separate 'conjugation' page type) — see the
+      // fix note on shelf-16's Particle Reference table.
+      type: 'summary',
+      title: 'New Patterns: Past & Negative',
+      headers: ['Form', 'Romaji', 'Label'],
+      rows: [
+        { kana: '起きます → 起きません', romaji: 'okimasen', meaning: 'present negative' },
+        { kana: '起きます → 起きました', romaji: 'okimashita', meaning: 'past' },
+        { kana: '起きます → 起きませんでした', romaji: 'okimasendeshita', meaning: 'past negative' },
+        { kana: '行きます → 行きませんでした', romaji: 'ikimasendeshita', meaning: 'iku, past negative' },
+        { kana: '話します → 話しました', romaji: 'hanashimashita', meaning: 'hanasu, past' },
+        { kana: '勉強します → 勉強しません', romaji: 'benkyoushimasen', meaning: 'suru, present negative' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '本を', after: '。', answer: '読みません', hint: '"I don\'t read books."' },
+        { before: '友達に', after: '。', answer: '会いました', hint: '"I met a friend."' },
+        { before: '今日', after: '。', answer: '働きませんでした', hint: '"I didn\'t work today."' },
+        { before: '', after: 'ました。', answer: '休み', hint: '"I rested."' },
+        { before: '', after: 'でした。', answer: '勉強しません', hint: '"I didn\'t study."' },
+      ],
+    },
+  ],
+  'shelf-15': [
+    {
+      // Page 1/13: intro — connecting clauses to build longer sentences.
+      type: 'grammar-intro',
+      sectionLabel: 'Putting it all together',
+      recapChips: ['て-form connects actions (shelf 13)'],
+      bigIdea: 'You already know how to say single-clause sentences. This shelf connects them into longer ones with a small set of connector words.',
+      explain: [
+        'Four connectors: て-form (already know it), から ("because"), けど ("but"), and と ("and", for listing nouns).',
+      ],
+    },
+    {
+      // Page 2/13: て-form recap — brief, since shelf-13 already taught it.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: て-form chains actions',
+      pattern: [
+        { text: '[action 1-て]', role: 'subject' }, { text: '[action 2]', role: 'predicate' },
+      ],
+      explain: [
+        `Already covered in shelf 13 — ${furigana('起き', 'おき')}て${furigana('食べ', 'たべ')}ます ("I wake up and eat") chains two actions in order, no separate word for "and" needed.`,
+      ],
+    },
+    {
+      // Page 3/13: から (because) — new connector.
+      type: 'grammar-intro',
+      sectionLabel: 'から: "because..."',
+      pattern: [
+        { text: '[reason]から', role: 'particle' }, { text: '、', role: 'copula' }, { text: '[result]', role: 'predicate' },
+      ],
+      explain: [
+        'から attaches to the end of the reason clause, then a comma, then the result — the reason always comes first, unlike English "I rested because I was tired" (reason comes second there).',
+      ],
+      samples: [
+        {
+          tag: '"It\'s quiet, so I like it."',
+          tiles: [
+            { text: '静かだから', role: 'subject', gloss: 'because it\'s quiet', isNew: true, smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '好きです', role: 'predicate', gloss: 'I like it' },
+          ],
+          translation: 'Shizuka dakara, suki desu.',
+        },
+      ],
+    },
+    {
+      // Page 4/13: から sample using a verb reason instead of だから, so
+      // it's clear から attaches directly after a verb too, no extra word
+      // needed.
+      type: 'grammar-intro',
+      sectionLabel: 'から with a verb reason',
+      explain: [
+        'から attaches directly after a verb too, not just だ — no extra word needed.',
+      ],
+      samples: [
+        {
+          tag: '"Because I talk with my friend, it\'s fun."',
+          tiles: [
+            { text: '友達と話しますから', role: 'subject', gloss: 'because I talk with my friend', isNew: true, smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '楽しいです', role: 'predicate', gloss: 'it\'s fun' },
+          ],
+          translation: 'Tomodachi to hanashimasu kara, tanoshii desu.',
+        },
+      ],
+    },
+    {
+      // Page 5/13: けど (but) — new connector, distinct job from が
+      // (which shelf-16 covers as the subject marker) — deliberately not
+      // conflated here.
+      type: 'grammar-intro',
+      sectionLabel: 'けど: "but..."',
+      pattern: [
+        { text: '[clause 1]けど', role: 'particle' }, { text: '、', role: 'copula' }, { text: '[clause 2]', role: 'predicate' },
+      ],
+      explain: [
+        'けど joins two contrasting clauses — "X, but Y." It\'s the everyday-conversation version; you may also see が used the same way in more formal writing, but that\'s a different job from the が you\'ll meet in shelf 16.',
+      ],
+      samples: [
+        {
+          tag: '"It\'s old, but I like it."',
+          tiles: [
+            { text: '古いけど', role: 'subject', gloss: 'it\'s old, but', isNew: true, smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '好きです', role: 'predicate', gloss: 'I like it' },
+          ],
+          translation: 'Furui kedo, suki desu.',
+        },
+      ],
+    },
+    {
+      // Page 6/13: と for listing nouns — reinforces the lightly-used
+      // shelf-11 と ("with"), now formalized as "and" for noun lists.
+      type: 'grammar-intro',
+      sectionLabel: 'と: "and" (for listing nouns)',
+      pattern: [
+        { text: '[noun A]と', role: 'particle' }, { text: '[noun B]', role: 'predicate' },
+      ],
+      explain: [
+        'と joins nouns into a complete list — "A and B," nothing left out. It only works for nouns, never for verbs or full clauses (て-form handles those).',
+      ],
+      samples: [
+        {
+          tag: '"A book and a bag."',
+          tiles: [
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'と', role: 'particle', gloss: 'and' },
+            { text: 'かばん', role: 'predicate', gloss: 'bag' },
+          ],
+          translation: 'Hon to kaban.',
+        },
+      ],
+    },
+    {
+      // Page 7/13: putting multiple connectors in one longer sentence.
+      type: 'grammar-intro',
+      sectionLabel: 'One long sentence, three connectors',
+      explain: [
+        'Real sentences often chain more than one connector together — here\'s て-form and から in the same sentence.',
+      ],
+      samples: [
+        {
+          tag: '"I woke up, and because it was quiet, I read."',
+          tiles: [
+            { text: '起きて', role: 'subject', gloss: 'woke up, and' },
+            { text: '静かだから', role: 'particle', gloss: 'because it was quiet', isNew: true, smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '読みました', role: 'predicate', gloss: 'I read' },
+          ],
+          translation: 'Okite shizuka dakara, yomimashita.',
+        },
+      ],
+    },
+    {
+      // Page 8/13: try-it — から.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It\'s expensive, so I don\'t buy it" (expensive = 高い, buy = 買います):',
+      before: '', after: '、買いません。',
+      choices: ['高いから', '高いけど', '高いと'],
+      answer: '高いから',
+    },
+    {
+      // Page 9/13: try-it — けど.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It\'s small, but it\'s good" (small = 小さい, good = 良い):',
+      before: '', after: '、良いです。',
+      choices: ['小さいけど', '小さいから', '小さいと'],
+      answer: '小さいけど',
+    },
+    {
+      // Page 10/13: try-it — と.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "book and clock" (book = 本, clock = 時計):',
+      before: '', after: '',
+      choices: ['本と時計', '本けど時計', '本から時計'],
+      answer: '本と時計',
+    },
+    {
+      // Page 11/13: full-sentence quiz-fill warm-up before the summary,
+      // matching the "one more check before the reference table" shape
+      // other shelves use.
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '静か', after: '、好きです。', answer: 'だから', hint: '"It\'s quiet, so I like it."' },
+        { before: '古い', after: '、好きです。', answer: 'けど', hint: '"It\'s old, but I like it."' },
+        { before: '本', after: 'かばん。', answer: 'と', hint: '"A book and a bag."' },
+        { before: '高い', after: '、買いません。', answer: 'から', hint: '"It\'s expensive, so I don\'t buy it."' },
+      ],
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Connectors',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜から', romaji: '~kara', meaning: 'because... (reason first)' },
+        { kana: '〜けど', romaji: '~kedo', meaning: 'but...' },
+        { kana: '〜と〜', romaji: '~to~', meaning: '...and... (nouns only)' },
+        { kana: '静かだから', romaji: 'shizuka dakara', meaning: 'because it\'s quiet' },
+        { kana: '古いけど', romaji: 'furui kedo', meaning: 'it\'s old, but' },
+        { kana: '本とかばん', romaji: 'hon to kaban', meaning: 'a book and a bag' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '静か', after: '、休みます。', answer: 'だから', hint: '"It\'s quiet, so I\'ll rest."' },
+        { before: '小さい', after: '、良いです。', answer: 'けど', hint: '"It\'s small, but it\'s good."' },
+        { before: '本', after: '時計です。', answer: 'と', hint: '"It\'s a book and a clock."' },
+        { before: '静か', after: '、好きです。', answer: 'だから', hint: '"It\'s quiet, so I like it."' },
+      ],
+    },
+  ],
+  'shelf-16': [
+    {
+      // Page 1/14: intro — recap every particle taught so far as chips.
+      type: 'grammar-intro',
+      sectionLabel: 'Every particle, one place',
+      recapChips: [
+        'は (topic, shelf 3)', 'を (object, shelf 11)', 'に (location/target, shelf 8)',
+        'で (action location, shelf 12)', 'の (possessive, shelf 5)', 'か (question, shelf 6)',
+        'と (and/with, shelf 11/15)', 'から (because, shelf 15)', 'けど (but, shelf 15)',
+      ],
+      bigIdea: 'This shelf reviews everything above, then adds the last two: が and も — plus deeper dives into で, から, けど, and と.',
+    },
+    {
+      // Page 2/22: "where particles go" sentence skeleton — a labeled
+      // slot order (topic/subject -> place -> object -> verb) so every
+      // particle below has a mental "home" before diving into specifics.
+      // Per explicit request to show sentence position, not just meet
+      // each particle in isolation.
+      type: 'grammar-intro',
+      sectionLabel: 'Where each particle goes',
+      diagramSvg: `
+        <div class="lesson-box__skeleton-row">
+          <div class="lesson-box__skeleton-slot role-subject"><div class="lesson-box__skeleton-chip">猫</div><div class="lesson-box__skeleton-caption">topic/subject</div></div>
+          <div class="lesson-box__skeleton-slot role-particle"><div class="lesson-box__skeleton-chip">は・が</div><div class="lesson-box__skeleton-caption">は / が</div></div>
+          <div class="lesson-box__skeleton-slot role-subject"><div class="lesson-box__skeleton-chip">図書館</div><div class="lesson-box__skeleton-caption">place</div></div>
+          <div class="lesson-box__skeleton-slot role-particle"><div class="lesson-box__skeleton-chip">に・で</div><div class="lesson-box__skeleton-caption">に / で</div></div>
+          <div class="lesson-box__skeleton-slot role-subject"><div class="lesson-box__skeleton-chip">本</div><div class="lesson-box__skeleton-caption">thing</div></div>
+          <div class="lesson-box__skeleton-slot role-particle"><div class="lesson-box__skeleton-chip">を</div><div class="lesson-box__skeleton-caption">object</div></div>
+          <div class="lesson-box__skeleton-slot role-copula"><div class="lesson-box__skeleton-chip">読みます</div><div class="lesson-box__skeleton-caption">verb</div></div>
+        </div>
+      `,
+      explain: [
+        'Not every sentence uses every slot — but when several particles show up together, this is the order: topic/subject first, then place, then the direct object, then the verb last.',
+      ],
+    },
+    {
+      // Page 3/22: が — new, subject marker. Kept short on purpose — the
+      // full は vs が contrast lives in the next two pages.
+      type: 'grammar-intro',
+      sectionLabel: 'が: singling something out',
+      pattern: [
+        { text: '[thing]', role: 'subject' }, { text: 'が', role: 'particle' }, { text: '[description]', role: 'predicate' },
+      ],
+      explain: [
+        'が singles out exactly what fits a description — often answering an unspoken "which one?"',
+      ],
+      samples: [
+        {
+          tag: '"IT\'S the cat (not the dog) that\'s here." (answering "what\'s here?")',
+          tiles: [
+            { text: '猫', role: 'subject', gloss: 'cat', isNew: true },
+            { text: 'が', role: 'particle', gloss: 'subject marker', isNew: true },
+            { text: 'います', role: 'predicate', gloss: 'is here (animate)' },
+          ],
+          translation: 'Neko ga imasu.',
+        },
+      ],
+    },
+    {
+      // Page 4/22: は vs が comparison — spotlight cards. One of 3 mocked-
+      // up options, picked explicitly (along with the table on the next
+      // page) over the old single dense paragraph. Needs a real `explain`
+      // line, not just sectionLabel — renderContent's grammar-intro only
+      // shows sectionLabel as part of the intro block, which only renders
+      // when the page has OTHER intro content too (bigIdea/explain/
+      // pattern/etc.); a diagramSvg-only page silently falls back to a
+      // generic "Diagram" heading instead (found live — see the same fix
+      // on the table page next).
+      type: 'grammar-intro',
+      sectionLabel: 'は vs が, side by side',
+      explain: ['Same word, same predicate — only the particle changes.'],
+      diagramSvg: `
+        <div class="lesson-box__spotlight-row">
+          <div class="lesson-box__spotlight-card is-a">
+            <div class="lesson-box__spotlight-badge">は — TOPIC</div>
+            <div class="lesson-box__spotlight-sentence">猫<span class="lesson-box__spotlight-glow">は</span>かわいいです</div>
+            <div class="lesson-box__spotlight-use">"As for the cat, it's cute." — a general statement about the cat.</div>
+          </div>
+          <div class="lesson-box__spotlight-card is-b">
+            <div class="lesson-box__spotlight-badge">が — SUBJECT</div>
+            <div class="lesson-box__spotlight-sentence">猫<span class="lesson-box__spotlight-glow">が</span>かわいいです</div>
+            <div class="lesson-box__spotlight-use">"IT'S the cat that's cute" — maybe among several animals, this one stands out.</div>
+          </div>
+        </div>
+      `,
+    },
+    {
+      // Page 5/22: は vs が comparison — reference table, the 2nd
+      // explicitly-picked option, same content as the cards above in
+      // scannable form for quick lookup later. See the spotlight-cards
+      // page above for why `explain` is required alongside sectionLabel.
+      type: 'grammar-intro',
+      sectionLabel: 'は vs が, at a glance',
+      explain: ['Same comparison as the last page, in table form for quick lookup.'],
+      diagramSvg: `
+        <table class="lesson-box__particletable">
+          <thead><tr><th></th><th>Job</th><th>Example</th><th>Use when...</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="lesson-box__particletable-particle is-a">は</td>
+              <td>Topic marker</td>
+              <td class="lesson-box__particletable-jp">猫はかわいいです</td>
+              <td>Making a general statement about the topic.</td>
+            </tr>
+            <tr>
+              <td class="lesson-box__particletable-particle is-b">が</td>
+              <td>Subject marker</td>
+              <td class="lesson-box__particletable-jp">猫がかわいいです</td>
+              <td>Singling one thing out — often answering "which one?"</td>
+            </tr>
+          </tbody>
+        </table>
+      `,
+    },
+    {
+      // Page 6/22: も — new, "also".
+      type: 'grammar-intro',
+      sectionLabel: 'も: "also"',
+      pattern: [
+        { text: '[thing]', role: 'subject' }, { text: 'も', role: 'particle' }, { text: '[same predicate]', role: 'predicate' },
+      ],
+      explain: [
+        'も replaces は or が entirely (never stacks with them) when the same thing applies to something else too.',
+      ],
+      samples: [
+        {
+          tag: '"I am a student. My friend is too."',
+          tiles: [
+            { text: '友達', role: 'subject', gloss: 'friend' },
+            { text: 'も', role: 'particle', gloss: 'also', isNew: true },
+            { text: '学生です', role: 'predicate', gloss: 'is a student' },
+          ],
+          translation: 'Tomodachi mo gakusei desu.',
+        },
+      ],
+    },
+    {
+      // Page 7/22: で — dedicated page (was a one-line recap) per
+      // explicit request for its own page with samples explaining what
+      // it does before the に-comparison page that follows.
+      type: 'grammar-intro',
+      sectionLabel: 'で: where an action happens',
+      pattern: [
+        { text: '[place]', role: 'subject' }, { text: 'で', role: 'particle' }, { text: '[action]', role: 'predicate' },
+      ],
+      explain: [
+        'で marks the place an ACTION happens — reading, working, playing, eating. It never attaches to あります・います (existence uses に instead — see the comparison on the next page).',
+      ],
+      samples: [
+        {
+          tag: '"I study at the library."',
+          tiles: [
+            { text: '図書館', role: 'subject', gloss: 'library' },
+            { text: 'で', role: 'particle', gloss: 'location of an action' },
+            { text: '勉強します', role: 'predicate', gloss: 'study' },
+          ],
+          translation: 'Toshokan de benkyoushimasu.',
+        },
+        {
+          tag: '"I play at the park."',
+          tiles: [
+            { text: '公園', role: 'subject', gloss: 'park' },
+            { text: 'で', role: 'particle', gloss: 'location of an action' },
+            { text: '遊びます', role: 'predicate', gloss: 'play' },
+          ],
+          translation: 'Kouen de asobimasu.',
+        },
+        {
+          tag: '"I speak with the teacher at school."',
+          tiles: [
+            { text: '学校', role: 'subject', gloss: 'school' },
+            { text: 'で', role: 'particle', gloss: 'location of an action' },
+            { text: '先生と話します', role: 'predicate', gloss: 'speak with the teacher' },
+          ],
+          translation: 'Gakkou de sensei to hanashimasu.',
+        },
+      ],
+    },
+    {
+      // Page 8/22: で vs に — direct minimal-pair comparison, same place
+      // both ways, reusing the spotlight-card component built for は/が
+      // (kept generic — is-a/is-b, not is-wa/is-ga — for exactly this).
+      type: 'grammar-intro',
+      sectionLabel: 'で vs に: same place, different job',
+      diagramSvg: `
+        <div class="lesson-box__spotlight-row">
+          <div class="lesson-box__spotlight-card is-a">
+            <div class="lesson-box__spotlight-badge">に — EXISTENCE / DESTINATION</div>
+            <div class="lesson-box__spotlight-sentence">図書館<span class="lesson-box__spotlight-glow">に</span>います</div>
+            <div class="lesson-box__spotlight-use">"I am AT the library." — just existing there, or heading there.</div>
+          </div>
+          <div class="lesson-box__spotlight-card is-b">
+            <div class="lesson-box__spotlight-badge">で — ACTION</div>
+            <div class="lesson-box__spotlight-sentence">図書館<span class="lesson-box__spotlight-glow">で</span>勉強します</div>
+            <div class="lesson-box__spotlight-use">"I study AT the library." — actively doing something there.</div>
+          </div>
+        </div>
+      `,
+      explain: ['Same place (図書館), different job — に for simply being there, で for doing something there.'],
+    },
+    {
+      // Page 9/22: から — dedicated page (was a brief mention in shelf
+      // 15) per explicit request for more explanation.
+      type: 'grammar-intro',
+      sectionLabel: 'から: "because..." (in depth)',
+      recapChips: ['から attaches after a reason clause (shelf 15)'],
+      pattern: [
+        { text: '[reason]から', role: 'particle' }, { text: '、', role: 'copula' }, { text: '[result]', role: 'predicate' },
+      ],
+      explain: [
+        'The reason always comes FIRST, then から, then a comma, then the result — backwards from English, where "because" usually introduces the second half. から attaches directly after だ (だから) or after a plain verb — no extra word needed either way.',
+      ],
+      samples: [
+        {
+          tag: '"It\'s quiet, so I like it."',
+          tiles: [
+            { text: '静かだから', role: 'subject', gloss: 'because it\'s quiet', smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '好きです', role: 'predicate', gloss: 'I like it' },
+          ],
+          translation: 'Shizuka dakara, suki desu.',
+        },
+        {
+          tag: '"Because I talk with my friend, it\'s fun."',
+          tiles: [
+            { text: '友達と話しますから', role: 'subject', gloss: 'because I talk with my friend', smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '楽しいです', role: 'predicate', gloss: 'it\'s fun' },
+          ],
+          translation: 'Tomodachi to hanashimasu kara, tanoshii desu.',
+        },
+      ],
+    },
+    {
+      // Page 10/22: けど — dedicated page (was a brief mention in shelf
+      // 15) per explicit request for more explanation.
+      type: 'grammar-intro',
+      sectionLabel: 'けど: "but..." (in depth)',
+      recapChips: ['けど joins two contrasting clauses (shelf 15)'],
+      pattern: [
+        { text: '[clause 1]けど', role: 'particle' }, { text: '、', role: 'copula' }, { text: '[clause 2]', role: 'predicate' },
+      ],
+      explain: [
+        'けど is the everyday-conversation connector for "X, but Y" — it attaches directly to the end of the first clause, no separate word needed. You may also see が used this exact same way in more formal writing, but that が is a different job from the subject-marker が earlier on this shelf.',
+      ],
+      samples: [
+        {
+          tag: '"It\'s old, but I like it."',
+          tiles: [
+            { text: '古いけど', role: 'subject', gloss: 'it\'s old, but', smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '好きです', role: 'predicate', gloss: 'I like it' },
+          ],
+          translation: 'Furui kedo, suki desu.',
+        },
+        {
+          tag: '"It\'s small, but it\'s good."',
+          tiles: [
+            { text: '小さいけど', role: 'subject', gloss: 'it\'s small, but', smallGloss: true },
+            { text: '、', role: 'copula', gloss: '' },
+            { text: '良いです', role: 'predicate', gloss: 'it\'s good' },
+          ],
+          translation: 'Chiisai kedo, ii desu.',
+        },
+      ],
+    },
+    {
+      // Page 11/22: と — dedicated page (was a brief mention in shelf
+      // 11/15) per explicit request for more explanation.
+      type: 'grammar-intro',
+      sectionLabel: 'と: "and" / "with" (in depth)',
+      recapChips: ['と (with, shelf 11) / と (and, shelf 15)'],
+      pattern: [
+        { text: '[noun A]と', role: 'particle' }, { text: '[noun B / action]', role: 'predicate' },
+      ],
+      explain: [
+        'と does two related jobs, both on NOUNS only (never verbs or full clauses — て-form handles those): joining a complete list ("A and B, nothing left out") and marking who you do something WITH.',
+      ],
+      samples: [
+        {
+          tag: '"A book and a bag." (listing)',
+          tiles: [
+            { text: '本', role: 'subject', gloss: 'book' },
+            { text: 'と', role: 'particle', gloss: 'and' },
+            { text: 'かばん', role: 'predicate', gloss: 'bag' },
+          ],
+          translation: 'Hon to kaban.',
+        },
+        {
+          tag: '"I speak with the teacher." (with)',
+          tiles: [
+            { text: '先生', role: 'subject', gloss: 'teacher' },
+            { text: 'と', role: 'particle', gloss: 'with' },
+            { text: '話します', role: 'predicate', gloss: 'speak' },
+          ],
+          translation: 'Sensei to hanashimasu.',
+        },
+      ],
+    },
+    {
+      // Page 12/18: try-it — が vs は.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Answer "what\'s in the bag?" — single out the book (bag = かばん, book = 本, in = に, is = あります):',
+      before: 'かばんに', after: 'あります。',
+      choices: ['本が', '本は', '本を'],
+      answer: '本が',
+    },
+    {
+      // Page 13/18: try-it — も.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "This book is also big" (this = この, book = 本, big = 大きい):',
+      before: 'この本', after: '大きいです。',
+      choices: ['も', 'が', 'は'],
+      answer: 'も',
+    },
+    {
+      // Page 14/18: try-it — に vs で.
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I study at the library" (library = 図書館, study = 勉強します):',
+      before: '図書館', after: '勉強します。',
+      choices: ['で', 'に', 'を'],
+      answer: 'で',
+    },
+    {
+      // Page 15/18: try-it — の recap (possessive, easy to forget once
+      // が/も enter the mix).
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "my friend\'s book" (I = 私, friend = 友達, book = 本):',
+      before: '私の友達', after: '本',
+      choices: ['の', 'が', 'は'],
+      answer: 'の',
+    },
+    {
+      // Page 16/18: full mixed quiz-fill before the reference table —
+      // now covers all 4 newly-expanded connectors (から/けど/と/で) too.
+      type: 'quiz-fill',
+      sectionLabel: 'Mixed practice',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '猫', after: 'います。', answer: 'が', hint: '"IT\'S the cat that\'s here."' },
+        { before: '友達', after: '学生です。', answer: 'も', hint: '"My friend is also a student."' },
+        { before: '図書館', after: '勉強します。', answer: 'で', hint: '"I study at the library."' },
+        { before: '猫は椅子', after: 'います。', answer: 'に', hint: '"The cat is on the chair."' },
+        { before: '本', after: 'かばん。', answer: 'と', hint: '"A book and a bag."' },
+        { before: '静か', after: '、好きです。', answer: 'だから', hint: '"It\'s quiet, so I like it."' },
+        { before: '古い', after: '、好きです。', answer: 'けど', hint: '"It\'s old, but I like it."' },
+        { before: '先生', after: '話します。', answer: 'と', hint: '"I speak with the teacher." (と = with)' },
+      ],
+    },
+    {
+      // 'summary' page type reads r.meaning for its 3rd column (see
+      // renderContent's 'summary' branch in lesson-box.js) — using
+      // `label` here instead silently rendered "undefined", since that
+      // field only exists on 'conjugation'-type rows, a different page
+      // type. headers ARE honored by 'summary' (unlike 'conjugation',
+      // which hardcodes Form/Romaji/Label regardless of what's passed).
+      type: 'summary',
+      title: 'Particle Reference',
+      headers: ['Particle', 'Romaji', 'Job'],
+      rows: [
+        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
+        { kana: 'が', romaji: 'ga', meaning: 'subject marker (singles out)' },
+        { kana: 'を', romaji: 'o', meaning: 'object marker' },
+        { kana: 'に', romaji: 'ni', meaning: 'destination / location of being' },
+        { kana: 'で', romaji: 'de', meaning: 'location of an action' },
+        { kana: 'の', romaji: 'no', meaning: 'possessive' },
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+        { kana: 'と', romaji: 'to', meaning: 'and / with' },
+        { kana: 'も', romaji: 'mo', meaning: 'also' },
+        { kana: 'から', romaji: 'kara', meaning: 'because' },
+        { kana: 'けど', romaji: 'kedo', meaning: 'but' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '猫', after: 'かわいいです。', answer: 'が', hint: '"IT\'S the cat that\'s cute."' },
+        { before: '私', after: '学生です。', answer: 'も', hint: '"I am also a student."' },
+        { before: '図書館', after: '本を読みます。', answer: 'で', hint: '"I read a book at the library."' },
+        { before: '本は机', after: 'あります。', answer: 'の上に', hint: '"The book is on top of the desk." (recap: 上, shelf 8)' },
+      ],
+    },
+  ],
   // The two reference-kiosk TVs (see buildFurniture's buildTV) — always-
   // available content (kind: 'npc', not gated behind SHELF_PREREQ), out
   // of shelf-numeric order deliberately, same reasoning as shelf-17 used
@@ -5857,6 +6629,59 @@ function wireTeformDiagram(container) {
     select(b.dataset.tef);
   }));
   select('taberu');
+}
+
+// -- shelf-14 interactive past/negative diagram ---------------------------
+// Click a verb (reuses shelf-11's VERBMASU_WORDS — same 5 verbs, same
+// stems, no new vocab) and all 4 polite forms rebuild at once: present,
+// present-negative, past, past-negative. Every verb's `add` field already
+// ends in ます (e.g. "ます", "きます", "します") — stripping that suffix
+// gives the shared masu-stem-plus-sound-shift piece (き for iku, し for
+// hanasu/suru-verbs, empty for ichidan), which every one of the 4 endings
+// below attaches to identically, regardless of verb group. Reuses
+// .lesson-box__voldiagram-row/-gloss from shelf-12's diagram (4 stacked
+// rows instead of 2) rather than inventing new CSS for the same layout.
+function buildPastNegDiagram() {
+  const buttons = VERBMASU_WORDS.map((w) => `
+    <button class="lesson-box__adjdiagram-btn" data-pn="${w.id}">${furigana(w.kana, w.reading)} (${w.gloss})</button>
+  `).join('');
+  return `
+    <div class="lesson-box__adjdiagram">
+      <div class="lesson-box__voldiagram-forms" data-pn-forms></div>
+      <div class="lesson-box__adjdiagram-btn-list">${buttons}</div>
+    </div>
+  `;
+}
+
+function wirePastNegDiagram(container) {
+  const forms = container.querySelector('[data-pn-forms]');
+  const buttons = Array.from(container.querySelectorAll('[data-pn]'));
+  if (!forms) return;
+
+  const FORMS = [
+    { suffix: 'ます', label: 'Present' },
+    { suffix: 'ません', label: 'Present Neg.' },
+    { suffix: 'ました', label: 'Past' },
+    { suffix: 'ませんでした', label: 'Past Neg.' },
+  ];
+
+  function select(id) {
+    buttons.forEach((b) => b.classList.toggle('is-active', b.dataset.pn === id));
+    const w = VERBMASU_WORDS.find((x) => x.id === id);
+    const masuStem = w.add.slice(0, -2); // strips the trailing ます every `add` ends in
+    forms.innerHTML = FORMS.map((f) => `
+      <div class="lesson-box__voldiagram-row">
+        <span class="lesson-box__ikunai-stem">${w.stem}${masuStem}</span><span class="lesson-box__ikunai-add">${f.suffix}</span>
+        <span class="lesson-box__voldiagram-gloss">${f.label}</span>
+      </div>
+    `).join('');
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(b.dataset.pn);
+  }));
+  select('okiru');
 }
 
 // Resolves any 'grammar-intro' page whose diagramSvg is a function (not a
