@@ -766,6 +766,16 @@
     if (els.pageIndicator) {
       els.pageIndicator.textContent = `${state.index + 1} / ${state.pages.length}`;
     }
+    // Print-link only shows on page 1 — it used to persist across the
+    // whole lesson (fixed-position, bottom-left) and would silently
+    // overlap tall per-page content (diagrams, long tables) on any page
+    // deep enough to fill the box, since a fixed-position element never
+    // pushes content out of its way. Page 1 is short on every lesson
+    // that has one (an intro), so this is the one spot guaranteed to
+    // have room, and it's the first thing a player sees regardless.
+    if (els.printLink) {
+      els.printLink.hidden = !(state.printLinks.length && state.index === 0);
+    }
     // Reset per-page gate state before rendering — 'try-it' always starts
     // locked on a fresh view of that page (re-visiting doesn't keep a
     // stale "already typed" pass from a previous open()).
@@ -939,17 +949,26 @@
     };
     // Optional "print the full list" links (e.g. shelf-09's Nouns &
     // Pronouns PDFs, curated in-game to a digestible subset but with
-    // the complete reference vocab list available on request) — lives
-    // for the whole lesson-open session, same as printLinks scope,
-    // not per-page. options.printLinks: [{ label, href }, ...].
-    const printLinks = (options && options.printLinks) || [];
-    if (printLinks.length) {
-      els.printLink.innerHTML = `<span class="lesson-box__print-icon">&#128424;</span> Print full list: ${
-        printLinks.map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join(' &middot; ')
+    // the complete reference vocab list available on request).
+    // options.printLinks: [{ label, href }, ...]. options.printIconPath:
+    // same path-passed-in-by-caller convention every other DOM image in
+    // this file uses (see page.imageSrc above) — this file never
+    // hardcodes an asset path itself, since it doesn't know its own
+    // relative position to assets/ (that's n5-phaser-game.js's job, via
+    // startLesson's printIconPath option). Falls back to the old emoji
+    // glyph if the caller doesn't supply one, so a future printLinks
+    // caller isn't forced to also pass an icon. Stashed on state (not
+    // just built once here) because render() below now re-decides
+    // visibility on every page change — see that comment for why.
+    state.printLinks = (options && options.printLinks) || [];
+    if (state.printLinks.length) {
+      const iconHtml = options.printIconPath
+        ? `<img class="lesson-box__print-icon" src="${options.printIconPath}" alt="">`
+        : `<span class="lesson-box__print-icon">&#128424;</span>`;
+      els.printLink.innerHTML = `${iconHtml} Print full list: ${
+        state.printLinks.map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join(' &middot; ')
       }`;
-      els.printLink.hidden = false;
     } else {
-      els.printLink.hidden = true;
       els.printLink.innerHTML = '';
     }
     root.hidden = false;

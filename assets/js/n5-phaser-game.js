@@ -4612,7 +4612,7 @@ const LESSON_CONTENT = {
   ],
   'shelf-13': [
     {
-      // Page 1/16: intro — motivate て-form before drilling the rules.
+      // Page 1/12: intro — motivate て-form before drilling the rules.
       type: 'grammar-intro',
       sectionLabel: 'The て-form: one shape, many jobs',
       recapChips: [`${furigana('起き', 'おき')}ます, ${furigana('話し', 'はなし')}ます (ます-stem, shelf 11)`],
@@ -4622,7 +4622,86 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 2/16: ichidan て-form (same drop-る shape as ます).
+      // Page 2/12: Godan verbs — ALL 5 sound-based sub-rules on one page
+      // now (was 4 separate pages plus a separate 行く-exception page),
+      // per explicit "many pages gives the illusion that it is not part
+      // of the godan" feedback. う/る/つ, ぶ/む/ぬ, ぐ, く (+行く
+      // exception folded in here instead of its own page), す — all one
+      // group, one page, so they read as 5 faces of the same rule
+      // instead of 5 unrelated things to memorize. ぬ and ぐ have no
+      // taught example verb (none of shelf 11's 18 verbs end in those
+      // sounds) — their formula blocks say so plainly rather than
+      // silently reusing a taught verb from the wrong ending.
+      type: 'grammar-intro',
+      sectionLabel: 'Godan verbs: 5 endings, all one group',
+      bigIdea: 'These are all godan verbs — grouped below by which sound the dictionary form ends in, not 5 separate rules to learn one at a time.',
+      diagramSvg: `
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">買</span><span class="lesson-box__formula-drop">う</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">って</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">買って</span>
+          </div>
+          <div class="lesson-box__formula-romaji">kau &#8594; ka(u) + tte = katte</div>
+          <div class="lesson-box__formula-note">う・る・つ &#8594; って — 立つ&#8594;立って, 分かる&#8594;分かって (same result, 3 different endings).</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">読</span><span class="lesson-box__formula-drop">む</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">んで</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">読んで</span>
+          </div>
+          <div class="lesson-box__formula-romaji">yomu &#8594; yo(mu) + nde = yonde</div>
+          <div class="lesson-box__formula-note">ぶ・む・ぬ &#8594; んで — 遊ぶ&#8594;遊んで. (No taught verb ends in ぬ yet, but the same rule covers it.)</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">泳</span><span class="lesson-box__formula-drop">ぐ</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">いで</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">泳いで</span>
+          </div>
+          <div class="lesson-box__formula-romaji">oyogu &#8594; oyo(gu) + ide = oyoide</div>
+          <div class="lesson-box__formula-note">ぐ &#8594; いで — shown for completeness with 泳ぐ ("to swim," not otherwise taught) since no shelf-11 verb ends in ぐ.</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">書</span><span class="lesson-box__formula-drop">く</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">いて</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">書いて</span>
+          </div>
+          <div class="lesson-box__formula-romaji">kaku &#8594; ka(ku) + ite = kaite</div>
+          <div class="lesson-box__formula-note">く &#8594; いて — 働く&#8594;働いて too. EXCEPTION: 行く breaks its own rule — 行って, not 行いて (borrowed from the う・る・つ group above instead). This is the single most common て-form mistake, worth memorizing 行って on its own.</div>
+        </div>
+        <div class="lesson-box__formula-block">
+          <div class="lesson-box__formula-row">
+            <span class="lesson-box__formula-stem">話</span><span class="lesson-box__formula-drop">す</span>
+            <span class="lesson-box__formula-op">+</span>
+            <span class="lesson-box__formula-add">して</span>
+            <span class="lesson-box__formula-op">=</span>
+            <span class="lesson-box__formula-result">話して</span>
+          </div>
+          <div class="lesson-box__formula-romaji">hanasu &#8594; hana(su) + shite = hanashite</div>
+          <div class="lesson-box__formula-note">す &#8594; して — every す-ending godan verb works this way.</div>
+        </div>
+      `,
+    },
+    {
+      // Page 3/12: ichidan て-form (same drop-る shape as ます) + the
+      // "fake ichidan" exceptions list, per explicit request. 帰る is
+      // the one exception already taught in this game (shelf 11) — its
+      // て-form (帰って, in the reference table later on this shelf) was
+      // already correctly godan; this page is what explains why. The
+      // rest are reference-only (not taught vocab, not tested anywhere)
+      // — same treatment as shelf-09's print-link PDF for words beyond
+      // this course's scope.
       type: 'grammar-intro',
       sectionLabel: 'Ichidan: drop る, add て',
       pattern: [
@@ -4630,63 +4709,25 @@ const LESSON_CONTENT = {
       ],
       explain: [
         `Same shape as the ます-stem you already know — just add て instead. ${furigana('食べる', 'たべる')} → ${furigana('食べ', 'たべ')}て, ${furigana('起きる', 'おきる')} → ${furigana('起き', 'おき')}て.`,
+        `Watch out: a handful of verbs LOOK ichidan (end in ~える／~いる) but are secretly godan — ${furigana('帰る', 'かえる')} (shelf 11) is one, which is why its て-form is 帰って, not 帰て. Others you'll meet later (reference only, not tested here): <ul><li>${furigana('入る', 'はいる')} (hairu) — to enter</li><li>${furigana('走る', 'はしる')} (hashiru) — to run</li><li>${furigana('知る', 'しる')} (shiru) — to know</li><li>${furigana('要る', 'いる')} (iru) — to need</li><li>${furigana('切る', 'きる')} (kiru) — to cut</li><li>${furigana('減る', 'へる')} (heru) — to decrease</li></ul>`,
       ],
     },
     {
-      // Page 3/16: する te-form.
+      // Page 4/12: irregular verbs — する (already taught, recapped
+      // here) + 来る mentioned by name but not taught (reference only,
+      // same treatment as the ichidan exceptions above).
       type: 'grammar-intro',
-      sectionLabel: 'する-verbs: する → して',
-      explain: [
-        `Every する-verb swaps する for して, the same way it swaps to します — ${furigana('勉強する', 'べんきょうする')} → ${furigana('勉強', 'べんきょう')}して.`,
-      ],
-    },
-    {
-      // Page 4/16: godan group 1: う/つ/る -> って.
-      type: 'grammar-intro',
-      sectionLabel: 'Godan group 1: う・つ・る → って',
+      sectionLabel: 'Irregular verbs',
       pattern: [
-        { text: '[stem]', role: 'subject' }, { text: 'う／つ／る', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'って', role: 'predicate' },
+        { text: 'する', role: 'subject' }, { text: '→', role: 'copula' }, { text: 'して', role: 'predicate' },
       ],
       explain: [
-        `${furigana('買う', 'かう')} → ${furigana('買', 'か')}って, ${furigana('立つ', 'たつ')} → ${furigana('立', 'た')}って, ${furigana('分かる', 'わかる')} → ${furigana('分か', 'わか')}って — three different endings, same って result.`,
+        `Only one truly irregular pattern shows up at this level: する-verbs, which you already know swap to して the same way they swap to します (${furigana('勉強する', 'べんきょうする')} → ${furigana('勉強', 'べんきょう')}して).`,
+        `The other classic irregular is ${furigana('来る', 'くる')} (kuru, "to come") → ${furigana('来て', 'きて')} (kite) — not taught as vocabulary in this course, but worth knowing by name since it follows no group's rule at all, same as する.`,
       ],
     },
     {
-      // Page 5/16: godan group 2: む/ぶ -> んで.
-      type: 'grammar-intro',
-      sectionLabel: 'Godan group 2: む・ぶ → んで',
-      pattern: [
-        { text: '[stem]', role: 'subject' }, { text: 'む／ぶ', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'んで', role: 'predicate' },
-      ],
-      explain: [
-        `${furigana('読む', 'よむ')} → ${furigana('読', 'よ')}んで, ${furigana('休む', 'やすむ')} → ${furigana('休', 'やす')}んで, ${furigana('遊ぶ', 'あそぶ')} → ${furigana('遊', 'あそ')}んで.`,
-      ],
-    },
-    {
-      // Page 6/16: godan group 3: く -> いて.
-      type: 'grammar-intro',
-      sectionLabel: 'Godan group 3: く → いて',
-      pattern: [
-        { text: '[stem]', role: 'subject' }, { text: 'く', role: 'particle' }, { text: '→', role: 'copula' }, { text: '[stem]', role: 'subject' }, { text: 'いて', role: 'predicate' },
-      ],
-      explain: [
-        `${furigana('書く', 'かく')} → ${furigana('書', 'か')}いて, ${furigana('働く', 'はたらく')} → ${furigana('働', 'はたら')}いて.`,
-      ],
-    },
-    {
-      // Page 7/16: the 行く exception — mirrors shelf-10/11's "watch
-      // out" exception pages. 行く LOOKS like a く-group verb but takes
-      // って instead of いて.
-      type: 'grammar-intro',
-      sectionLabel: 'Watch out: 行く breaks its own group',
-      recapChips: ['きれい・きらい・有名 (shelf 10), 帰る (shelf 11) — this project\'s recurring "looks like X but isn\'t" trap'],
-      bigIdea: `${furigana('行く', 'いく')} ends in く, so you'd expect ${furigana('行', 'い')}いて — but the real form is ${furigana('行', 'い')}って, borrowed from the う・つ・る group instead.`,
-      explain: [
-        'This is the single most common て-form mistake — worth memorizing 行って on its own rather than trusting the く-group rule here.',
-      ],
-    },
-    {
-      // Page 8/16: the payoff pattern — て-form + ください, recapping
+      // Page 5/12: the payoff pattern — て-form + ください, recapping
       // ください itself from shelf-02.
       type: 'grammar-intro',
       sectionLabel: '[て-form] + ください: "Please..."',
@@ -4717,7 +4758,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 9/16: interactive diagram — click a verb, its て-form
+      // Page 6/12: interactive diagram — click a verb, its て-form
       // rebuilds. Spans every rule group above, including the 行く
       // exception. See buildTeformDiagram/wireTeformDiagram.
       type: 'grammar-intro',
@@ -4726,7 +4767,7 @@ const LESSON_CONTENT = {
       diagramCaption: 'Click a verb — its て-form rebuilds, and the rule it follows is named below.',
     },
     {
-      // Page 10/16: more samples, connecting two actions with て-form
+      // Page 7/12: more samples, connecting two actions with て-form
       // (its OTHER job, beyond ください requests).
       type: 'grammar-intro',
       sectionLabel: 'Connecting two actions',
@@ -4745,7 +4786,7 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 11/16: drag-and-drop mini-check — group 1 recall.
+      // Page 8/12: drag-and-drop mini-check — う・る・つ group recall.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "please buy it":',
@@ -4754,7 +4795,7 @@ const LESSON_CONTENT = {
       answer: '買って',
     },
     {
-      // Page 12/16: drag-and-drop mini-check — the 行く exception.
+      // Page 9/12: drag-and-drop mini-check — the 行く exception.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "please go":',
@@ -6816,14 +6857,31 @@ const SENSEI_PORTRAIT_PATHS = {
   idle: '../../assets/images/avatars/calico-sensei-idle-sheet.png',
   talk: '../../assets/images/avatars/calico-sensei-talk.png',
 };
-// shelf-09's "print the full list" links (see startLesson's printLinks
-// branch) — the source reference PDFs, way more nouns/pronouns than the
-// curated in-game subset. encodeURI (not a hand-escaped literal) since
-// the real filenames have spaces AND parentheses in them.
-const SHELF09_PRINT_LINKS = [
-  { label: 'Nouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (NOUNS).pdf') },
-  { label: 'Pronouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (PRONOUNS).pdf') },
-];
+// "Print the full list" links (see startLesson's printLinks lookup) —
+// source reference PDFs with way more words/patterns than each lesson's
+// curated in-game subset. Was shelf-09 only; extended to every shelf with
+// a matching PDF per explicit request (Option B from the printer mockup —
+// popup icon+link only, no new object in the game world). encodeURI (not
+// a hand-escaped literal) since the real filenames have spaces AND
+// parentheses in them.
+const PRINT_LINKS_BY_SHELF = {
+  'shelf-09': [
+    { label: 'Nouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (NOUNS).pdf') },
+    { label: 'Pronouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (PRONOUNS).pdf') },
+  ],
+  'shelf-10': [
+    { label: 'Adjectives', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS ADJ.pdf') },
+  ],
+  'shelf-11': [
+    { label: 'Verbs', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS VERBS.pdf') },
+  ],
+  'shelf-13': [
+    { label: 'Conjugations', href: encodeURI('../../assets/lesson pdf/N5 Conjugations - Conjugations.pdf') },
+  ],
+  'shelf-16': [
+    { label: 'Particles', href: encodeURI('../../assets/lesson pdf/N5 particles - Particles.pdf') },
+  ],
+};
 // Per-action, per-color sprite strips for LessonBox 'conversation' pages
 // (see resolveConversationTurns below) — all cropped from the same
 // "<color> cat with text.png" packs via a blob-center scan (fixed-grid
@@ -8711,11 +8769,13 @@ class LibraryScene extends Phaser.Scene {
       catImagePath,
       talkImagePath,
       startIndex: resumeIndex,
-      // Nouns & Pronouns only teaches a curated subset in-canvas (per
+      // Several lessons only teach a curated subset in-canvas (per
       // explicit "instead of adding it, just put a printer... link the
-      // pdf" request) — the full reference lists are one click away
-      // instead of cramming hundreds more words into the lesson itself.
-      printLinks: entry.id === 'shelf-09' ? SHELF09_PRINT_LINKS : undefined,
+      // pdf" request, later extended to adjectives/verbs/conjugations/
+      // particles too) — the full reference lists are one click away
+      // instead of cramming hundreds more words/patterns into the lesson.
+      printLinks: PRINT_LINKS_BY_SHELF[entry.id],
+      printIconPath: '../../assets/images/lesson/printer-image-Original.png',
       onComplete: () => {
         this.progress[entry.id] = true;
         saveProgress(this.progress);

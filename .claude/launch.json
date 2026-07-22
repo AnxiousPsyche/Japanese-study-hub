@@ -1740,6 +1740,36 @@
         "25507"
       ],
       "port": 25507
+    },
+    {
+      "name": "jp-library-static-godan-rebuild",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25608"
+      ],
+      "port": 25608
+    },
+    {
+      "name": "jp-library-static-printer-links",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25709"
+      ],
+      "port": 25709
+    },
+    {
+      "name": "jp-library-static-printlink-page1",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25810"
+      ],
+      "port": 25810
     }
   ],
   "autoVerify": true
