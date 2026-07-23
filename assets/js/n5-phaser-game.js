@@ -102,7 +102,7 @@ const ASSET_RECTS = {
   // drawer-pull band, dark base), replacing the old checkered-basket
   // cubby shelf as the "shoe cabinet" placed near the start entrance,
   // per an explicit reference image.
-  shoeCabinet: { x: 176, y: 80, w: 39, h: 80 },
+  shoeCabinet: { x: 173, y: 81, w: 19, h: 47 },
   // TopDownHouse_FurnitureState1.png — plain table + chair (replaces
   // furniture03's table/floorBench in the decor rows) and the 4-sofa
   // family (2-seat couch, 3-seat w/ pillows, armchair w/ pillow, plain
@@ -125,14 +125,32 @@ const ASSET_RECTS = {
   // just below the couch in the sheet — showing as a stray dark line
   // under the couch once rendered in-game.
   sofaCouch2: { x: 24, y: 167, w: 56, h: 25 },
-  // furniture03.png — TV cabinet (antenna, purple screen, 3-slot drawer
-  // below), per the user's reference screenshot. Isolated with a manual
-  // grid-scan crop rather than pure alpha-flood: the plant shelf directly
-  // to its left touches it with zero transparent gap, so a flood fill
-  // seeded inside the screen merges the two into one region — the flood
-  // result was used only to find the item, then trimmed by eye against a
-  // 2px reference grid to the TV unit's own tight bounds.
-  tvCabinet: { x: 195, y: 43, w: 28, h: 40 },
+  // furniture03.png — TV cabinet (antenna knob, purple screen, 3-slot
+  // drawer below), per the user's reference screenshot. Re-cropped a 2nd
+  // time (was {195,43,28,40}) after a "meticulously crop the joined
+  // items out" bug report — the old rect bled in ~4px of the wardrobe
+  // piece sitting directly above (its bottom edge dips as low as y=50 in
+  // this sprite sheet's x=208-218 range specifically, closer than a
+  // glance at its LEFT portion suggested) and the connector nub touching
+  // the item below at y=81+. Isolated via max-zoom (24-28x) per-pixel
+  // grid inspection rather than alpha-flood/bounding-box scans — both of
+  // those merge with the plant shelf touching its left edge with zero
+  // gap, and a plain windowed bounding-box scan still "touches" any
+  // window edge that happens to overlap ANY unrelated sprite's pixels in
+  // this densely-packed sheet, independent of real transparent gaps.
+  // Trade-off: the antenna's thin wire prongs above the gold knob got
+  // trimmed (their exact boundary against the wardrobe piece above was
+  // genuinely ambiguous at 1px resolution) — the knob itself, screen,
+  // and drawer are all fully intact.
+  tvCabinet: { x: 196, y: 51, w: 31, h: 29 },
+  // furniture03.png — small drawer-front side table, per the user's
+  // reference screenshot (the printer prop sits on top of it, see
+  // buildPrinterStation). Isolated via connected-component flood fill
+  // seeded inside the solid tabletop (190,26) — a pure bounding-box scan
+  // touched neighboring sprites' edges even in a hand-picked window, so
+  // the flood-fill result (rendered as a red mask overlay and visually
+  // confirmed clean, no bleed) is the authoritative crop here.
+  printerTable: { x: 177, y: 21, w: 14, h: 23 },
 };
 
 // Round 2 feedback item 1 (Option A — extend the map). World is much
@@ -435,6 +453,56 @@ const REVIEW_3_QUIZ_QUESTIONS = [
   },
 ];
 
+// Graduated font-size so a long word still fits its fillercard column on
+// one line instead of wrapping to two (e.g. どうも/どうぞ at the default
+// 26px, できるだけ even more so) — per explicit "make long words smaller
+// so they fit in 1 line, for ALL long words" request.
+//
+// First cut used a flat "N chars over threshold -> shrink by 2px" rule,
+// verified live via getBoundingClientRect/scrollWidth against the actual
+// rendered column (per this project's "measure, don't guess" alignment-
+// debugging pattern) — it undershot badly: どうぞ still fit fine
+// unshrunk once the column itself was widened, while できるだけ (5 kana)
+// still overflowed its column by 14px even after "shrinking". Replaced
+// with a direct fit computation instead of a heuristic step function:
+// solve for the largest font size where charWidthRatio * fontSize * len
+// <= columnWidth, then clamp to [minSize, baseSize]. charWidthRatio ~1.0
+// for DotGothic16 kana glyphs (near-square, ~1em advance width each —
+// confirmed by the できるだけ overflow measurement: 100px actual / 5
+// chars / 20px font = 1.0), ~0.55 for the romaji column's latin text
+// (narrower per character in a normal, non-monospace UI font).
+// columnWidth is passed a few px under the real CSS grid-track width
+// (86px kana / 92px romaji, see lesson-box.css) as a rounding-error
+// safety margin, not the exact track size.
+function fillerFontSize(text, { baseSize, minSize, columnWidth, charWidthRatio }) {
+  const fitSize = Math.floor(columnWidth / (text.length * charWidthRatio));
+  return Math.max(minSize, Math.min(baseSize, fitSize));
+}
+
+// shelf-02's "filler word" mini-card table (see LESSON_CONTENT['shelf-02']
+// below) — 4-5 entries per page instead of one 'greeting' page per word,
+// per explicit "44 pages is too many, put them in a table" request.
+// entries: [{kana, romaji, pronunciation, meaning, note}, ...].
+function buildFillerCardTable(entries) {
+  return `
+    <div class="lesson-box__fillercard-list">
+      ${entries.map((e) => {
+        const kanaSize = fillerFontSize(e.kana, { baseSize: 26, minSize: 13, columnWidth: 80, charWidthRatio: 1.0 });
+        const romajiSize = fillerFontSize(e.romaji, { baseSize: 13, minSize: 10, columnWidth: 88, charWidthRatio: 0.55 });
+        return `
+        <div class="lesson-box__fillercard">
+          <div class="lesson-box__fillercard-kana" style="font-size:${kanaSize}px;">${e.kana}</div>
+          <div class="lesson-box__fillercard-romaji" style="font-size:${romajiSize}px;">${e.romaji}<span>${e.pronunciation}</span></div>
+          <div class="lesson-box__fillercard-meaning">${e.meaning}</div>
+          <div class="lesson-box__fillercard-divider"></div>
+          <div class="lesson-box__fillercard-note">${e.note}</div>
+        </div>
+      `;
+      }).join('')}
+    </div>
+  `;
+}
+
 // Real lesson content, keyed by LESSON_DATA id, rendered through
 // LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
 // option is selected. Each entry is an array of "pages" the player clicks/
@@ -614,88 +682,64 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      type: 'greeting', kana: 'どうも', romaji: 'Doumo', pronunciation: '(doh-moh)', meaning: 'Thanks / general all-purpose greeting',
-      usage: 'A shorter, more casual "thanks" than ありがとうございます — also works alone as a quick greeting ("hey") or apology, depending on tone and context.',
+      // 21 filler words, grouped thematically into 5 table pages (4-5
+      // per page) instead of 21 separate 'greeting' pages — per explicit
+      // "44 pages is too many, put them in a table like [reference
+      // image]" request. See buildFillerCardTable above.
+      type: 'grammar-intro',
+      sectionLabel: 'Agreement & politeness',
+      explain: ['The everyday words for yes, thanks, and offering something.'],
+      diagramSvg: buildFillerCardTable([
+        { kana: 'どうも', romaji: 'Doumo', pronunciation: '(doh-moh)', meaning: 'Thanks / general greeting', note: 'A shorter, more casual "thanks" than ありがとうございます — also works alone as a quick greeting or apology.' },
+        { kana: 'どうぞ', romaji: 'Douzo', pronunciation: '(doh-zoh)', meaning: 'Please (go ahead)', note: 'Said when offering or inviting someone to do something — handing over an item, or inviting them to start eating.' },
+        { kana: 'はい', romaji: 'Hai', pronunciation: '(hai)', meaning: 'Yes', note: 'The standard, polite way to say "yes" — also doubles as "here" when answering a roll call.' },
+        { kana: 'ええ', romaji: 'Ee', pronunciation: '(eh)', meaning: 'Yes (softer, conversational)', note: 'A softer, more conversational "yes" than はい — common between friends rather than formal settings.' },
+      ]),
     },
     {
-      type: 'greeting', kana: 'どうぞ', romaji: 'Douzo', pronunciation: '(doh-zoh)', meaning: 'Please (go ahead)',
-      usage: 'Said when offering or inviting someone to do something — handing over an item, gesturing someone through a door first, or inviting them to start eating.',
+      type: 'grammar-intro',
+      sectionLabel: 'Hesitation & reactions',
+      explain: ['Small interjections for pausing, transitioning, or reacting mid-conversation.'],
+      diagramSvg: buildFillerCardTable([
+        { kana: 'さあ', romaji: 'Saa', pronunciation: '(sah)', meaning: 'Well... (hesitation)', note: 'Hesitation or uncertainty ("well, I\'m not sure...") — or, with a different tone, a rallying "let\'s go."' },
+        { kana: 'それでは', romaji: 'Soredewa', pronunciation: '(soh-reh-deh-wah)', meaning: 'Well then / In that case', note: 'A formal transition word — moving to a new topic, or closing out a conversation before parting ways.' },
+        { kana: '多分', romaji: 'Tabun', pronunciation: '(tah-boon)', meaning: 'Probably / perhaps', note: 'Softens a statement into a guess — e.g. "tabun sou desu" ("that\'s probably right").' },
+        { kana: 'あ', romaji: 'A', pronunciation: '(ah)', meaning: 'Ah! / Oh!', note: 'A short interjection for sudden realization — like snapping your fingers when you remember something.' },
+        { kana: 'ああ', romaji: 'Aa', pronunciation: '(ah-ah)', meaning: 'Ah, yes', note: 'A softer acknowledgment than あ — recalling or confirming something ("ah, right, that\'s the one").' },
+      ]),
     },
     {
-      type: 'greeting', kana: 'はい', romaji: 'Hai', pronunciation: '(hai)', meaning: 'Yes',
-      usage: 'The standard, polite way to say "yes" or acknowledge being called — also doubles as "here" when answering a roll call.',
+      type: 'grammar-intro',
+      sectionLabel: 'Time & conditionals',
+      explain: ['Words that set up a sequence, a timeframe, or a hypothetical.'],
+      diagramSvg: buildFillerCardTable([
+        { kana: 'できるだけ', romaji: 'Dekiru dake', pronunciation: '(deh-kee-roo dah-keh)', meaning: 'As much as possible', note: 'Attached before a request or plan — e.g. "dekiru dake hayaku" ("as soon as possible").' },
+        { kana: 'これから', romaji: 'Kore kara', pronunciation: '(koh-reh kah-rah)', meaning: 'From now on / after this', note: 'Marks a point going forward — "kore kara ganbarimasu" ("I\'ll do my best from here on").' },
+        { kana: 'まず', romaji: 'Mazu', pronunciation: '(mah-zoo)', meaning: 'First of all', note: 'Opens a list of steps or points — "mazu, kore wo shimasu" ("first, I\'ll do this").' },
+        { kana: 'もし', romaji: 'Moshi', pronunciation: '(moh-shee)', meaning: 'If / in case', note: 'Sets up a hypothetical — also doubled as もしもし, the standard way to say "hello?" on the phone.' },
+      ]),
     },
     {
-      type: 'greeting', kana: 'ええ', romaji: 'Ee', pronunciation: '(eh)', meaning: 'Yes (softer, conversational)',
-      usage: 'A softer, more conversational "yes" than はい — common in casual replies between friends rather than in formal settings.',
+      type: 'grammar-intro',
+      sectionLabel: 'Reactions & degree',
+      explain: ['Reacting to what someone said, or describing how much/little something applies.'],
+      diagramSvg: buildFillerCardTable([
+        { kana: 'なるほど', romaji: 'Naruhodo', pronunciation: '(nah-roo-hoh-doh)', meaning: 'I see / now I understand', note: 'A reaction showing you just understood something — close to English "I see" or "ahh, got it."' },
+        { kana: 'それで', romaji: 'Sorede', pronunciation: '(soh-reh-deh)', meaning: 'And then / because of that', note: 'Links a reason or event to what comes next — continuing a story, or explaining a cause.' },
+        { kana: 'それほど', romaji: 'Sorehodo', pronunciation: '(soh-reh-hoh-doh)', meaning: 'To that extent / not that much', note: 'Usually paired with a negative — "sorehodo muzukashikunai" ("it\'s not THAT difficult").' },
+        { kana: 'やっぱり', romaji: 'Yappari', pronunciation: '(yahp-pah-ree)', meaning: 'As I thought / after all', note: 'Said when something confirms a suspicion, or you revert to your original choice.' },
+        { kana: '全然', romaji: 'Zenzen', pronunciation: '(zen-zen)', meaning: 'Not at all', note: 'Almost always paired with a negative verb — "zenzen wakarimasen" ("I don\'t understand at all").' },
+      ]),
     },
     {
-      type: 'greeting', kana: 'さあ', romaji: 'Saa', pronunciation: '(sah)', meaning: 'Well... (hesitation)',
-      usage: 'An interjection for hesitation or uncertainty ("well, I\'m not sure...") — or, with a different tone, a rallying "well then, let\'s go."',
-    },
-    {
-      type: 'greeting', kana: 'それでは', romaji: 'Soredewa', pronunciation: '(soh-reh-deh-wah)', meaning: 'Well then / In that case',
-      usage: 'A formal transition word — used to move into a new topic, or to close out a conversation or meeting before parting ways.',
-    },
-    {
-      type: 'greeting', kana: '多分', romaji: 'Tabun', pronunciation: '(tah-boon)', meaning: 'Probably / perhaps',
-      usage: 'Softens a statement into a guess rather than a certainty — placed before the rest of the sentence, e.g. "tabun sou desu" ("that\'s probably right").',
-    },
-    {
-      type: 'greeting', kana: 'あ', romaji: 'A', pronunciation: '(ah)', meaning: 'Ah! / Oh!',
-      usage: 'A short interjection for sudden realization or noticing something — like snapping your fingers when you remember something.',
-    },
-    {
-      type: 'greeting', kana: 'ああ', romaji: 'Aa', pronunciation: '(ah-ah)', meaning: 'Ah, yes',
-      usage: 'A softer acknowledgment than あ — used when recalling or confirming something ("ah, right, that\'s the one").',
-    },
-    {
-      type: 'greeting', kana: 'できるだけ', romaji: 'Dekiru dake', pronunciation: '(deh-kee-roo dah-keh)', meaning: 'As much as possible',
-      usage: 'Attached before a request or plan to add "if at all possible" — e.g. "dekiru dake hayaku" ("as soon as possible").',
-    },
-    {
-      type: 'greeting', kana: 'これから', romaji: 'Kore kara', pronunciation: '(koh-reh kah-rah)', meaning: 'From now on / after this',
-      usage: 'Marks a point going forward from right now — "kore kara ganbarimasu" ("I\'ll do my best from here on").',
-    },
-    {
-      type: 'greeting', kana: 'まず', romaji: 'Mazu', pronunciation: '(mah-zoo)', meaning: 'First of all',
-      usage: 'Opens a list of steps or points — "mazu, kore wo shimasu" ("first, I\'ll do this").',
-    },
-    {
-      type: 'greeting', kana: 'もし', romaji: 'Moshi', pronunciation: '(moh-shee)', meaning: 'If / in case',
-      usage: 'Sets up a hypothetical at the start of a sentence — also doubled as もしもし, the standard way to say "hello?" when answering the phone.',
-    },
-    {
-      type: 'greeting', kana: 'なるほど', romaji: 'Naruhodo', pronunciation: '(nah-roo-hoh-doh)', meaning: 'I see / now I understand',
-      usage: 'A reaction showing you just understood or been convinced by something someone said — close to English "I see" or "ahh, got it."',
-    },
-    {
-      type: 'greeting', kana: 'それで', romaji: 'Sorede', pronunciation: '(soh-reh-deh)', meaning: 'And then / because of that',
-      usage: 'Links a reason or event to what comes next — either continuing a story ("and then...") or explaining a cause ("because of that...").',
-    },
-    {
-      type: 'greeting', kana: 'それほど', romaji: 'Sorehodo', pronunciation: '(soh-reh-hoh-doh)', meaning: 'To that extent / not that much',
-      usage: 'Usually paired with a negative ending — "sorehodo muzukashikunai" ("it\'s not THAT difficult") — to downplay a degree.',
-    },
-    {
-      type: 'greeting', kana: 'やっぱり', romaji: 'Yappari', pronunciation: '(yahp-pah-ree)', meaning: 'As I thought / after all',
-      usage: 'Said when something confirms a suspicion or when you change your mind back to your original choice — "yappari, kore ga ii" ("actually, this one\'s better after all").',
-    },
-    {
-      type: 'greeting', kana: '全然', romaji: 'Zenzen', pronunciation: '(zen-zen)', meaning: 'Not at all',
-      usage: 'Almost always paired with a negative verb ending — "zenzen wakarimasen" ("I don\'t understand at all"). Casually, it can also mean "totally" in a positive sentence.',
-    },
-    {
-      type: 'greeting', kana: 'ちゃん', romaji: 'Chan', pronunciation: '(chahn)', meaning: 'Familiar name suffix (affectionate)',
-      usage: 'Attached to a name for children, close female friends, or pets — carries warmth and familiarity, never used with someone you\'d address formally.',
-    },
-    {
-      type: 'greeting', kana: '君', romaji: 'Kun', pronunciation: '(koon)', meaning: 'Familiar name suffix (for boys/young men)',
-      usage: 'Attached to a name for boys, younger men, or by a senior addressing a junior — the male-leaning counterpart to ちゃん. (Same kanji as きみ, "you" — different reading, different job, as a suffix vs. a standalone pronoun.)',
-    },
-    {
-      type: 'greeting', kana: '用', romaji: 'You', pronunciation: '(yoh)', meaning: 'Business / errand / use',
-      usage: 'A short way to refer to something you need to do — "you ga arimasu" ("I have some business/errand [to attend to]").',
+      type: 'grammar-intro',
+      sectionLabel: 'Name suffixes & misc',
+      explain: ['Two familiar name suffixes, plus one handy standalone noun.'],
+      diagramSvg: buildFillerCardTable([
+        { kana: 'ちゃん', romaji: 'Chan', pronunciation: '(chahn)', meaning: 'Familiar name suffix (affectionate)', note: 'Attached to a name for children, close female friends, or pets — warmth and familiarity, never formal.' },
+        { kana: '君', romaji: 'Kun', pronunciation: '(koon)', meaning: 'Familiar name suffix (for boys/young men)', note: 'The male-leaning counterpart to ちゃん. Same kanji as きみ ("you") — different reading, different job.' },
+        { kana: '用', romaji: 'You', pronunciation: '(yoh)', meaning: 'Business / errand / use', note: 'A short way to refer to something you need to do — "you ga arimasu" ("I have an errand to attend to").' },
+      ]),
     },
     {
       // Two NPC cats using shelf-02 vocab (plus one already-known
@@ -3638,6 +3682,15 @@ const LESSON_CONTENT = {
     },
     {
       type: 'grammar-intro',
+      sectionLabel: 'The printer',
+      recapChips: ['printer, next to my desk'],
+      bigIdea: 'See the printer next to my desk? Click it any time.',
+      explain: [
+        'Every lesson only teaches a curated, digestible slice of its topic — plenty of nouns, adjectives, verbs, conjugation patterns, and particles didn\'t make the cut. The printer has the FULL reference list for each of those, ready to print, all in one place.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
       sectionLabel: 'The staircase',
       explain: [
         'At the far end waits the final quiz — it only unlocks once every shelf and review pile is done. Pass it, and N4 is next.',
@@ -3647,7 +3700,7 @@ const LESSON_CONTENT = {
       type: 'grammar-intro',
       sectionLabel: 'Everything else',
       explain: [
-        'The sofas, plants, rug, and my desk are just here to make the library feel lived-in — there\'s nothing to click on them. Your progress saves automatically, so feel free to close the game any time and pick up right where you left off.',
+        'The sofas, plants, and rug are just here to make the library feel lived-in — there\'s nothing to click on them. Your progress saves automatically, so feel free to close the game any time and pick up right where you left off.',
       ],
       takeaway: 'Lost? Just come back and ask me again — I\'m not going anywhere.',
     },
@@ -5626,6 +5679,22 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  // The printer prop by reception (see buildPrinterStation) — always-
+  // available content (kind: 'npc', not gated), same reasoning as the two
+  // TVs below. A single page whose printLinks (attached in startLesson
+  // via ALL_PRINT_LINKS, since entry.id === 'printer-station' there)
+  // covers every lesson's PDF in one place, for words/patterns that
+  // didn't fit in the curated in-game lessons.
+  'printer-station': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'The printer',
+      bigIdea: 'Not every word or pattern fits in a lesson — the full reference lists are printable here.',
+      explain: [
+        'Each lesson only teaches a curated, digestible subset. Nouns, pronouns, adjectives, verbs, conjugations, and particles all have a much longer full list than what made it into the shelves — print any of them below.',
+      ],
+    },
+  ],
   // The two reference-kiosk TVs (see buildFurniture's buildTV) — always-
   // available content (kind: 'npc', not gated behind SHELF_PREREQ), out
   // of shelf-numeric order deliberately, same reasoning as shelf-17 used
@@ -6882,6 +6951,11 @@ const PRINT_LINKS_BY_SHELF = {
     { label: 'Particles', href: encodeURI('../../assets/lesson pdf/N5 particles - Particles.pdf') },
   ],
 };
+// Every PDF from PRINT_LINKS_BY_SHELF in one flat list, for the printer
+// prop near reception (see buildPrinterStation) — unlike the per-lesson
+// popup links, this is reachable any time, not just while a specific
+// lesson is open, so it needs every reference sheet in one place.
+const ALL_PRINT_LINKS = Object.values(PRINT_LINKS_BY_SHELF).flat();
 // Per-action, per-color sprite strips for LessonBox 'conversation' pages
 // (see resolveConversationTurns below) — all cropped from the same
 // "<color> cat with text.png" packs via a blob-center scan (fixed-grid
@@ -7558,6 +7632,13 @@ class LibraryScene extends Phaser.Scene {
     // to strip this source file's ~40% transparent padding.
     this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
     this.load.image('finishFlagIcon', '../../assets/images/ui/finish-line-Original.png');
+    // Printer prop — sits on top of the small drawer-front table (see
+    // ASSET_RECTS.printerTable) beside reception; clicking it opens every
+    // lesson's "print the full list" PDF in one place (see
+    // buildPrinterStation). Full 1024x1024 source, scaled way down at
+    // display time — no crop needed, the source has no surrounding
+    // padding to trim (confirmed by eye against a transparent background).
+    this.load.image('printerRaw', '../../assets/images/lesson/printer-image-Original.png');
     // Calico sensei — a stationary NPC sitting at the reception desk.
     // Loaded as a plain image, not a spritesheet: the source PNG (decoded
     // from the .aseprite file, no exported PNG existed yet) holds 3
@@ -8092,7 +8173,9 @@ class LibraryScene extends Phaser.Scene {
     // baseScale * ...) every frame while nearest, which would silently
     // fight a setDisplaySize-derived size.
     const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'tvCabinetTex');
-    const tvScale = 1.3;
+    // Bumped 1.3->1.5 per explicit "make the TV a few pixels bigger"
+    // feedback, alongside the tvCabinet re-crop above.
+    const tvScale = 1.5;
     const tvDisplayW = ASSET_RECTS.tvCabinet.w * tvScale;
     const tvDisplayH = ASSET_RECTS.tvCabinet.h * tvScale;
     const carpetTopY = LAYOUT.carpetGlobeY - carpetH / 2;
@@ -8115,12 +8198,13 @@ class LibraryScene extends Phaser.Scene {
 
     // 2 shoe cabinets, symmetric, flanking the corridor between
     // reception and spawn — per the reference diagram's "CAB CAB". The
-    // new cabinet art is tall and narrow (native 39x80, vs the old
-    // wide-and-short 48x28 crop) so the display scale is much smaller
-    // than before to land at a similar on-screen footprint. Scaled up
-    // ~1.4x (0.9->1.26) alongside the reception cluster per explicit
-    // "enlarge... the shoe cabinet" request.
-    const shoeCabinetScale = 1.26;
+    // previous crop rect ({x:176,y:80,w:39,h:80}) bled into the
+    // neighboring chest item on the sheet; re-measured via per-row pixel
+    // inspection to the cabinet's true tight bounds (native 19x47).
+    // Scale bumped up (1.26->2.15) so the display height still lands at
+    // roughly the same on-screen footprint as before the bleed was cut
+    // away, rather than shrinking the prop.
+    const shoeCabinetScale = 2.15;
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     const cabinetY = LAYOUT.spawnY - shoeCabinetH;
@@ -8409,10 +8493,13 @@ class LibraryScene extends Phaser.Scene {
     // bumping them enlarges the whole reception cluster together. Bumped
     // again (106->118) per "a little bit bigger", then again (118->150)
     // per plain "make the table more bigger" — rug kept at the same
-    // ratio to the desk each time (~1.22x). Bumped again (150->190).
+    // ratio to the desk each time (~1.22x). Bumped again (150->190), then
+    // matched exactly to rugW (190->232) per "the reception table needs
+    // to be same big as the carpet in front of it" — desk and rug now
+    // share the same display width.
     // Chair was independently resized/repositioned per its own explicit
     // feedback and stays fixed at 46 here (not tied to deskW).
-    const deskW = 190;
+    const deskW = 232;
     const deskH = ASSET_RECTS.receptionDesk.h * (deskW / ASSET_RECTS.receptionDesk.w);
     const rugW = 232;
     const rugH = ASSET_RECTS.receptionRug.h * (rugW / ASSET_RECTS.receptionRug.w);
@@ -8457,6 +8544,69 @@ class LibraryScene extends Phaser.Scene {
     this.buildDeskItems(originX, originY + 10, deskW / ASSET_RECTS.receptionDesk.w);
 
     this.buildReceptionSensei(chairX + chairW / 2, chairY + chairH / 2);
+    this.buildPrinterStation(originX, originY + 10, deskH);
+  }
+
+  // Printer prop on its own small side table, on the left of the
+  // reception desk (per explicit request) — an always-available
+  // interactive (kind: 'npc', same pattern as Neko-sensei/the TVs) that
+  // opens every lesson's "print the full list" PDF in one place, instead
+  // of only being reachable from inside each individual lesson's popup.
+  // deskOriginX/deskOriginY/deskH are the desk's own placed position/size
+  // (from buildReception, not re-derived) so the table lines up with it
+  // regardless of future desk resizes.
+  buildPrinterStation(deskOriginX, deskOriginY, deskH) {
+    const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.printerTable, 'printerTableTex');
+    // Table nudged smaller (3.2->2.8->2.7) and the printer nudged bigger
+    // (34->44) per explicit feedback across two rounds — was reading as
+    // a small printer lost on an oversized table.
+    const tableScale = 2.7;
+    const tableDisplayW = ASSET_RECTS.printerTable.w * tableScale;
+    const tableDisplayH = ASSET_RECTS.printerTable.h * tableScale;
+    const tableGap = 30; // clearance west of the desk's left edge
+    const tableX = deskOriginX - tableGap - tableDisplayW;
+    const tableY = deskOriginY + deskH - tableDisplayH; // bottoms align with the desk's own base line
+    this.add.image(tableX, tableY, tableKey).setOrigin(0, 0).setDepth(1)
+      .setDisplaySize(tableDisplayW, tableDisplayH);
+
+    // setScale (not setDisplaySize) — same reason as every other clickable
+    // prop in this file: update()'s proximity pulse calls entry.sprite.
+    // setScale(entry.baseScale * ...) every frame while nearest, which
+    // would silently fight a setDisplaySize-derived size.
+    //
+    // printerRaw's source PNG is 1024x1024 but the actual printer glyph
+    // only occupies a {130,152,766,769} sub-region (confirmed by alpha
+    // scan) — asymmetric padding (152px on top, only 103px on bottom)
+    // around it. Anchoring origin(0.5,1) against the FULL untrimmed
+    // texture put the sprite's "bottom" ~100 native px below where the
+    // printer actually visually ends, reading as floating above the
+    // table with a gap instead of sitting on it — found live per this
+    // project's "measure, don't guess" pattern, same class of bug
+    // savePointRaw already needed cropToTexture for. Cropped here the
+    // same way, so the bottom anchor lines up with the real glyph edge.
+    const printerRect = { x: 130, y: 152, w: 766, h: 769 };
+    const printerKey = cropToTexture(this, 'printerRaw', printerRect, 'printerCroppedTex');
+    const printerDisplayW = 44;
+    const printerScale = printerDisplayW / printerRect.w;
+    // Centered on the table's own width so it reads as aligned with it,
+    // not offset to one side.
+    const printerX = tableX + tableDisplayW / 2;
+    // Bottom edge sits right at the tabletop's top edge (small 4px
+    // overlap for "grounding", like DESK_ITEMS do on the reception desk)
+    // so it reads as sitting ON TOP of the table, not floating above or
+    // sinking into it.
+    const printerY = tableY + 4;
+    const printer = this.add.image(printerX, printerY, printerKey)
+      .setOrigin(0.5, 1).setScale(printerScale).setDepth(2);
+
+    const printerEntry = {
+      id: 'printer-station', kind: 'npc', title: 'Printer',
+      sprite: printer, x: printerX, y: printerY,
+      baseScale: printerScale,
+    };
+    printer.setInteractive({ useHandCursor: true });
+    printer.on('pointerdown', () => this.handleInteractiveClick(printerEntry));
+    this.interactives.push(printerEntry);
   }
 
   // Calico sensei — sits in the reception chair, idling while she waits
@@ -8478,7 +8628,12 @@ class LibraryScene extends Phaser.Scene {
     // frame she's the nearest interactive, which would silently override
     // a setDisplaySize-derived scale and snap her back to native size
     // the moment the player walked up. baseScale below must match.
-    const senseiScale = 1.3;
+    // Bumped 1.3->2.2 per explicit "make her bigger than the chair"
+    // feedback — at 1.3 she displayed at 36x42 against the chair's own
+    // 46x65 display size (armchairFacingDown scaled to chairW=46 in
+    // buildReception), reading as smaller than the seat itself. 2.2
+    // gives her 61.6x70.4, clearing the chair in both dimensions.
+    const senseiScale = 2.2;
     // Anchored by her feet (origin 0.5, 1) a few px above the chair's
     // vertical center so she reads as sitting IN the seat rather than
     // floating above it or sunk into the desk.
@@ -8774,7 +8929,7 @@ class LibraryScene extends Phaser.Scene {
       // pdf" request, later extended to adjectives/verbs/conjugations/
       // particles too) — the full reference lists are one click away
       // instead of cramming hundreds more words/patterns into the lesson.
-      printLinks: PRINT_LINKS_BY_SHELF[entry.id],
+      printLinks: entry.id === 'printer-station' ? ALL_PRINT_LINKS : PRINT_LINKS_BY_SHELF[entry.id],
       printIconPath: '../../assets/images/lesson/printer-image-Original.png',
       onComplete: () => {
         this.progress[entry.id] = true;

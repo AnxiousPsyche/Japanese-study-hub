@@ -451,8 +451,16 @@
           <div class="lesson-box__term-desc">${t.desc}</div>
         `).join('')
       }</div>` : '';
+      // hasIntroContent (declared here, ahead of its other use below, so
+      // diagramHtml can read it too) — a page that already renders its
+      // own sectionLabel via the intro block (bigIdea/explain/pattern/
+      // etc. — e.g. a titled data table authored as diagramSvg) doesn't
+      // need a second, redundant "Diagram" header stacked right below
+      // it, so the generic label only shows when there's no intro block
+      // to carry a real heading instead.
+      const hasIntroContent = Boolean(page.bigIdea || page.analogy || page.pattern || page.recapChips || (page.explain && page.explain.length) || page.tensePair || page.terms || page.takeaway);
       const diagramHtml = page.diagramSvg ? `
-        <div class="lesson-box__section-label">Diagram</div>
+        ${hasIntroContent ? '' : '<div class="lesson-box__section-label">Diagram</div>'}
         <div class="lesson-box__diagram-wrap">
           ${page.diagramSvg}
           ${page.diagramCaption ? `<div class="lesson-box__diagram-caption">${page.diagramCaption}</div>` : ''}
@@ -486,8 +494,8 @@
       // this lets a single lesson split "how this works", "diagram",
       // "samples", and "notes" across separate pages (one type per
       // page, click-to-advance) instead of forcing them onto one long
-      // scrolling page.
-      const hasIntroContent = Boolean(page.bigIdea || page.analogy || page.pattern || page.recapChips || (page.explain && page.explain.length) || page.tensePair || page.terms || page.takeaway);
+      // scrolling page. (hasIntroContent itself is declared above,
+      // ahead of diagramHtml, which needs it too.)
       const divider = '<div class="lesson-box__divider"></div>';
       // page.dividedIntro: true inserts the same dashed divider ALREADY
       // used between top-level sections (intro/diagram/samples/notes)

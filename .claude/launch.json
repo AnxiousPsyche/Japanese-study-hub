@@ -1770,6 +1770,76 @@
         "25810"
       ],
       "port": 25810
+    },
+    {
+      "name": "jp-library-static-printer-station",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "25911"
+      ],
+      "port": 25911
+    },
+    {
+      "name": "jp-library-static-sizing-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26012"
+      ],
+      "port": 26012
+    },
+    {
+      "name": "jp-library-static-fillercards",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26113"
+      ],
+      "port": 26113
+    },
+    {
+      "name": "jp-library-static-fillercard-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26214"
+      ],
+      "port": 26214
+    },
+    {
+      "name": "jp-library-static-fillercard-fix2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26315"
+      ],
+      "port": 26315
+    },
+    {
+      "name": "jp-library-static-shoecab-printer-reception",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26416"
+      ],
+      "port": 26416
+    },
+    {
+      "name": "jp-library-static-verify-round6",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26517"
+      ],
+      "port": 26517
     }
   ],
   "autoVerify": true
