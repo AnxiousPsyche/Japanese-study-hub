@@ -102,7 +102,7 @@ const ASSET_RECTS = {
   // drawer-pull band, dark base), replacing the old checkered-basket
   // cubby shelf as the "shoe cabinet" placed near the start entrance,
   // per an explicit reference image.
-  shoeCabinet: { x: 173, y: 81, w: 19, h: 47 },
+  shoeCabinet: { x: 176, y: 80, w: 15, h: 48 },
   // TopDownHouse_FurnitureState1.png — plain table + chair (replaces
   // furniture03's table/floorBench in the decor rows) and the 4-sofa
   // family (2-seat couch, 3-seat w/ pillows, armchair w/ pillow, plain
@@ -142,7 +142,7 @@ const ASSET_RECTS = {
   // trimmed (their exact boundary against the wardrobe piece above was
   // genuinely ambiguous at 1px resolution) — the knob itself, screen,
   // and drawer are all fully intact.
-  tvCabinet: { x: 196, y: 51, w: 31, h: 29 },
+  tvCabinet: { x: 193, y: 50, w: 31, h: 30 },
   // furniture03.png — small drawer-front side table, per the user's
   // reference screenshot (the printer prop sits on top of it, see
   // buildPrinterStation). Isolated via connected-component flood fill
@@ -450,6 +450,65 @@ const REVIEW_3_QUIZ_QUESTIONS = [
   {
     kind: 'fill', prompt: '"Won\'t you eat together?":',
     before: '一緒に', after: '。', answer: '食べませんか', altAnswers: ['tabemasenka'],
+  },
+];
+
+// Same pattern as REVIEW_1/2/3_QUIZ_QUESTIONS above — one shared array
+// referenced by both review-4's 'quiz-review' and 'quiz-answers' pages
+// so they can't drift out of sync. ~3 questions per shelf-13..16, in
+// shelf order.
+const REVIEW_4_QUIZ_QUESTIONS = [
+  {
+    kind: 'mc', prompt: 'Which is the correct て-form of 読む ("to read")?',
+    choices: ['読んで', '読いて', '読って', '読みて'], correctIndex: 0,
+  },
+  {
+    kind: 'fill', prompt: '"Please write it.":',
+    before: '', after: 'ください。', answer: '書いて', altAnswers: ['kaite'],
+  },
+  {
+    kind: 'mc', prompt: 'Which verb breaks the く→いて rule (its て-form is 行って, not 行いて)?',
+    choices: ['行く', '書く', '聞く', '働く'], correctIndex: 0,
+  },
+  {
+    kind: 'mc', prompt: 'What does 〜ませんでした mean?',
+    choices: ['present negative', 'past affirmative', 'past negative', 'a polite request'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: '"I met a friend.":',
+    before: '友達に', after: '。', answer: '会いました', altAnswers: ['aimashita'],
+  },
+  {
+    kind: 'mc', prompt: 'Which ending turns 起きます into "I don\'t wake up"?',
+    choices: ['起きました', '起きません', '起きませんでした', '起きて'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"It\'s expensive, so I don\'t buy it.":',
+    before: '', after: '、買いません。', answer: '高いから', altAnswers: ['takaikara'],
+  },
+  {
+    kind: 'mc', prompt: 'Which connector means "and" but only joins nouns, never verbs?',
+    choices: ['て-form', 'から', 'けど', 'と'], correctIndex: 3,
+  },
+  {
+    kind: 'fill', prompt: '"It\'s old, but I like it.":',
+    before: '', after: '、好きです。', answer: '古いけど', altAnswers: ['furuikedo'],
+  },
+  {
+    kind: 'mc', prompt: 'Which particle singles something out, often answering an unspoken "which one?"?',
+    choices: ['は', 'が', 'も', 'の'], correctIndex: 1,
+  },
+  {
+    kind: 'fill', prompt: '"I study at the library.":',
+    before: '図書館', after: '勉強します。', answer: 'で', altAnswers: ['de'],
+  },
+  {
+    kind: 'mc', prompt: 'What does も mean?',
+    choices: ['topic marker', 'object marker', 'also', 'because'], correctIndex: 2,
+  },
+  {
+    kind: 'fill', prompt: '"The book is on top of the desk.":',
+    before: '本は机', after: 'あります。', answer: 'の上に', altAnswers: ['no ue ni'],
   },
 ];
 
@@ -4663,6 +4722,144 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  // Grammar Mastery Review — same shape as review-1/review-2/review-3:
+  // intro, one recap per shelf (13-16) reusing that shelf's own
+  // vocab/pattern data verbatim, 2 short grammar-point recaps for the
+  // trickiest bits (て-form's 行く exception, は vs が), then
+  // quiz-review -> quiz-answers -> quiz-score off one shared
+  // REVIEW_4_QUIZ_QUESTIONS array.
+  'review-4': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Grammar Mastery Review',
+      bigIdea: 'Before the final quiz, let\'s make sure て-form through Particle Mastery actually stuck.',
+      explain: [
+        'This review recaps the て-form, Past & Negative Tense, Sentence Construction, and Particle Mastery — then closes with a 13-question quiz (multiple choice + fill-in-the-blank). The quiz doesn\'t grade as you go: answer everything first, then the next page shows the answer key so you can self-check, followed by your score.',
+      ],
+      takeaway: 'Skim each recap, then take the quiz at the end — no pressure, you can revisit this pile any time.',
+    },
+    {
+      // Recap 1/4: て-form — divider first, since 'conjugation' rows
+      // have no title field of their own (same reason shelf-13 itself
+      // pairs a divider page with its own reference table).
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: て-form',
+      bigIdea: 'One shape, many jobs — every verb from shelf 13, dictionary form to て-form.',
+    },
+    {
+      // The same 18 rows shelf-13's own て-form reference table uses,
+      // verbatim.
+      type: 'conjugation',
+      rows: [
+        { kana: '起きる → 起きて', romaji: 'okite', label: 'wake up' },
+        { kana: '食べる → 食べて', romaji: 'tabete', label: 'eat' },
+        { kana: '行く → 行って', romaji: 'itte', label: 'go (exception!)' },
+        { kana: '話す → 話して', romaji: 'hanashite', label: 'speak' },
+        { kana: '帰る → 帰って', romaji: 'kaette', label: 'go home' },
+        { kana: '勉強する → 勉強して', romaji: 'benkyoushite', label: 'study' },
+        { kana: '読む → 読んで', romaji: 'yonde', label: 'read' },
+        { kana: '買う → 買って', romaji: 'katte', label: 'buy' },
+        { kana: '書く → 書いて', romaji: 'kaite', label: 'write' },
+        { kana: '聞く → 聞いて', romaji: 'kiite', label: 'listen / ask' },
+        { kana: '会う → 会って', romaji: 'atte', label: 'meet' },
+        { kana: '立つ → 立って', romaji: 'tatte', label: 'stand' },
+        { kana: '座る → 座って', romaji: 'suwatte', label: 'sit' },
+        { kana: '働く → 働いて', romaji: 'hataraite', label: 'work' },
+        { kana: '休む → 休んで', romaji: 'yasunde', label: 'rest' },
+        { kana: '遊ぶ → 遊んで', romaji: 'asonde', label: 'play' },
+        { kana: '分かる → 分かって', romaji: 'wakatte', label: 'understand' },
+        { kana: '歌う → 歌って', romaji: 'utatte', label: 'sing' },
+      ],
+    },
+    {
+      // The trickiest て-form point, called out on its own — the 行く
+      // exception (borrows the う・る・つ ending instead of following
+      // く's own いて rule).
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: the 行く exception',
+      pattern: [
+        { text: '行く', role: 'subject' }, { text: '→', role: 'copula' }, { text: '行って', role: 'predicate' },
+      ],
+      explain: [
+        'Every other く-ending verb takes いて (書く→書いて, 働く→働いて) — 行く breaks its own rule and borrows って from the う・る・つ group instead. This is the single most common て-form mistake, worth memorizing on its own.',
+      ],
+    },
+    {
+      // Recap 2/4: Past & Negative — the same 6 rows shelf-14's own
+      // "New Patterns: Past & Negative" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Past & Negative Tense',
+      headers: ['Form', 'Romaji', 'Label'],
+      rows: [
+        { kana: '起きます → 起きません', romaji: 'okimasen', meaning: 'present negative' },
+        { kana: '起きます → 起きました', romaji: 'okimashita', meaning: 'past' },
+        { kana: '起きます → 起きませんでした', romaji: 'okimasendeshita', meaning: 'past negative' },
+        { kana: '行きます → 行きませんでした', romaji: 'ikimasendeshita', meaning: 'iku, past negative' },
+        { kana: '話します → 話しました', romaji: 'hanashimashita', meaning: 'hanasu, past' },
+        { kana: '勉強します → 勉強しません', romaji: 'benkyoushimasen', meaning: 'suru, present negative' },
+      ],
+    },
+    {
+      // Recap 3/4: Connectors — the same 6 rows shelf-15's own "New
+      // Patterns: Connectors" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Sentence Construction',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜から', romaji: '~kara', meaning: 'because... (reason first)' },
+        { kana: '〜けど', romaji: '~kedo', meaning: 'but...' },
+        { kana: '〜と〜', romaji: '~to~', meaning: '...and... (nouns only)' },
+        { kana: '静かだから', romaji: 'shizuka dakara', meaning: 'because it\'s quiet' },
+        { kana: '古いけど', romaji: 'furui kedo', meaning: 'it\'s old, but' },
+        { kana: '本とかばん', romaji: 'hon to kaban', meaning: 'a book and a bag' },
+      ],
+    },
+    {
+      // Recap 4/4: Particles — the same 11 rows shelf-16's own "Particle
+      // Reference" summary page uses, verbatim.
+      type: 'summary',
+      title: 'Recap: Particle Mastery',
+      headers: ['Particle', 'Romaji', 'Job'],
+      rows: [
+        { kana: 'は', romaji: 'wa', meaning: 'topic marker' },
+        { kana: 'が', romaji: 'ga', meaning: 'subject marker (singles out)' },
+        { kana: 'を', romaji: 'o', meaning: 'object marker' },
+        { kana: 'に', romaji: 'ni', meaning: 'destination / location of being' },
+        { kana: 'で', romaji: 'de', meaning: 'location of an action' },
+        { kana: 'の', romaji: 'no', meaning: 'possessive' },
+        { kana: 'か', romaji: 'ka', meaning: 'question marker' },
+        { kana: 'と', romaji: 'to', meaning: 'and / with' },
+        { kana: 'も', romaji: 'mo', meaning: 'also' },
+        { kana: 'から', romaji: 'kara', meaning: 'because' },
+        { kana: 'けど', romaji: 'kedo', meaning: 'but' },
+      ],
+    },
+    {
+      // The trickiest particle point, called out on its own — は vs が.
+      type: 'grammar-intro',
+      sectionLabel: 'Recap: は vs が',
+      explain: [
+        '猫はかわいいです ("As for the cat, it\'s cute") makes a general statement with は. 猫がかわいいです ("IT\'S the cat that\'s cute") singles the cat out with が — often answering an unspoken "which one?"',
+      ],
+    },
+    {
+      type: 'quiz-review',
+      sectionLabel: 'Grammar Mastery Review Quiz',
+      intro: 'Answer each question, then continue to see the answer key. 13 questions across the 4 lessons.',
+      questions: REVIEW_4_QUIZ_QUESTIONS,
+    },
+    {
+      type: 'quiz-answers',
+      sectionLabel: 'Answer Key',
+      questions: REVIEW_4_QUIZ_QUESTIONS,
+    },
+    {
+      // note omitted deliberately — quizScoreMessage in lesson-box.js
+      // auto-picks a retro-cat reaction line from the score percentage.
+      type: 'quiz-score',
+      title: 'Grammar Mastery Review — Score',
+    },
+  ],
   'shelf-13': [
     {
       // Page 1/12: intro — motivate て-form before drilling the rules.
@@ -6855,33 +7052,52 @@ const BOOK_PILE_DATA = [
 // relative to wherever the desk itself is drawn. tier is the depth
 // layer (1=back, 2=middle, 3=front); rot is a CSS-style rotation in
 // degrees, applied around each item's own center.
+// w/h were originally each exactly 0.65x their real ASSET_RECTS crop size
+// (e.g. deskStripedStack crops at 22x23 but was listed here as 14.3x14.95)
+// — an intentional shrink at authoring time that, once the desk itself
+// got scaled up across several rounds, started reading as "toy-sized"
+// clutter on a much bigger desk. Restored to each item's true crop
+// size (1:1 with the desk's own native pixel density) per explicit
+// "items need to be bigger, like actual item size proportioned to the
+// size of the table" feedback — x/y (top-left) unchanged, so items now
+// simply occupy their real footprint from the same anchor point.
 const DESK_ITEMS = [
   // Wings (the pillar-top surfaces flanking the notch) — 1 book each.
-  { key: 'stripedStack', rectKey: 'deskStripedStack', x: 4, y: 4, w: 14.3, h: 14.95, tier: 1, rot: 0 },
-  { key: 'flatBook', rectKey: 'deskFlatBook', x: 150, y: 4, w: 15.6, h: 11.05, tier: 1, rot: 0 },
-  // Bottom-left book cluster.
-  { key: 'tallStack', rectKey: 'deskTallStack', x: 20, y: 30, w: 19.5, h: 31.2, tier: 1, rot: 0 },
-  { key: 'greenLedger', rectKey: 'deskGreenLedger', x: 43.5, y: 65, w: 15.6, h: 13, tier: 2, rot: 0 },
-  { key: 'redBook', rectKey: 'deskRedBook', x: 62.1, y: 63.7, w: 15.6, h: 14.3, tier: 2, rot: 0 },
-  // Bottom-right book cluster.
-  { key: 'thickStack', rectKey: 'deskThickStack', x: 150.85, y: 30, w: 20.15, h: 29.25, tier: 1, rot: 0 },
-  { key: 'ribbonScroll', rectKey: 'deskRibbonScroll', x: 133.55, y: 65.65, w: 14.3, h: 12.35, tier: 2, rot: 0 },
-  { key: 'openBook', rectKey: 'deskOpenBook', x: 101.3, y: 62.4, w: 29.25, h: 15.6, tier: 2, rot: 0 },
-  // Papers + dice, scattered around the center.
-  { key: 'clipboard', rectKey: 'deskClipboard', x: 103.95, y: 51.06, w: 7.8, h: 10.4, tier: 3, rot: 0.3 },
-  { key: 'paperWavy', rectKey: 'deskPaperWavy', x: 150.35, y: 58.55, w: 11.05, h: 12.35, tier: 3, rot: 0.2 },
-  { key: 'paperFanned', rectKey: 'deskPaperFanned', x: 133.56, y: 63.22, w: 13.65, h: 13, tier: 3, rot: -3.4 },
-  { key: 'paperStackB', rectKey: 'deskPaperStackB', x: 152.92, y: 48.67, w: 9.75, h: 11.7, tier: 3, rot: -2.5 },
-  { key: 'dice', rectKey: 'deskDice', x: 156.86, y: 45.74, w: 5.2, h: 4.55, tier: 3, rot: -0.9 },
+  { key: 'stripedStack', rectKey: 'deskStripedStack', x: 4, y: 4, w: 22, h: 23, tier: 1, rot: 0 },
+  { key: 'flatBook', rectKey: 'deskFlatBook', x: 150, y: 4, w: 24, h: 17, tier: 1, rot: 0 },
+  // Bottom-left book cluster. greenLedger/redBook nudged up 12 (65->53,
+  // 63.7->51.7) per "the books need to be moved upwards" — were sitting
+  // low enough to read as about to slide off the desk's front edge.
+  { key: 'tallStack', rectKey: 'deskTallStack', x: 20, y: 30, w: 30, h: 48, tier: 1, rot: 0 },
+  { key: 'greenLedger', rectKey: 'deskGreenLedger', x: 43.5, y: 53, w: 24, h: 20, tier: 2, rot: 0 },
+  { key: 'redBook', rectKey: 'deskRedBook', x: 62.1, y: 51.7, w: 24, h: 22, tier: 2, rot: 0 },
+  // Bottom-right book cluster. ribbonScroll/openBook likewise nudged up
+  // 12 per the same feedback ("the blue opened book needs to be moved
+  // upwards a little as it might fall").
+  { key: 'thickStack', rectKey: 'deskThickStack', x: 150.85, y: 30, w: 31, h: 45, tier: 1, rot: 0 },
+  { key: 'ribbonScroll', rectKey: 'deskRibbonScroll', x: 133.55, y: 53.65, w: 22, h: 19, tier: 2, rot: 0 },
+  { key: 'openBook', rectKey: 'deskOpenBook', x: 101.3, y: 50, w: 45, h: 24, tier: 2, rot: 0 },
+  // Papers + dice, re-centered horizontally (desk native width is 191,
+  // center ~95.5) — several were sitting far enough right (x~133-157)
+  // to read as part of the right book cluster rather than "in the
+  // middle of the table", per explicit feedback.
+  { key: 'clipboard', rectKey: 'deskClipboard', x: 100, y: 44, w: 12, h: 16, tier: 3, rot: 0.3 },
+  { key: 'paperWavy', rectKey: 'deskPaperWavy', x: 116, y: 46, w: 17, h: 19, tier: 3, rot: 0.2 },
+  { key: 'paperFanned', rectKey: 'deskPaperFanned', x: 76, y: 44, w: 21, h: 20, tier: 3, rot: -3.4 },
+  { key: 'paperStackB', rectKey: 'deskPaperStackB', x: 106, y: 34, w: 15, h: 18, tier: 3, rot: -2.5 },
+  { key: 'dice', rectKey: 'deskDice', x: 120, y: 38, w: 8, h: 7, tier: 3, rot: -0.9 },
   // Coffee mug — top-left-of-center.
-  { key: 'mug', rectKey: 'deskMug', x: 68.32, y: 32, w: 6.5, h: 8.45, tier: 2, rot: 0 },
+  { key: 'mug', rectKey: 'deskMug', x: 68.32, y: 32, w: 10, h: 13, tier: 2, rot: 0 },
   // Parchment scroll — dead center.
-  { key: 'scrap', rectKey: 'deskScrap', x: 87.7, y: 51.08, w: 15.6, h: 5.85, tier: 3, rot: 0 },
-  // Paper stack + quill cup + inkwell&quill, grouped top-right-of-center,
-  // each rotated 180deg.
-  { key: 'paperStackA', rectKey: 'deskPaperStackA', x: 103.05, y: 32, w: 14.3, h: 13.65, tier: 2, rot: 180 },
-  { key: 'quillCup', rectKey: 'deskQuillCup', x: 120.35, y: 32, w: 6.5, h: 14.3, tier: 2, rot: 180 },
-  { key: 'inkwellQuill', rectKey: 'deskInkwellQuill', x: 129.85, y: 32, w: 12.35, h: 15.6, tier: 2, rot: 180 },
+  { key: 'scrap', rectKey: 'deskScrap', x: 87.7, y: 47, w: 24, h: 9, tier: 3, rot: 0 },
+  // Paper stack, grouped top-right-of-center, rotated 180deg (unrelated
+  // to the quill cup/inkwell below — kept as-is, not part of the
+  // "upside down" feedback).
+  { key: 'paperStackA', rectKey: 'deskPaperStackA', x: 103.05, y: 32, w: 22, h: 21, tier: 2, rot: 180 },
+  // Quill cup + inkwell&quill — explicitly flipped upside down (not just
+  // rotated 180, which also mirrors left/right) per explicit feedback.
+  { key: 'quillCup', rectKey: 'deskQuillCup', x: 120.35, y: 32, w: 10, h: 22, tier: 2, flipY: true },
+  { key: 'inkwellQuill', rectKey: 'deskInkwellQuill', x: 129.85, y: 32, w: 19, h: 24, tier: 2, flipY: true },
 ];
 
 const SAVE_KEY = 'nekoBunko.n5.progress';
@@ -8198,13 +8414,19 @@ class LibraryScene extends Phaser.Scene {
 
     // 2 shoe cabinets, symmetric, flanking the corridor between
     // reception and spawn — per the reference diagram's "CAB CAB". The
-    // previous crop rect ({x:176,y:80,w:39,h:80}) bled into the
-    // neighboring chest item on the sheet; re-measured via per-row pixel
-    // inspection to the cabinet's true tight bounds (native 19x47).
-    // Scale bumped up (1.26->2.15) so the display height still lands at
-    // roughly the same on-screen footprint as before the bleed was cut
-    // away, rather than shrinking the prop.
-    const shoeCabinetScale = 2.15;
+    // crop rect was re-measured twice: first pass ({x:176,y:80,w:39,h:80})
+    // bled into the neighboring chest on the right; second pass
+    // ({x:173,y:81,w:19,h:47}) shifted the origin into the transparent
+    // gap left of the cabinet AND clipped 1px off the true top edge,
+    // reading as "cut off at the top". Final bounds found via exact
+    // per-pixel alpha column/row scans (not eyeballed): the sheet packs
+    // this item edge-to-edge with neighbors on both sides with only a
+    // few px of true transparent gap, so a bounding-box/flood scan
+    // reliably merges neighbors — the reliable method here was reading
+    // raw RGBA values across a single row/column to find the exact
+    // opaque-run boundaries. True native bounds: 15x48.
+    // Scale kept near the same on-screen footprint as before re-measure.
+    const shoeCabinetScale = 2.1;
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     const cabinetY = LAYOUT.spawnY - shoeCabinetH;
@@ -8464,6 +8686,10 @@ class LibraryScene extends Phaser.Scene {
       const img = this.add.image(cx, cy, texKey).setOrigin(0.5, 0.5)
         .setDisplaySize(w, h).setDepth(1 + item.tier * 0.1);
       if (item.rot) img.setAngle(item.rot);
+      // Vertical mirror, distinct from `rot` (a point-rotation, which also
+      // mirrors left/right) — used where "upside down" specifically means
+      // flipped top-to-bottom, not spun 180.
+      if (item.flipY) img.setFlipY(true);
     });
   }
 
@@ -8543,7 +8769,7 @@ class LibraryScene extends Phaser.Scene {
     // position/size is ever retuned.
     this.buildDeskItems(originX, originY + 10, deskW / ASSET_RECTS.receptionDesk.w);
 
-    this.buildReceptionSensei(chairX + chairW / 2, chairY + chairH / 2);
+    this.buildReceptionSensei(chairX + chairW / 2, chairY, chairH);
     this.buildPrinterStation(originX, originY + 10, deskH);
   }
 
@@ -8586,16 +8812,23 @@ class LibraryScene extends Phaser.Scene {
     // same way, so the bottom anchor lines up with the real glyph edge.
     const printerRect = { x: 130, y: 152, w: 766, h: 769 };
     const printerKey = cropToTexture(this, 'printerRaw', printerRect, 'printerCroppedTex');
-    const printerDisplayW = 44;
+    // Narrowed (44->30) to fit inside the tabletop's own display width
+    // (37.8 at tableScale 2.7) instead of overhanging both edges, per
+    // "make it feel like it's on top of it".
+    const printerDisplayW = 30;
     const printerScale = printerDisplayW / printerRect.w;
     // Centered on the table's own width so it reads as aligned with it,
     // not offset to one side.
     const printerX = tableX + tableDisplayW / 2;
-    // Bottom edge sits right at the tabletop's top edge (small 4px
-    // overlap for "grounding", like DESK_ITEMS do on the reception desk)
-    // so it reads as sitting ON TOP of the table, not floating above or
-    // sinking into it.
-    const printerY = tableY + 4;
+    // Was tableY+4, then tableY+5*tableScale (targeting the flat tabletop
+    // band before the table's rim) — still read as floating above the
+    // table per explicit "still not in the middle of the desk, it looks
+    // like it's floating above it" feedback. Anchored to the literal
+    // vertical middle of the whole table sprite instead, removing any
+    // guesswork about which band is the "surface" — this puts a solid
+    // ~31px of overlap between the printer's bottom and the table's top
+    // edge (half of tableDisplayH), unambiguously grounded on the table.
+    const printerY = tableY + tableDisplayH / 2;
     const printer = this.add.image(printerX, printerY, printerKey)
       .setOrigin(0.5, 1).setScale(printerScale).setDepth(2);
 
@@ -8615,7 +8848,7 @@ class LibraryScene extends Phaser.Scene {
   // pipeline as shelves/piles (see openInteraction's 'npc' branch and
   // startLesson) instead of the locked/available/completed shelf-menu
   // flow, since she's an always-available guide, not gated content.
-  buildReceptionSensei(centerX, centerY) {
+  buildReceptionSensei(centerX, chairY, chairH) {
     // Single static pose, alpha-scanned out of calicoSenseiRaw at its
     // real bounds (x:0-27, y:0-31 — verified by per-column opacity scan,
     // not guessed) via the project's standard cropToTexture utility. She
@@ -8628,23 +8861,32 @@ class LibraryScene extends Phaser.Scene {
     // frame she's the nearest interactive, which would silently override
     // a setDisplaySize-derived scale and snap her back to native size
     // the moment the player walked up. baseScale below must match.
-    // Bumped 1.3->2.2 per explicit "make her bigger than the chair"
-    // feedback — at 1.3 she displayed at 36x42 against the chair's own
-    // 46x65 display size (armchairFacingDown scaled to chairW=46 in
-    // buildReception), reading as smaller than the seat itself. 2.2
-    // gives her 61.6x70.4, clearing the chair in both dimensions.
-    const senseiScale = 2.2;
-    // Anchored by her feet (origin 0.5, 1) a few px above the chair's
-    // vertical center so she reads as sitting IN the seat rather than
-    // floating above it or sunk into the desk.
-    const sensei = this.add.image(centerX, centerY + 6, senseiKey)
+    // Was bumped 1.3->2.2 per "make her bigger than the chair" — at 2.2
+    // she displayed 61.6x70.4 against the chair's own 46x65 display size
+    // (armchairFacingDown scaled to chairW=46 in buildReception), wider
+    // AND taller than the whole chair frame, so she visibly overflowed
+    // both armrests and towered above the seat back. Brought down to
+    // 1.43 (40x45.7) per "a little smaller... place it in the middle of
+    // the chair" — narrower than the chair's 46px frame so the armrests
+    // still show on both sides, while still poking a few px above the
+    // seat back like a cat's head/ears naturally would.
+    const senseiScale = 1.43;
+    // Was anchored at the chair's raw vertical center (centerY) + a fixed
+    // +6px fudge — still read as perched near the top of the chair,
+    // "like she might fall", per explicit follow-up feedback. Anchored
+    // to 70% down the chair's own display height instead (deep into the
+    // seat-cushion band, not just past the midpoint) so her feet plant
+    // solidly on the seat and her head no longer pokes up above the
+    // chair's back at all — a fully-contained, obviously-seated pose.
+    const senseiBottomY = chairY + chairH * 0.7;
+    const sensei = this.add.image(centerX, senseiBottomY, senseiKey)
       .setOrigin(0.5, 1)
       .setScale(senseiScale)
       .setDepth(2);
 
     const senseiEntry = {
       id: 'sensei-guide', kind: 'npc', title: 'Neko-sensei',
-      sprite: sensei, x: centerX, y: centerY,
+      sprite: sensei, x: centerX, y: senseiBottomY,
       baseScale: senseiScale,
     };
     sensei.setInteractive({ useHandCursor: true });

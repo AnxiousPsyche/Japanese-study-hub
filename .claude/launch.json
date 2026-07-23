@@ -1840,6 +1840,36 @@
         "26517"
       ],
       "port": 26517
+    },
+    {
+      "name": "jp-library-static-round7-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26618"
+      ],
+      "port": 26618
+    },
+    {
+      "name": "jp-library-static-round8-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26719"
+      ],
+      "port": 26719
+    },
+    {
+      "name": "jp-library-static-review4-glossary",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26820"
+      ],
+      "port": 26820
     }
   ],
   "autoVerify": true
