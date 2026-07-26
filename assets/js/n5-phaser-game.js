@@ -8264,7 +8264,13 @@ class LibraryScene extends Phaser.Scene {
     // 2 chairs side by side in front of every table (was 1) — centered
     // under the table with a small gap between them, per explicit
     // request applied to every table+chair placement in the room.
-    const addTableWithChairs = (tableX, tableY, chairY) => {
+    // sideChair ('left'/'right'/null) adds one more chair beside the
+    // table itself (not under it), rotated to face inward toward the
+    // table — libChair's native crop faces down (south) unrotated (per
+    // the front-facing 2 chairs below the table), confirmed by test
+    // render: setAngle(-90) turns that into facing right/east,
+    // setAngle(90) into facing left/west.
+    const addTableWithChairs = (tableX, tableY, chairY, sideChair) => {
       const chairGap = 4;
       const pairW = chairDW * 2 + chairGap;
       const chairStartX = tableX + (tableW - pairW) / 2;
@@ -8274,6 +8280,19 @@ class LibraryScene extends Phaser.Scene {
         .setDisplaySize(chairDW, chairDH);
       this.add.image(chairStartX + chairDW + chairGap, chairY, libChairKey).setOrigin(0, 0).setDepth(2)
         .setDisplaySize(chairDW, chairDH);
+      if (sideChair === 'left') {
+        // Sits just west of the table, vertically centered on it, facing
+        // right/east toward the table.
+        const sideX = tableX - chairGap - chairDW / 2;
+        const sideY = tableY + tableH / 2;
+        this.add.image(sideX, sideY, libChairKey).setOrigin(0.5, 0.5).setDepth(2)
+          .setDisplaySize(chairDW, chairDH).setAngle(-90);
+      } else if (sideChair === 'right') {
+        const sideX = tableX + tableW + chairGap + chairDW / 2;
+        const sideY = tableY + tableH / 2;
+        this.add.image(sideX, sideY, libChairKey).setOrigin(0.5, 0.5).setDepth(2)
+          .setDisplaySize(chairDW, chairDH).setAngle(90);
+      }
     };
     const buildTableRow = (y) => {
       const tableY = y - tableH / 2;
@@ -8314,18 +8333,25 @@ class LibraryScene extends Phaser.Scene {
     buildReviewRow(LAYOUT.zone2RowY[1], 'review-2', 'right');
 
     // One more pure-decor T&C-T&C row, nearest the carpet/globe — not
-    // shelf-adjacent, so it keeps its own small band. No plants here
-    // (removed per feedback) — they were redundant with the ones now
-    // living in every table row. Table X now uses the same gapCenter-
-    // relative formula as buildTableRow (was decorSpanLeft+80 /
-    // decorSpanRight-80-tableW, which put the two tables close enough to
-    // overlap into one fused table — per explicit "the two tables have
-    // joined" bug report and "make them the same position as the other
-    // table" request).
+    // shelf-adjacent, so it keeps its own small band. Table X uses the
+    // same gapCenter-relative formula as buildTableRow (was
+    // decorSpanLeft+80 / decorSpanRight-80-tableW, which put the two
+    // tables close enough to overlap into one fused table — per explicit
+    // "the two tables have joined" bug report and "make them the same
+    // position as the other table" request).
+    // Restored the P/T&C/P plant flanking (originally removed as
+    // "redundant with every table row" — per explicit "the table here
+    // doesn't have the plant that other tables have" follow-up feedback,
+    // this row gets them back too) plus one extra side chair on the left
+    // table's outer (west) edge, facing right into the table, per
+    // explicit request.
     const tableY3 = LAYOUT.decorRow3Y - tableH / 2;
     const chairY3 = LAYOUT.decorRow3Y + tableH / 2 - 6;
-    addTableWithChairs(gapCenter - 40 - tableW, tableY3, chairY3);
+    const plantY3 = LAYOUT.decorRow3Y - ASSET_RECTS.plant.h / 2;
+    this.add.image(gapLeft, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
+    addTableWithChairs(gapCenter - 40 - tableW, tableY3, chairY3, 'left');
     addTableWithChairs(gapCenter + 40, tableY3, chairY3);
+    this.add.image(gapRight - ASSET_RECTS.plant.w, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
 
     // Globe, centered on the corridor per the requested layout — non-
     // solid like every other decor piece, so centering it doesn't block
@@ -8375,6 +8401,21 @@ class LibraryScene extends Phaser.Scene {
           .setDisplaySize(sofaDisplayW, sofaDisplayH);
       });
     });
+
+    // One extra couch on the right side only, per explicit request —
+    // sits just outside (east of) the existing right-side pair, with a
+    // libChair reused (same rotate-to-face trick as the reading-table
+    // side chairs) placed beyond it and facing left/west, back toward
+    // the couch and the library's center.
+    const extraSofaX = rightShelfColCenterX + sofaPairWidth / 2 + sofaGap;
+    this.furnitureSprites.sofa5 = this.add
+      .image(extraSofaX, sofaTopY, sofaKeys[0]).setOrigin(0, 0).setDepth(1)
+      .setDisplaySize(sofaDisplayW, sofaDisplayH);
+    const extraChairGap = 6;
+    const extraChairX = extraSofaX + sofaDisplayW + extraChairGap + chairDW / 2;
+    const extraChairY = sofaTopY + sofaDisplayH / 2;
+    this.add.image(extraChairX, extraChairY, libChairKey).setOrigin(0.5, 0.5).setDepth(2)
+      .setDisplaySize(chairDW, chairDH).setAngle(90);
 
     // 2 interactive TVs — hiragana (left) / katakana (right) reference
     // kiosks, per explicit request: "above the carpet in front of the

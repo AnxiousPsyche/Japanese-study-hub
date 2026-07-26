@@ -1870,6 +1870,16 @@
         "26820"
       ],
       "port": 26820
+    },
+    {
+      "name": "jp-library-static-furniture-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26921"
+      ],
+      "port": 26921
     }
   ],
   "autoVerify": true
