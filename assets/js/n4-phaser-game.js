@@ -1533,16 +1533,41 @@ class N4LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- N4->N3 exam gate: the one interactive N5 has no equivalent of ------
-  // Built like a BOOK_PILE_DATA-shaped interactive (kind: 'pile', same
+  // -- N4/N3 entrance exam gates: interactives N5 has no equivalent of ----
+  // Built like BOOK_PILE_DATA-shaped interactives (kind: 'pile', same
   // shape openInteraction()/refreshAllStates() already expect from any
-  // pile), but its id equals this.finalGateId ('n3-exam-gate', set in
-  // create()) — that single equality is what routes it through
-  // openQuizGateMenu()'s 3-attempt/24h-cooldown flow (library-scene-
-  // shared.js:340-356) instead of a plain review-pile menu, and exempts
-  // it from refreshAllStates()' lock-dimming (library-scene-shared.js:
-  // 442-444, "entry.id !== this.finalGateId") the same way N5's own
-  // staircase gate is exempt. No new interaction-dispatch logic needed.
+  // pile), but each has entry.isExamGate: true and its own entry.quizGateKey
+  // — that's what routes each one through openQuizGateMenu()'s 3-attempt/
+  // 24h-cooldown flow (library-scene-shared.js, openInteraction()) instead
+  // of a plain review-pile menu, and exempts it from refreshAllStates()'
+  // lock-dimming, per-entry rather than via a single scene-level
+  // this.finalGateId as N5's own staircase gate still uses.
+
+  // Builds one exam-gate interactive: sprite (reused book-pile texture,
+  // scaled), glow (available-state pulse) / stamp (completed) icons, a
+  // floating title label, and the this.interactives entry. Replaces the
+  // hand-duplicated N4/N3 block buildExamGate() used to write out twice.
+  // config: { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale }
+  createExamGateEntry(config) {
+    const { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale } = config;
+    const w = ASSET_RECTS.bookPileTall.w * scale;
+    const h = ASSET_RECTS.bookPileTall.h * scale;
+    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
+    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+    const entry = {
+      id, kind: 'pile', title, sprite, glow, stamp, requires,
+      x: x + w / 2, y: y + h / 2, baseScale: scale, isExamGate: true, quizGateKey, onPass,
+    };
+    sprite.setInteractive({ useHandCursor: true });
+    sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+    this.add.text(x + w / 2, y - 18, title.toUpperCase(), {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8',
+    }).setOrigin(.5).setDepth(4);
+    this.interactives.push(entry);
+    return entry;
+  }
 
   buildExamGate() {
     // Reuses the exact same book-pile crop buildBookPiles() already
@@ -1552,43 +1577,19 @@ class N4LibraryScene extends Phaser.Scene {
     // buildExamGate(), so this.bookPileTexKey is guaranteed to exist.
     const bookKey = this.bookPileTexKey;
     const scale = 1.3; // larger than the 0.7 review piles — reads as the floor's one landmark gate, not just another pile
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n4.id, title: EXAM_GATE_DATA.n4.title,
+      x: 322, y: 1515, requires: EXAM_GATE_DATA.n4.requires,
+      quizGateKey: N4_ENTRANCE_GATE_KEY, bookKey, scale,
+      onPass: () => showToast('The N4 balcony is permanently open.'),
+    });
     const w = ASSET_RECTS.bookPileTall.w * scale;
-    const h = ASSET_RECTS.bookPileTall.h * scale;
-    const n4X = 322;
-    const n4Y = 1515;
-    const n4Sprite = this.add.image(n4X, n4Y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
-    const n4Glow = this.add.text(n4X + w - 8, n4Y - 6, '*', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const n4Stamp = this.add.text(n4X + w - 8, n4Y - 6, 'OK', { fontSize: '11px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const n4Entry = { id: EXAM_GATE_DATA.n4.id, kind: 'pile', title: EXAM_GATE_DATA.n4.title,
-      sprite: n4Sprite, glow: n4Glow, stamp: n4Stamp, requires: EXAM_GATE_DATA.n4.requires,
-      x: n4X + w / 2, y: n4Y + h / 2, baseScale: scale, isExamGate: true, quizGateKey: N4_ENTRANCE_GATE_KEY,
-      onPass: () => showToast('The N4 balcony is permanently open.') };
-    n4Sprite.setInteractive({ useHandCursor: true });
-    n4Sprite.on('pointerdown', () => this.handleInteractiveClick(n4Entry));
-    this.interactives.push(n4Entry);
-    this.add.text(n4X + w / 2, n4Y - 18, 'N4 EXAM GATE', { fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8' }).setOrigin(.5).setDepth(4);
-    const x = WORLD_W - 322 - w; // mirrored right-wing entrance
-    const y = 1515;
-
-    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0)
-      .setDisplaySize(w, h).setDepth(1);
-    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' })
-      .setOrigin(0.5).setDepth(4).setVisible(false);
-    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' })
-      .setOrigin(0.5).setDepth(4).setVisible(false);
-    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
-
-    sprite.setInteractive({ useHandCursor: true });
-    sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
-
-    const entry = {
-      id: EXAM_GATE_DATA.n3.id, kind: 'pile', title: EXAM_GATE_DATA.n3.title,
-      sprite, glow, stamp, requires: EXAM_GATE_DATA.n3.requires,
-      x: x + w / 2, y: y + h / 2,
-      baseScale: scale, isExamGate: true, quizGateKey: QUIZ_GATE_KEY,
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
+      x: WORLD_W - 322 - w, y: 1515, requires: EXAM_GATE_DATA.n3.requires,
+      quizGateKey: QUIZ_GATE_KEY, bookKey, scale,
       onPass: () => showToast('The N3 balcony is permanently open.'),
-    };
-    this.interactives.push(entry);
+    });
   }
 
   buildPlayer() {
