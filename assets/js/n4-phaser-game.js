@@ -1592,7 +1592,7 @@ class N4LibraryScene extends Phaser.Scene {
       id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
       x: WORLD_W - 322 - w, y: 1515, requires: EXAM_GATE_DATA.n3.requires,
       quizGateKey: QUIZ_GATE_KEY, bookKey, scale,
-      onPass: () => showToast('N2 is next... someday.'),
+      onPass: () => showToast('The N3 balcony is permanently open.'),
     });
 
     // N2/N1 — left wing, per explicit instruction (breaks the natural
