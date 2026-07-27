@@ -274,6 +274,73 @@ const LAYOUT = {
   centerpieceY, entryY,
 };
 
+// -- Progression data: lessons, prereqs, review piles, exam gate (Tasks 5-7) --
+// Task 5 (this task) adds the data structures. Task 6 builds the sprites.
+// Task 7 populates LESSON_CONTENT with actual pages for selected shelves.
+
+// 16 total shelves: 8 N4 (left column, Grammar Foundations + Vocabulary & Usage wings),
+// 8 N3 (right column, Grammar Expansion + Nuance & Conversation wings). Only
+// n4-shelf-01, n4-shelf-05, n3-shelf-01 get full content this pass; the rest
+// get placeholder pages in Task 7.
+const LESSON_DATA = [
+  // N4 side (left column) — Grammar Foundations wing.
+  { id: 'n4-shelf-01', title: 'て-form Requests & Permission' },
+  { id: 'n4-shelf-02', title: 'Potential Form' },
+  { id: 'n4-shelf-03', title: 'Conditionals (と・ば・たら・なら)' },
+  { id: 'n4-shelf-04', title: 'Volitional & Intention' },
+  // N4 side (left column) — Vocabulary & Usage wing.
+  { id: 'n4-shelf-05', title: 'Giving & Receiving' },
+  { id: 'n4-shelf-06', title: 'Comparisons' },
+  { id: 'n4-shelf-07', title: 'Passive & Causative Verbs' },
+  { id: 'n4-shelf-08', title: 'Adjective + なる・する' },
+  // N3 side (right column) — Grammar Expansion wing. Locked behind
+  // n3-exam-gate until both N4 review piles are complete.
+  { id: 'n3-shelf-01', title: '〜ておく・〜てしまう' },
+  { id: 'n3-shelf-02', title: 'Causative-Passive' },
+  { id: 'n3-shelf-03', title: 'Conjecture & Hearsay (そうだ・ようだ・らしい)' },
+  { id: 'n3-shelf-04', title: 'Relative Clauses & Complex Modification' },
+  // N3 side (right column) — Nuance & Conversation wing.
+  { id: 'n3-shelf-05', title: 'Formal Written Style (である体)' },
+  { id: 'n3-shelf-06', title: 'Advanced Keigo' },
+  { id: 'n3-shelf-07', title: 'Conjunction Nuances (ものの・くせに・というより)' },
+  { id: 'n3-shelf-08', title: 'Extended Reading Practice' },
+];
+
+// N4 chain (left column) — n4-shelf-01 is always available, it's the
+// floor's entry point. N3 chain (right column) — n3-shelf-01's prereq
+// is the exam gate itself (not null), so the ENTIRE right column stays
+// locked until it's passed; the rest of the N3 chain then works exactly
+// like N4's own internal chaining.
+const SHELF_PREREQ = {
+  'n4-shelf-01': null,
+  'n4-shelf-02': 'n4-shelf-01', 'n4-shelf-03': 'n4-shelf-02', 'n4-shelf-04': 'n4-shelf-03',
+  'n4-shelf-05': 'n4-review-1',
+  'n4-shelf-06': 'n4-shelf-05', 'n4-shelf-07': 'n4-shelf-06', 'n4-shelf-08': 'n4-shelf-07',
+  'n3-shelf-01': 'n3-exam-gate',
+  'n3-shelf-02': 'n3-shelf-01', 'n3-shelf-03': 'n3-shelf-02', 'n3-shelf-04': 'n3-shelf-03',
+  'n3-shelf-05': 'n3-review-1',
+  'n3-shelf-06': 'n3-shelf-05', 'n3-shelf-07': 'n3-shelf-06', 'n3-shelf-08': 'n3-shelf-07',
+};
+
+// Four review piles: 2 for N4 progression, 2 for N3 progression.
+// Each review pile's requires array lists all shelves that must be completed
+// before this pile becomes available (same pattern as SHELF_PREREQ, but
+// review piles are accessed via BOOK_PILE_DATA in buildBookPiles()).
+const BOOK_PILE_DATA = [
+  { id: 'n4-review-1', title: 'N4 Grammar Foundations Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
+  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
+  { id: 'n3-review-1', title: 'N3 Grammar Expansion Review', requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04'] },
+  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08'] },
+];
+
+// The N4→N3 gate: reuses the same quiz-gate mechanic N5's staircase has
+// (3-attempt/24h-cooldown). Built as a physical interactive in Task 6
+// (kind: 'pile'-shaped for interaction model consistency), but the content
+// and scoring differ: it's a standalone exam, not a recap+quiz review pile.
+// Every N3 shelf's prereq chain roots on it — the entire right column stays
+// locked until this exam is passed.
+const EXAM_GATE_DATA = { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] };
+
 class N4LibraryScene extends Phaser.Scene {
   constructor() { super('N4LibraryScene'); }
 
