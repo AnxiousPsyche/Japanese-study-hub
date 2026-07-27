@@ -39,6 +39,26 @@ const TOP_BAND_HEIGHT = 110;
 const ASSET_RECTS = {
   brickTile: { x: 30, y: 90, w: 16, h: 16 }, // floors-walls02.png, n5-phaser-game.js:5
   topDownFloorTile: { x: 81, y: 81, w: 63, h: 46 }, // TopDownHouse_FloorsAndWalls.png, n5-phaser-game.js:13
+  // libassetpack-tiled.png (1488x528px) — shelf/book-pile crops, verbatim
+  // from n5-phaser-game.js's own ASSET_RECTS (same source sheet, same
+  // already-alpha-scan-confirmed rects — see that file's comments for
+  // how each was isolated).
+  shelfLocked: { x: 28, y: 384, w: 88, h: 120 },
+  shelfFilled1: { x: 148, y: 372, w: 88, h: 132 },
+  shelfFilled2: { x: 268, y: 365, w: 88, h: 139 },
+  shelfFilled3: { x: 388, y: 373, w: 88, h: 131 },
+  bookPileTall: { x: 240, y: 96, w: 30, h: 48 },
+  // N4's own new crop (no N5 equivalent) — a freestanding grandfather
+  // clock, this floor's globe-equivalent centerpiece landmark (Task 6,
+  // buildFurniture). Isolated via per-row/per-column alpha-run scanning
+  // of the same libassetpack-tiled.png sheet (not a bounding-box flood
+  // fill — see CLAUDE.md's crop-isolation warning): the item sits
+  // between a potted plant (left, columns <=67) and a treasure chest
+  // (below, rows >=150), both confirmed transparent in the gap columns/
+  // rows immediately surrounding this box (cols 68-78 and 137-149 fully
+  // transparent for rows 20-146; rows 144-149 fully transparent for
+  // cols 75-140) — a clean, unmerged isolation.
+  grandfatherClock: { x: 79, y: 24, w: 58, h: 120 },
 };
 
 // Distinct accent palette for this floor (deeper wine/green/wood instead
@@ -341,6 +361,187 @@ const BOOK_PILE_DATA = [
 // locked until this exam is passed.
 const EXAM_GATE_DATA = { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] };
 
+// -- Shelf-decoration helpers (Task 6) -----------------------------------
+// Local copies of n5-phaser-game.js's createBookshelfLabel()/
+// buildShelfTrinketAnim()/drawShelfCompleteTexture() (n5-phaser-game.js:
+// 7373-7562), copied verbatim rather than referenced — n4-dashboard.html
+// does NOT load n5-phaser-game.js (only library-scene-shared.js), so
+// these generic, scene-only helpers (no N5-specific data referenced
+// anywhere in their bodies) aren't reachable as bare identifiers here.
+// Kept byte-for-byte identical to the N5 versions so both floors' shelves
+// render with the same plaque/trinket/checkmark chrome.
+
+let bookshelfLabelSeq = 0;
+function createBookshelfLabel(scene, x, y, text, options = {}) {
+  const fontSize = options.fontSize || 6;
+  const paddingX = options.paddingX || 6;
+  const paddingY = options.paddingY || 5;
+  const maxWidth = options.maxWidth || 78;
+  const frame = '#3a1414';
+  const plank = '#7a2e2e';
+  const grain = '#5a1f1f';
+  const rivet = '#c9a66b';
+  const ink = '#e8d4a8';
+  const textStyle = {
+    fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
+    align: 'center', wordWrap: { width: maxWidth - paddingX * 2, useAdvancedWrap: true },
+  };
+
+  // Measure first (throwaway, invisible) so the plaque background can be
+  // sized exactly to the wrapped text instead of a guessed constant.
+  const measure = scene.add.text(0, 0, text, textStyle).setVisible(false);
+  const textW = Math.min(measure.width, maxWidth - paddingX * 2);
+  const textH = measure.height;
+  measure.destroy();
+
+  const tagW = Math.ceil(textW + paddingX * 2);
+  const tagH = Math.ceil(textH + paddingY * 2);
+
+  bookshelfLabelSeq += 1;
+  const key = `n4BookshelfLabelTex_${bookshelfLabelSeq}`;
+  const tex = scene.textures.createCanvas(key, tagW, tagH);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  // Dark frame, inset plank fill.
+  ctx.fillStyle = frame;
+  ctx.fillRect(0, 0, tagW, tagH);
+  ctx.fillStyle = plank;
+  ctx.fillRect(2, 2, tagW - 4, tagH - 4);
+
+  // Wood-grain plank lines, every 6px.
+  ctx.fillStyle = grain;
+  for (let gy = 6; gy < tagH - 3; gy += 6) ctx.fillRect(4, gy, tagW - 8, 1);
+
+  // 4 gold corner rivets.
+  ctx.fillStyle = rivet;
+  ctx.fillRect(4, 4, 2, 2);
+  ctx.fillRect(tagW - 6, 4, 2, 2);
+  ctx.fillRect(4, tagH - 6, 2, 2);
+  ctx.fillRect(tagW - 6, tagH - 6, 2, 2);
+
+  tex.refresh();
+
+  const bg = scene.add.image(x, y, key).setOrigin(0.5, 0);
+  const label = scene.add.text(x, y + paddingY, text, textStyle).setOrigin(0.5, 0);
+  return { bg, label, width: tagW, height: tagH };
+}
+
+// Tiny retro-tech "available" trinket + "completed" badge, same as N5's
+// (n5-phaser-game.js:7429-7562) — a mini loading-panel prop with a
+// genuinely animating segmented progress bar for 'available', a
+// checkmark variant for 'completed'. Keyed with an n4-prefixed anim/
+// texture key since N4 is a separate Game instance (separate texture/
+// anim registries from N5) but shares the page's global JS scope with
+// no other floor's script — no actual collision risk, just kept
+// consistent with this file's n4-prefixing convention elsewhere.
+let n4ShelfTrinketAnimKey = null;
+function buildShelfTrinketAnim(scene) {
+  if (n4ShelfTrinketAnimKey) return n4ShelfTrinketAnimKey;
+  n4ShelfTrinketAnimKey = 'n4ShelfTrinketLoad';
+
+  const w = 30;
+  const h = 22;
+  const face = '#1a1410';
+  const hi = '#5a4a3a';
+  const lo = '#000000';
+  const track = '#0a0806';
+  const segFill = '#f0c674';
+  const segEmpty = '#3a2418';
+  const corner1 = '#f0c674';
+  const corner2 = '#6b2f2c';
+  const segCount = 5;
+
+  const frameKeys = [];
+  for (let segFilled = 0; segFilled <= segCount; segFilled++) {
+    const key = `n4ShelfTrinketFrame${segFilled}`;
+    const tex = scene.textures.createCanvas(key, w, h);
+    const ctx = tex.getContext();
+    ctx.imageSmoothingEnabled = false;
+
+    ctx.fillStyle = lo;
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = face;
+    ctx.fillRect(1, 1, w - 2, h - 2);
+    ctx.fillStyle = hi;
+    ctx.fillRect(1, 1, w - 2, 1);
+
+    // Corner accent squares, top edge.
+    ctx.fillStyle = corner1;
+    ctx.fillRect(3, 3, 3, 3);
+    ctx.fillStyle = corner2;
+    ctx.fillRect(w - 6, 3, 3, 3);
+
+    // Segmented progress bar — this frame's fill state.
+    ctx.fillStyle = track;
+    ctx.fillRect(3, h - 7, w - 6, 4);
+    const segW = (w - 8) / segCount;
+    for (let i = 0; i < segCount; i++) {
+      ctx.fillStyle = i < segFilled ? segFill : segEmpty;
+      ctx.fillRect(4 + i * segW, h - 6, Math.max(1, segW - 1), 2);
+    }
+
+    tex.refresh();
+    frameKeys.push(key);
+  }
+
+  const frames = frameKeys.concat(frameKeys.slice(1, -1).reverse()).map((key) => ({ key }));
+  scene.anims.create({ key: n4ShelfTrinketAnimKey, frames, frameRate: 3, repeat: -1 });
+  return n4ShelfTrinketAnimKey;
+}
+
+let n4ShelfCompleteKey = null;
+function drawShelfCompleteTexture(scene) {
+  if (n4ShelfCompleteKey) return n4ShelfCompleteKey;
+  n4ShelfCompleteKey = 'n4ShelfCompleteTex';
+
+  const w = 30;
+  const h = 22;
+  const outline = '#000000';
+  const face = '#1a2b1a';
+  const hi = '#3a6b40';
+  const corner1 = '#c9a66b';
+  const corner2 = '#2f6b3f';
+  const trackBg = '#0a0806';
+  const trackFill = '#3ca35c';
+  const checkColor = '#c8f0d0';
+
+  const tex = scene.textures.createCanvas(n4ShelfCompleteKey, w, h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.fillStyle = outline;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = face;
+  ctx.fillRect(1, 1, w - 2, h - 2);
+  ctx.fillStyle = hi;
+  ctx.fillRect(1, 1, w - 2, 1);
+
+  ctx.fillStyle = corner1;
+  ctx.fillRect(3, 3, 3, 3);
+  ctx.fillStyle = corner2;
+  ctx.fillRect(w - 6, 3, 3, 3);
+
+  ctx.fillStyle = trackBg;
+  ctx.fillRect(3, h - 8, w - 6, 5);
+  ctx.fillStyle = trackFill;
+  ctx.fillRect(4, h - 7, w - 8, 3);
+
+  const cx = w / 2;
+  const cy = h / 2 - 2;
+  const s = 6;
+  ctx.strokeStyle = checkColor;
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(cx - s * 0.5, cy);
+  ctx.lineTo(cx - s * 0.15, cy + s * 0.4);
+  ctx.lineTo(cx + s * 0.55, cy - s * 0.45);
+  ctx.stroke();
+
+  tex.refresh();
+  return n4ShelfCompleteKey;
+}
+
 class N4LibraryScene extends Phaser.Scene {
   constructor() { super('N4LibraryScene'); }
 
@@ -359,6 +560,12 @@ class N4LibraryScene extends Phaser.Scene {
     // buildWalls() below reuse their exact crops) — added for Task 3.
     this.load.image('floorsWalls', '../../assets/images/ui/floors-walls02.png');
     this.load.image('floorsWallsTopDown', '../../assets/images/ui/TopDownHouse_FloorsAndWalls.png');
+    // Shelf stamp/favorite icons — same source files as N5's LibraryScene
+    // preload() (n5-phaser-game.js:7576/7581), needed for Task 6's
+    // buildShelves() (completion checkmark stamp + favorite floppy-disk
+    // badge, both copied verbatim from that file).
+    this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
+    this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -411,13 +618,6 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   // -- World geometry (Task 3): floor, walls, top band, player ------------
-  // buildFurniture/buildShelves/buildBookPiles/buildExamGate stay no-op
-  // stubs below (still an expected near-empty world past the floor/walls,
-  // see Task 2's verify step) — each gets its real implementation in a
-  // later task:
-  //   buildShelves/buildBookPiles — Task 4/5
-  //   buildExamGate — Task 6
-  //   buildFurniture — a later task (not this one)
 
   buildFloor() {
     // Same TopDownHouse_FloorsAndWalls.png floor crop as N5's LibraryScene
@@ -506,10 +706,283 @@ class N4LibraryScene extends Phaser.Scene {
     this.wallGroup.add(block);
   }
 
-  buildFurniture() {}
-  buildShelves() {}
-  buildBookPiles() {}
-  buildExamGate() {}
+  // -- Central decor (Task 6): corridor rug, centerpiece landmark, arrival
+  // marker. A first pass only — denser than N5's per the design spec, but
+  // that density (reading tables/sofas/TVs/reception desk) is explicitly
+  // out of scope for this pass; only 3 pieces are built here.
+
+  buildFurniture() {
+    // Recolors drawWovenRug's default brick-red/tan palette to this
+    // floor's deeper wine/gold accent (N4_PALETTE, declared at the top of
+    // this file — this is the "consumer" that comment forward-referenced).
+    // rugDark/rugFringeLight/rugWeave/rugMotifShade have no N4_PALETTE
+    // equivalent yet, so those 4 stay literal; rugBase/rugMotif reuse
+    // N4_PALETTE.carpet/gold directly rather than duplicating the hex.
+    const n4RugPalette = {
+      rugDark: 0x2a0d1a, rugFringeLight: 0x3a1526, rugBase: N4_PALETTE.carpet,
+      rugWeave: 0x4a1524, rugMotif: N4_PALETTE.gold, rugMotifShade: 0xa87f3a,
+    };
+
+    // Center-corridor rug — same hand-drawn woven-runner technique as
+    // N5's corridorRugTex (drawWovenRug + tileSprite for a seamless
+    // vertical repeat), recolored via the palette above. Runs from just
+    // below the top wall band down to just above the centerpiece
+    // landmark; the arrival point near entryY gets its own separate
+    // small rug below instead of one strip spanning the whole room.
+    // Non-solid, like every decor piece in this file — no collider.
+    const corridorX = WORLD_W / 2;
+    const corridorTop = TOP_BAND_HEIGHT + 20;
+    const corridorBottom = LAYOUT.entryY - 80;
+    const corridorHeight = corridorBottom - corridorTop;
+    const corridorMidY = (corridorTop + corridorBottom) / 2;
+    const corridorWidth = 100; // wider than N5's 80 — this floor's shelf columns sit further apart
+    const corridorRugRepeatH = 32;
+    drawWovenRug(this, 'n4CorridorRugTex', corridorWidth, corridorRugRepeatH, n4RugPalette);
+    this.add.tileSprite(corridorX, corridorMidY, corridorWidth, corridorHeight, 'n4CorridorRugTex')
+      .setDepth(0);
+
+    // Centerpiece landmark — this floor's globe-equivalent decorative
+    // prop: a large freestanding grandfather clock, cropped from the same
+    // libassetpack-tiled.png sheet N5's own globe/shelves come from (see
+    // ASSET_RECTS.grandfatherClock for the isolation method). Centered in
+    // the corridor at LAYOUT.centerpieceY, scaled just enough to read as
+    // a landmark without reaching into the shelf rows immediately above
+    // (wing1's south sub-row bottom edge sits at row1Y + shelfH*2 + 12 =
+    // 1280; at this scale the clock's top edge lands at ~1291, an 11px
+    // clearance) or the arrival rug below. Non-solid, like every other
+    // decor piece — centering it doesn't block auto-walk.
+    const clockKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.grandfatherClock, 'n4CenterpieceClockTex');
+    const clockScale = 1.15;
+    const clockW = ASSET_RECTS.grandfatherClock.w * clockScale;
+    const clockH = ASSET_RECTS.grandfatherClock.h * clockScale;
+    this.furnitureSprites.centerpiece = this.add
+      .image(WORLD_W / 2, LAYOUT.centerpieceY, clockKey)
+      .setOrigin(0.5, 0.5).setDepth(1).setDisplaySize(clockW, clockH);
+
+    // Plain arrival rug at the entry point — N4 has no "Neko-sensei" desk
+    // this pass (out of scope, matches the design spec's placeholder-
+    // first approach), just a small accent rug (same woven technique,
+    // fixed-size like N5's globeRug accents, no tiling needed) so the
+    // spawn point doesn't read as bare floor.
+    const arrivalW = 90;
+    const arrivalH = 50;
+    drawWovenRug(this, 'n4ArrivalRugTex', arrivalW, arrivalH, n4RugPalette);
+    this.add.image(WORLD_W / 2, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
+  }
+
+  // -- 16 lesson shelves, 2 physical rows (left column = N4, right column
+  // = N3 throughout — see LAYOUT's doc comment) --------------------------
+
+  buildShelves() {
+    const shelfW = LAYOUT.shelfW;
+    const shelfH = LAYOUT.shelfH;
+    const leftColX = LAYOUT.leftColX;
+    const rightColX = LAYOUT.rightColX;
+
+    // Each of LAYOUT's 2 rows is actually a "wing" of 4 shelves split
+    // into 2 sub-rows: [0] = north sub-row (further from entry), [1] =
+    // south sub-row (closer to entry) — matches LESSON_DATA's grouping
+    // into Grammar Foundations/Vocabulary & Usage (N4) and Grammar
+    // Expansion/Nuance & Conversation (N3).
+    const wing1RowY = [LAYOUT.row1Y, LAYOUT.row1Y + shelfH + 12];
+    const wing2RowY = [LAYOUT.row2Y, LAYOUT.row2Y + shelfH + 12];
+
+    // Wall header above each column's topmost (north) sub-row per wing,
+    // same hand-drawn "real wall" mural + invisible-rectangle/wallGroup
+    // collision pattern as N5's buildShelves() (n5-phaser-game.js:8216-
+    // 8275) — copied verbatim, this reads as shelves built into a wall
+    // rather than floating in open floor.
+    const colWidth = shelfW * 2 + 20;
+    const headerH = 110;
+    const headerKey = drawWallHeaderTexture(this, colWidth, headerH);
+    const buildWallHeader = (x, topY, h = headerH) => {
+      const key = h === headerH ? headerKey : drawWallHeaderTexture(this, colWidth, h);
+      const cx = x + colWidth / 2;
+      const cy = topY - h / 2 - 4;
+      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
+      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
+    };
+    buildWallHeader(leftColX[0], wing1RowY[0]);
+    buildWallHeader(rightColX[0], wing1RowY[0]);
+    buildWallHeader(leftColX[0], wing2RowY[0]);
+    buildWallHeader(rightColX[0], wing2RowY[0]);
+
+    // Wall footer below the southmost sub-row overall (wing1's south
+    // sub-row, nearest the entry point) — same "the walls need to be on
+    // where the arrow lands" reasoning as N5's own footer-only-nearest-
+    // spawn treatment (n5-phaser-game.js:8256-8275).
+    const buildWallFooter = (x, bottomY, h) => {
+      const key = drawWallHeaderTexture(this, colWidth, h);
+      const cx = x + colWidth / 2;
+      const cy = bottomY + h / 2 + 4;
+      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
+      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
+    };
+    buildWallFooter(leftColX[0], wing1RowY[1] + shelfH, headerH);
+    buildWallFooter(rightColX[0], wing1RowY[1] + shelfH, headerH);
+
+    // Matches LESSON_DATA's order (n4-shelf-01..08, n3-shelf-01..08)
+    // exactly — buildShelves() zips LESSON_DATA[i] with positions[i] by
+    // array index below.
+    const positions = [
+      [leftColX[0], wing1RowY[0]], [leftColX[1], wing1RowY[0]],
+      [leftColX[0], wing1RowY[1]], [leftColX[1], wing1RowY[1]],
+      [leftColX[0], wing2RowY[0]], [leftColX[1], wing2RowY[0]],
+      [leftColX[0], wing2RowY[1]], [leftColX[1], wing2RowY[1]],
+      [rightColX[0], wing1RowY[0]], [rightColX[1], wing1RowY[0]],
+      [rightColX[0], wing1RowY[1]], [rightColX[1], wing1RowY[1]],
+      [rightColX[0], wing2RowY[0]], [rightColX[1], wing2RowY[0]],
+      [rightColX[0], wing2RowY[1]], [rightColX[1], wing2RowY[1]],
+    ];
+
+    const filledVariants = ['shelfFilled1', 'shelfFilled2', 'shelfFilled3'];
+    const lockedKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.shelfLocked, 'n4ShelfLockedTex');
+    const filledKeys = filledVariants.map(
+      (v) => cropToTexture(this, 'libAssetPack', ASSET_RECTS[v], 'n4' + v + 'Tex')
+    );
+    // Registers the trinket's frame textures + looping animation once,
+    // before any shelf sprite tries to use them (must exist first).
+    const trinketAnimKey = buildShelfTrinketAnim(this);
+    // Favorite icon: crop savePointRaw down to its tight 624x624 content
+    // box, same as N5's (n5-phaser-game.js:8301).
+    const favoriteDiskKey = cropToTexture(this, 'savePointRaw', { x: 200, y: 200, w: 624, h: 624 }, 'n4FavoriteDiskTex');
+
+    LESSON_DATA.forEach((lesson, i) => {
+      const [x, y] = positions[i];
+      const sprite = this.add.image(x + shelfW / 2, y + shelfH / 2, lockedKey)
+        .setOrigin(0.5, 0.5).setDepth(1)
+        .setDisplaySize(shelfW, shelfH);
+      const glow = this.add.sprite(x + shelfW / 2, y + shelfH / 2, 'n4ShelfTrinketFrame0')
+        .setOrigin(0.5).setDepth(4).setVisible(false)
+        .play(trinketAnimKey);
+      const completeBadge = this.add.image(x + shelfW / 2, y + shelfH / 2, drawShelfCompleteTexture(this))
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+
+      const label = createBookshelfLabel(this, x + shelfW / 2, y + shelfH - 20, lesson.title, {
+        maxWidth: shelfW + 20,
+      });
+      label.bg.setDepth(2);
+      label.label.setDepth(3);
+      const stamp = this.add.image(label.bg.x + label.width / 2 - 6, label.bg.y + 6, 'checkmarkIcon')
+        .setOrigin(0.5).setDepth(4).setDisplaySize(12, 12).setVisible(false);
+      const favIcon = this.add.image(label.bg.x + label.width / 2 - 10, label.bg.y - 8, favoriteDiskKey)
+        .setOrigin(0.5).setDepth(4).setDisplaySize(18, 18).setVisible(false);
+
+      // Deliberately non-solid — same reasoning as N5: 2 shelves share
+      // each row with only a 14px gap, and auto-walk routing to the far
+      // column would have to cross the near column's collision box.
+      // Interaction still works via distance checks (TRIGGER_RANGE), not
+      // physical contact.
+      sprite.setInteractive({ useHandCursor: true });
+      sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+
+      const entry = {
+        id: lesson.id, kind: 'shelf', title: lesson.title,
+        sprite, glow, completeBadge, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
+        x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
+        baseScale: 1,
+      };
+      this.interactives.push(entry);
+    });
+  }
+
+  // -- 4 review book piles (2 for N4 progression, 2 for N3) ---------------
+
+  buildBookPiles() {
+    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'n4BookPileTex');
+    this.bookPileTexKey = bookKey; // reused by buildExamGate() (same crop, must not re-cropToTexture with a duplicate destKey)
+
+    // "Beside its own column" — same pattern as N5's buildReviewRow: each
+    // pile sits just inside the corridor gap, flush against its own
+    // column's inner edge. gapLeft/gapRight are that inner edge on each
+    // side (mirrors buildFurniture's own gap-edge math, kept local here
+    // since this floor's buildFurniture() doesn't build a table row to
+    // derive it from).
+    const gapLeft = LAYOUT.leftColX[1] + LAYOUT.shelfW;
+    const gapRight = LAYOUT.rightColX[0];
+    const scale = 0.7; // same as N5's review piles — reads as sitting "in" the shelf-row scale, not dominating it
+    const w = ASSET_RECTS.bookPileTall.w * scale;
+    const h = ASSET_RECTS.bookPileTall.h * scale;
+    const positions = {
+      'n4-review-1': { x: gapLeft + 16, y: LAYOUT.review1Y },
+      'n4-review-2': { x: gapLeft + 16, y: LAYOUT.review2Y },
+      'n3-review-1': { x: gapRight - 16 - w, y: LAYOUT.review1Y },
+      'n3-review-2': { x: gapRight - 16 - w, y: LAYOUT.review2Y },
+    };
+
+    BOOK_PILE_DATA.forEach((pile) => {
+      const pos = positions[pile.id];
+      const sprite = this.add.image(pos.x, pos.y, bookKey).setOrigin(0, 0)
+        .setDisplaySize(w, h).setDepth(1);
+      const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', { fontSize: '18px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      const stamp = this.add.text(pos.x + w - 8, pos.y - 6, '✅', { fontSize: '18px' })
+        .setOrigin(0.5).setDepth(4).setVisible(false);
+      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+
+      // Non-solid, same reasoning as shelves — keeps auto-walk routing
+      // simple and reliable for every interactive on this floor.
+      sprite.setInteractive({ useHandCursor: true });
+      sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+
+      const entry = {
+        id: pile.id, kind: 'pile', title: pile.title,
+        sprite, glow, stamp, requires: pile.requires,
+        x: pos.x + w / 2, y: pos.y + h / 2,
+        baseScale: scale,
+      };
+      this.interactives.push(entry);
+    });
+  }
+
+  // -- N4->N3 exam gate: the one interactive N5 has no equivalent of ------
+  // Built like a BOOK_PILE_DATA-shaped interactive (kind: 'pile', same
+  // shape openInteraction()/refreshAllStates() already expect from any
+  // pile), but its id equals this.finalGateId ('n3-exam-gate', set in
+  // create()) — that single equality is what routes it through
+  // openQuizGateMenu()'s 3-attempt/24h-cooldown flow (library-scene-
+  // shared.js:340-356) instead of a plain review-pile menu, and exempts
+  // it from refreshAllStates()' lock-dimming (library-scene-shared.js:
+  // 442-444, "entry.id !== this.finalGateId") the same way N5's own
+  // staircase gate is exempt. No new interaction-dispatch logic needed.
+
+  buildExamGate() {
+    // Reuses the exact same book-pile crop buildBookPiles() already
+    // established (must reuse the cached key, not call cropToTexture
+    // again with the same destKey — Phaser throws on re-registering a
+    // canvas key). buildScene() always calls buildBookPiles() before
+    // buildExamGate(), so this.bookPileTexKey is guaranteed to exist.
+    const bookKey = this.bookPileTexKey;
+    const scale = 1.3; // larger than the 0.7 review piles — reads as the floor's one landmark gate, not just another pile
+    const w = ASSET_RECTS.bookPileTall.w * scale;
+    const h = ASSET_RECTS.bookPileTall.h * scale;
+    const x = WORLD_W / 2 - w / 2; // centered in the corridor, between leftColX and rightColX
+    const y = LAYOUT.examGateY - h / 2;
+
+    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0)
+      .setDisplaySize(w, h).setDepth(1);
+    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' })
+      .setOrigin(0.5).setDepth(4).setVisible(false);
+    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' })
+      .setOrigin(0.5).setDepth(4).setVisible(false);
+    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+
+    sprite.setInteractive({ useHandCursor: true });
+    sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+
+    const entry = {
+      id: EXAM_GATE_DATA.id, kind: 'pile', title: EXAM_GATE_DATA.title,
+      sprite, glow, stamp, requires: EXAM_GATE_DATA.requires,
+      x: x + w / 2, y: y + h / 2,
+      baseScale: scale,
+    };
+    this.interactives.push(entry);
+  }
+
   buildPlayer() {
     // Spawns near the south end of the world — this floor's real entry
     // point from N5's staircase.
