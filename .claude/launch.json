@@ -1880,6 +1880,46 @@
         "26921"
       ],
       "port": 26921
+    },
+    {
+      "name": "jp-library-static-n4task1-baseline",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27325"
+      ],
+      "port": 27325
+    },
+    {
+      "name": "jp-library-static-n4task1-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27022"
+      ],
+      "port": 27022
+    },
+    {
+      "name": "jp-library-static-n4task2-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27123"
+      ],
+      "port": 27123
+    },
+    {
+      "name": "jp-library-static-n4task8-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27224"
+      ],
+      "port": 27224
     }
   ],
   "autoVerify": true
