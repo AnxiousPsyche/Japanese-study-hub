@@ -1890,6 +1890,16 @@
         "27022"
       ],
       "port": 27022
+    },
+    {
+      "name": "jp-library-static-n4task2-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27123"
+      ],
+      "port": 27123
     }
   ],
   "autoVerify": true
