@@ -1065,14 +1065,20 @@ class N4LibraryScene extends Phaser.Scene {
     const wallGroup = this.physics.add.staticGroup();
 
     // Top/bottom strips — WORLD_W (1152) divides evenly by 32 (36 tiles),
-    // so no remainder handling needed on this axis.
+    // so no remainder handling needed on this axis. Constrain height to
+    // TILE_SIZE (16px) instead of full blockSize (32px) to avoid overwriting
+    // buildFloor()'s border-row tiles at the top/bottom edges.
     for (let x = 0; x < WORLD_W; x += blockSize) {
-      this.add.image(x, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      this.add.image(x, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      this.add.image(x, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, blockSize, TILE_SIZE).setDisplaySize(blockSize, TILE_SIZE);
+      this.add.image(x, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, blockSize, TILE_SIZE).setDisplaySize(blockSize, TILE_SIZE);
     }
 
     // Left/right strips — 3 * TILE_SIZE (48px) deep, starting below the
-    // top wall band. The vertical run length (GRID_ROWS * TILE_SIZE minus
+    // top wall band. Positioned at original x-offsets (columns 1-3 left,
+    // columns 68-70 right) to avoid overlapping buildFloor()'s perimeter
+    // border tiles. The vertical run length (GRID_ROWS * TILE_SIZE minus
     // the header) is not guaranteed to be a multiple of blockSize, so the
     // final tile in each column gets clipped to the remaining pixel
     // height instead of overshooting past the strip's bottom edge.
@@ -1082,9 +1088,9 @@ class N4LibraryScene extends Phaser.Scene {
     for (let y = sideWallStartY; y < sideWallEndY; y += blockSize) {
       const remaining = sideWallEndY - y;
       const h = Math.min(blockSize, remaining);
-      this.add.image(0, y, brickKey).setOrigin(0, 0).setDepth(0)
+      this.add.image(TILE_SIZE, y, brickKey).setOrigin(0, 0).setDepth(0)
         .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
-      this.add.image(WORLD_W - colWidth, y, brickKey).setOrigin(0, 0).setDepth(0)
+      this.add.image(WORLD_W - TILE_SIZE - colWidth, y, brickKey).setOrigin(0, 0).setDepth(0)
         .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
     }
     this.wallGroup = wallGroup;
