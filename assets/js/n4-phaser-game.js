@@ -1429,6 +1429,19 @@ class N4LibraryScene extends Phaser.Scene {
     }
   }
 
+  // N4-only (Task 10 additive HUD button): shows/hides #n3GateExamBtn based
+  // on whether both N4 review piles are complete. Deliberately NOT added to
+  // library-scene-shared.js (loaded by N5 too, which has no such button).
+  // Caches the last-known boolean on this.n3GateBtnVisible so the DOM is
+  // only touched when the value actually changes, not every frame.
+  updateN3GateButtonVisibility() {
+    const shouldShow = !!this.progress['n4-review-1'] && !!this.progress['n4-review-2'];
+    if (this.n3GateBtnVisible === shouldShow) return;
+    this.n3GateBtnVisible = shouldShow;
+    const btn = document.getElementById('n3GateExamBtn');
+    if (btn) btn.hidden = !shouldShow;
+  }
+
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
   // Copied verbatim from N5's LibraryScene.update() (n5-phaser-game.js:
   // 8752) — only references this.player/this.cursors/this.wasd/
@@ -1438,6 +1451,7 @@ class N4LibraryScene extends Phaser.Scene {
   update() {
     if (!this.player) return;
     this.updatePlayerAnimation();
+    this.updateN3GateButtonVisibility();
     if (this.panelOpen) {
       this.player.setVelocity(0, 0);
       if (this.retroMenu) this.updateRetroMenuInput();
@@ -1517,3 +1531,19 @@ const n4PhaserGame = new Phaser.Game({
 });
 
 window.__n4Game = n4PhaserGame;
+
+// Task 10 (additive): HUD shortcut button that opens the n3-exam-gate's
+// existing menu without walking up to it. Mirrors changeCharBtn's exact
+// defensive shape (n5-phaser-game.js:9621-9639) — null-safe getElementById,
+// scene-active check, panelOpen guard. Reuses the real interactive entry
+// (found in this.interactives, not a newly-constructed object) so
+// openInteraction() routes through the exact same openQuizGateMenu/
+// openQuizAttemptMenu path a walk-up interaction uses.
+document.getElementById('n3GateExamBtn')?.addEventListener('click', () => {
+  if (!n4PhaserGame.scene.isActive('N4LibraryScene')) return;
+  const libraryScene = n4PhaserGame.scene.getScene('N4LibraryScene');
+  if (libraryScene.panelOpen) return; // don't stack over an open lesson/review/gate panel
+  const gateEntry = libraryScene.interactives.find((e) => e.id === libraryScene.finalGateId);
+  if (!gateEntry) return;
+  libraryScene.openInteraction(gateEntry);
+});
