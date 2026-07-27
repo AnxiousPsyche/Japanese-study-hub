@@ -1900,6 +1900,16 @@
         "27123"
       ],
       "port": 27123
+    },
+    {
+      "name": "jp-library-static-n4task8-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27224"
+      ],
+      "port": 27224
     }
   ],
   "autoVerify": true

@@ -7656,12 +7656,11 @@ class LibraryScene extends Phaser.Scene {
     this.extraRetroMenuOptions = (entry) =>
       entry.id === 'shelf-08' ? [{ label: 'Walk the Route (駅)', onSelect: () => this.launchDirectionMap() }] : [];
     this.finalGateProceedLabel = 'Proceed to N4';
-    // NOTE: kept as N5's existing toast-only stub (not real navigation) —
-    // Task 1 must leave N5 behavior 100% unchanged; the real N4 handoff
-    // is a separate, focused change (Task 8).
+    // Task 8: real N4 handoff — toast, then navigate to the N4 dashboard
+    // once the player has had a moment to read it.
     this.onFinalGatePass = () => {
-      showToast('N4 is coming soon.');
-      this.closeRetroMenu();
+      showToast('Climbing to the second floor…');
+      setTimeout(() => { window.location.href = '../N4/n4-dashboard.html'; }, 900);
     };
     registerCatAnimations(this);
 
