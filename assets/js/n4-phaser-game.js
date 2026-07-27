@@ -252,10 +252,406 @@ function saveCatColor(id) {
 }
 
 // -- Lesson content, shelf/gate data -------------------------------------
-// Task 7 populates LESSON_CONTENT with this floor's actual pages. Empty
-// for now — Tasks 4-6 (shelves/piles/exam gate) haven't built any
-// interactives that would read into it yet either.
-const LESSON_CONTENT = {};
+// Task 7 populates LESSON_CONTENT with this floor's actual pages.
+
+// One-page placeholder for shelves not getting full content this pass
+// — still real LESSON_CONTENT (marks progress, unlocks the next shelf),
+// just short. title/kanaHint are used verbatim, no re-authoring per
+// shelf beyond what's already in LESSON_DATA.
+function buildPlaceholderLesson(title) {
+  return [{
+    type: 'grammar-intro',
+    sectionLabel: title,
+    bigIdea: `${title} is on its way — a full lesson isn't written yet.`,
+    explain: [
+      'This shelf is part of the N4 floor\'s layout, but its lesson content is still being written. Completing this page marks it done for now, and you can revisit it any time once the real lesson ships.',
+    ],
+  }];
+}
+
+const LESSON_CONTENT = {
+  'n4-shelf-02': buildPlaceholderLesson('Potential Form'),
+  'n4-shelf-03': buildPlaceholderLesson('Conditionals (と・ば・たら・なら)'),
+  'n4-shelf-04': buildPlaceholderLesson('Volitional & Intention'),
+  'n4-shelf-06': buildPlaceholderLesson('Comparisons'),
+  'n4-shelf-07': buildPlaceholderLesson('Passive & Causative Verbs'),
+  'n4-shelf-08': buildPlaceholderLesson('Adjective + なる・する'),
+  'n3-shelf-02': buildPlaceholderLesson('Causative-Passive'),
+  'n3-shelf-03': buildPlaceholderLesson('Conjecture & Hearsay (そうだ・ようだ・らしい)'),
+  'n3-shelf-04': buildPlaceholderLesson('Relative Clauses & Complex Modification'),
+  'n3-shelf-05': buildPlaceholderLesson('Formal Written Style (である体)'),
+  'n3-shelf-06': buildPlaceholderLesson('Advanced Keigo'),
+  'n3-shelf-07': buildPlaceholderLesson('Conjunction Nuances (ものの・くせに・というより)'),
+  'n3-shelf-08': buildPlaceholderLesson('Extended Reading Practice'),
+  'n4-review-1': buildPlaceholderLesson('N4 Grammar Foundations Review'),
+  'n4-review-2': buildPlaceholderLesson('N4 Vocabulary & Usage Review'),
+  'n3-review-1': buildPlaceholderLesson('N3 Grammar Expansion Review'),
+  'n3-review-2': buildPlaceholderLesson('N3 Nuance & Conversation Review'),
+  'n4-shelf-01': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'て-form Requests & Permission',
+      recapChips: ['て-form itself (N5, shelf 13)'],
+      bigIdea: 'You already know て-form as a connector. N4 adds two new jobs for it: asking permission, and granting or denying it.',
+      explain: [
+        'Two new patterns this shelf: [て-form] + もいいです ("you may...") and [て-form] + はいけません ("you must not..."). Both attach to the exact same て-form you already built back in N5.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜てもいいです: "You may..."',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'もいいです', role: 'predicate' },
+      ],
+      explain: ['Grants permission — literally "even if you do [X], it\'s fine."'],
+      samples: [
+        {
+          tag: '"You may go home."',
+          tiles: [
+            { text: '帰っても', role: 'subject', gloss: 'even if you go home', isNew: true, smallGloss: true },
+            { text: 'いいです', role: 'predicate', gloss: 'it\'s fine' },
+          ],
+          translation: 'Kaettemo ii desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜てはいけません: "You must not..."',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'はいけません', role: 'predicate' },
+      ],
+      explain: ['Denies permission — "as for doing [X], it won\'t do."'],
+      samples: [
+        {
+          tag: '"You must not eat here."',
+          tiles: [
+            { text: 'ここで', role: 'subject', gloss: 'here' },
+            { text: '食べては', role: 'predicate', gloss: 'as for eating', isNew: true, smallGloss: true },
+            { text: 'いけません', role: 'predicate', gloss: 'won\'t do' },
+          ],
+          translation: 'Koko de tabete wa ikemasen.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "You may sit" (sit = 座って):',
+      before: '', after: '。',
+      choices: ['座ってもいいです', '座ってはいけません', '座ります'],
+      answer: '座ってもいいです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "You must not write here" (here = ここで, write = 書いて):',
+      before: '', after: '。',
+      choices: ['ここで書いてはいけません', 'ここで書いてもいいです', 'ここで書きます'],
+      answer: 'ここで書いてはいけません',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Permission',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜てもいいです', romaji: '~temo ii desu', meaning: 'you may...' },
+        { kana: '〜てはいけません', romaji: '~tewa ikemasen', meaning: 'you must not...' },
+        { kana: '帰ってもいいです', romaji: 'kaettemo ii desu', meaning: 'you may go home' },
+        { kana: '食べてはいけません', romaji: 'tabetewa ikemasen', meaning: 'you must not eat' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '座って', after: '。', answer: 'もいいです', hint: '"You may sit."' },
+        { before: 'ここで書いて', after: '。', answer: 'はいけません', hint: '"You must not write here."' },
+      ],
+    },
+  ],
+  'n4-shelf-05': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Giving & Receiving',
+      bigIdea: 'Japanese has three different verbs for "give/receive" depending on WHO is giving to WHOM — English just uses "give" for all of it.',
+      explain: [
+        'あげる (give, moving away from you), もらう (receive), くれる (give, moving toward you) — the verb itself encodes the direction, not just who\'s speaking.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'あげる: giving (away from you)',
+      pattern: [
+        { text: '[giver]は', role: 'subject' }, { text: '[receiver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'あげます', role: 'predicate' },
+      ],
+      explain: ['Use あげる when you (or someone else) give something to another person — the giving moves away from the speaker\'s side.'],
+      samples: [
+        {
+          tag: '"I gave my friend a book."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'to my friend' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'あげました', role: 'predicate', gloss: 'gave', isNew: true },
+          ],
+          translation: 'Watashi wa tomodachi ni hon o agemashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'もらう: receiving',
+      pattern: [
+        { text: '[receiver]は', role: 'subject' }, { text: '[giver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'もらいます', role: 'predicate' },
+      ],
+      explain: ['もらう flips the perspective to the receiver\'s side — same event as あげる, described from the other direction.'],
+      samples: [
+        {
+          tag: '"I received a book from my friend."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'from my friend' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'もらいました', role: 'predicate', gloss: 'received', isNew: true },
+          ],
+          translation: 'Watashi wa tomodachi ni hon o moraimashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'くれる: giving (toward you)',
+      pattern: [
+        { text: '[giver]は', role: 'subject' }, { text: '私に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'くれます', role: 'predicate' },
+      ],
+      explain: ['くれる is only for gifts moving TOWARD the speaker (or the speaker\'s in-group) — never used for the speaker\'s own giving.'],
+      samples: [
+        {
+          tag: '"My friend gave me a book."',
+          tiles: [
+            { text: '友達は', role: 'subject', gloss: 'my friend' },
+            { text: '私に', role: 'particle', gloss: 'to me' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'くれました', role: 'predicate', gloss: 'gave (to me)', isNew: true },
+          ],
+          translation: 'Tomodachi wa watashi ni hon o kuremashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "My friend gave me a book" (friend = 友達, book = 本):',
+      before: '友達は私に本を', after: '。',
+      choices: ['くれました', 'あげました', 'もらいました'],
+      answer: 'くれました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I gave my friend a book":',
+      before: '私は友達に本を', after: '。',
+      choices: ['あげました', 'くれました', 'もらいました'],
+      answer: 'あげました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Giving & Receiving',
+      headers: ['Verb', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'あげる', romaji: 'ageru', meaning: 'give (away from speaker)' },
+        { kana: 'もらう', romaji: 'morau', meaning: 'receive' },
+        { kana: 'くれる', romaji: 'kureru', meaning: 'give (toward speaker)' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '友達は私に本を', after: '。', answer: 'くれました', hint: '"My friend gave me a book."' },
+        { before: '私は友達に本を', after: '。', answer: 'あげました', hint: '"I gave my friend a book."' },
+      ],
+    },
+  ],
+  'n3-shelf-01': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ておく・〜てしまう',
+      recapChips: ['て-form itself (N4, shelf 1)'],
+      bigIdea: 'Two more jobs for て-form: doing something in advance/leaving it as-is (ておく), and doing something completely/with a sense of regret (てしまう).',
+      explain: [
+        'Both attach to the exact same て-form from N4 — no new conjugation to learn, just two new meanings on top of it.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ておく: preparing / leaving as-is',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'おきます', role: 'predicate' },
+      ],
+      explain: ['ておく marks an action done in advance, in preparation for something later — or simply leaving something as it is on purpose.'],
+      samples: [
+        {
+          tag: '"I\'ll buy the tickets in advance."',
+          tiles: [
+            { text: 'チケットを', role: 'subject', gloss: 'tickets' },
+            { text: '買って', role: 'predicate', gloss: 'buy (て-form)' },
+            { text: 'おきます', role: 'predicate', gloss: 'in advance', isNew: true },
+          ],
+          translation: 'Chiketto o katte okimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜てしまう: completing / regret',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'しまいます', role: 'predicate' },
+      ],
+      explain: ['てしまう marks an action finished completely — often with a nuance of "and now I can\'t undo it" or mild regret.'],
+      samples: [
+        {
+          tag: '"I ended up reading the whole book."',
+          tiles: [
+            { text: '本を', role: 'subject', gloss: 'the book' },
+            { text: '全部', role: 'predicate', gloss: 'all', isNew: true },
+            { text: '読んで', role: 'predicate', gloss: 'read (て-form)' },
+            { text: 'しまいました', role: 'predicate', gloss: 'ended up (completely)', isNew: true },
+          ],
+          translation: 'Hon o zenbu yonde shimaimashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I\'ll buy the tickets in advance" (tickets = チケット, buy = 買って):',
+      before: 'チケットを買って', after: '。',
+      choices: ['おきます', 'しまいます', 'あります'],
+      answer: 'おきます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I ended up reading the whole book" (book = 本, all = 全部, read = 読んで):',
+      before: '本を全部読んで', after: '。',
+      choices: ['しまいました', 'おきました', 'もらいました'],
+      answer: 'しまいました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: 〜ておく・〜てしまう',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ておく', romaji: '~te oku', meaning: 'do in advance / leave as-is' },
+        { kana: '〜てしまう', romaji: '~te shimau', meaning: 'do completely / regretfully' },
+        { kana: '買っておきます', romaji: 'katte okimasu', meaning: 'buy in advance' },
+        { kana: '読んでしまいました', romaji: 'yonde shimaimashita', meaning: 'ended up reading (all of it)' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: 'チケットを買って', after: '。', answer: 'おきます', hint: '"I\'ll buy the tickets in advance."' },
+        { before: '本を全部読んで', after: '。', answer: 'しまいました', hint: '"I ended up reading the whole book."' },
+      ],
+    },
+  ],
+};
+
+// -- Lesson-content resolver helpers (same pattern as the Task 6 comment
+// block above createBookshelfLabel/buildShelfTrinketAnim/
+// drawShelfCompleteTexture) --------------------------------------------
+// library-scene-shared.js's openRetroMenu()/startLesson() call these three
+// functions by bare name (appendGreetingSummary, resolveConversationTurns,
+// resolveDynamicDiagrams) unconditionally whenever a shelf/pile has
+// LESSON_CONTENT — they were unreachable while LESSON_CONTENT was the
+// Task-7 empty stub (hasContent was always false), so their absence from
+// this file went unnoticed until this task actually populated
+// LESSON_CONTENT. n4-dashboard.html does NOT load n5-phaser-game.js (only
+// library-scene-shared.js), so these generic, scene-only helpers aren't
+// reachable as bare identifiers here either — copied verbatim from
+// n5-phaser-game.js (around its appendGreetingSummary/
+// resolveConversationTurns/resolveDynamicDiagrams definitions) for the
+// same reason as the shelf-decoration helpers above. None of this floor's
+// LESSON_CONTENT this pass uses 'conversation'-type pages, so
+// resolveConversationTurns' ACTION_SPRITE_PATHS lookup is never reached —
+// kept byte-for-byte identical to the N5 version anyway so a future
+// 'conversation' page here behaves the same way N5's do (at which point
+// ACTION_SPRITE_PATHS would also need to be added to this file). Same
+// story for furigana(): lesson-box.js's 'summary' page branch calls it
+// unconditionally on every row (even rows with no `reading` field), and
+// its own comment says it's "defined in n5-phaser-game.js, safe to call
+// here since this page only ever loads alongside it" — that assumption
+// doesn't hold for n4-dashboard.html, so it's copied verbatim below too;
+// every one of this pass's 3 flagship shelves ends in a 'summary' page,
+// so this one is not a someday-future gap like the conversation/diagram
+// helpers above — it's hit immediately.
+
+// Builds the lesson-end recap page (LessonBox type: 'summary') from
+// whatever 'greeting' pages a lesson has, and appends it — generic to
+// any lesson's page array, not specific to any one shelf, so future
+// greeting-type lessons get the same recap for free. Lessons with no
+// greeting pages come back unchanged (no summary appended).
+function appendGreetingSummary(pages, lessonTitle) {
+  const greetings = pages.filter((p) => p.type === 'greeting');
+  if (greetings.length === 0) return pages;
+  const summaryPage = {
+    type: 'summary',
+    title: `Summary: ${lessonTitle}`,
+    headers: ['Phrase', 'Romaji', 'Meaning'],
+    rows: greetings.map((p) => ({ kana: p.kana, romaji: p.romaji, meaning: p.meaning })),
+  };
+  return [...pages, summaryPage];
+}
+
+// Resolves each 'conversation' page's turns to an actual spritePath —
+// LESSON_CONTENT only declares { speaker: 'sensei'|'player', action, ... }
+// since it's static data with no knowledge of which cat color the current
+// player picked. 'player' turns use the player's own selected color;
+// 'sensei' turns use a fixed color distinct from it (Neko-sensei isn't
+// the player's cat, so she shouldn't share its color and become
+// indistinguishable — falls back to black when the player is also
+// orange). Lessons with no 'conversation' pages come back unchanged.
+function resolveConversationTurns(pages, playerColorId) {
+  const senseiColorId = playerColorId === 'orange' ? 'black' : 'orange';
+  return pages.map((page) => {
+    if (page.type !== 'conversation') return page;
+    return {
+      ...page,
+      turns: page.turns.map((t) => {
+        const colorId = t.speaker === 'player' ? playerColorId : senseiColorId;
+        return { ...t, spritePath: ACTION_SPRITE_PATHS[t.action][colorId] };
+      }),
+    };
+  });
+}
+
+// Resolves any 'grammar-intro' page's diagramSvg field when authored as a
+// (playerColorId, senseiColorId) => string function instead of a static
+// string — pages with a static string diagramSvg pass through unchanged.
+function resolveDynamicDiagrams(pages, playerColorId) {
+  const senseiColorId = playerColorId === 'orange' ? 'black' : 'orange';
+  return pages.map((page) => {
+    if (typeof page.diagramSvg !== 'function') return page;
+    return { ...page, diagramSvg: page.diagramSvg(playerColorId, senseiColorId) };
+  });
+}
+
+// Shared furigana helper — wraps a kanji string with its kana reading as
+// native <ruby>/<rt> (styled in lesson-box.css, scoped to .lesson-box), so
+// every diagram/table that shows a kanji word can add its reading with
+// one call instead of hand-writing the ruby markup each time. Falls back
+// to the bare word when no reading is given (kana-only words like レストラン
+// don't need one).
+function furigana(word, reading) {
+  return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
+}
 
 // -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
 // North (top) = deeper into the building, toward a future N2 stub (not
