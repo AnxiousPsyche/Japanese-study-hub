@@ -237,6 +237,43 @@ function saveCatColor(id) {
 // interactives that would read into it yet either.
 const LESSON_CONTENT = {};
 
+// -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
+// North (top) = deeper into the building, toward a future N2 stub (not
+// built this pass). South (bottom) = arrival point from N5's
+// staircase. Mirrors N5's own spawn-south / stairs-north shape (see
+// LAYOUT's doc comment in n5-phaser-game.js) at N4/N3's larger scale.
+// leftColX = N4 shelves throughout every row; rightColX = N3 shelves
+// throughout every row (not arbitrary sub-columns of one topic, like
+// N5's shape — a real per-side split, per explicit feedback). Y values
+// are a first pass — expect to retune them live against actual
+// rendered shelf/furniture sizes, exactly as every N5 row/gap constant
+// was tuned over many rounds (see that file's own comments for
+// precedent) — this is normal for this codebase, not a gap in this plan.
+const shelfW = 87; // same "big furniture" reference size N5 uses
+const shelfH = 64;
+const leftColX = [64, 64 + shelfW + 20]; // N4, always
+const rightColX = [WORLD_W - 64 - shelfW * 2 - 20, WORLD_W - 64 - shelfW]; // N3, always
+
+// Smaller Y = further north (deeper in). N3's shelves sit in the SAME
+// 2 rows as N4's (just the right column) — visible-but-locked the
+// whole time, same as seeing a locked door before you have the key.
+// The exam gate itself is the northmost interactive, the last
+// checkpoint before the plain north wall, reached only after both N4
+// reviews (which are further south/closer to entry) are done.
+const examGateY = 420; // center corridor, north-most interactive
+const review2Y = 600; // N4 review-2 (left) / N3 review-2 (right)
+const row2Y = 780; // N4 Vocabulary & Usage (left) / N3 Nuance & Conversation (right)
+const review1Y = 960; // N4 review-1 (left) / N3 review-1 (right)
+const row1Y = 1140; // N4 Grammar Foundations (left) / N3 Grammar Expansion (right) — nearest entry
+const centerpieceY = 1360; // N4/N3's globe-equivalent decorative landmark
+const entryY = 1560; // player spawn / arrival from N5, south-most
+
+const LAYOUT = {
+  shelfW, shelfH, leftColX, rightColX,
+  row1Y, review1Y, examGateY, row2Y, review2Y,
+  centerpieceY, entryY,
+};
+
 class N4LibraryScene extends Phaser.Scene {
   constructor() { super('N4LibraryScene'); }
 
@@ -408,10 +445,9 @@ class N4LibraryScene extends Phaser.Scene {
   buildExamGate() {}
   buildPlayer() {
     // Spawns near the south end of the world — this floor's real entry
-    // point (LAYOUT.entryY) doesn't exist yet (Task 4 defines LAYOUT), so
-    // this is a placeholder Y that Task 4 will replace.
+    // point from N5's staircase.
     const spawnX = WORLD_W / 2;
-    const spawnY = WORLD_H - 200; // placeholder — Task 4 replaces with LAYOUT.entryY
+    const spawnY = LAYOUT.entryY;
     // N4LibraryScene is only ever reached after N5's CatSelectScene has
     // run (the cat color is a player-level preference, not per-floor —
     // see CAT_COLOR_KEY above), so a saved color always exists here;
