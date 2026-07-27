@@ -86,6 +86,8 @@ const FAVORITES_KEY = 'nekoBunko.n4.favorites';
 const LESSON_PAGE_KEY = 'nekoBunko.n4.lessonPage';
 const QUIZ_GATE_KEY = 'nekoBunko.n4.quizGate'; // N3 wing entrance exam
 const N4_ENTRANCE_GATE_KEY = 'nekoBunko.n4.entranceGate';
+const N2_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n2Gate';
+const N1_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n1Gate';
 
 function loadProgress() {
   try {
@@ -800,6 +802,8 @@ const BOOK_PILE_DATA = [
 const EXAM_GATE_DATA = {
   n4: { id: 'n4-exam-gate', title: 'N4 Entrance Exam', requires: [] },
   n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] },
+  n2: { id: 'n2-exam-gate', title: 'N2 Entrance Exam', requires: [] },
+  n1: { id: 'n1-exam-gate', title: 'N1 Entrance Exam', requires: [] },
 };
 
 // -- Shelf-decoration helpers (Task 6) -----------------------------------
@@ -1588,7 +1592,25 @@ class N4LibraryScene extends Phaser.Scene {
       id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
       x: WORLD_W - 322 - w, y: 1515, requires: EXAM_GATE_DATA.n3.requires,
       quizGateKey: QUIZ_GATE_KEY, bookKey, scale,
-      onPass: () => showToast('The N3 balcony is permanently open.'),
+      onPass: () => showToast('N2 is next... someday.'),
+    });
+
+    // N2/N1 — left wing, per explicit instruction (breaks the natural
+    // N4->N3->N2->N1 left/right progression on purpose; see design spec
+    // Item 4). Placed in the open band between the rear walkway and the
+    // first shelf row (y 630), clear of every left-wing shelf position.
+    const gateScale = 1.0; // smaller than the 1.3 entry gates — these read as "future" landmarks, not the floor's primary gate
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n2.id, title: EXAM_GATE_DATA.n2.title,
+      x: 100, y: 520, requires: EXAM_GATE_DATA.n2.requires,
+      quizGateKey: N2_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
+      onPass: () => showToast('The N2 gate creaks open... nothing beyond it yet.'),
+    });
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n1.id, title: EXAM_GATE_DATA.n1.title,
+      x: 220, y: 520, requires: EXAM_GATE_DATA.n1.requires,
+      quizGateKey: N1_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
+      onPass: () => showToast('The N1 gate creaks open... nothing beyond it yet.'),
     });
   }
 
