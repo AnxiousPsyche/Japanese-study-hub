@@ -7230,9 +7230,6 @@ function catFrameRange(rowKey) {
   return { start, end: start + count - 1 };
 }
 const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
-const QUIZ_GATE_KEY = 'nekoBunko.n5.quizGate';
-const QUIZ_MAX_ATTEMPTS = 3;
-const QUIZ_LOCKOUT_MS = 24 * 60 * 60 * 1000;
 // Both thresholds must exceed the realistic minimum approach distance:
 // every shelf/pile has a solid collision body (addSolid), so the player
 // can never physically reach an interactive's exact center (entry.x/y)
@@ -7242,7 +7239,6 @@ const QUIZ_LOCKOUT_MS = 24 * 60 * 60 * 1000;
 // auto-walk-arrival and click/E-range checks impossible to satisfy —
 // this was a real bug caught by testing the full flow end-to-end, not
 // just checking the code compiles.
-const TRIGGER_RANGE = 80; // px — click-in-range / E-to-interact radius
 const ARRIVE_THRESHOLD = 74; // px — how close auto-walk needs to get before stopping
 
 function loadProgress() {
@@ -7304,60 +7300,6 @@ function saveLessonPage(lessonPage) {
   }
 }
 
-function loadQuizGateState() {
-  try {
-    const raw = localStorage.getItem(QUIZ_GATE_KEY);
-    if (!raw) return { attemptsUsed: 0, lockedUntil: null };
-    const parsed = JSON.parse(raw);
-    return {
-      attemptsUsed: typeof parsed.attemptsUsed === 'number' ? parsed.attemptsUsed : 0,
-      lockedUntil: typeof parsed.lockedUntil === 'number' ? parsed.lockedUntil : null,
-    };
-  } catch (e) {
-    return { attemptsUsed: 0, lockedUntil: null };
-  }
-}
-
-function saveQuizGateState(state) {
-  try {
-    localStorage.setItem(QUIZ_GATE_KEY, JSON.stringify(state));
-  } catch (e) {
-    // localStorage unavailable — degrade to session-only, same pattern
-    // as saveProgress()/saveCatColor().
-  }
-}
-
-function formatLockMessage(msRemaining) {
-  const totalMinutes = Math.max(1, Math.ceil(msRemaining / 60000));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `Locked - try again in ${hours}h ${minutes}m`;
-}
-
-// Applies lazy cooldown-expiry reset (spec: "attempts reset to 3... no
-// re-review required" once 24h has passed), then returns what the UI needs.
-function getQuizGateStatus() {
-  const state = loadQuizGateState();
-  if (state.lockedUntil !== null && Date.now() >= state.lockedUntil) {
-    state.attemptsUsed = 0;
-    state.lockedUntil = null;
-    saveQuizGateState(state);
-  }
-  const locked = state.lockedUntil !== null && Date.now() < state.lockedUntil;
-  return {
-    state,
-    locked,
-    attemptsLeft: Math.max(0, QUIZ_MAX_ATTEMPTS - state.attemptsUsed),
-    lockMessage: locked ? formatLockMessage(state.lockedUntil - Date.now()) : null,
-  };
-}
-
-function getState(id, prereq, progress) {
-  if (progress[id]) return 'completed';
-  if (prereq === null || prereq === undefined || progress[prereq]) return 'available';
-  return 'locked';
-}
-
 function loadCatSpritesheets(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
@@ -7409,195 +7351,6 @@ function saveCatColor(id) {
     // localStorage unavailable — degrade to session-only, same pattern
     // as saveProgress().
   }
-}
-
-function cropToTexture(scene, sourceKey, rect, destKey) {
-  const srcImage = scene.textures.get(sourceKey).getSourceImage();
-  const canvasTexture = scene.textures.createCanvas(destKey, rect.w, rect.h);
-  const ctx = canvasTexture.getContext();
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
-  canvasTexture.refresh();
-  return destKey;
-}
-
-// Hand-drawn "real wall" header: individual hand-cut planks (randomized
-// per-plank shade + grain streaks + occasional knots) instead of a single
-// flat tiled strip, a weathered stain streak across the lower wainscoting
-// band, a 3-step carved molding cap/base trim, and pillars with a flared
-// capital/base, a center grain line, and 2 riveted iron straps. Ported
-// verbatim (same palette + proportions) from the approved
-// wall_header_mockup_v2 visualize mockup — do not reinterpret the colors
-// or swap the blocky/smooth techniques used there.
-// Keyed by size (not a single cached key) — the shorter wall segment
-// above shelves 1/2/5/6 needs its own smaller texture alongside the main
-// 110px-tall header, and Phaser throws on re-registering a canvas key.
-function drawWallHeaderTexture(scene, w, h) {
-  const key = `wallHeaderPanelTex_${w}x${h}`;
-  if (scene.textures.exists(key)) return key;
-
-  let seed = 42;
-  const rand = () => {
-    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    return seed / 0x7fffffff;
-  };
-  const shade = ([r, g, b], amt) =>
-    `rgb(${Math.max(0, Math.min(255, r + amt))},${Math.max(0, Math.min(255, g + amt))},${Math.max(0, Math.min(255, b + amt))})`;
-
-  const tex = scene.textures.createCanvas(key, w, h);
-  const ctx = tex.getContext();
-  ctx.imageSmoothingEnabled = false;
-
-  const moldH = Math.max(3, Math.round((h * 6) / 58));
-  const baseH = Math.max(3, Math.round((h * 6) / 58));
-  const pillarW = Math.max(6, Math.round((w * 10) / 220));
-  const panelCount = 3;
-  const totalPillarW = pillarW * (panelCount - 1);
-  const panelW = (w - totalPillarW) / panelCount;
-  const plankW = Math.max(3, Math.round((w * 5) / 220));
-  const plankBandH = Math.max(6, Math.round(((h - moldH - baseH) * 24) / 46));
-
-  const plankTopBase = [192, 107, 30];
-  const panelBottomBase = [90, 47, 38];
-
-  // 3-step carved molding cap.
-  ctx.fillStyle = '#241209'; ctx.fillRect(0, 0, w, moldH);
-  ctx.fillStyle = '#4a2a1c'; ctx.fillRect(0, 1, w, Math.max(1, moldH - 2));
-  ctx.fillStyle = '#6a4128'; ctx.fillRect(0, 1, w, 1);
-
-  let x = 0;
-  for (let p = 0; p < panelCount; p++) {
-    // Individual planks — each a slightly different hand-cut shade, with
-    // a vertical grain streak and occasional knot.
-    for (let px = 0; px < panelW; px += plankW) {
-      const thisPlankW = Math.min(plankW, panelW - px);
-      const variance = Math.floor(rand() * 20) - 10;
-      ctx.fillStyle = shade(plankTopBase, variance);
-      ctx.fillRect(x + px, moldH, thisPlankW, plankBandH);
-      ctx.fillStyle = shade(plankTopBase, variance - 30);
-      ctx.fillRect(x + px, moldH, 1, plankBandH);
-      if (rand() > 0.4) {
-        ctx.fillStyle = shade(plankTopBase, variance - 18);
-        ctx.fillRect(x + px + Math.floor(thisPlankW / 2), moldH + Math.round(plankBandH * 0.12), 1, Math.round(plankBandH * 0.65));
-      }
-      if (rand() > 0.75) {
-        ctx.fillStyle = shade(plankTopBase, -35);
-        ctx.fillRect(x + px + 1, moldH + Math.round(plankBandH * 0.4) + Math.floor(rand() * Math.round(plankBandH * 0.25)), 2, 2);
-      }
-    }
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(x, moldH + plankBandH, panelW, 1);
-
-    // Lower panel (paneled wainscoting) with grain + a weathering streak.
-    const panelBandY = moldH + plankBandH + 1;
-    const panelBandH = h - baseH - panelBandY;
-    for (let px = 0; px < panelW; px += plankW) {
-      const thisPlankW = Math.min(plankW, panelW - px);
-      const variance = Math.floor(rand() * 16) - 8;
-      ctx.fillStyle = shade(panelBottomBase, variance);
-      ctx.fillRect(x + px, panelBandY, thisPlankW, panelBandH);
-      ctx.fillStyle = shade(panelBottomBase, variance - 25);
-      ctx.fillRect(x + px, panelBandY, 1, panelBandH);
-    }
-    ctx.fillStyle = shade(panelBottomBase, -30);
-    ctx.fillRect(x, panelBandY, panelW, 1);
-    ctx.fillRect(x, h - baseH - 1, panelW, 1);
-    ctx.fillStyle = 'rgba(20,10,6,0.25)';
-    ctx.fillRect(x + Math.floor(panelW * 0.3), panelBandY + 2, Math.max(2, Math.floor(panelW * 0.15)), Math.max(1, panelBandH - 4));
-
-    x += panelW;
-    if (p < panelCount - 1) {
-      // Pillar: flared capital + base, grain, 2 riveted metal straps.
-      const capFlare = 2;
-      ctx.fillStyle = '#241209';
-      ctx.fillRect(x - capFlare, moldH - 1, pillarW + capFlare * 2, 5);
-      ctx.fillRect(x, moldH + 4, pillarW, h - moldH - baseH - 8);
-      ctx.fillRect(x - capFlare, h - baseH - 4, pillarW + capFlare * 2, 5);
-
-      ctx.fillStyle = '#5a3220';
-      ctx.fillRect(x + 1, moldH + 4, pillarW - 2, h - moldH - baseH - 8);
-      ctx.fillStyle = '#6f4126';
-      ctx.fillRect(x + 1, moldH + 4, 1, h - moldH - baseH - 8);
-      ctx.fillStyle = '#3a2013';
-      ctx.fillRect(x + pillarW - 2, moldH + 4, 1, h - moldH - baseH - 8);
-
-      ctx.fillStyle = '#4a2a1a';
-      ctx.fillRect(x + Math.floor(pillarW / 2), moldH + 6, 1, h - moldH - baseH - 12);
-
-      ctx.fillStyle = '#3a3a38';
-      ctx.fillRect(x, moldH + 12, pillarW, 2);
-      ctx.fillRect(x, h - baseH - 16, pillarW, 2);
-      ctx.fillStyle = '#5a5a56';
-      ctx.fillRect(x, moldH + 12, pillarW, 1);
-      ctx.fillRect(x, h - baseH - 16, pillarW, 1);
-      ctx.fillStyle = '#1c1c1a';
-      ctx.fillRect(x + 1, moldH + 12, 1, 2);
-      ctx.fillRect(x + pillarW - 2, moldH + 12, 1, 2);
-
-      x += pillarW;
-    }
-  }
-
-  // 3-step carved base trim.
-  ctx.fillStyle = '#241209'; ctx.fillRect(0, h - baseH, w, baseH);
-  ctx.fillStyle = '#4a2a1c'; ctx.fillRect(0, h - baseH + 1, w, Math.max(1, baseH - 2));
-
-  tex.refresh();
-  return key;
-}
-
-// Hand-drawn woven pixel-art rug: bordered edges with alternating fringe
-// ticks, horizontal thread-line weave texture across the body, and a
-// centered cream/tan diamond motif. Brick-red/gold-tan palette (no pink)
-// per explicit feedback. Shared by the long corridor runner (drawn once
-// as a small repeat unit, then tiled via tileSprite) and the two smaller
-// accent rugs beside the globe (drawn at their own full, fixed size, no
-// tiling needed) so every rug in the room reads as the same family.
-function drawWovenRug(scene, key, w, h) {
-  const rugDark = 0x3a1816;
-  const rugFringeLight = 0x4a231f;
-  const rugBase = 0x7a3230;
-  const rugWeave = 0x6b2b28;
-  const rugMotif = 0xc9a66b;
-  const rugMotifShade = 0xa87f4a;
-  const borderW = 6;
-  const hex = (n) => '#' + n.toString(16).padStart(6, '0');
-
-  const tex = scene.textures.createCanvas(key, w, h);
-  const ctx = tex.getContext();
-  ctx.imageSmoothingEnabled = false;
-
-  ctx.fillStyle = hex(rugBase);
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = hex(rugWeave);
-  for (let y = 1; y < h; y += 3) ctx.fillRect(borderW, y, w - borderW * 2, 1);
-  ctx.fillStyle = hex(rugDark);
-  ctx.fillRect(0, 0, borderW, h);
-  ctx.fillRect(w - borderW, 0, borderW, h);
-  ctx.fillStyle = hex(rugFringeLight);
-  for (let y = 0; y < h; y += 4) {
-    ctx.fillRect(0, y, borderW - 2, 2);
-    ctx.fillRect(w - borderW + 2, y, borderW - 2, 2);
-  }
-
-  const dcx = w / 2;
-  const dcy = h / 2;
-  const dw = Math.min(18, w - borderW * 2 - 6);
-  const dh = Math.min(12, h - 6);
-  const drawDiamond = (fill, pad) => {
-    ctx.fillStyle = fill;
-    ctx.beginPath();
-    ctx.moveTo(dcx, dcy - dh / 2 - pad);
-    ctx.lineTo(dcx + dw / 2 + pad, dcy);
-    ctx.lineTo(dcx, dcy + dh / 2 + pad);
-    ctx.lineTo(dcx - dw / 2 - pad, dcy);
-    ctx.closePath();
-    ctx.fill();
-  };
-  drawDiamond(hex(rugMotifShade), 1);
-  drawDiamond(hex(rugMotif), 0);
-
-  tex.refresh();
-  return key;
 }
 
 // Reusable wooden-plaque shelf label — replaces the earlier parchment-tag
@@ -7808,27 +7561,6 @@ function drawShelfCompleteTexture(scene) {
   return shelfCompleteKey;
 }
 
-function ensureToast() {
-  let toast = document.getElementById('nekoToast');
-  if (toast) return toast;
-  toast = document.createElement('div');
-  toast.id = 'nekoToast';
-  toast.style.cssText = 'position:fixed;top:110px;left:50%;transform:translateX(-50%);'
-    + 'background:#5A4A3A;color:#FFFDF6;padding:10px 18px;border-radius:4px;'
-    + 'font-family:Nunito,sans-serif;font-size:.85rem;z-index:20001;'
-    + 'opacity:0;transition:opacity .25s;pointer-events:none;';
-  document.body.appendChild(toast);
-  return toast;
-}
-
-function showToast(text) {
-  const toast = ensureToast();
-  toast.textContent = text;
-  toast.style.opacity = '1';
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => { toast.style.opacity = '0'; }, 1400);
-}
-
 class LibraryScene extends Phaser.Scene {
   constructor() {
     super('LibraryScene');
@@ -7911,6 +7643,26 @@ class LibraryScene extends Phaser.Scene {
     this.favorites = loadFavorites();
     this.lessonPage = loadLessonPage();
     this.furnitureSprites = {};
+    this.worldW = WORLD_W;
+    this.finalGateId = 'final-quiz';
+    this.printerStationId = 'printer-station';
+    this.printLinksByShelf = PRINT_LINKS_BY_SHELF;
+    this.allPrintLinks = ALL_PRINT_LINKS;
+    this.lessonContent = LESSON_CONTENT;
+    this.quizGateKey = 'nekoBunko.n5.quizGate'; // was the module-level QUIZ_GATE_KEY
+    this.catColors = CAT_COLORS;
+    this.talkColorPaths = TALK_COLOR_PATHS;
+    this.senseiPortraitPaths = SENSEI_PORTRAIT_PATHS;
+    this.extraRetroMenuOptions = (entry) =>
+      entry.id === 'shelf-08' ? [{ label: 'Walk the Route (駅)', onSelect: () => this.launchDirectionMap() }] : [];
+    this.finalGateProceedLabel = 'Proceed to N4';
+    // NOTE: kept as N5's existing toast-only stub (not real navigation) —
+    // Task 1 must leave N5 behavior 100% unchanged; the real N4 handoff
+    // is a separate, focused change (Task 8).
+    this.onFinalGatePass = () => {
+      showToast('N4 is coming soon.');
+      this.closeRetroMenu();
+    };
     registerCatAnimations(this);
 
     this.buildFloor();
@@ -8983,218 +8735,6 @@ class LibraryScene extends Phaser.Scene {
     this.solidGroup.add(block);
   }
 
-  wireInput() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.wasd = this.input.keyboard.addKeys({ up: 'W', down: 'S', left: 'A', right: 'D' });
-    this.interactKey = this.input.keyboard.addKey('E');
-    this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-    const tryInteract = () => {
-      // If the retro menu is already open, E/Enter/Space confirms the
-      // highlighted option instead of trying to open a new interaction.
-      if (this.retroMenu) {
-        this.selectRetroMenuOption();
-        return;
-      }
-      // LessonBox (a DOM overlay, not a Phaser object) owns E/Enter/Space
-      // while it's open via its own document keydown listener — without
-      // this guard, the SAME keypress would also fall through to
-      // nearestInRange()/openInteraction() here and re-open the shelf's
-      // retro menu underneath the lesson dialogue.
-      if (this.panelOpen) return;
-      const near = this.nearestInRange();
-      if (near) this.openInteraction(near);
-    };
-    this.interactKey.on('down', tryInteract);
-    this.enterKey.on('down', tryInteract);
-    this.spaceKey.on('down', tryInteract);
-  }
-
-  handleInteractiveClick(entry) {
-    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
-    if (dist <= (entry.triggerRange || TRIGGER_RANGE)) {
-      this.openInteraction(entry);
-      return;
-    }
-    // Route through the clear central corridor (horizontal -> vertical
-    // -> final approach) instead of one straight line. A direct line to
-    // a far/off-axis shelf reliably grazes some OTHER shelf's collision
-    // box along the way (found by testing every shelf, not just one) -
-    // the corridor at WORLD_W/2 is kept clear of every shelf cluster and
-    // both review piles by design, so routing through it avoids that
-    // whole class of got-stuck bug rather than special-casing each one.
-    const corridorX = WORLD_W / 2;
-    this.moveQueue = [
-      { x: corridorX, y: this.player.y },
-      { x: corridorX, y: entry.y },
-      { x: entry.x, y: entry.y },
-    ];
-    this.pendingInteract = entry;
-  }
-
-  nearestInRange() {
-    let closest = null;
-    let closestDist = Infinity;
-    this.interactives.forEach((entry) => {
-      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, entry.x, entry.y);
-      if (dist <= (entry.triggerRange || TRIGGER_RANGE) && dist < closestDist) {
-        closest = entry;
-        closestDist = dist;
-      }
-    });
-    return closest;
-  }
-
-  // -- Lesson/review interaction ---------------------------------------------
-  // Shelves, the 2 review piles, and the staircase/quiz gate all share the
-  // same retro in-canvas menu engine (below).
-
-  openInteraction(entry) {
-    // Neko-sensei: an always-available guide NPC, not gated content —
-    // skip the shelf/pile locked/available/completed machinery entirely
-    // and jump straight into her dialogue (no "Start Lesson" menu; she's
-    // not a lesson, just a conversation).
-    if (entry.kind === 'npc') {
-      this.startLesson(entry);
-      return;
-    }
-    const state = entry.kind === 'shelf'
-      ? getState(entry.id, entry.prereq, this.progress)
-      : (this.progress[entry.id] ? 'completed'
-        : (entry.requires.every((r) => this.progress[r]) ? 'available' : 'locked'));
-
-    if (state === 'locked') {
-      showToast('Not yet…');
-      return;
-    }
-
-    if (entry.id === 'final-quiz') {
-      if (state !== 'completed') {
-        const gate = getQuizGateStatus();
-        if (gate.locked) {
-          showToast(gate.lockMessage);
-          return;
-        }
-      }
-      this.openQuizGateMenu(entry, state);
-      return;
-    }
-    this.openRetroMenu(entry, state);
-  }
-
-  // -- Retro in-canvas selection menu (shelves + review piles) -----------
-  // Same interaction pattern as CatSelectScene: a dark panel with a
-  // ▶-prefixed, keyboard/click-selectable option list, screen-fixed
-  // (scrollFactor 0) so it stays centered regardless of camera position.
-
-  openRetroMenu(entry, state) {
-    // Anything (shelf or review pile) with real LESSON_CONTENT opens the
-    // LessonBox dialogue instead of completing instantly; entries with no
-    // content yet keep the old direct-complete behavior. Piles skip
-    // "Make Favorite?" — favoriting is a shelf-plaque-specific affordance
-    // (see the favorite-disk icon wiring in buildShelves), not something
-    // review piles have a slot for.
-    const hasContent = !!LESSON_CONTENT[entry.id];
-    // Page count for the subtitle — computed via appendGreetingSummary
-    // alone (not the full resolveConversationTurns/resolveDynamicDiagrams
-    // pipeline) since only appendGreetingSummary can change page COUNT;
-    // the other two only resolve per-page content and don't depend on
-    // catColorId, so this stays accurate without needing a color.
-    const totalPages = hasContent ? appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title).length : 0;
-    const savedIndex = hasContent ? this.lessonPage[entry.id] : undefined;
-    // A saved index only means something to resume if it's strictly
-    // between the start and the last page — index 0 is indistinguishable
-    // from "never started" and isn't worth a resume prompt, and the last
-    // page is never saved (startLesson's onClose clears it on completion).
-    const hasResume = typeof savedIndex === 'number' && savedIndex > 0 && savedIndex < totalPages - 1;
-    const startAction = hasContent
-      ? () => this.startLesson(entry)
-      : () => this.completeInteraction(entry);
-    const options = hasContent
-      ? [
-        ...(hasResume
-          ? [
-            { label: `Continue (pg ${savedIndex + 1})`, onSelect: () => this.startLesson(entry, savedIndex) },
-            { label: 'Start Over', onSelect: startAction },
-          ]
-          : [{ label: 'Start Lesson', onSelect: startAction }]),
-        // "Michi Shirube" overworld direction scene — only offered from
-        // shelf-08 (Places & Directions), the shelf that actually teaches
-        // まっすぐ/みぎ/ひだり/うしろにきて. See DirectionMapScene below.
-        ...(entry.id === 'shelf-08' ? [{ label: 'Walk the Route (駅)', onSelect: () => this.launchDirectionMap() }] : []),
-        ...(entry.kind === 'shelf' ? [{ label: 'Make Favorite?', onSelect: () => this.toggleFavorite(entry) }] : []),
-        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
-      ]
-      : [
-        { label: 'Read again', onSelect: () => this.completeInteraction(entry) },
-        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
-      ];
-    void state; // available vs completed doesn't change the option set — both are "revisit" actions
-    const subtitle = hasContent ? `${totalPages} pages` : undefined;
-    this.buildRetroMenu(entry.title, options, subtitle);
-  }
-
-  // Opens the DOM LessonBox (assets/js/lesson-box.js) for shelves that
-  // have LESSON_CONTENT. Closes the in-canvas retro menu first (both
-  // can't be open at once), keeps this.panelOpen = true for the whole
-  // lesson (freezes player movement, same as the retro menu does), and
-  // marks progress complete only once the player reaches the last page —
-  // matching completeInteraction's own save/refresh/close sequence.
-  startLesson(entry, resumeIndex) {
-    this.closeRetroMenu();
-    this.panelOpen = true;
-    // Appends a lesson-end recap table of every 'greeting' page seen so
-    // far, generic to any lesson (not hardcoded to shelf-01) — per
-    // explicit "summary table of all basic greetings used" request.
-    // Lessons with no greeting pages (future sentence/conjugation-only
-    // shelves) just don't get one.
-    let pages = appendGreetingSummary(LESSON_CONTENT[entry.id], entry.title);
-    pages = resolveConversationTurns(pages, this.catColorId);
-    pages = resolveDynamicDiagrams(pages, this.catColorId);
-    // Neko-sensei's own reception-desk guide shows HER portrait (the
-    // calico prof), not the player's chosen cat color — every other
-    // lesson still narrates as "Neko-sensei" but visually shows the
-    // player's own cat (see the module doc comment on CAT_COLORS/
-    // TALK_COLOR_PATHS), which would look wrong for a conversation that's
-    // explicitly framed as talking WITH her specifically.
-    const isSenseiGuide = entry.kind === 'npc';
-    const catImagePath = isSenseiGuide ? SENSEI_PORTRAIT_PATHS.idle : CAT_COLORS[this.catColorId].path;
-    const talkImagePath = isSenseiGuide ? SENSEI_PORTRAIT_PATHS.talk : TALK_COLOR_PATHS[this.catColorId];
-    window.LessonBox.open(pages, {
-      speaker: 'Neko-sensei',
-      catImagePath,
-      talkImagePath,
-      startIndex: resumeIndex,
-      // Several lessons only teach a curated subset in-canvas (per
-      // explicit "instead of adding it, just put a printer... link the
-      // pdf" request, later extended to adjectives/verbs/conjugations/
-      // particles too) — the full reference lists are one click away
-      // instead of cramming hundreds more words/patterns into the lesson.
-      printLinks: entry.id === 'printer-station' ? ALL_PRINT_LINKS : PRINT_LINKS_BY_SHELF[entry.id],
-      printIconPath: '../../assets/images/lesson/printer-image-Original.png',
-      onComplete: () => {
-        this.progress[entry.id] = true;
-        saveProgress(this.progress);
-        this.refreshAllStates();
-        this.panelOpen = false;
-      },
-      // Fires on every close, including natural completion (closedIndex
-      // is then the last page) — save a resume position only when the
-      // player actually left mid-lesson, clear it otherwise (finished,
-      // or closed right at the start).
-      onClose: (closedIndex, totalPages) => {
-        this.panelOpen = false;
-        if (typeof closedIndex === 'number' && totalPages && closedIndex < totalPages - 1) {
-          this.lessonPage[entry.id] = closedIndex;
-        } else {
-          delete this.lessonPage[entry.id];
-        }
-        saveLessonPage(this.lessonPage);
-      },
-    });
-  }
-
   // Launches the overworld "Michi Shirube" direction scene as an overlay,
   // same pause/launch/resume pattern CatSelectScene's overlay re-pick
   // uses (this.scene.pause + this.scene.launch, resumed by the other
@@ -9205,219 +8745,6 @@ class LibraryScene extends Phaser.Scene {
     this.closeRetroMenu();
     this.scene.pause('LibraryScene');
     this.scene.launch('DirectionMapScene', { catColorId: this.catColorId });
-  }
-
-  completeInteraction(entry) {
-    this.progress[entry.id] = true;
-    saveProgress(this.progress);
-    this.refreshAllStates();
-    this.closeRetroMenu();
-  }
-
-  toggleFavorite(entry) {
-    this.favorites[entry.id] = !this.favorites[entry.id];
-    saveFavorites(this.favorites);
-    this.refreshAllStates();
-    this.closeRetroMenu();
-  }
-
-  // -- Quiz gate (staircase) retro menu -----------------------------------
-  // Same buildRetroMenu engine as shelves/review piles, two levels deep:
-  // a top-level menu whose options depend on pass state, and — for "Retry
-  // exam" — a nested Pass/Fail test menu that exercises the attempts/
-  // cooldown mechanic from getQuizGateStatus()/saveQuizGateState().
-
-  openQuizGateMenu(entry, state) {
-    const options = state === 'completed'
-      ? [
-        { label: 'Proceed to N4', onSelect: () => { showToast('N4 is coming soon.'); this.closeRetroMenu(); } },
-        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
-      ]
-      : [
-        { label: 'Retry exam', onSelect: () => this.openQuizAttemptMenu(entry) },
-        { label: 'Exit', onSelect: () => this.closeRetroMenu() },
-      ];
-    this.buildRetroMenu(entry.title, options);
-  }
-
-  openQuizAttemptMenu(entry) {
-    const { attemptsLeft } = getQuizGateStatus();
-    const options = [
-      { label: 'Pass (test)', onSelect: () => this.resolveQuizAttempt(entry, true) },
-      { label: 'Fail (test)', onSelect: () => this.resolveQuizAttempt(entry, false) },
-      { label: 'Back', onSelect: () => this.openQuizGateMenu(entry, 'available') },
-    ];
-    this.buildRetroMenu(`${entry.title} (${attemptsLeft} left)`, options);
-  }
-
-  resolveQuizAttempt(entry, passed) {
-    if (passed) {
-      this.progress[entry.id] = true;
-      saveProgress(this.progress);
-      this.refreshAllStates();
-      this.closeRetroMenu();
-      this.spawnPassSparkle(entry.x, entry.y);
-      return;
-    }
-    const gateState = loadQuizGateState();
-    gateState.attemptsUsed += 1;
-    if (gateState.attemptsUsed >= QUIZ_MAX_ATTEMPTS) {
-      gateState.lockedUntil = Date.now() + QUIZ_LOCKOUT_MS;
-      saveQuizGateState(gateState);
-      this.closeRetroMenu();
-      showToast('Locked for 24 hours.');
-    } else {
-      saveQuizGateState(gateState);
-      this.closeRetroMenu();
-      showToast(`Try again (${QUIZ_MAX_ATTEMPTS - gateState.attemptsUsed} left)`);
-    }
-  }
-
-  // subtitle: optional non-interactive line under the title (e.g. a page
-  // count) — doesn't count toward options/keyboard nav.
-  buildRetroMenu(title, options, subtitle) {
-    this.closeRetroMenu();
-    const cam = this.cameras.main;
-    const cx = cam.width / 2;
-    const cy = cam.height / 2;
-    const hasSubtitle = !!subtitle;
-    const boxWidth = 300;
-
-    // Longer shelf titles (e.g. "Volitional & Invitations (〜ましょう・
-    // 〜ませんか)") overflowed this fixed-width box under the old flat
-    // single-line-height assumption, clipping past both edges. Word-wrap
-    // the title and measure its ACTUAL rendered height so the box,
-    // subtitle, and options all shift down to make room instead.
-    // "Press Start 2P" has no Japanese glyphs at all, so any 〜ましょう/
-    // 〜ませんか-style text in a title fell back to the canvas's generic
-    // default font — visibly different weight/style from the pixel
-    // English text right next to it. DotGothic16 (already used as the
-    // project's standard Japanese canvas-text fallback elsewhere) fills
-    // in those glyphs only; the Latin text is unaffected since Press
-    // Start 2P still wins for every character it actually has.
-    const titleText = this.add.text(0, 0, title, {
-      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '12px', color: '#F0C674',
-      align: 'center', wordWrap: { width: boxWidth - 40, useAdvancedWrap: true },
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001);
-    const titleExtra = Math.max(0, titleText.height - 16);
-
-    const boxHeight = (hasSubtitle ? 96 : 76) + titleExtra + options.length * 32;
-    const boxTop = cy - boxHeight / 2;
-
-    const bg = this.add.rectangle(cx, cy, boxWidth, boxHeight, 0x1a1410)
-      .setStrokeStyle(3, 0x8a6a3a).setScrollFactor(0).setDepth(2000);
-    titleText.setPosition(cx, boxTop + 26 + titleExtra / 2);
-    const subtitleText = hasSubtitle ? this.add.text(cx, boxTop + 46 + titleExtra, subtitle, {
-      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '8px', color: '#8a7a5a',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(2001) : null;
-    const optionsStartY = boxTop + (hasSubtitle ? 78 : 58) + titleExtra;
-    const optionTexts = options.map((opt, i) => this.add.text(cx - 118, optionsStartY + i * 32, '', {
-      fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: '10px', color: '#B08D57',
-    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(2001)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.highlightRetroMenu(i))
-      .on('pointerup', () => { if (this.retroMenu && this.retroMenu.selectedIndex === i) this.selectRetroMenuOption(); }));
-
-    this.retroMenu = { bg, titleText, subtitleText, optionTexts, options, selectedIndex: 0 };
-    this.panelOpen = true;
-    this.highlightRetroMenu(0);
-  }
-
-  highlightRetroMenu(index) {
-    if (!this.retroMenu) return;
-    this.retroMenu.selectedIndex = index;
-    this.retroMenu.optionTexts.forEach((t, i) => {
-      t.setColor(i === index ? '#FFDD88' : '#B08D57');
-      t.setText((i === index ? '▶ ' : '  ') + this.retroMenu.options[i].label);
-    });
-  }
-
-  selectRetroMenuOption() {
-    if (!this.retroMenu) return;
-    const opt = this.retroMenu.options[this.retroMenu.selectedIndex];
-    if (opt) opt.onSelect();
-  }
-
-  // Up/down (arrow keys or WASD) cycles the highlighted option, Enter/E/
-  // Space confirms it (the confirm side lives in wireInput's tryInteract)
-  // — same debounced isDown-edge pattern as CatSelectScene's keyboard nav.
-  updateRetroMenuInput() {
-    const upDown = this.cursors.up.isDown || this.wasd.up.isDown;
-    const downDown = this.cursors.down.isDown || this.wasd.down.isDown;
-    if (upDown && !this.retroUpKeyWasDown) {
-      this.highlightRetroMenu(Math.max(0, this.retroMenu.selectedIndex - 1));
-    }
-    if (downDown && !this.retroDownKeyWasDown) {
-      this.highlightRetroMenu(Math.min(this.retroMenu.options.length - 1, this.retroMenu.selectedIndex + 1));
-    }
-    this.retroUpKeyWasDown = upDown;
-    this.retroDownKeyWasDown = downDown;
-  }
-
-  closeRetroMenu() {
-    if (this.retroMenu) {
-      this.retroMenu.bg.destroy();
-      this.retroMenu.titleText.destroy();
-      if (this.retroMenu.subtitleText) this.retroMenu.subtitleText.destroy();
-      this.retroMenu.optionTexts.forEach((t) => t.destroy());
-      this.retroMenu = null;
-    }
-    this.panelOpen = false;
-  }
-
-  refreshAllStates() {
-    this.interactives.forEach((entry) => {
-      // Neko-sensei has no locked/available/completed states — she's
-      // always there, always fully visible (no glow/stamp/dim sprites
-      // exist for her — see buildReceptionSensei), so skip the rest of
-      // this per-entry visual-state logic entirely.
-      if (entry.kind === 'npc') return;
-      const state = entry.kind === 'shelf'
-        ? getState(entry.id, entry.prereq, this.progress)
-        : (this.progress[entry.id] ? 'completed'
-          : (entry.requires.every((r) => this.progress[r]) ? 'available' : 'locked'));
-
-      if (entry.kind === 'shelf') {
-        entry.sprite.setTexture(state === 'locked' ? entry.lockedKey : entry.filledKey);
-        entry.favIcon.setVisible(!!this.favorites[entry.id]);
-        entry.completeBadge.setVisible(state === 'completed');
-      }
-      // The staircase is exempt from the locked-state dim — see
-      // buildTopBand's comment: fading a large architectural piece to
-      // 55% opacity reads as broken, not "locked". It still gates
-      // correctly (openInteraction's "Not yet…" toast is unaffected), it just
-      // always renders at full visibility.
-      if (entry.id !== 'final-quiz') {
-        entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
-      }
-      entry.glow.setVisible(state === 'available');
-      entry.stamp.setVisible(state === 'completed');
-    });
-  }
-
-  // One-time celebratory flourish on passing the quiz gate — same
-  // lightweight emoji+tween approach as the glow/checkmark icons above,
-  // not a new particle-emitter system. Purely visual, no state.
-  spawnPassSparkle(x, y) {
-    const sparkCount = 6;
-    for (let i = 0; i < sparkCount; i++) {
-      const angle = (Math.PI * 2 * i) / sparkCount;
-      const dist = 40;
-      const targetX = x + Math.cos(angle) * dist;
-      const targetY = y + Math.sin(angle) * dist;
-      const spark = this.add.text(x, y, '✨', { fontSize: '18px' })
-        .setOrigin(0.5).setDepth(10);
-      this.tweens.add({
-        targets: spark,
-        x: targetX,
-        y: targetY,
-        scale: { from: 1, to: 1.4 },
-        alpha: { from: 1, to: 0 },
-        duration: 700,
-        ease: 'Cubic.Out',
-        onComplete: () => spark.destroy(),
-      });
-    }
   }
 
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
@@ -9489,6 +8816,7 @@ class LibraryScene extends Phaser.Scene {
     });
   }
 }
+Object.assign(LibraryScene.prototype, LibrarySceneEngine);
 
 class CatSelectScene extends Phaser.Scene {
   constructor() {

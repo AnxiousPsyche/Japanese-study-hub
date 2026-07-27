@@ -1870,6 +1870,26 @@
         "26820"
       ],
       "port": 26820
+    },
+    {
+      "name": "jp-library-static-n4task1-baseline",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "26921"
+      ],
+      "port": 26921
+    },
+    {
+      "name": "jp-library-static-n4task1-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27022"
+      ],
+      "port": 27022
     }
   ],
   "autoVerify": true
