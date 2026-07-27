@@ -1060,24 +1060,32 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   buildWalls() {
-    // Visually thicker wall strip just inside the tilemap's border tile,
-    // using the same brick tile crop, same pattern as N5's buildWalls()
-    // (n5-phaser-game.js:7735).
-    const brickKey = cropToTexture(this, 'floorsWalls', ASSET_RECTS.brickTile, 'n4BrickWallTex');
+    const blockSize = 32; // was TILE_SIZE (16) via image crop — see Task 2
+    const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', { blockW: blockSize, blockH: blockSize });
     const wallGroup = this.physics.add.staticGroup();
-    for (let x = 0; x < GRID_COLS; x++) {
-      this.add.image(x * TILE_SIZE, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      this.add.image(x * TILE_SIZE, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+
+    // Top/bottom strips — WORLD_W (1152) divides evenly by 32 (36 tiles),
+    // so no remainder handling needed on this axis.
+    for (let x = 0; x < WORLD_W; x += blockSize) {
+      this.add.image(x, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+      this.add.image(x, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
     }
-    // Left/right walls, 3 tiles deep, starting below the top wall band
-    // (buildTopBand()'s solid header) so the brick strip doesn't visually
-    // collide with it — same reasoning as N5's sideWallStartRow.
-    const sideWallStartRow = Math.ceil(TOP_BAND_HEIGHT / TILE_SIZE);
-    for (let y = sideWallStartRow; y < GRID_ROWS; y++) {
-      for (let col = 1; col <= 3; col++) {
-        this.add.image(col * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-        this.add.image((GRID_COLS - 1 - col) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      }
+
+    // Left/right strips — 3 * TILE_SIZE (48px) deep, starting below the
+    // top wall band. The vertical run length (GRID_ROWS * TILE_SIZE minus
+    // the header) is not guaranteed to be a multiple of blockSize, so the
+    // final tile in each column gets clipped to the remaining pixel
+    // height instead of overshooting past the strip's bottom edge.
+    const sideWallStartY = Math.ceil(TOP_BAND_HEIGHT / TILE_SIZE) * TILE_SIZE;
+    const sideWallEndY = GRID_ROWS * TILE_SIZE;
+    const colWidth = 3 * TILE_SIZE; // 48px, same total strip width as before
+    for (let y = sideWallStartY; y < sideWallEndY; y += blockSize) {
+      const remaining = sideWallEndY - y;
+      const h = Math.min(blockSize, remaining);
+      this.add.image(0, y, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
+      this.add.image(WORLD_W - colWidth, y, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
     }
     this.wallGroup = wallGroup;
   }

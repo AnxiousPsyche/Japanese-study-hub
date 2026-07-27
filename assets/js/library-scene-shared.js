@@ -216,6 +216,44 @@ function drawWovenRug(scene, key, w, h, palette) {
   return key;
 }
 
+// Procedural brick-wall texture, replacing a small tiled image crop.
+// Bigger, hand-drawn blocks with mortar lines and per-brick shading
+// read as "real brickwork" instead of a tight repeating pattern.
+// config: { blockW, blockH, mortarColor, brickColors } — blockW/blockH
+// default to 32x32 (2x the previous 16x16 crop); brickColors is an
+// array cycled per-brick for subtle variation.
+function createBrickWallTexture(scene, key, config) {
+  const cfg = config || {};
+  const blockW = cfg.blockW || 32;
+  const blockH = cfg.blockH || 32;
+  const mortar = cfg.mortarColor || '#1c120b';
+  const brickColors = cfg.brickColors || ['#4c2b1b', '#442619', '#3e2216'];
+  const rowH = blockH / 2; // two brick courses per texture tile, offset like real brickwork
+  const tex = scene.textures.createCanvas(key, blockW, blockH);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = mortar;
+  ctx.fillRect(0, 0, blockW, blockH);
+  let brickIndex = 0;
+  for (let row = 0; row < 2; row++) {
+    const y = row * rowH;
+    const offset = row % 2 ? -blockW / 4 : 0;
+    for (let x = offset; x < blockW; x += blockW / 2) {
+      ctx.fillStyle = brickColors[brickIndex % brickColors.length];
+      brickIndex += 1;
+      ctx.fillRect(x + 1, y + 1, blockW / 2 - 2, rowH - 2);
+      // Top highlight + bottom shadow per brick, same technique as
+      // drawHardwoodFloorTexture's plank shading.
+      ctx.fillStyle = 'rgba(235, 178, 98, .08)';
+      ctx.fillRect(x + 2, y + 1, blockW / 2 - 4, 1);
+      ctx.fillStyle = 'rgba(10, 5, 2, .45)';
+      ctx.fillRect(x + 1, y + rowH - 2, blockW / 2 - 2, 1);
+    }
+  }
+  tex.refresh();
+  return key;
+}
+
 // Draws an illustrated "lower floor" void into a mezzanine's open
 // atrium rect, instead of a flat color fill — a darker/desaturated
 // floor-tile pattern, a few silhouette shelf blocks suggesting
