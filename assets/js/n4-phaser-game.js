@@ -1249,6 +1249,23 @@ class N4LibraryScene extends Phaser.Scene {
 
     LESSON_DATA.forEach((lesson, i) => {
       const [x, y] = positions[i];
+      // setDisplaySize below is overwritten every frame: update()'s
+      // proximity-pulse loop calls entry.sprite.setScale(entry.baseScale *
+      // ...) unconditionally on every interactive (baseScale: 1 here), which
+      // resets the sprite back to its texture's native crop size (88x120
+      // locked, up to 88x139 filled) rather than the shelfW/shelfH (87x64)
+      // requested here. LAYOUT's sub-row gap (shelfH + 12) is computed
+      // against the nominal 64px, not the ~120-139px shelves actually
+      // render at — confirmed live (scaleY reads 1, not ~0.53) and verified
+      // visually to have no rendering defect (crops carry transparent
+      // padding beyond the opaque artwork), but the layout math technically
+      // "works by accident." This exact setDisplaySize+per-frame-setScale
+      // conflict is called out explicitly for N5's NPC props (see
+      // n5-phaser-game.js's buildFurniture(), "setScale (not
+      // setDisplaySize)..." comment) which deliberately use setScale
+      // instead for this reason — N5's own shelves have the identical
+      // conflict, unflagged, shipped without issue; this comment documents
+      // it for N4 rather than silently reproducing the ambiguity.
       const sprite = this.add.image(x + shelfW / 2, y + shelfH / 2, lockedKey)
         .setOrigin(0.5, 0.5).setDepth(1)
         .setDisplaySize(shelfW, shelfH);
