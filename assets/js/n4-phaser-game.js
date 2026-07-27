@@ -653,6 +653,29 @@ function furigana(word, reading) {
   return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
 }
 
+// Crops a padded window around the jukebox artwork's opaque content
+// and zeroes any residual low-alpha pixels (<20/255) left over from
+// the source file's soft vignette background, so the destination
+// texture reads as a clean cutout against the mezzanine floor instead
+// of a faint translucent square.
+function cropJukeboxTexture(scene) {
+  const destKey = 'n4JukeboxTex';
+  const srcImage = scene.textures.get('jukebox').getSourceImage();
+  const rect = { x: 202, y: 82, w: 620, h: 870 }; // padded around the measured x:242-782, y:122-912 opaque bbox
+  const tex = scene.textures.createCanvas(destKey, rect.w, rect.h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+  const imageData = ctx.getImageData(0, 0, rect.w, rect.h);
+  const data = imageData.data;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] < 20) data[i] = 0;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  tex.refresh();
+  return destKey;
+}
+
 // -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
 // North (top) = deeper into the building, toward a future N2 stub (not
 // built this pass). South (bottom) = arrival point from N5's
@@ -962,6 +985,8 @@ class N4LibraryScene extends Phaser.Scene {
     // badge, both copied verbatim from that file).
     this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
     this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
+    // Jukebox decorative prop (Task 3) — loaded here for texture cleanup in buildJukebox()
+    this.load.image('jukebox', '../../assets/images/ui/jukebox-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -1004,6 +1029,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildWalls();
     this.buildTopBand();
     this.buildFurniture();
+    this.buildJukebox();
     this.buildAtrium();
     this.buildShelves();
     this.buildBookPiles();
@@ -1228,6 +1254,41 @@ class N4LibraryScene extends Phaser.Scene {
     this.add.text(labelX, labelY + 28, 'FIRST-FLOOR LIBRARY', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#a89068', align: 'center',
     }).setOrigin(0.5).setDepth(2);
+  }
+
+  // Decorative jukebox prop — visual-only this pass (no real audio;
+  // n4-dashboard.html doesn't load music-player.js and no audio asset
+  // was supplied). Placed along the rear walkway, non-solid like every
+  // other decor piece on this floor.
+  buildJukebox() {
+    const texKey = cropJukeboxTexture(this);
+    const x = 470;
+    const y = 480; // on the rear walkway strip (buildAtrium()'s walkway spans roughly y 452-494)
+    const scale = 0.16; // source crop is 620x870 — scales down to a footprint similar to the centerpiece clock
+    createDecorativeProp(this, {
+      x, y, textureKey: texKey, scale, depth: 2,
+      onClick: () => {
+        showToast('The jukebox hums an old N4 tune...');
+        this.spawnNoteFlourish(x, y);
+      },
+    });
+  }
+
+  // Same particle technique as spawnPassSparkle (library-scene-shared.js)
+  // but with a musical-note glyph and no dependency on quiz-pass state —
+  // kept local since it's cosmetic flavor for one prop, not shared engine.
+  spawnNoteFlourish(x, y) {
+    const count = 4;
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+      const note = this.add.text(x, y, '♪', { fontSize: '16px', color: '#e8d4a8' })
+        .setOrigin(0.5).setDepth(10);
+      this.tweens.add({
+        targets: note, x: x + Math.cos(angle) * 30, y: y + Math.sin(angle) * 30 - 20,
+        alpha: { from: 1, to: 0 }, duration: 800, ease: 'Cubic.Out',
+        onComplete: () => note.destroy(),
+      });
+    }
   }
 
   // -- 16 lesson shelves, 2 physical rows (left column = N4, right column

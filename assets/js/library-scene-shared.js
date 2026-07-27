@@ -341,6 +341,23 @@ function getState(id, prereq, progress) {
   return 'locked';
 }
 
+// Renders a decorative prop (non-interactive by default, optionally clickable).
+// config: { x, y, textureKey, scale?, onClick?, depth? }
+// Returns the created Phaser.GameObjects.Image. Deliberately NOT pushed into
+// scene.interactives — decor props don't participate in the progress/lock system,
+// so they need no requires/glow/stamp fields. Scale/onClick/depth are optional.
+function createDecorativeProp(scene, config) {
+  const { x, y, textureKey } = config;
+  const scale = config.scale !== undefined ? config.scale : 1;
+  const depth = config.depth !== undefined ? config.depth : 1;
+  const sprite = scene.add.image(x, y, textureKey).setOrigin(0.5).setScale(scale).setDepth(depth);
+  if (config.onClick) {
+    sprite.setInteractive({ useHandCursor: true });
+    sprite.on('pointerdown', config.onClick);
+  }
+  return sprite;
+}
+
 // Quiz-gate (staircase/exam-gate attempt/cooldown) persistence —
 // generalized to take the floor's own localStorage key instead of N5's
 // hardcoded QUIZ_GATE_KEY, so N4's exam gate can reuse this unchanged
@@ -671,6 +688,7 @@ window.cropToTexture = cropToTexture;
 window.drawWovenRug = drawWovenRug;
 window.drawWallHeaderTexture = drawWallHeaderTexture;
 window.getState = getState;
+window.createDecorativeProp = createDecorativeProp;
 window.getQuizGateStatus = getQuizGateStatus;
 window.ensureToast = ensureToast;
 window.showToast = showToast;
