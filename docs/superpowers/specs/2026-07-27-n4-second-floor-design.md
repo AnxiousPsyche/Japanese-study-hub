@@ -2,20 +2,28 @@
 
 ## Goal
 
-Add a second, explorable Phaser floor for JLPT N4 content, reached from the
-existing N5 library's staircase ("Proceed to N4," currently a stub toast at
+Add a second, explorable Phaser floor reached from the existing N5
+library's staircase ("Proceed to N4," currently a stub toast at
 `n5-phaser-game.js`'s `openQuizGateMenu`). N5's `LibraryScene` is not
-redesigned or replaced — N4 is new, additive work that reuses N5's proven
-systems (movement, camera-follow, collision, the retro interaction menu,
-LessonBox content pipeline, progression/persistence patterns) without
+redesigned or replaced — this floor is new, additive work that reuses N5's
+proven systems (movement, camera-follow, collision, the retro interaction
+menu, LessonBox content pipeline, progression/persistence patterns) without
 duplicating their code.
 
-This first pass builds the **entire N4 floor's layout and progression
+**Revised per explicit follow-up feedback:** this floor is no longer
+entirely N4. It's **split down the middle** — the **left column carries N4
+content, the right column carries N3 content** — with a real exam gate (not
+a stub) separating them: every N3 shelf stays locked until every N4 review
+pile is complete. "Proceed to N4" (the button label on N5's staircase)
+still reads that way since N4 is what the player reaches first; N3 is
+reached by progressing further on the same floor, not a separate page/gate.
+
+This first pass builds the **entire floor's layout and progression
 skeleton** — every wing, room, shelf plaque, and review pile placed and
 wired into the same lock/available/completed system N5 uses — but most
 individual shelves ship with a short placeholder lesson instead of a fully
-curated one. A handful of flagship shelves get full content to prove the
-content pipeline works unchanged on the new floor.
+curated one. A handful of flagship shelves (both N4 and N3 side) get full
+content to prove the content pipeline works unchanged on the new floor.
 
 ## Architecture
 
@@ -59,11 +67,15 @@ parameterized single scene, not a copy-pasted duplicate file).
   `buildFloor/buildWalls/buildTopBand/buildFurniture/buildShelves/
   buildReception/buildPlayer`, `preload()`, `update()`) but with N4's own:
   - `LAYOUT`/`GRID_COLS`/`GRID_ROWS` (larger world, see Theme below)
-  - `LESSON_DATA` (16 N4 shelf titles, grouped into 4 wings)
-  - `SHELF_PREREQ` / `BOOK_PILE_DATA` (same shape as N5's, gating every 4
-    shelves behind a review pile, mirroring N5's pattern exactly)
-  - `LESSON_CONTENT` (N4's own lesson pages — flagship shelves fully
-    authored, the rest placeholder pages, see Content Plan)
+  - `LESSON_DATA` (16 shelf titles total: 8 N4 on the left column, 8 N3 on
+    the right column, grouped into 4 wings of 4 — see Wings & Shelves)
+  - `SHELF_PREREQ` / `BOOK_PILE_DATA` (same shape as N5's — review piles
+    gate every 4 shelves — PLUS one extra gate entry, the N4->N3 exam
+    gate, which every N3-side shelf's prereq chain roots on instead of
+    `null`)
+  - `LESSON_CONTENT` (this floor's own lesson pages — flagship shelves
+    fully authored on both sides, the rest placeholder pages, see Content
+    Plan)
   - `ASSET_RECTS` — reuses the **same image files** already in
     `assets/images/ui/`, `assets/images/lesson/`, `assets/images/avatars/`
     (no new art packs, per your explicit instruction), with new crop
@@ -112,27 +124,39 @@ without new art packs:
 
 ## Wings & Shelves
 
-Mirrors N5's 16-shelf / 4-review-pile / 1-final-gate shape for
-architectural and progression consistency:
+16 shelves total, still 4 wings of 4 for architectural consistency with
+N5's shape — but now split by JLPT level, left column vs. right column,
+with a real gate between them instead of all 16 being one level:
 
-| Wing | Shelves | Room theme |
-|---|---|---|
-| N4 Grammar | 1-4 | Grammar study wing |
-| N4 Vocabulary | 5-8 | Vocabulary wing |
-| Reading & Listening | 9-12 | Reading corner + archive room |
-| Conversation & Practice | 13-16 | Conversation wing |
+| Side | Wing | Shelves | Room theme |
+|---|---|---|---|
+| N4 (left) | N4 Grammar Foundations | 1-4 | Grammar study wing |
+| N4 (left) | N4 Vocabulary & Usage | 5-8 | Vocabulary wing |
+| — | **Exam Gate** | — | Real gate, not a stub — see below |
+| N3 (right) | N3 Grammar Expansion | 1-4 | Archive room (denser, dimmer) |
+| N3 (right) | N3 Nuance & Conversation | 5-8 | Conversation/reading wing |
 
-- 4 review piles, one per wing (same gating pattern as N5's review-1..4).
-- 1 "Boss Quiz" staircase gate at the end (same interaction pattern as
-  N5's `final-quiz`), stubbed to `showToast('N3 is coming soon.')` — the
-  same kind of stub N5 itself shipped with for N4 before this pass.
+- 4 review piles total: 2 for N4 (one per N4 wing), 2 for N3 (one per N3
+  wing) — same gating pattern as N5's review-1..4.
+- **Exam Gate**: a real interactive gate, same lock mechanic as every
+  other gate in this codebase (`SHELF_PREREQ`-style chain), requiring
+  both N4 review piles complete. Every N3-side shelf's prereq chain
+  roots on this gate instead of `null` — so the entire right column stays
+  fully locked (not just visually dimmed) until N4 is 100% done. This
+  replaces the original plan's stubbed "Boss Quiz -> N3 coming soon" —
+  N3 is real content now, gated instead of deferred.
+- A further gate (e.g. "N2 is coming soon") can sit past N3's completion
+  in a later pass, mirroring how N5 itself stubbed this floor before this
+  pass — out of scope here (see Out of Scope).
 
 ## Content Plan
 
 - **Flagship shelves (full curated content, same page-type vocabulary as
-  N5 — `grammar-intro`/`summary`/`try-it`/`quiz-fill`/etc.):**
-  shelf-01 (first Grammar shelf — the player's first N4 impression),
-  one Reading & Listening shelf, one Conversation & Practice shelf.
+  N5 — `grammar-intro`/`summary`/`try-it`/`quiz-fill`/etc.):** 2 on the N4
+  side (the first Grammar Foundations shelf — the player's first
+  impression of this floor — plus one Vocabulary & Usage shelf), 1 on the
+  N3 side (one Grammar Expansion shelf, to prove the gated content works
+  identically to the ungated side).
 - **All other shelves:** a short placeholder lesson — a single
   `grammar-intro` page naming the topic and noting it's coming soon,
   still wired through the real `LESSON_CONTENT`/progression system (so
@@ -158,9 +182,12 @@ architectural and progression consistency:
 
 ## Out of scope for this pass (explicitly deferred)
 
-- Full curated lesson content for every N4 shelf (only flagships this
-  pass).
-- A return staircase from N4 back down to N5.
-- The N3 floor (stubbed exactly like N5 stubbed N4).
+- Full curated lesson content for every shelf on either side (only 3
+  flagships total this pass — 2 N4, 1 N3).
+- A return staircase from this floor back down to N5.
+- Anything past N3 (a stubbed "N2 is coming soon" gate past N3's
+  completion, same kind of stub N5 itself shipped with for this floor
+  before this pass — not built this round, N3 already fills that role
+  for this pass).
 - Any shared save-slot/cross-floor progress dashboard beyond what already
   exists per-floor.

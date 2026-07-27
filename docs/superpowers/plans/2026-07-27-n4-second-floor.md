@@ -14,10 +14,11 @@
 - No new art packs or image files — every new crop comes from `assets/images/ui/*.png`, `assets/images/lesson/*`, or `assets/images/avatars/*`, already loaded by N5.
 - Every new/changed `.js` file must pass `node --check` after every task.
 - Every task that touches rendering must be verified live in the Browser pane preview on a fresh, never-before-used port (this project's documented stale-JS-cache gotcha — see `CLAUDE.md`), checking for console errors via `read_console_messages`.
-- N4's world: `TILE_SIZE = 16`, `GRID_COLS = 72`, `GRID_ROWS = 180` → `WORLD_W = 1152`, `WORLD_H = 2880`. Camera-follow, no fixed camera, no shrinking — same as N5.
+- N4's world: `TILE_SIZE = 16`, `GRID_COLS = 72`, `GRID_ROWS = 130` → `WORLD_W = 1152`, `WORLD_H = 2080` (revised down from an original 180-row estimate once the floor's split-column redesign needed only 2 physical shelf-rows instead of 4 — see Task 4). Camera-follow, no fixed camera, no shrinking — same as N5.
 - N4 palette accents (from the approved mockup): deep wine `#5c1a2e` (carpet), forest green `#1f3d2b` (accent), dark wood `#3a2415`, richer amber `#d4a24c` (gold accent, replaces N5's `#F0C674` where N4 draws its own canvas textures).
-- 16 N4 shelves in 4 wings of 4 (Grammar 1-4, Vocabulary 5-8, Reading & Listening 9-12, Conversation & Practice 13-16), 4 review piles (one per wing), 1 boss-quiz gate stubbed to `showToast('N3 is coming soon.')`. Flagship shelves with full content: `n4-shelf-01`, `n4-shelf-09`, `n4-shelf-13`. All other shelves get a single-page placeholder lesson (real `LESSON_CONTENT`, marks progress, just short).
-- Shelf/pile ids are prefixed `n4-` (e.g. `n4-shelf-01`, `n4-review-1`, `n4-boss-quiz`) so they can never collide with N5's `localStorage` progress keys if the two floors' saves are ever merged later.
+- **Revised per explicit follow-up feedback:** this floor is split down the middle, not entirely N4. Left column = N4 (8 shelves, 2 wings, 2 review piles). Right column = N3 (8 shelves, 2 wings, 2 review piles) — genuinely locked (not just dimmed) behind a real **exam gate** until both N4 review piles are complete. 16 shelves total, same as the original plan, now split 8/8 across two JLPT levels instead of 16 on one. There is no "boss quiz stubbed to N3 coming soon" anymore — N3 IS the real content this pass; a further stub (N3 -> N2) is deferred, out of scope, see the spec's Out of Scope section.
+- Flagship shelves with full content: `n4-shelf-01`, `n4-shelf-05` (one per N4 wing), `n3-shelf-01` (proves the gated side works identically). All other shelves get a single-page placeholder lesson (real `LESSON_CONTENT`, marks progress, just short).
+- Shelf/pile ids are prefixed `n4-`/`n3-` (e.g. `n4-shelf-01`, `n4-review-1`, `n3-shelf-01`, `n3-exam-gate`) so they can never collide with N5's `localStorage` progress keys if floors' saves are ever merged later.
 
 ---
 
@@ -173,10 +174,10 @@
     return 'locked';
   }
 
-  // Quiz-gate (staircase attempt/cooldown) persistence — generalized to
-  // take the floor's own localStorage key instead of N5's hardcoded
-  // QUIZ_GATE_KEY, so N4's boss-quiz gate can reuse this unchanged with
-  // its own key instead of a duplicated copy.
+  // Quiz-gate (staircase/exam-gate attempt/cooldown) persistence —
+  // generalized to take the floor's own localStorage key instead of N5's
+  // hardcoded QUIZ_GATE_KEY, so N4's exam gate can reuse this unchanged
+  // with its own key instead of a duplicated copy.
   function loadQuizGateState(quizGateKey) {
     try {
       const raw = localStorage.getItem(quizGateKey);
@@ -587,9 +588,9 @@
   ```js
   const TILE_SIZE = 16;
   const GRID_COLS = 72;
-  const GRID_ROWS = 180;
+  const GRID_ROWS = 130; // revised down from 180 — see Task 4 (only 2 physical shelf-rows needed, not 4)
   const WORLD_W = GRID_COLS * TILE_SIZE; // 1152
-  const WORLD_H = GRID_ROWS * TILE_SIZE; // 2880
+  const WORLD_H = GRID_ROWS * TILE_SIZE; // 2080
 
   const N4_PALETTE = {
     carpet: 0x5c1a2e,
@@ -623,7 +624,13 @@
       // first engine methods to run.
       this.worldW = WORLD_W;
       this.worldH = WORLD_H;
-      this.finalGateId = 'n4-boss-quiz';
+      // This floor's one quiz-gate-mechanic entry (3-attempt/24h-cooldown,
+      // same as N5's staircase) is the N4->N3 exam gate, NOT a north-wall
+      // staircase (there's no further N2 stub built this pass — see the
+      // design spec's Out of Scope). Passing it just unlocks the N3
+      // column in place (n3-shelf-01's SHELF_PREREQ points at this id) —
+      // no page navigation needed, so onFinalGatePass is just a toast.
+      this.finalGateId = 'n3-exam-gate';
       this.printerStationId = null;
       this.printLinksByShelf = {};
       this.allPrintLinks = {};
@@ -633,8 +640,8 @@
       this.talkColorPaths = TALK_COLOR_PATHS;
       this.senseiPortraitPaths = SENSEI_PORTRAIT_PATHS;
       this.extraRetroMenuOptions = undefined; // N4 has no shelf-08-style extra option this pass
-      this.finalGateProceedLabel = 'Proceed to N3';
-      this.onFinalGatePass = () => showToast('N3 is coming soon.');
+      this.finalGateProceedLabel = 'Continue';
+      this.onFinalGatePass = () => showToast('The N3 wing is now unlocked!');
       this.buildScene();
     }
 
@@ -651,6 +658,7 @@
       this.buildFurniture();
       this.buildShelves();
       this.buildBookPiles();
+      this.buildExamGate(); // Task 6 — the one interactive N5 has no equivalent of
       this.buildPlayer();
       this.wireInput();
       this.refreshAllStates();
@@ -761,13 +769,13 @@
 
   Copy verbatim from `LibraryScene`. `buildPlayer()`'s spawn point becomes N4's own entry point (south end, see Task 4's `LAYOUT.entryY`) instead of N5's `spawnY`. `this.cameras.main.startFollow(this.player, true, 0.09, 0.09)` — identical call, no fixed camera, confirming the Global Constraint. `update()`'s movement/auto-walk/proximity-glow logic is copied verbatim (it already only references `this.player`/`this.cursors`/`this.wasd`/`this.moveQueue`/`this.interactives`, all scene-local, no N5-specific module constants) except any direct `WORLD_W`/`WORLD_H` reference becomes `this.worldW`/`this.worldH` (set `this.worldH = WORLD_H;` alongside `this.worldW` in `create()`, Task 2).
 
-- [ ] **Step 4: Write N4's `buildTopBand()` (the boss-quiz staircase)**
+- [ ] **Step 4: Write N4's `buildTopBand()` (plain wall, no gate this pass)**
 
-  Mirrors N5's `buildTopBand()` staircase-as-gate pattern: a solid architectural piece at the north end, non-dimmed when locked (same exemption reasoning as N5's `final-quiz`), that opens `openQuizGateMenu` with `entry.id = 'n4-boss-quiz'`, `entry.requires` = every N4 review pile id (`['n4-review-1','n4-review-2','n4-review-3','n4-review-4']`).
+  Unlike N5, this floor's real gate (the N4->N3 exam gate) sits in the middle of the map, not at the north end (see Task 6) — a further "N3 -> N2" gate is explicitly out of scope this pass (per the design spec). So `buildTopBand()` here is simpler than N5's: just the solid north wall/architectural cap (reuse `drawWallHeaderTexture`/the wall-collision-rectangle pattern), no interactive staircase object at all.
 
 - [ ] **Step 5: Verify**
 
-  `node --check`. Live-verify: player spawns at the south entry point, WASD/arrow movement works, camera follows smoothly with no fixed-camera regression, walls block movement at the world edges, the boss-quiz staircase is visible and un-dimmed at the north end (still locked/toast-only until Task 5's review piles exist).
+  `node --check`. Live-verify: player spawns at the south entry point, WASD/arrow movement works, camera follows smoothly with no fixed-camera regression, walls block movement at every world edge including the plain north wall.
 
 ---
 
@@ -781,45 +789,50 @@
 
 - [ ] **Step 1: Define `LAYOUT`**
 
+  **Revised per explicit follow-up feedback** (split floor, not 4 stacked all-N4 wings): the left column carries N4 shelves throughout, the right column carries N3 shelves throughout, in the SAME 2 physical rows — so only 2 shelf-rows are needed total (N4 Grammar Foundations + N3 Grammar Expansion share row 1; N4 Vocabulary & Usage + N3 Nuance & Conversation share row 2), each with its own review-pile row below it. The exam gate sits in the center corridor between the two columns, at its own row.
+
   ```js
-  // North (top) = deeper into the building, toward the boss-quiz gate.
-  // South (bottom) = arrival point from N5's staircase. Mirrors N5's own
-  // spawn-south / stairs-north shape (see LAYOUT's doc comment in
-  // n5-phaser-game.js) at N4's larger scale. Y values are a first pass —
-  // expect to retune them live against actual rendered shelf/furniture
-  // sizes, exactly as every N5 row/gap constant was tuned over many
-  // rounds (see that file's own comments for precedent) — this is normal
-  // for this codebase, not a gap in this plan.
+  // North (top) = deeper into the building, toward a future N2 stub (not
+  // built this pass). South (bottom) = arrival point from N5's
+  // staircase. Mirrors N5's own spawn-south / stairs-north shape (see
+  // LAYOUT's doc comment in n5-phaser-game.js) at N4/N3's larger scale.
+  // leftColX = N4 shelves throughout every row; rightColX = N3 shelves
+  // throughout every row (not arbitrary sub-columns of one topic, like
+  // N5's shape — a real per-side split, per explicit feedback). Y values
+  // are a first pass — expect to retune them live against actual
+  // rendered shelf/furniture sizes, exactly as every N5 row/gap constant
+  // was tuned over many rounds (see that file's own comments for
+  // precedent) — this is normal for this codebase, not a gap in this plan.
   const shelfW = 87; // same "big furniture" reference size N5 uses
   const shelfH = 64;
-  const leftColX = [64, 64 + shelfW + 20];
-  const rightColX = [WORLD_W - 64 - shelfW * 2 - 20, WORLD_W - 64 - shelfW];
+  const leftColX = [64, 64 + shelfW + 20]; // N4, always
+  const rightColX = [WORLD_W - 64 - shelfW * 2 - 20, WORLD_W - 64 - shelfW]; // N3, always
 
-  const bossQuizY = 220;
-  const conversationRowY = 480;
-  const conversationReviewY = 660;
-  const readingRowY = 900;
-  const readingReviewY = 1080;
-  const wingTransitionY = 1260; // visual-only breathing room between the two wing pairs
-  const vocabRowY = 1500;
-  const vocabReviewY = 1680;
-  const grammarRowY = 1920;
-  const grammarReviewY = 2100;
-  const centerpieceY = 2340; // N4's globe-equivalent decorative landmark
-  const entryY = 2680; // player spawn / arrival from N5
+  // Smaller Y = further north (deeper in). N3's shelves sit in the SAME
+  // 2 rows as N4's (just the right column) — visible-but-locked the
+  // whole time, same as seeing a locked door before you have the key.
+  // The exam gate itself is the northmost interactive, the last
+  // checkpoint before the plain north wall, reached only after both N4
+  // reviews (which are further south/closer to entry) are done.
+  const examGateY = 420; // center corridor, north-most interactive
+  const review2Y = 600; // N4 review-2 (left) / N3 review-2 (right)
+  const row2Y = 780; // N4 Vocabulary & Usage (left) / N3 Nuance & Conversation (right)
+  const review1Y = 960; // N4 review-1 (left) / N3 review-1 (right)
+  const row1Y = 1140; // N4 Grammar Foundations (left) / N3 Grammar Expansion (right) — nearest entry
+  const centerpieceY = 1360; // N4/N3's globe-equivalent decorative landmark
+  const entryY = 1560; // player spawn / arrival from N5, south-most
 
   const LAYOUT = {
     shelfW, shelfH, leftColX, rightColX,
-    bossQuizY, conversationRowY, conversationReviewY,
-    readingRowY, readingReviewY, wingTransitionY,
-    vocabRowY, vocabReviewY, grammarRowY, grammarReviewY,
+    row1Y, review1Y, examGateY, row2Y, review2Y,
     centerpieceY, entryY,
   };
   ```
+  Note this shrinks `GRID_ROWS` from Task 2's original placeholder estimate (180) down to something closer to N5's own 149 — recompute `GRID_ROWS` in `n4-phaser-game.js` so `WORLD_H` comfortably fits `entryY` plus south margin (e.g. `GRID_ROWS = 130` → `WORLD_H = 2080`; adjust `entryY` above if it doesn't, verify live in Task 3/6 rather than trusting the arithmetic blind).
 
 - [ ] **Step 2: Verify**
 
-  `node --check`. No live check needed yet (pure data) — Task 5 exercises these values.
+  `node --check`. No live check needed yet (pure data) — Task 5/6 exercise these values.
 
 ---
 
@@ -831,47 +844,57 @@
 **Interfaces:**
 - Produces: `LESSON_DATA` (16 entries), `SHELF_PREREQ`, `BOOK_PILE_DATA` (4 entries) — same shapes as N5's, consumed by `buildShelves()`/`buildBookPiles()` in Task 6.
 
+**Revised per explicit follow-up feedback:** 8 N4 shelves (left column) + 8 N3 shelves (right column) = 16 total, instead of 16 all-N4. A real exam gate (`n3-exam-gate`) sits between them — every N3 shelf's prereq chain roots on it instead of `null`.
+
 - [ ] **Step 1: Write `LESSON_DATA`**
 
   ```js
-  // Illustrative N4 topic names approved in the design mockup — real
-  // grammar points, but only n4-shelf-01/09/13 (the flagships) get full
-  // lesson content this pass; the rest get a placeholder page (Task 7).
+  // Illustrative topic names approved in the design mockup — real N4/N3
+  // grammar points, but only n4-shelf-01/n4-shelf-05/n3-shelf-01 (the
+  // flagships) get full lesson content this pass; the rest get a
+  // placeholder page (Task 7).
   const LESSON_DATA = [
+    // N4 side (left column) — Grammar Foundations wing.
     { id: 'n4-shelf-01', title: 'て-form Requests & Permission' },
     { id: 'n4-shelf-02', title: 'Potential Form' },
     { id: 'n4-shelf-03', title: 'Conditionals (と・ば・たら・なら)' },
     { id: 'n4-shelf-04', title: 'Volitional & Intention' },
+    // N4 side (left column) — Vocabulary & Usage wing.
     { id: 'n4-shelf-05', title: 'Giving & Receiving' },
     { id: 'n4-shelf-06', title: 'Comparisons' },
     { id: 'n4-shelf-07', title: 'Passive & Causative Verbs' },
     { id: 'n4-shelf-08', title: 'Adjective + なる・する' },
-    { id: 'n4-shelf-09', title: 'Reading Short Passages' },
-    { id: 'n4-shelf-10', title: 'Listening Comprehension' },
-    { id: 'n4-shelf-11', title: 'Quotation & Hearsay' },
-    { id: 'n4-shelf-12', title: 'Extended Predicates (んです)' },
-    { id: 'n4-shelf-13', title: 'Keigo Basics' },
-    { id: 'n4-shelf-14', title: 'Making Suggestions' },
-    { id: 'n4-shelf-15', title: 'Ability & Experience' },
-    { id: 'n4-shelf-16', title: 'Conversation Practice' },
+    // N3 side (right column) — Grammar Expansion wing. Locked behind
+    // n3-exam-gate until both N4 review piles are complete.
+    { id: 'n3-shelf-01', title: '〜ておく・〜てしまう' },
+    { id: 'n3-shelf-02', title: 'Causative-Passive' },
+    { id: 'n3-shelf-03', title: 'Conjecture & Hearsay (そうだ・ようだ・らしい)' },
+    { id: 'n3-shelf-04', title: 'Relative Clauses & Complex Modification' },
+    // N3 side (right column) — Nuance & Conversation wing.
+    { id: 'n3-shelf-05', title: 'Formal Written Style (である体)' },
+    { id: 'n3-shelf-06', title: 'Advanced Keigo' },
+    { id: 'n3-shelf-07', title: 'Conjunction Nuances (ものの・くせに・というより)' },
+    { id: 'n3-shelf-08', title: 'Extended Reading Practice' },
   ];
   ```
 
 - [ ] **Step 2: Write `SHELF_PREREQ`**
 
   ```js
-  // Each wing gates its first shelf on the PREVIOUS wing's review pile
-  // (n4-shelf-01 is always available — it's the floor's entry point),
-  // same "review gates every 4" shape as N5.
+  // N4 chain (left column) — n4-shelf-01 is always available, it's the
+  // floor's entry point. N3 chain (right column) — n3-shelf-01's prereq
+  // is the exam gate itself (not null), so the ENTIRE right column stays
+  // locked until it's passed; the rest of the N3 chain then works exactly
+  // like N4's own internal chaining.
   const SHELF_PREREQ = {
     'n4-shelf-01': null,
     'n4-shelf-02': 'n4-shelf-01', 'n4-shelf-03': 'n4-shelf-02', 'n4-shelf-04': 'n4-shelf-03',
     'n4-shelf-05': 'n4-review-1',
     'n4-shelf-06': 'n4-shelf-05', 'n4-shelf-07': 'n4-shelf-06', 'n4-shelf-08': 'n4-shelf-07',
-    'n4-shelf-09': 'n4-review-2',
-    'n4-shelf-10': 'n4-shelf-09', 'n4-shelf-11': 'n4-shelf-10', 'n4-shelf-12': 'n4-shelf-11',
-    'n4-shelf-13': 'n4-review-3',
-    'n4-shelf-14': 'n4-shelf-13', 'n4-shelf-15': 'n4-shelf-14', 'n4-shelf-16': 'n4-shelf-15',
+    'n3-shelf-01': 'n3-exam-gate',
+    'n3-shelf-02': 'n3-shelf-01', 'n3-shelf-03': 'n3-shelf-02', 'n3-shelf-04': 'n3-shelf-03',
+    'n3-shelf-05': 'n3-review-1',
+    'n3-shelf-06': 'n3-shelf-05', 'n3-shelf-07': 'n3-shelf-06', 'n3-shelf-08': 'n3-shelf-07',
   };
   ```
 
@@ -879,15 +902,21 @@
 
   ```js
   const BOOK_PILE_DATA = [
-    { id: 'n4-review-1', title: 'N4 Grammar Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
-    { id: 'n4-review-2', title: 'N4 Vocabulary Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
-    { id: 'n4-review-3', title: 'Reading & Listening Review', requires: ['n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12'] },
-    { id: 'n4-review-4', title: 'Conversation & Practice Review', requires: ['n4-shelf-13', 'n4-shelf-14', 'n4-shelf-15', 'n4-shelf-16'] },
+    { id: 'n4-review-1', title: 'N4 Grammar Foundations Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
+    { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
+    { id: 'n3-review-1', title: 'N3 Grammar Expansion Review', requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04'] },
+    { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08'] },
   ];
   ```
-  Note: the design's wing order (Grammar first, nearest the entry) means `n4-review-1` through `n4-review-4` go grammar → vocabulary → reading&listening → conversation&practice, matching `SHELF_PREREQ`'s gating order above — opposite of the mockup's north-to-south drawing order (which showed conversation at the top/deepest point). Grammar is nearest the entry (south), Conversation & Practice is nearest the boss-quiz gate (north).
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 4: Write the exam gate entry**
+
+  This is NOT a `BOOK_PILE_DATA` entry (it doesn't use the review-pile "recap + quiz" content shape) — it reuses the SAME quiz-gate mechanic N5's own staircase already has (3-attempt/24h-cooldown, `openQuizGateMenu`/`openQuizAttemptMenu`/`resolveQuizAttempt`, all already generalized in the shared engine from Task 1). Define it as its own small object, built into a physical `kind: 'pile'`-shaped interactive in Task 6 (it needs `id`, `title`, `requires`, exactly like a review pile does, for `openInteraction`'s generic locked/available/completed check to work):
+  ```js
+  const EXAM_GATE_DATA = { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] };
+  ```
+
+- [ ] **Step 5: Verify**
 
   `node --check`. No live check yet — Task 6 wires these into actual sprites.
 
@@ -899,33 +928,40 @@
 - Modify: `assets/js/n4-phaser-game.js`
 
 **Interfaces:**
-- Consumes: `LAYOUT` (Task 4), `LESSON_DATA`/`SHELF_PREREQ`/`BOOK_PILE_DATA` (Task 5).
-- Produces: `buildShelves()`, `buildBookPiles()`, `buildFurniture()` (wing decor + centerpiece + N4 palette application).
+- Consumes: `LAYOUT` (Task 4), `LESSON_DATA`/`SHELF_PREREQ`/`BOOK_PILE_DATA`/`EXAM_GATE_DATA` (Task 5).
+- Produces: `buildShelves()`, `buildBookPiles()`, `buildExamGate()`, `buildFurniture()` (wing decor + centerpiece + N4/N3 palette application).
 
 - [ ] **Step 1: Read `n5-phaser-game.js`'s `buildShelves()` and `buildBookPiles()` in full**
 
-  These already read `LESSON_DATA`/`SHELF_PREREQ`/`BOOK_PILE_DATA`/`LAYOUT` generically (no N5-specific hardcoded shelf ids in the loop bodies themselves, per that file's own "Matches LESSON_DATA's order exactly" comment on the `positions` array) — confirm this by reading them, then adapt only the `positions` array to N4's simpler 1-row-per-wing shape instead of N5's 2-row-per-zone shape:
+  These already read `LESSON_DATA`/`SHELF_PREREQ`/`BOOK_PILE_DATA`/`LAYOUT` generically (no N5-specific hardcoded shelf ids in the loop bodies themselves, per that file's own "Matches LESSON_DATA's order exactly" comment on the `positions` array) — confirm this by reading them, then adapt only the `positions` array. **Revised per explicit follow-up feedback:** the left column is N4 throughout, the right column is N3 throughout, across just 2 physical rows (not N5's 2-rows-per-zone/4-rows-total shape) — matches `LESSON_DATA`'s order exactly (N4 shelves 1-8 first, then N3 shelves 1-8):
   ```js
-  // 4 wings, 1 row each (was N5's 2 rows per zone) — matches the
-  // approved mockup's "13-14 / 15-16 side by side" shelf-pair shape.
+  // Row 1: N4 Grammar Foundations (left) / N3 Grammar Expansion (right).
+  // Row 2: N4 Vocabulary & Usage (left) / N3 Nuance & Conversation (right).
+  // LESSON_DATA order is n4-shelf-01..08 then n3-shelf-01..08 — positions
+  // below must match that exactly (buildShelves zips LESSON_DATA[i] with
+  // positions[i]).
   const positions = [
-    [LAYOUT.leftColX[0], LAYOUT.grammarRowY], [LAYOUT.leftColX[1], LAYOUT.grammarRowY],
-    [LAYOUT.rightColX[0], LAYOUT.grammarRowY], [LAYOUT.rightColX[1], LAYOUT.grammarRowY],
-    [LAYOUT.leftColX[0], LAYOUT.vocabRowY], [LAYOUT.leftColX[1], LAYOUT.vocabRowY],
-    [LAYOUT.rightColX[0], LAYOUT.vocabRowY], [LAYOUT.rightColX[1], LAYOUT.vocabRowY],
-    [LAYOUT.leftColX[0], LAYOUT.readingRowY], [LAYOUT.leftColX[1], LAYOUT.readingRowY],
-    [LAYOUT.rightColX[0], LAYOUT.readingRowY], [LAYOUT.rightColX[1], LAYOUT.readingRowY],
-    [LAYOUT.leftColX[0], LAYOUT.conversationRowY], [LAYOUT.leftColX[1], LAYOUT.conversationRowY],
-    [LAYOUT.rightColX[0], LAYOUT.conversationRowY], [LAYOUT.rightColX[1], LAYOUT.conversationRowY],
+    [LAYOUT.leftColX[0], LAYOUT.row1Y], [LAYOUT.leftColX[1], LAYOUT.row1Y], // n4-shelf-01, 02
+    [LAYOUT.leftColX[0], LAYOUT.row1Y + LAYOUT.shelfH + 12], [LAYOUT.leftColX[1], LAYOUT.row1Y + LAYOUT.shelfH + 12], // n4-shelf-03, 04 (2nd sub-row within Grammar Foundations)
+    [LAYOUT.leftColX[0], LAYOUT.row2Y], [LAYOUT.leftColX[1], LAYOUT.row2Y], // n4-shelf-05, 06
+    [LAYOUT.leftColX[0], LAYOUT.row2Y + LAYOUT.shelfH + 12], [LAYOUT.leftColX[1], LAYOUT.row2Y + LAYOUT.shelfH + 12], // n4-shelf-07, 08
+    [LAYOUT.rightColX[0], LAYOUT.row1Y], [LAYOUT.rightColX[1], LAYOUT.row1Y], // n3-shelf-01, 02
+    [LAYOUT.rightColX[0], LAYOUT.row1Y + LAYOUT.shelfH + 12], [LAYOUT.rightColX[1], LAYOUT.row1Y + LAYOUT.shelfH + 12], // n3-shelf-03, 04
+    [LAYOUT.rightColX[0], LAYOUT.row2Y], [LAYOUT.rightColX[1], LAYOUT.row2Y], // n3-shelf-05, 06
+    [LAYOUT.rightColX[0], LAYOUT.row2Y + LAYOUT.shelfH + 12], [LAYOUT.rightColX[1], LAYOUT.row2Y + LAYOUT.shelfH + 12], // n3-shelf-07, 08
   ];
   ```
   Everything else in `buildShelves()` (wall-header-per-column, shelf sprite/lock/glow/stamp construction, non-solid collision reasoning) copies verbatim.
 
 - [ ] **Step 2: Adapt `buildBookPiles()`**
 
-  Copy verbatim; review pile positions become one per wing row (beside that wing's own row, left/right split matching `n5-review-1`/`n5-review-2`'s "one per side" pattern), using `LAYOUT.grammarReviewY`/`vocabReviewY`/`readingReviewY`/`conversationReviewY`.
+  Copy verbatim; review pile positions: `n4-review-1` and `n4-review-2` sit beside the left column at `LAYOUT.review1Y`/`LAYOUT.review2Y` respectively, `n3-review-1` and `n3-review-2` sit beside the right column at the same two Y values — same "review pile beside its own column" pattern as N5's `review-1`/`review-2`.
 
-- [ ] **Step 3: Write N4's `buildFurniture()`**
+- [ ] **Step 3: Write `buildExamGate()`**
+
+  A new method, not present in N5 — builds the one physical interactive that gates N4 from N3. Reuses the exact same `kind: 'pile'`-shaped interactive object shape `openInteraction`/`refreshAllStates` already expect (id/title/requires/sprite/glow/stamp), positioned in the center corridor at `LAYOUT.examGateY`, using `this.finalGateId` (already set to `'n3-exam-gate'` in `create()`, Task 2) so it automatically routes through `openQuizGateMenu`'s 3-attempt/24h-cooldown flow instead of a plain review-pile menu — no new interaction logic needed, this is purely "place one more `BOOK_PILE_DATA`-shaped sprite whose id happens to equal `this.finalGateId`." Use `EXAM_GATE_DATA` (Task 5) for its id/title/requires. Visually, reuse the same book-pile sprite/crop `buildBookPiles()` already established (or a locked-gate-style variant if a suitable crop exists in the same sheets) rather than introducing a new asset.
+
+- [ ] **Step 4: Write N4's `buildFurniture()`**
 
   Denser than N5's per the design spec, but built from the SAME crop/placement helpers (`cropToTexture`, `drawWovenRug`, the `addTableWithChairs`-style pattern from N5's `buildFurniture` — copy that helper's shape, it's generic). Concretely, for this first pass:
   - A woven-rug corridor down the center, same technique as N5's, recolored via `drawWovenRug`'s new `palette` param (Task 1):
@@ -939,9 +975,9 @@
   - One centerpiece decorative prop at `LAYOUT.centerpieceY` (N4's globe-equivalent landmark — reuse an existing uncropped prop from the same sheets, e.g. a large bookstand or reading-lectern crop, verified via the same per-pixel crop process as every other asset this project has added).
   - Reception-style desk clutter is NOT required at N4's entry (N4 has no "Neko-sensei" desk in this pass — out of scope, matches the design spec's placeholder-first approach) — the entry point (`LAYOUT.entryY`) can be a plain arrival rug/marker instead.
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 5: Verify**
 
-  `node --check`. Live-verify: all 16 shelves render (locked-state dimmed except `n4-shelf-01`), all 4 review piles render, clicking each opens the interaction system correctly (still placeholder/no-content behavior until Task 7 — `openRetroMenu`'s `hasContent` check will currently be false for every `n4-shelf-*`/`n4-review-*` id, so they'll show the old instant-complete menu; that's expected until Task 7 adds `LESSON_CONTENT`). Confirm no wall/collision overlaps anywhere on the new, larger map (check every shelf/pile bounds against `wallGroup`/`solidGroup`, same method used throughout this session).
+  `node --check`. Live-verify: all 8 N4 shelves render, dimmed-locked except `n4-shelf-01`; all 8 N3 shelves render, fully dimmed-locked (their prereq chain roots on `n3-exam-gate`, which has 0 progress yet); both N4 review piles and both N3 review piles render; the exam gate itself renders and is NOT dimmed (same exemption as N5's staircase, since `entry.id === this.finalGateId`). Clicking any shelf/pile opens the interaction system correctly (still placeholder/no-content behavior until Task 7 — `openRetroMenu`'s `hasContent` check will currently be false for every id, so they'll show the old instant-complete menu; expected until Task 7 adds `LESSON_CONTENT`). Confirm no wall/collision overlaps anywhere on the map (check every shelf/pile/gate bounds against `wallGroup`/`solidGroup`, same method used throughout this session). Confirm the exam gate genuinely blocks N3: force-complete both N4 review piles via the console, confirm the gate's state becomes `'available'` (not auto-completed) and N3 shelves stay locked until the gate itself is actually passed.
 
 ---
 
@@ -951,7 +987,7 @@
 - Modify: `assets/js/n4-phaser-game.js`
 
 **Interfaces:**
-- Produces: `const LESSON_CONTENT = { ... }` with 19 keys (16 shelves + ... actually 16 shelves + 4 review piles = 20 keys, `n4-boss-quiz` stays content-less/toast-only per the design spec).
+- Produces: `const LESSON_CONTENT = { ... }` with 20 keys (16 shelves + 4 review piles). `n3-exam-gate` gets NO `LESSON_CONTENT` entry — same as N5's `final-quiz`, it's driven entirely by `openQuizGateMenu`'s attempt/cooldown mechanic, not `LESSON_CONTENT`.
 - Consumes: `LibrarySceneEngine.startLesson`/`openRetroMenu` (Task 1) — no changes needed there, they already key off `LESSON_CONTENT[entry.id]` generically.
 
 - [ ] **Step 1: Write the placeholder-lesson helper**
@@ -980,25 +1016,26 @@
     'n4-shelf-02': buildPlaceholderLesson('Potential Form'),
     'n4-shelf-03': buildPlaceholderLesson('Conditionals (と・ば・たら・なら)'),
     'n4-shelf-04': buildPlaceholderLesson('Volitional & Intention'),
-    'n4-shelf-05': buildPlaceholderLesson('Giving & Receiving'),
     'n4-shelf-06': buildPlaceholderLesson('Comparisons'),
     'n4-shelf-07': buildPlaceholderLesson('Passive & Causative Verbs'),
     'n4-shelf-08': buildPlaceholderLesson('Adjective + なる・する'),
-    'n4-shelf-10': buildPlaceholderLesson('Listening Comprehension'),
-    'n4-shelf-11': buildPlaceholderLesson('Quotation & Hearsay'),
-    'n4-shelf-12': buildPlaceholderLesson('Extended Predicates (んです)'),
-    'n4-shelf-14': buildPlaceholderLesson('Making Suggestions'),
-    'n4-shelf-15': buildPlaceholderLesson('Ability & Experience'),
-    'n4-shelf-16': buildPlaceholderLesson('Conversation Practice'),
-    'n4-review-1': buildPlaceholderLesson('N4 Grammar Review'),
-    'n4-review-2': buildPlaceholderLesson('N4 Vocabulary Review'),
-    'n4-review-3': buildPlaceholderLesson('Reading & Listening Review'),
-    'n4-review-4': buildPlaceholderLesson('Conversation & Practice Review'),
+    'n3-shelf-02': buildPlaceholderLesson('Causative-Passive'),
+    'n3-shelf-03': buildPlaceholderLesson('Conjecture & Hearsay (そうだ・ようだ・らしい)'),
+    'n3-shelf-04': buildPlaceholderLesson('Relative Clauses & Complex Modification'),
+    'n3-shelf-05': buildPlaceholderLesson('Formal Written Style (である体)'),
+    'n3-shelf-06': buildPlaceholderLesson('Advanced Keigo'),
+    'n3-shelf-07': buildPlaceholderLesson('Conjunction Nuances (ものの・くせに・というより)'),
+    'n3-shelf-08': buildPlaceholderLesson('Extended Reading Practice'),
+    'n4-review-1': buildPlaceholderLesson('N4 Grammar Foundations Review'),
+    'n4-review-2': buildPlaceholderLesson('N4 Vocabulary & Usage Review'),
+    'n3-review-1': buildPlaceholderLesson('N3 Grammar Expansion Review'),
+    'n3-review-2': buildPlaceholderLesson('N3 Nuance & Conversation Review'),
     'n4-shelf-01': [ /* Step 3 */ ],
-    'n4-shelf-09': [ /* Step 4 */ ],
-    'n4-shelf-13': [ /* Step 5 */ ],
+    'n4-shelf-05': [ /* Step 4 */ ],
+    'n3-shelf-01': [ /* Step 5 */ ],
   };
   ```
+  That's 13 placeholder shelves + 4 placeholder review piles + 3 flagship shelves = 20 keys, matching this task's Interfaces line.
 
 - [ ] **Step 3: Author `n4-shelf-01` — "て-form Requests & Permission" (flagship, full content)**
 
@@ -1089,104 +1126,202 @@
   ],
   ```
 
-- [ ] **Step 4: Author `n4-shelf-09` — "Reading Short Passages" (flagship, full content)**
+- [ ] **Step 4: Author `n4-shelf-05` — "Giving & Receiving" (flagship, full content)**
 
   ```js
-  'n4-shelf-09': [
+  'n4-shelf-05': [
     {
       type: 'grammar-intro',
-      sectionLabel: 'Reading Short Passages',
-      bigIdea: 'N4 reading means short, connected passages instead of single sentences — the same grammar you know, just longer.',
+      sectionLabel: 'Giving & Receiving',
+      bigIdea: 'Japanese has three different verbs for "give/receive" depending on WHO is giving to WHOM — English just uses "give" for all of it.',
       explain: [
-        'This shelf walks through one short passage line by line, then checks comprehension — no new grammar, just practice reading connected text.',
+        'あげる (give, moving away from you), もらう (receive), くれる (give, moving toward you) — the verb itself encodes the direction, not just who\'s speaking.',
       ],
     },
     {
       type: 'grammar-intro',
-      sectionLabel: 'Passage',
-      explain: [
-        '私は毎日図書館で本を読みます。今日は静かだから、たくさん読みました。 ("I read books at the library every day. Today it was quiet, so I read a lot.")',
-      ],
-    },
-    {
-      type: 'try-it',
-      sectionLabel: 'Comprehension check',
-      prompt: 'Where does the narrator read every day?',
-      before: '', after: '',
-      choices: ['図書館', '学校', '公園'],
-      answer: '図書館',
-    },
-    {
-      type: 'try-it',
-      sectionLabel: 'Comprehension check',
-      prompt: 'Why did the narrator read a lot today?',
-      before: '', after: '',
-      choices: ['静かだったから', '楽しかったから', '友達が来たから'],
-      answer: '静かだったから',
-    },
-    {
-      type: 'quiz-fill',
-      sectionLabel: 'Final check',
-      intro: 'Fill in the blank from the passage above.',
-      questions: [
-        { before: '私は毎日図書館で本を', after: '。', answer: '読みます', hint: '"I read books every day."' },
-      ],
-    },
-  ],
-  ```
-
-- [ ] **Step 5: Author `n4-shelf-13` — "Keigo Basics" (flagship, full content)**
-
-  ```js
-  'n4-shelf-13': [
-    {
-      type: 'grammar-intro',
-      sectionLabel: 'Keigo Basics',
-      bigIdea: 'Keigo (敬語) is respectful language — a different register, not different grammar rules.',
-      explain: [
-        'This shelf covers just the most common polite swap: いらっしゃいます replaces います/来ます/行きます when talking ABOUT someone you\'re being respectful toward (a teacher, a customer, a boss).',
-      ],
-    },
-    {
-      type: 'grammar-intro',
-      sectionLabel: 'いらっしゃいます',
+      sectionLabel: 'あげる: giving (away from you)',
       pattern: [
-        { text: '[respected person]は', role: 'subject' }, { text: 'いらっしゃいます', role: 'predicate' },
+        { text: '[giver]は', role: 'subject' }, { text: '[receiver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'あげます', role: 'predicate' },
       ],
-      explain: ['One word covers "is here," "is coming," and "is going" — context tells you which.'],
+      explain: ['Use あげる when you (or someone else) give something to another person — the giving moves away from the speaker\'s side.'],
       samples: [
         {
-          tag: '"The teacher is here."',
+          tag: '"I gave my friend a book."',
           tiles: [
-            { text: '先生は', role: 'subject', gloss: 'teacher' },
-            { text: 'いらっしゃいます', role: 'predicate', gloss: 'is here (respectful)', isNew: true },
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'to my friend' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'あげました', role: 'predicate', gloss: 'gave', isNew: true },
           ],
-          translation: 'Sensei wa irasshaimasu.',
+          translation: 'Watashi wa tomodachi ni hon o agemashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'もらう: receiving',
+      pattern: [
+        { text: '[receiver]は', role: 'subject' }, { text: '[giver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'もらいます', role: 'predicate' },
+      ],
+      explain: ['もらう flips the perspective to the receiver\'s side — same event as あげる, described from the other direction.'],
+      samples: [
+        {
+          tag: '"I received a book from my friend."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'from my friend' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'もらいました', role: 'predicate', gloss: 'received', isNew: true },
+          ],
+          translation: 'Watashi wa tomodachi ni hon o moraimashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'くれる: giving (toward you)',
+      pattern: [
+        { text: '[giver]は', role: 'subject' }, { text: '私に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'くれます', role: 'predicate' },
+      ],
+      explain: ['くれる is only for gifts moving TOWARD the speaker (or the speaker\'s in-group) — never used for the speaker\'s own giving.'],
+      samples: [
+        {
+          tag: '"My friend gave me a book."',
+          tiles: [
+            { text: '友達は', role: 'subject', gloss: 'my friend' },
+            { text: '私に', role: 'particle', gloss: 'to me' },
+            { text: '本を', role: 'particle', gloss: 'a book' },
+            { text: 'くれました', role: 'predicate', gloss: 'gave (to me)', isNew: true },
+          ],
+          translation: 'Tomodachi wa watashi ni hon o kuremashita.',
         },
       ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
-      prompt: 'Say "The teacher is here" respectfully (teacher = 先生):',
-      before: '先生は', after: '。',
-      choices: ['いらっしゃいます', 'います', '行きます'],
-      answer: 'いらっしゃいます',
+      prompt: 'Say "My friend gave me a book" (friend = 友達, book = 本):',
+      before: '友達は私に本を', after: '。',
+      choices: ['くれました', 'あげました', 'もらいました'],
+      answer: 'くれました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I gave my friend a book":',
+      before: '私は友達に本を', after: '。',
+      choices: ['あげました', 'くれました', 'もらいました'],
+      answer: 'あげました',
     },
     {
       type: 'summary',
-      title: 'New Patterns: Keigo Basics',
-      headers: ['Word', 'Romaji', 'Meaning'],
+      title: 'New Patterns: Giving & Receiving',
+      headers: ['Verb', 'Romaji', 'Meaning'],
       rows: [
-        { kana: 'いらっしゃいます', romaji: 'irasshaimasu', meaning: 'is / comes / goes (respectful)' },
+        { kana: 'あげる', romaji: 'ageru', meaning: 'give (away from speaker)' },
+        { kana: 'もらう', romaji: 'morau', meaning: 'receive' },
+        { kana: 'くれる', romaji: 'kureru', meaning: 'give (toward speaker)' },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
-      intro: 'Fill in the blank.',
+      intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '先生は', after: '。', answer: 'いらっしゃいます', hint: '"The teacher is here." (respectful)' },
+        { before: '友達は私に本を', after: '。', answer: 'くれました', hint: '"My friend gave me a book."' },
+        { before: '私は友達に本を', after: '。', answer: 'あげました', hint: '"I gave my friend a book."' },
+      ],
+    },
+  ],
+  ```
+
+- [ ] **Step 5: Author `n3-shelf-01` — "〜ておく・〜てしまう" (flagship, full content, gated behind the exam gate — proves the N3 side works identically to N4)**
+
+  ```js
+  'n3-shelf-01': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ておく・〜てしまう',
+      recapChips: ['て-form itself (N4, shelf 1)'],
+      bigIdea: 'Two more jobs for て-form: doing something in advance/leaving it as-is (ておく), and doing something completely/with a sense of regret (てしまう).',
+      explain: [
+        'Both attach to the exact same て-form from N4 — no new conjugation to learn, just two new meanings on top of it.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ておく: preparing / leaving as-is',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'おきます', role: 'predicate' },
+      ],
+      explain: ['ておく marks an action done in advance, in preparation for something later — or simply leaving something as it is on purpose.'],
+      samples: [
+        {
+          tag: '"I\'ll buy the tickets in advance."',
+          tiles: [
+            { text: 'チケットを', role: 'subject', gloss: 'tickets' },
+            { text: '買って', role: 'predicate', gloss: 'buy (て-form)' },
+            { text: 'おきます', role: 'predicate', gloss: 'in advance', isNew: true },
+          ],
+          translation: 'Chiketto o katte okimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜てしまう: completing / regret',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'しまいます', role: 'predicate' },
+      ],
+      explain: ['てしまう marks an action finished completely — often with a nuance of "and now I can\'t undo it" or mild regret.'],
+      samples: [
+        {
+          tag: '"I ended up reading the whole book."',
+          tiles: [
+            { text: '本を', role: 'subject', gloss: 'the book' },
+            { text: '全部', role: 'predicate', gloss: 'all', isNew: true },
+            { text: '読んで', role: 'predicate', gloss: 'read (て-form)' },
+            { text: 'しまいました', role: 'predicate', gloss: 'ended up (completely)', isNew: true },
+          ],
+          translation: 'Hon o zenbu yonde shimaimashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I\'ll buy the tickets in advance" (tickets = チケット, buy = 買って):',
+      before: 'チケットを買って', after: '。',
+      choices: ['おきます', 'しまいます', 'あります'],
+      answer: 'おきます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I ended up reading the whole book" (book = 本, all = 全部, read = 読んで):',
+      before: '本を全部読んで', after: '。',
+      choices: ['しまいました', 'おきました', 'もらいました'],
+      answer: 'しまいました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: 〜ておく・〜てしまう',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ておく', romaji: '~te oku', meaning: 'do in advance / leave as-is' },
+        { kana: '〜てしまう', romaji: '~te shimau', meaning: 'do completely / regretfully' },
+        { kana: '買っておきます', romaji: 'katte okimasu', meaning: 'buy in advance' },
+        { kana: '読んでしまいました', romaji: 'yonde shimaimashita', meaning: 'ended up reading (all of it)' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: 'チケットを買って', after: '。', answer: 'おきます', hint: '"I\'ll buy the tickets in advance."' },
+        { before: '本を全部読んで', after: '。', answer: 'しまいました', hint: '"I ended up reading the whole book."' },
       ],
     },
   ],
@@ -1194,7 +1329,7 @@
 
 - [ ] **Step 6: Verify**
 
-  `node --check`. Live-verify: open all 3 flagship shelves end to end (every page renders, no "undefined", try-it/quiz-fill grade correctly), open 2-3 placeholder shelves (single page, marks progress, unlocks the next shelf), open all 4 review piles (placeholder content for now — fine, matches this pass's scope).
+  `node --check`. Live-verify: open all 3 flagship shelves end to end (`n4-shelf-01`, `n4-shelf-05`, and `n3-shelf-01` — force-unlock the exam gate via the console first, same technique used throughout this session, since `n3-shelf-01` is genuinely locked until then) — every page renders, no "undefined", try-it/quiz-fill grade correctly. Open 2-3 placeholder shelves on each side (single page, marks progress, unlocks the next shelf). Open all 4 review piles (placeholder content for now — fine, matches this pass's scope).
 
 ---
 
@@ -1228,5 +1363,5 @@
 **Files:** none (verification only).
 
 - [ ] **Step 1: N5 regression check** — every shelf, review pile, printer station, TV, reception sensei, and the staircase still behave exactly as before Task 1's extraction.
-- [ ] **Step 2: N4 full walkthrough** — from a cold load of `n4-dashboard.html`: player spawns at the entry point, can walk to and open all 16 shelves (respecting lock order), all 4 review piles, the boss-quiz gate (locked until all 4 reviews done, then shows the "N3 is coming soon" stub). No wall/collision overlaps anywhere on the map. No console errors at any point.
+- [ ] **Step 2: Full floor walkthrough** — from a cold load of `n4-dashboard.html`: player spawns at the entry point, can walk to and open all 8 N4 shelves (left column, respecting lock order) and both N4 review piles. Confirm every N3 shelf (right column) stays locked until the exam gate is passed, then confirm the exam gate is reachable, gated correctly (locked toast until both N4 reviews done, then opens the 3-attempt/24h-cooldown menu), and passing it genuinely unlocks `n3-shelf-01` (not just cosmetically — verify via `SHELF_PREREQ`/`progress` state, not just that the sprite stopped looking dimmed). Then walk all 8 N3 shelves and both N3 review piles. No wall/collision overlaps anywhere on the map. No console errors at any point.
 - [ ] **Step 3: Cross-floor check** — N5's localStorage keys (`nekoBunko.n5.*`) and N4's (`nekoBunko.n4.*`) don't collide; clearing one floor's progress doesn't affect the other's.
