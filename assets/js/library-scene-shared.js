@@ -216,6 +216,61 @@ function drawWovenRug(scene, key, w, h, palette) {
   return key;
 }
 
+// Draws an illustrated "lower floor" void into a mezzanine's open
+// atrium rect, instead of a flat color fill — a darker/desaturated
+// floor-tile pattern, a few silhouette shelf blocks suggesting
+// receding first-floor furniture, and a soft vertical depth gradient,
+// all drawn on the caller's own Graphics object so it composites under
+// whatever rail/frame trim the caller draws next. Pure procedural
+// drawing (no new image assets) — reusable by any future floor with a
+// similar mezzanine-over-void layout.
+// config: { left, top, width, height, label } (label optional)
+function buildOpenAtriumVoid(scene, g, config) {
+  const { left, top, width, height } = config;
+  const midY = top + height / 2;
+
+  // Desaturated "first floor" tile pattern — small dark tiles, cooler
+  // and flatter than the mezzanine's own warm wood tones, reading as
+  // a different, more distant surface.
+  const tileW = 34;
+  const tileH = 22;
+  for (let ty = top + 20; ty < top + height - 20; ty += tileH) {
+    for (let tx = left + 20; tx < left + width - 20; tx += tileW) {
+      const shade = ((tx / tileW + ty / tileH) % 2) ? 0x1c1410 : 0x211714;
+      g.fillStyle(shade, 1).fillRect(tx, ty, tileW - 1, tileH - 1);
+    }
+  }
+
+  // Depth gradient — brighter near the rail edges (top/bottom of the
+  // void, closest to the viewer on each balcony), darker toward the
+  // center, implying the floor recedes downward/away.
+  const bands = 10;
+  for (let i = 0; i < bands; i++) {
+    const t = i / (bands - 1);
+    const distFromMid = Math.abs(t - 0.5) * 2; // 1 at edges, 0 at center
+    const alpha = 0.16 * (1 - distFromMid);
+    if (alpha <= 0.01) continue;
+    const bandTop = top + (height / bands) * i;
+    g.fillStyle(0x000000, alpha).fillRect(left, bandTop, width, height / bands + 1);
+  }
+
+  // Silhouette shelf blocks — simple dark rectangles (not full
+  // sprites) scattered across the void, reading as distant first-floor
+  // shelving seen from above without competing with the mezzanine's
+  // own shelf sprites.
+  const silhouettes = [
+    { x: left + width * 0.18, w: 30, h: 16 },
+    { x: left + width * 0.34, w: 22, h: 16 },
+    { x: left + width * 0.62, w: 26, h: 16 },
+    { x: left + width * 0.80, w: 30, h: 16 },
+  ];
+  silhouettes.forEach((s, i) => {
+    const sy = midY - 40 + (i % 2) * 26;
+    g.fillStyle(0x0e0906, 0.85).fillRect(s.x, sy, s.w, s.h);
+    g.fillStyle(0x3a2415, 0.4).fillRect(s.x, sy, s.w, 2);
+  });
+}
+
 // Pure DOM helpers (no scene/floor state, no Phaser dependency) — were
 // module-level functions in n5-phaser-game.js, move unchanged. Safe as
 // a page-wide singleton toast element since N5 and N4 are separate

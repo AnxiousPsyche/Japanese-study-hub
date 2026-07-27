@@ -1004,6 +1004,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildWalls();
     this.buildTopBand();
     this.buildFurniture();
+    this.buildAtrium();
     this.buildShelves();
     this.buildBookPiles();
     this.buildExamGate(); // Task 6 — the one interactive N5 has no equivalent of
@@ -1164,6 +1165,55 @@ class N4LibraryScene extends Phaser.Scene {
     const arrivalH = 50;
     drawWovenRug(this, 'n4ArrivalRugTex', arrivalW, arrivalH, n4RugPalette);
     this.add.image(WORLD_W / 2, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
+  }
+
+  buildAtrium() {
+    const left = 392;
+    const width = WORLD_W - left * 2;
+    const top = 510;
+    const height = 910;
+    const g = this.add.graphics().setDepth(0);
+    g.fillStyle(0x160f0c, 1).fillRect(left, top, width, height);
+    buildOpenAtriumVoid(this, g, { left: left + 14, top: top + 16, width: width - 28, height: height - 32 });
+    for (let y = top + 48; y < top + height - 28; y += 42) {
+      g.lineStyle(2, 0x4a2d1d, 0.9).lineBetween(left + 22, y, left + width - 22, y);
+    }
+    // Outer frame lines (1px, dark border box around the whole rect)
+    g.lineStyle(1, 0x1a0f0a, 0.95).lineBetween(left, top, left + width, top)
+      .lineBetween(left + width, top, left + width, top + height)
+      .lineBetween(left + width, top + height, left, top + height)
+      .lineBetween(left, top + height, left, top);
+    // Side rail posts (tall, thin vertical dividers on the left+right edges
+    // of the atrium, reading as the visual anchors holding the two balcony
+    // rails apart)
+    g.lineStyle(3, 0x4a2d1d, 0.9).lineBetween(left + 22, top, left + 22, top + height)
+      .lineBetween(left + width - 22, top, left + width - 22, top + height);
+    // Gold trim lines (highlight accent on top edge of the outer frame, top
+    // edge of the plank seams, and top edge of the side rail posts, evoking
+    // polished gold leaf or a precious metal cap)
+    g.lineStyle(1, 0xc9a66b, 0.65).lineBetween(left, top, left + width, top)
+      .lineBetween(left + 22, top, left + 22, top + height)
+      .lineBetween(left + width - 22, top, left + width - 22, top + height);
+    // Rear walkway strip — a horizontal band above the top of the atrium
+    // void (at the scene's very back / topmost), just visual space, not
+    // an interactive or path (the player can't walk behind the atrium
+    // because the bounds are set up to lock off the north corridor access).
+    const walkwayTop = top - 42;
+    const walkwayH = 42;
+    g.fillStyle(0x2a2118, 1).fillRect(left, walkwayTop, width, walkwayH);
+    // Rear walkway trim (a double line giving it depth)
+    g.lineStyle(1, 0x1a0f0a, 0.85).lineBetween(left, walkwayTop + 1, left + width, walkwayTop + 1)
+      .lineBetween(left, walkwayTop + walkwayH - 1, left + width, walkwayTop + walkwayH - 1);
+    // "OPEN ATRIUM / FIRST-FLOOR LIBRARY" label, centered inside the
+    // atrium void, floating over the illustrated content.
+    const labelX = left + width / 2;
+    const labelY = top + height / 2 - 20;
+    this.add.text(labelX, labelY, 'OPEN ATRIUM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8d4a8', align: 'center',
+    }).setOrigin(0.5).setDepth(2);
+    this.add.text(labelX, labelY + 28, 'FIRST-FLOOR LIBRARY', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#a89068', align: 'center',
+    }).setOrigin(0.5).setDepth(2);
   }
 
   // -- 16 lesson shelves, 2 physical rows (left column = N4, right column
