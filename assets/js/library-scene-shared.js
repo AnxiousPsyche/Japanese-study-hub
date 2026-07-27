@@ -344,9 +344,9 @@ const LibrarySceneEngine = {
       : (this.progress[entry.id] ? 'completed'
         : (entry.requires.every((r) => this.progress[r]) ? 'available' : 'locked'));
     if (state === 'locked') { showToast('Not yet…'); return; }
-    if (entry.id === this.finalGateId) { // was === 'final-quiz'
+    if (entry.id === this.finalGateId || entry.isExamGate) {
       if (state !== 'completed') {
-        const gate = getQuizGateStatus(this.quizGateKey); // was getQuizGateStatus() reading module-level QUIZ_GATE_KEY
+        const gate = getQuizGateStatus(entry.quizGateKey || this.quizGateKey);
         if (gate.locked) { showToast(gate.lockMessage); return; }
       }
       this.openQuizGateMenu(entry, state);
@@ -439,9 +439,7 @@ const LibrarySceneEngine = {
         entry.favIcon.setVisible(!!this.favorites[entry.id]);
         entry.completeBadge.setVisible(state === 'completed');
       }
-      if (entry.id !== this.finalGateId) { // was !== 'final-quiz'
-        entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
-      }
+      entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
       entry.glow.setVisible(state === 'available');
       entry.stamp.setVisible(state === 'completed');
     });
@@ -531,7 +529,7 @@ const LibrarySceneEngine = {
   openQuizGateMenu(entry, state) {
     const options = state === 'completed'
       ? [
-        { label: this.finalGateProceedLabel || 'Proceed', onSelect: () => this.onFinalGatePass() }, // was the hardcoded 'Proceed to N4' + showToast stub
+        { label: this.finalGateProceedLabel || 'Proceed', onSelect: () => (entry.onPass || this.onFinalGatePass)() },
         { label: 'Exit', onSelect: () => this.closeRetroMenu() },
       ]
       : [
@@ -541,7 +539,7 @@ const LibrarySceneEngine = {
     this.buildRetroMenu(entry.title, options);
   },
   openQuizAttemptMenu(entry) {
-    const { attemptsLeft } = getQuizGateStatus(this.quizGateKey);
+    const { attemptsLeft } = getQuizGateStatus(entry.quizGateKey || this.quizGateKey);
     const options = [
       { label: 'Pass (test)', onSelect: () => this.resolveQuizAttempt(entry, true) },
       { label: 'Fail (test)', onSelect: () => this.resolveQuizAttempt(entry, false) },
@@ -558,15 +556,16 @@ const LibrarySceneEngine = {
       this.spawnPassSparkle(entry.x, entry.y);
       return;
     }
-    const gateState = loadQuizGateState(this.quizGateKey);
+    const gateKey = entry.quizGateKey || this.quizGateKey;
+    const gateState = loadQuizGateState(gateKey);
     gateState.attemptsUsed += 1;
     if (gateState.attemptsUsed >= QUIZ_MAX_ATTEMPTS) {
       gateState.lockedUntil = Date.now() + QUIZ_LOCKOUT_MS;
-      saveQuizGateState(this.quizGateKey, gateState);
+      saveQuizGateState(gateKey, gateState);
       this.closeRetroMenu();
       showToast('Locked for 24 hours.');
     } else {
-      saveQuizGateState(this.quizGateKey, gateState);
+      saveQuizGateState(gateKey, gateState);
       this.closeRetroMenu();
       showToast(`Try again (${QUIZ_MAX_ATTEMPTS - gateState.attemptsUsed} left)`);
     }
