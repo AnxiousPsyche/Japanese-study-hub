@@ -84,7 +84,8 @@ const N4_PALETTE = {
 const SAVE_KEY = 'nekoBunko.n4.progress';
 const FAVORITES_KEY = 'nekoBunko.n4.favorites';
 const LESSON_PAGE_KEY = 'nekoBunko.n4.lessonPage';
-const QUIZ_GATE_KEY = 'nekoBunko.n4.quizGate'; // passed as this.quizGateKey to the shared engine (Task 1) — load/save/status functions themselves now live in library-scene-shared.js, parameterized by this key
+const QUIZ_GATE_KEY = 'nekoBunko.n4.quizGate'; // N3 wing entrance exam
+const N4_ENTRANCE_GATE_KEY = 'nekoBunko.n4.entranceGate';
 
 function loadProgress() {
   try {
@@ -276,6 +277,10 @@ const LESSON_CONTENT = {
   'n4-shelf-06': buildPlaceholderLesson('Comparisons'),
   'n4-shelf-07': buildPlaceholderLesson('Passive & Causative Verbs'),
   'n4-shelf-08': buildPlaceholderLesson('Adjective + なる・する'),
+  'n4-shelf-09': buildPlaceholderLesson('Obligation & Necessity'),
+  'n4-shelf-10': buildPlaceholderLesson('Experience & Continuation'),
+  'n4-shelf-11': buildPlaceholderLesson('Purpose & Preparation'),
+  'n4-shelf-12': buildPlaceholderLesson('Everyday Reading Practice'),
   'n3-shelf-02': buildPlaceholderLesson('Causative-Passive'),
   'n3-shelf-03': buildPlaceholderLesson('Conjecture & Hearsay (そうだ・ようだ・らしい)'),
   'n3-shelf-04': buildPlaceholderLesson('Relative Clauses & Complex Modification'),
@@ -283,6 +288,10 @@ const LESSON_CONTENT = {
   'n3-shelf-06': buildPlaceholderLesson('Advanced Keigo'),
   'n3-shelf-07': buildPlaceholderLesson('Conjunction Nuances (ものの・くせに・というより)'),
   'n3-shelf-08': buildPlaceholderLesson('Extended Reading Practice'),
+  'n3-shelf-09': buildPlaceholderLesson('Tendency & Appearance'),
+  'n3-shelf-10': buildPlaceholderLesson('Restriction & Emphasis'),
+  'n3-shelf-11': buildPlaceholderLesson('Abstract Expressions'),
+  'n3-shelf-12': buildPlaceholderLesson('Advanced Reading Practice'),
   'n4-review-1': buildPlaceholderLesson('N4 Grammar Foundations Review'),
   'n4-review-2': buildPlaceholderLesson('N4 Vocabulary & Usage Review'),
   'n3-review-1': buildPlaceholderLesson('N3 Grammar Expansion Review'),
@@ -690,8 +699,8 @@ function cropJukeboxTexture(scene) {
 // precedent) — this is normal for this codebase, not a gap in this plan.
 const shelfW = 87; // same "big furniture" reference size N5 uses
 const shelfH = 64;
-const leftColX = [64, 64 + shelfW + 20]; // N4, always
-const rightColX = [WORLD_W - 64 - shelfW * 2 - 20, WORLD_W - 64 - shelfW]; // N3, always
+const leftColX = [70, 178]; // N4's outer/rear side of the atrium
+const rightColX = [WORLD_W - 265, WORLD_W - 157]; // N3, mirrored
 
 // Smaller Y = further north (deeper in). N3's shelves sit in the SAME
 // 2 rows as N4's (just the right column) — visible-but-locked the
@@ -732,6 +741,10 @@ const LESSON_DATA = [
   { id: 'n4-shelf-06', title: 'Comparisons' },
   { id: 'n4-shelf-07', title: 'Passive & Causative Verbs' },
   { id: 'n4-shelf-08', title: 'Adjective + なる・する' },
+  { id: 'n4-shelf-09', title: 'Obligation & Necessity' },
+  { id: 'n4-shelf-10', title: 'Experience & Continuation' },
+  { id: 'n4-shelf-11', title: 'Purpose & Preparation' },
+  { id: 'n4-shelf-12', title: 'Everyday Reading Practice' },
   // N3 side (right column) — Grammar Expansion wing. Locked behind
   // n3-exam-gate until both N4 review piles are complete.
   { id: 'n3-shelf-01', title: '〜ておく・〜てしまう' },
@@ -743,6 +756,10 @@ const LESSON_DATA = [
   { id: 'n3-shelf-06', title: 'Advanced Keigo' },
   { id: 'n3-shelf-07', title: 'Conjunction Nuances (ものの・くせに・というより)' },
   { id: 'n3-shelf-08', title: 'Extended Reading Practice' },
+  { id: 'n3-shelf-09', title: 'Tendency & Appearance' },
+  { id: 'n3-shelf-10', title: 'Restriction & Emphasis' },
+  { id: 'n3-shelf-11', title: 'Abstract Expressions' },
+  { id: 'n3-shelf-12', title: 'Advanced Reading Practice' },
 ];
 
 // N4 chain (left column) — n4-shelf-01 is always available, it's the
@@ -751,14 +768,16 @@ const LESSON_DATA = [
 // locked until it's passed; the rest of the N3 chain then works exactly
 // like N4's own internal chaining.
 const SHELF_PREREQ = {
-  'n4-shelf-01': null,
+  'n4-shelf-01': 'n4-exam-gate',
   'n4-shelf-02': 'n4-shelf-01', 'n4-shelf-03': 'n4-shelf-02', 'n4-shelf-04': 'n4-shelf-03',
   'n4-shelf-05': 'n4-review-1',
   'n4-shelf-06': 'n4-shelf-05', 'n4-shelf-07': 'n4-shelf-06', 'n4-shelf-08': 'n4-shelf-07',
+  'n4-shelf-09': 'n4-shelf-08', 'n4-shelf-10': 'n4-shelf-09', 'n4-shelf-11': 'n4-shelf-10', 'n4-shelf-12': 'n4-shelf-11',
   'n3-shelf-01': 'n3-exam-gate',
   'n3-shelf-02': 'n3-shelf-01', 'n3-shelf-03': 'n3-shelf-02', 'n3-shelf-04': 'n3-shelf-03',
   'n3-shelf-05': 'n3-review-1',
   'n3-shelf-06': 'n3-shelf-05', 'n3-shelf-07': 'n3-shelf-06', 'n3-shelf-08': 'n3-shelf-07',
+  'n3-shelf-09': 'n3-shelf-08', 'n3-shelf-10': 'n3-shelf-09', 'n3-shelf-11': 'n3-shelf-10', 'n3-shelf-12': 'n3-shelf-11',
 };
 
 // Four review piles: 2 for N4 progression, 2 for N3 progression.
@@ -767,9 +786,9 @@ const SHELF_PREREQ = {
 // review piles are accessed via BOOK_PILE_DATA in buildBookPiles()).
 const BOOK_PILE_DATA = [
   { id: 'n4-review-1', title: 'N4 Grammar Foundations Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
-  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
+  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08', 'n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12'] },
   { id: 'n3-review-1', title: 'N3 Grammar Expansion Review', requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04'] },
-  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08'] },
+  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08', 'n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12'] },
 ];
 
 // The N4→N3 gate: reuses the same quiz-gate mechanic N5's staircase has
@@ -778,7 +797,10 @@ const BOOK_PILE_DATA = [
 // and scoring differ: it's a standalone exam, not a recap+quiz review pile.
 // Every N3 shelf's prereq chain roots on it — the entire right column stays
 // locked until this exam is passed.
-const EXAM_GATE_DATA = { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] };
+const EXAM_GATE_DATA = {
+  n4: { id: 'n4-exam-gate', title: 'N4 Entrance Exam', requires: [] },
+  n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] },
+};
 
 // -- Shelf-decoration helpers (Task 6) -----------------------------------
 // Local copies of n5-phaser-game.js's createBookshelfLabel()/
@@ -1047,7 +1069,7 @@ class N4LibraryScene extends Phaser.Scene {
     // (buildFloor(), n5-phaser-game.js:7684) rendered as a single
     // tileSprite spanning the whole world for guaranteed seamless tiling.
     // Sits at depth -1, strictly behind the border tilemap below.
-    const floorKey = cropToTexture(this, 'floorsWallsTopDown', ASSET_RECTS.topDownFloorTile, 'n4TopDownFloorTileTex');
+    const floorKey = this.drawHardwoodFloorTexture();
     this.add.tileSprite(0, 0, WORLD_W, WORLD_H, floorKey).setOrigin(0, 0).setDepth(-1);
 
     // Border tileset holds only the brick tile, same as N5 — every
@@ -1207,6 +1229,39 @@ class N4LibraryScene extends Phaser.Scene {
     this.add.image(WORLD_W / 2, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
   }
 
+  // The mezzanine's floor is drawn in layers rather than borrowed from a
+  // bitmap: long alternating planks, fine grain, seams, and a soft warm
+  // highlight read as dark hardwood even at the game's pixel scale.
+  drawHardwoodFloorTexture() {
+    const key = 'n4LayeredHardwoodTex';
+    if (this.textures.exists(key)) return key;
+    const tex = this.textures.createCanvas(key, 128, 96);
+    const ctx = tex.getContext();
+    ctx.fillStyle = '#301b12';
+    ctx.fillRect(0, 0, 128, 96);
+    for (let y = 0; y < 96; y += 16) {
+      const offset = (y / 16) % 2 ? -28 : 0;
+      for (let x = offset; x < 128; x += 56) {
+        ctx.fillStyle = (x / 56 + y / 16) % 2 ? '#4c2b1b' : '#422417';
+        ctx.fillRect(x + 1, y + 1, 54, 14);
+        ctx.fillStyle = 'rgba(235, 178, 98, .10)';
+        ctx.fillRect(x + 3, y + 3, 50, 1);
+        ctx.fillStyle = 'rgba(15, 6, 3, .52)';
+        ctx.fillRect(x, y + 15, 56, 1);
+        ctx.strokeStyle = 'rgba(25, 10, 5, .36)';
+        ctx.lineWidth = 1;
+        for (let grain = 7; grain < 52; grain += 13) {
+          ctx.beginPath(); ctx.moveTo(x + grain, y + 5); ctx.lineTo(x + grain + 8, y + 6); ctx.stroke();
+        }
+      }
+    }
+    tex.refresh();
+    return key;
+  }
+
+  // A real open central void makes the floor read as a mezzanine. The
+  // subdued lower level, trim, posts, and rail caps preserve a clear view
+  // down while keeping the traversal route entirely on the balconies.
   buildAtrium() {
     const left = 392;
     const width = WORLD_W - left * 2;
@@ -1291,6 +1346,16 @@ class N4LibraryScene extends Phaser.Scene {
     }
   }
 
+  createMezzanineShelfPositions() {
+    const left = [
+      [70, 630], [178, 630], [286, 630], [70, 790],
+      [70, 940], [70, 1090], [178, 1240], [286, 1240],
+      [70, 1400], [178, 1400], [286, 1400], [70, 1545],
+    ];
+    const right = left.map(([x, y]) => [WORLD_W - x - shelfW, y]);
+    return [...left, ...right];
+  }
+
   // -- 16 lesson shelves, 2 physical rows (left column = N4, right column
   // = N3 throughout — see LAYOUT's doc comment) --------------------------
 
@@ -1349,16 +1414,7 @@ class N4LibraryScene extends Phaser.Scene {
     // Matches LESSON_DATA's order (n4-shelf-01..08, n3-shelf-01..08)
     // exactly — buildShelves() zips LESSON_DATA[i] with positions[i] by
     // array index below.
-    const positions = [
-      [leftColX[0], wing1RowY[0]], [leftColX[1], wing1RowY[0]],
-      [leftColX[0], wing1RowY[1]], [leftColX[1], wing1RowY[1]],
-      [leftColX[0], wing2RowY[0]], [leftColX[1], wing2RowY[0]],
-      [leftColX[0], wing2RowY[1]], [leftColX[1], wing2RowY[1]],
-      [rightColX[0], wing1RowY[0]], [rightColX[1], wing1RowY[0]],
-      [rightColX[0], wing1RowY[1]], [rightColX[1], wing1RowY[1]],
-      [rightColX[0], wing2RowY[0]], [rightColX[1], wing2RowY[0]],
-      [rightColX[0], wing2RowY[1]], [rightColX[1], wing2RowY[1]],
-    ];
+    const positions = this.createMezzanineShelfPositions();
 
     const filledVariants = ['shelfFilled1', 'shelfFilled2', 'shelfFilled3'];
     const lockedKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.shelfLocked, 'n4ShelfLockedTex');
@@ -1498,8 +1554,21 @@ class N4LibraryScene extends Phaser.Scene {
     const scale = 1.3; // larger than the 0.7 review piles — reads as the floor's one landmark gate, not just another pile
     const w = ASSET_RECTS.bookPileTall.w * scale;
     const h = ASSET_RECTS.bookPileTall.h * scale;
-    const x = WORLD_W / 2 - w / 2; // centered in the corridor, between leftColX and rightColX
-    const y = LAYOUT.examGateY - h / 2;
+    const n4X = 322;
+    const n4Y = 1515;
+    const n4Sprite = this.add.image(n4X, n4Y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
+    const n4Glow = this.add.text(n4X + w - 8, n4Y - 6, '*', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    const n4Stamp = this.add.text(n4X + w - 8, n4Y - 6, 'OK', { fontSize: '11px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    const n4Entry = { id: EXAM_GATE_DATA.n4.id, kind: 'pile', title: EXAM_GATE_DATA.n4.title,
+      sprite: n4Sprite, glow: n4Glow, stamp: n4Stamp, requires: EXAM_GATE_DATA.n4.requires,
+      x: n4X + w / 2, y: n4Y + h / 2, baseScale: scale, isExamGate: true, quizGateKey: N4_ENTRANCE_GATE_KEY,
+      onPass: () => showToast('The N4 balcony is permanently open.') };
+    n4Sprite.setInteractive({ useHandCursor: true });
+    n4Sprite.on('pointerdown', () => this.handleInteractiveClick(n4Entry));
+    this.interactives.push(n4Entry);
+    this.add.text(n4X + w / 2, n4Y - 18, 'N4 EXAM GATE', { fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8' }).setOrigin(.5).setDepth(4);
+    const x = WORLD_W - 322 - w; // mirrored right-wing entrance
+    const y = 1515;
 
     const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0)
       .setDisplaySize(w, h).setDepth(1);
@@ -1513,10 +1582,11 @@ class N4LibraryScene extends Phaser.Scene {
     sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
 
     const entry = {
-      id: EXAM_GATE_DATA.id, kind: 'pile', title: EXAM_GATE_DATA.title,
-      sprite, glow, stamp, requires: EXAM_GATE_DATA.requires,
+      id: EXAM_GATE_DATA.n3.id, kind: 'pile', title: EXAM_GATE_DATA.n3.title,
+      sprite, glow, stamp, requires: EXAM_GATE_DATA.n3.requires,
       x: x + w / 2, y: y + h / 2,
-      baseScale: scale,
+      baseScale: scale, isExamGate: true, quizGateKey: QUIZ_GATE_KEY,
+      onPass: () => showToast('The N3 balcony is permanently open.'),
     };
     this.interactives.push(entry);
   }
