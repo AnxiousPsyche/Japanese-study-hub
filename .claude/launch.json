@@ -1990,6 +1990,16 @@
         "28197"
       ],
       "port": 28197
+    },
+    {
+      "name": "jp-library-static-mezzanine-v7",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28308"
+      ],
+      "port": 28308
     }
   ],
   "autoVerify": true

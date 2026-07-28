@@ -9,13 +9,9 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="JP Library OS - JLPT N5 Journey">
+    <meta name="description" content="JP Library OS - JLPT N5 Journey">
 
     <title>JLPT N5 Journey</title>
 
@@ -23,22 +19,19 @@
          GOOGLE FONTS
     ========================================== -->
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=block"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=block"
+        rel="stylesheet">
 
     <!-- DotGothic16: a Japanese pixel/dot-matrix font, used as a fallback
          in the game's "Press Start 2P" text stacks so Japanese characters
          in lesson titles (e.g. "か", "ましょう") render in a matching
          retro-pixel style instead of the browser's default font. -->
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block" rel="stylesheet">
 
     <!-- M PLUS 1 Code: Japanese text font for the DirectionMapScene road
          map (Phaser Canvas text). Requested at a single fixed weight
@@ -50,8 +43,7 @@
          in normal DOM text (confirmed live: this is what broke Datatype
          for this scene's buttons — 'm' rendered as a different glyph in
          canvas only, never in DOM, at any size). -->
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400&display=block"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400&display=block" rel="stylesheet">
 
     <!-- VT323 (LessonBox running text) is no longer loaded from Google
          Fonts here — it's self-hosted instead (assets/fonts/VT323-
@@ -65,17 +57,13 @@
          BOOTSTRAP
     ========================================== -->
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- =========================================
          BOOTSTRAP ICONS
     ========================================== -->
 
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- =========================================
          CSS
@@ -89,274 +77,251 @@
 
     <!-- Dashboard CSS -->
 
-    <link rel="stylesheet"
-          href="../../assets/css/n5-dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/n5-dashboard.css">
 
     <!-- Lesson dialogue box (RPG-style, DOM overlay on the Phaser canvas) -->
 
-    <link rel="stylesheet"
-          href="../../assets/css/lesson-box.css">
+    <link rel="stylesheet" href="../../assets/css/lesson-box.css">
 
 </head>
 
 <body>
 
-<!-- =========================================
+    <!-- =========================================
      RPG HUD
 ========================================== -->
 
-<header id="gameHUD">
+    <header id="gameHUD">
 
-    <!-- Left -->
+        <!-- Left -->
 
-    <div class="hud-left">
+        <div class="hud-left">
 
-        <button
-            class="hud-btn"
-            id="backDesktop">
+            <button class="hud-btn" id="backDesktop">
 
-            <i class="bi bi-house-door-fill"></i>
+                <i class="bi bi-house-door-fill"></i>
 
-            Desktop
+                Desktop
 
-        </button>
+            </button>
 
-        <button class="hud-btn">
+            <button class="hud-btn">
 
-            🏠 Home
+                🏠 Home
 
-        </button>
+            </button>
 
-        <button class="hud-btn">
+            <button class="hud-btn">
 
-            🗺 Journey
+                🗺 Journey
 
-        </button>
+            </button>
 
-        <button class="hud-btn">
+            <button class="hud-btn">
 
-            📚 Lessons
+                📚 Lessons
 
-        </button>
+            </button>
 
-    </div>
+        </div>
 
-    <!-- Center -->
+        <!-- Center -->
 
-    <div class="hud-center">
+        <div class="hud-center">
 
-        <img
-            src="../../assets/images/logo/JPLnewlogo.png"
-            alt="JP Library"
-            class="hud-logo">
+            <img src="../../assets/images/logo/JPLnewlogo.png" alt="JP Library" class="hud-logo">
 
-        <div class="hud-player">
+            <div class="hud-player">
 
-            <img
-                src="../../assets/images/avatars/smeagol.png"
-                id="playerAvatar"
-                alt="Player">
+                <img src="../../assets/images/avatars/smeagol.png" id="playerAvatar" alt="Player">
 
-            <div>
+                <div>
 
-                <h3 id="playerDisplayName">
+                    <h3 id="playerDisplayName">
 
-                    Explorer
+                        Explorer
 
-                </h3>
+                    </h3>
 
-                <span id="playerRank">
+                    <span id="playerRank">
 
-                    Grammar Adventurer
+                        Grammar Adventurer
 
-                </span>
+                    </span>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+        <!-- Right -->
 
-    <!-- Right -->
+        <div class="hud-right">
 
-    <div class="hud-right">
+            <div class="hud-item">
 
-        <div class="hud-item">
+                ⭐
 
-            ⭐
+                <span id="playerXP">
 
-            <span id="playerXP">
+                    0 XP
 
-                0 XP
+                </span>
 
-            </span>
+            </div>
+
+            <div class="hud-item">
+
+                ❤️
+
+                <span id="playerLives">
+
+                    5
+
+                </span>
+
+            </div>
+
+            <div class="hud-item">
+
+                💰
+
+                <span id="playerCoins">
+
+                    0
+
+                </span>
+
+            </div>
+
+            <button id="changeCharBtn" class="hud-btn">
+
+                🐱 Change
+
+            </button>
+
+            <button id="musicButton" class="hud-btn">
+
+                <i class="bi bi-volume-up-fill"></i>
+
+            </button>
 
         </div>
 
-        <div class="hud-item">
+    </header>
 
-            ❤️
-
-            <span id="playerLives">
-
-                5
-
-            </span>
-
-        </div>
-
-        <div class="hud-item">
-
-            💰
-
-            <span id="playerCoins">
-
-                0
-
-            </span>
-
-        </div>
-
-        <button
-            id="changeCharBtn"
-            class="hud-btn">
-
-            🐱 Change
-
-        </button>
-
-        <button
-            id="musicButton"
-            class="hud-btn">
-
-            <i class="bi bi-volume-up-fill"></i>
-
-        </button>
-
-    </div>
-
-</header>
-
-<!-- =========================================
+    <!-- =========================================
      JOURNEY MAP
 ========================================== -->
 
-<main id="journeyMap">
+    <main id="journeyMap">
 
-    <div id="mapFrame">
+        <div id="mapFrame">
 
-        <div id="phaserGame"></div>
+            <div id="phaserGame"></div>
 
-        <div id="lessonBoxOverlay" class="lesson-box-overlay" hidden></div>
+            <div id="lessonBoxOverlay" class="lesson-box-overlay" hidden></div>
 
-    </div>
+        </div>
 
-</main>
+    </main>
 
-<!-- =========================================
+    <!-- =========================================
      FOOTER
 ========================================== -->
 
-<footer id="dashboardFooter">
+    <footer id="dashboardFooter">
 
-    <div class="footer-left">
+        <div class="footer-left">
 
-        🌸 JP Library OS • JLPT N5 Journey
+            🌸 JP Library OS • JLPT N5 Journey
 
-    </div>
+        </div>
 
-    <div class="footer-center">
+        <div class="footer-center">
 
-        Continue your adventure one lesson at a time.
+            Continue your adventure one lesson at a time.
 
-    </div>
+        </div>
 
-    <div class="footer-right">
+        <div class="footer-right">
 
-        Version 1.0
+            Version 1.0
 
-    </div>
+        </div>
 
-</footer>
+    </footer>
 
-<!-- =========================================
+    <!-- =========================================
      TELEPORT EFFECT
 ========================================== -->
 
-<div id="teleport-overlay">
+    <div id="teleport-overlay">
 
-    <div class="teleport-beam"></div>
+        <div class="teleport-beam"></div>
 
-    <div class="teleport-flash"></div>
+        <div class="teleport-flash"></div>
 
-</div>
+    </div>
 
-<!-- =========================================
+    <!-- =========================================
      ACHIEVEMENT NOTIFICATIONS
 ========================================== -->
 
-<div id="achievement-container"></div>
+    <div id="achievement-container"></div>
 
-<!-- =========================================
+    <!-- =========================================
      SAKURA PARTICLES
 ========================================== -->
 
-<div id="sakura-container"></div>
+    <div id="sakura-container"></div>
 
-<!-- =========================================
+    <!-- =========================================
      BACKGROUND MUSIC
 ========================================== -->
 
-<audio
-    id="bgMusic"
-    loop>
+    <audio id="bgMusic" loop>
 
-    <source
-        src="../../assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
-        type="audio/mpeg">
+        <source src="../../assets/sounds/Nebulite - Kyoto (freetouse.com).mp3" type="audio/mpeg">
 
-</audio>
+    </audio>
 
-<!-- =========================================
+    <!-- =========================================
      TELEPORT SOUND
 ========================================== -->
 
-<audio
-    id="teleportSound">
+    <audio id="teleportSound">
 
-    <source
-        src="../../assets/sounds/teleportSound.mp3"
-        type="audio/mpeg">
+        <source src="../../assets/sounds/teleportSound.mp3" type="audio/mpeg">
 
-</audio>
+    </audio>
 
-<!-- =========================================
+    <!-- =========================================
      JAVASCRIPT
 ========================================== -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Core -->
+    <!-- Core -->
 
-<script src="../../assets/js/player.js"></script>
+    <script src="../../assets/js/player.js"></script>
 
-<script src="../../assets/js/sakura.js"></script>
+    <script src="../../assets/js/sakura.js"></script>
 
-<script src="../../assets/js/teleport.js"></script>
+    <script src="../../assets/js/teleport.js"></script>
 
-<script src="../../assets/js/music-player.js"></script>
+    <script src="../../assets/js/music-player.js"></script>
 
-<!-- Dashboard -->
+    <!-- Dashboard -->
 
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-<script src="../../assets/js/lesson-box.js"></script>
+    <script src="../../assets/js/lesson-box.js"></script>
 
-<script src="../../assets/js/library-scene-shared.js"></script>
-<script src="../../assets/js/n5-phaser-game.js"></script>
+    <script src="../../assets/js/library-scene-shared.js"></script>
+    <script src="../../assets/js/n5-phaser-game.js"></script>
 
 </body>
 
 </html>
-
-        

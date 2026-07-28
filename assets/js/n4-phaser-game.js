@@ -51,17 +51,52 @@ const TOP_BAND_HEIGHT = 110;
 // furniture/accent color in later tasks, not a different floor crop —
 // see the design spec).
 const ASSET_RECTS = {
-  brickTile: { x: 30, y: 90, w: 16, h: 16 }, // floors-walls02.png, n5-phaser-game.js:5
-  topDownFloorTile: { x: 81, y: 81, w: 63, h: 46 }, // TopDownHouse_FloorsAndWalls.png, n5-phaser-game.js:13
+  brickTile: {
+    x: 30,
+    y: 90,
+    w: 16,
+    h: 16
+  }, // floors-walls02.png, n5-phaser-game.js:5
+  topDownFloorTile: {
+    x: 81,
+    y: 81,
+    w: 63,
+    h: 46
+  }, // TopDownHouse_FloorsAndWalls.png, n5-phaser-game.js:13
   // libassetpack-tiled.png (1488x528px) — shelf/book-pile crops, verbatim
   // from n5-phaser-game.js's own ASSET_RECTS (same source sheet, same
   // already-alpha-scan-confirmed rects — see that file's comments for
   // how each was isolated).
-  shelfLocked: { x: 28, y: 384, w: 88, h: 120 },
-  shelfFilled1: { x: 148, y: 372, w: 88, h: 132 },
-  shelfFilled2: { x: 268, y: 365, w: 88, h: 139 },
-  shelfFilled3: { x: 388, y: 373, w: 88, h: 131 },
-  bookPileTall: { x: 240, y: 96, w: 30, h: 48 },
+  shelfLocked: {
+    x: 28,
+    y: 384,
+    w: 88,
+    h: 120
+  },
+  shelfFilled1: {
+    x: 148,
+    y: 372,
+    w: 88,
+    h: 132
+  },
+  shelfFilled2: {
+    x: 268,
+    y: 365,
+    w: 88,
+    h: 139
+  },
+  shelfFilled3: {
+    x: 388,
+    y: 373,
+    w: 88,
+    h: 131
+  },
+  bookPileTall: {
+    x: 240,
+    y: 96,
+    w: 30,
+    h: 48
+  },
   // N4's own new crop (no N5 equivalent) — a freestanding grandfather
   // clock, this floor's globe-equivalent centerpiece landmark (Task 6,
   // buildFurniture). Isolated via per-row/per-column alpha-run scanning
@@ -72,13 +107,23 @@ const ASSET_RECTS = {
   // rows immediately surrounding this box (cols 68-78 and 137-149 fully
   // transparent for rows 20-146; rows 144-149 fully transparent for
   // cols 75-140) — a clean, unmerged isolation.
-  grandfatherClock: { x: 79, y: 24, w: 58, h: 120 },
+  grandfatherClock: {
+    x: 79,
+    y: 24,
+    w: 58,
+    h: 120
+  },
   // Same staircase crop N5's own buildTopBand() uses (n5-phaser-game.js's
   // ASSET_RECTS.staircase, verbatim rect) — kept for reference; only
   // lastStairStep below is actually used by buildStairsLandmark() now
   // (see that function's comment for why). Only the top ~53% of this
   // 300px-tall crop is opaque content — the rest is transparent padding.
-  staircase: { x: 935, y: 0, w: 100, h: 300 },
+  staircase: {
+    x: 935,
+    y: 0,
+    w: 100,
+    h: 300
+  },
   // The bottom-most tread of the same staircase asset — its rounded
   // drop-shadow terminus is the actual real end of the opaque content
   // (confirmed by alpha-scanning zoomed crops of the source sheet: the
@@ -87,7 +132,12 @@ const ASSET_RECTS = {
   // step visible, the rest continues off-world toward N5" landmark at
   // the spawn corner, per explicit request to crop this real asset
   // rather than hand-draw new stair art.
-  lastStairStep: { x: 935, y: 140, w: 100, h: 35 },
+  lastStairStep: {
+    x: 935,
+    y: 140,
+    w: 100,
+    h: 35
+  },
 };
 
 // Distinct accent palette for this floor (deeper wine/green/wood instead
@@ -126,6 +176,7 @@ function loadProgress() {
     return {};
   }
 }
+
 function saveProgress(progress) {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(progress));
@@ -133,6 +184,7 @@ function saveProgress(progress) {
     // localStorage unavailable — degrade to session-only, never throw.
   }
 }
+
 function loadFavorites() {
   try {
     const raw = localStorage.getItem(FAVORITES_KEY);
@@ -141,6 +193,7 @@ function loadFavorites() {
     return {};
   }
 }
+
 function saveFavorites(favorites) {
   try {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
@@ -148,6 +201,7 @@ function saveFavorites(favorites) {
     // localStorage unavailable — degrade to session-only.
   }
 }
+
 function loadLessonPage() {
   try {
     const raw = localStorage.getItem(LESSON_PAGE_KEY);
@@ -156,6 +210,7 @@ function loadLessonPage() {
     return {};
   }
 }
+
 function saveLessonPage(lessonPage) {
   try {
     localStorage.setItem(LESSON_PAGE_KEY, JSON.stringify(lessonPage));
@@ -182,9 +237,21 @@ const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
 // visually inspecting the actual sheets (not assumed) — see
 // CAT_SHEET_ROWS below.
 const CAT_COLORS = {
-  orange: { key: 'orangeCatSheet', path: '../../assets/images/avatars/cat-2-64x64.png', label: 'Orange' },
-  black: { key: 'blackCatSheet', path: '../../assets/images/avatars/cat-1-64x64.png', label: 'Black' },
-  white: { key: 'whiteCatSheet', path: '../../assets/images/avatars/cat-3-64x64.png', label: 'White' },
+  orange: {
+    key: 'orangeCatSheet',
+    path: '../../assets/images/avatars/cat-2-64x64.png',
+    label: 'Orange'
+  },
+  black: {
+    key: 'blackCatSheet',
+    path: '../../assets/images/avatars/cat-1-64x64.png',
+    label: 'Black'
+  },
+  white: {
+    key: 'whiteCatSheet',
+    path: '../../assets/images/avatars/cat-3-64x64.png',
+    label: 'White'
+  },
 };
 // Tight 3-frame "meow sit front" strips (192x64, closed/open/closed mouth)
 // cropped from the "<color> cat with text.png" asset packs' row 14 —
@@ -219,36 +286,81 @@ const CAT_SHEET_COLS = 14;
 //   row 5  = walking right (side view facing right), 6 frames
 //   row 12 = idle: sitting facing forward, tail-flick, 8 frames
 const CAT_SHEET_ROWS = {
-  idle: { row: 12, count: 8 },
-  walkDown: { row: 2, count: 6 },
-  walkUp: { row: 3, count: 6 },
-  walkLeft: { row: 4, count: 6 },
-  walkRight: { row: 5, count: 6 },
+  idle: {
+    row: 12,
+    count: 8
+  },
+  walkDown: {
+    row: 2,
+    count: 6
+  },
+  walkUp: {
+    row: 3,
+    count: 6
+  },
+  walkLeft: {
+    row: 4,
+    count: 6
+  },
+  walkRight: {
+    row: 5,
+    count: 6
+  },
 };
+
 function catFrameRange(rowKey) {
-  const { row, count } = CAT_SHEET_ROWS[rowKey];
+  const {
+    row,
+    count
+  } = CAT_SHEET_ROWS[rowKey];
   const start = row * CAT_SHEET_COLS;
-  return { start, end: start + count - 1 };
+  return {
+    start,
+    end: start + count - 1
+  };
 }
 const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
 
 function loadCatSpritesheets(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
-    scene.load.spritesheet(c.key, c.path, { frameWidth: 64, frameHeight: 64 });
+    scene.load.spritesheet(c.key, c.path, {
+      frameWidth: 64,
+      frameHeight: 64
+    });
   });
 }
 
 // Idempotent: safe even though N4 is a separate Game instance from N5
 // (Phaser's anim registry is per-Game, not shared) — but also safe to
 // call more than once within this same page, same as N5's own guard.
-const CAT_ANIM_DEFS = [
-  { suffix: 'idle', rowKey: 'idle', frameRate: 6 },
-  { suffix: 'walk-down', rowKey: 'walkDown', frameRate: 10 },
-  { suffix: 'walk-up', rowKey: 'walkUp', frameRate: 10 },
-  { suffix: 'walk-left', rowKey: 'walkLeft', frameRate: 10 },
-  { suffix: 'walk-right', rowKey: 'walkRight', frameRate: 10 },
+const CAT_ANIM_DEFS = [{
+    suffix: 'idle',
+    rowKey: 'idle',
+    frameRate: 6
+  },
+  {
+    suffix: 'walk-down',
+    rowKey: 'walkDown',
+    frameRate: 10
+  },
+  {
+    suffix: 'walk-up',
+    rowKey: 'walkUp',
+    frameRate: 10
+  },
+  {
+    suffix: 'walk-left',
+    rowKey: 'walkLeft',
+    frameRate: 10
+  },
+  {
+    suffix: 'walk-right',
+    rowKey: 'walkRight',
+    frameRate: 10
+  },
 ];
+
 function registerCatAnimations(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
@@ -302,8 +414,7 @@ function buildPlaceholderLesson(title) {
 }
 
 const LESSON_CONTENT = {
-  'n4-shelf-02': [
-    {
+  'n4-shelf-02': [{
       type: 'grammar-intro',
       sectionLabel: 'Potential Form: "Can Do"',
       bigIdea: 'The potential form turns any verb into its own "can do" — no separate ことができる construction needed once you know the conjugation.',
@@ -314,43 +425,77 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Ichidan: 〜る → 〜られる',
-      pattern: [
-        { text: '[verb stem]', role: 'subject' }, { text: 'られる', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[verb stem]',
+        role: 'subject'
+      }, {
+        text: 'られる',
+        role: 'predicate'
+      }, ],
       explain: ['Drop る and add られる — the same simple swap as every other ichidan conjugation you\'ve learned.'],
-      samples: [
-        {
-          tag: '"I can eat natto."',
-          tiles: [
-            { text: '私は', role: 'subject', gloss: 'I' },
-            { text: '納豆が', role: 'particle', gloss: 'natto' },
-            { text: '食べられます', role: 'predicate', gloss: 'can eat', isNew: true, smallGloss: true },
-          ],
-          translation: 'Watashi wa nattou ga taberaremasu.',
-        },
-      ],
+      samples: [{
+        tag: '"I can eat natto."',
+        tiles: [{
+            text: '私は',
+            role: 'subject',
+            gloss: 'I'
+          },
+          {
+            text: '納豆が',
+            role: 'particle',
+            gloss: 'natto'
+          },
+          {
+            text: '食べられます',
+            role: 'predicate',
+            gloss: 'can eat',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Watashi wa nattou ga taberaremasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Godan: final u-row → e-row + る',
-      pattern: [
-        { text: '[verb stem, u→e]', role: 'subject' }, { text: 'る', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[verb stem, u→e]',
+        role: 'subject'
+      }, {
+        text: 'る',
+        role: 'predicate'
+      }, ],
       explain: ['Swap the verb\'s final u-sound for its e-row match, then add る — 話す (hanasu) becomes 話せる (hanaseru).'],
-      samples: [
-        {
+      samples: [{
           tag: '"I can speak Japanese."',
-          tiles: [
-            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
-            { text: '話せます', role: 'predicate', gloss: 'can speak', isNew: true },
+          tiles: [{
+              text: '日本語を',
+              role: 'particle',
+              gloss: 'Japanese'
+            },
+            {
+              text: '話せます',
+              role: 'predicate',
+              gloss: 'can speak',
+              isNew: true
+            },
           ],
           translation: 'Nihongo o hanasemasu.',
         },
         {
           tag: '"Can you read kanji?"',
-          tiles: [
-            { text: '漢字が', role: 'particle', gloss: 'kanji' },
-            { text: '読めますか', role: 'predicate', gloss: 'can you read?', isNew: true },
+          tiles: [{
+              text: '漢字が',
+              role: 'particle',
+              gloss: 'kanji'
+            },
+            {
+              text: '読めますか',
+              role: 'predicate',
+              gloss: 'can you read?',
+              isNew: true
+            },
           ],
           translation: 'Kanji ga yomemasu ka?',
         },
@@ -363,20 +508,36 @@ const LESSON_CONTENT = {
       explain: [
         'する doesn\'t become される for potential — it swaps to a whole new word, できる ("to be able to do"). 来る follows the ichidan-style swap, becoming 来られる (korareru).',
       ],
-      samples: [
-        {
+      samples: [{
           tag: '"I can do this job."',
-          tiles: [
-            { text: 'この仕事が', role: 'particle', gloss: 'this job' },
-            { text: 'できます', role: 'predicate', gloss: 'can do', isNew: true },
+          tiles: [{
+              text: 'この仕事が',
+              role: 'particle',
+              gloss: 'this job'
+            },
+            {
+              text: 'できます',
+              role: 'predicate',
+              gloss: 'can do',
+              isNew: true
+            },
           ],
           translation: 'Kono shigoto ga dekimasu.',
         },
         {
           tag: '"I can come tomorrow."',
-          tiles: [
-            { text: '明日', role: 'particle', gloss: 'tomorrow' },
-            { text: '来られます', role: 'predicate', gloss: 'can come', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '明日',
+              role: 'particle',
+              gloss: 'tomorrow'
+            },
+            {
+              text: '来られます',
+              role: 'predicate',
+              gloss: 'can come',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Ashita koraremasu.',
         },
@@ -386,7 +547,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I can speak Japanese" (Japanese = 日本語, speak = 話す):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['日本語を話せます', '日本語を話します', '日本語を話しました'],
       answer: '日本語を話せます',
     },
@@ -394,7 +556,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Can you read kanji?" (kanji = 漢字, read = 読む):',
-      before: '', after: 'か。',
+      before: '',
+      after: 'か。',
       choices: ['漢字が読めます', '漢字を読みます', '漢字が読みました'],
       answer: '漢字が読めます',
     },
@@ -402,27 +565,58 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Potential Form',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜られる (ichidan)', romaji: '~rareru', meaning: 'can do (ichidan verbs)' },
-        { kana: '〜る→〜える (godan)', romaji: '~eru', meaning: 'can do (godan verbs)' },
-        { kana: 'できる', romaji: 'dekiru', meaning: 'can do (from する)' },
-        { kana: '来られる', romaji: 'korareru', meaning: 'can come' },
-        { kana: '日本語を話せます', romaji: 'Nihongo o hanasemasu', meaning: 'I can speak Japanese' },
-        { kana: '漢字が読めますか', romaji: 'Kanji ga yomemasu ka', meaning: 'Can you read kanji?' },
+      rows: [{
+          kana: '〜られる (ichidan)',
+          romaji: '~rareru',
+          meaning: 'can do (ichidan verbs)'
+        },
+        {
+          kana: '〜る→〜える (godan)',
+          romaji: '~eru',
+          meaning: 'can do (godan verbs)'
+        },
+        {
+          kana: 'できる',
+          romaji: 'dekiru',
+          meaning: 'can do (from する)'
+        },
+        {
+          kana: '来られる',
+          romaji: 'korareru',
+          meaning: 'can come'
+        },
+        {
+          kana: '日本語を話せます',
+          romaji: 'Nihongo o hanasemasu',
+          meaning: 'I can speak Japanese'
+        },
+        {
+          kana: '漢字が読めますか',
+          romaji: 'Kanji ga yomemasu ka',
+          meaning: 'Can you read kanji?'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '日本語を', after: '。', answer: '話せます', hint: '"I can speak Japanese."' },
-        { before: '漢字が', after: 'か。', answer: '読めます', hint: '"Can you read kanji?"' },
+      questions: [{
+          before: '日本語を',
+          after: '。',
+          answer: '話せます',
+          hint: '"I can speak Japanese."'
+        },
+        {
+          before: '漢字が',
+          after: 'か。',
+          answer: '読めます',
+          hint: '"Can you read kanji?"'
+        },
       ],
     },
   ],
-  'n4-shelf-03': [
-    {
+  'n4-shelf-03': [{
       type: 'grammar-intro',
       sectionLabel: 'Conditionals: と・ば・たら・なら',
       bigIdea: 'Japanese doesn\'t have one "if" — it has four, split by whether the outcome is automatic, a rule, a one-off guess, or advice reacting to what was just said.',
@@ -433,41 +627,73 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'と: automatic result',
-      pattern: [
-        { text: '[plain form]', role: 'subject' }, { text: 'と、[result]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form]',
+        role: 'subject'
+      }, {
+        text: 'と、[result]',
+        role: 'predicate'
+      }, ],
       explain: ['Use と when B always, naturally follows A — a law of nature, a habit, a fixed rule. Not for one-time plans or invitations.'],
-      samples: [
-        {
-          tag: '"When spring comes, flowers bloom."',
-          tiles: [
-            { text: '春に', role: 'particle', gloss: 'spring' },
-            { text: 'なると', role: 'predicate', gloss: 'when it becomes', isNew: true },
-            { text: '花が', role: 'particle', gloss: 'flowers' },
-            { text: '咲きます', role: 'predicate', gloss: 'bloom' },
-          ],
-          translation: 'Haru ni naru to, hana ga sakimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"When spring comes, flowers bloom."',
+        tiles: [{
+            text: '春に',
+            role: 'particle',
+            gloss: 'spring'
+          },
+          {
+            text: 'なると',
+            role: 'predicate',
+            gloss: 'when it becomes',
+            isNew: true
+          },
+          {
+            text: '花が',
+            role: 'particle',
+            gloss: 'flowers'
+          },
+          {
+            text: '咲きます',
+            role: 'predicate',
+            gloss: 'bloom'
+          },
+        ],
+        translation: 'Haru ni naru to, hana ga sakimasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'たら: one-time hypothetical',
-      pattern: [
-        { text: '[た-form]+ら', role: 'subject' }, { text: '、[result]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[た-form]+ら',
+        role: 'subject'
+      }, {
+        text: '、[result]',
+        role: 'predicate'
+      }, ],
       explain: ['Built on the plain past (た-form) plus ら. The most flexible, everyday way to say "if" — a one-off guess about a specific situation, most common in casual speech.'],
-      samples: [
-        {
-          tag: '"If it rains, I won\'t go."',
-          tiles: [
-            { text: '雨が', role: 'particle', gloss: 'rain' },
-            { text: '降ったら', role: 'predicate', gloss: 'if it falls', isNew: true },
-            { text: '行きません', role: 'predicate', gloss: 'won\'t go' },
-          ],
-          translation: 'Ame ga futtara, ikimasen.',
-        },
-      ],
+      samples: [{
+        tag: '"If it rains, I won\'t go."',
+        tiles: [{
+            text: '雨が',
+            role: 'particle',
+            gloss: 'rain'
+          },
+          {
+            text: '降ったら',
+            role: 'predicate',
+            gloss: 'if it falls',
+            isNew: true
+          },
+          {
+            text: '行きません',
+            role: 'predicate',
+            gloss: 'won\'t go'
+          },
+        ],
+        translation: 'Ame ga futtara, ikimasen.',
+      }, ],
     },
     {
       type: 'grammar-intro',
@@ -476,23 +702,35 @@ const LESSON_CONTENT = {
         'ば attaches to the verb\'s e-row stem + ば (行けば, "if [one] goes") and reads slightly more formal or bookish than たら — good for general truths and advice.',
         'なら doesn\'t react to a hypothetical future — it reacts to something the other person JUST said. If a friend says "I\'m going," 行くなら responds directly to that plan, not to some unrelated guess about going.',
       ],
-      samples: [
-        {
-          tag: '"If you\'re going, let\'s go together."',
-          tiles: [
-            { text: '行くなら', role: 'predicate', gloss: 'if you\'re going (given that)', isNew: true, smallGloss: true },
-            { text: '一緒に', role: 'predicate', gloss: 'together' },
-            { text: '行きましょう', role: 'predicate', gloss: 'let\'s go' },
-          ],
-          translation: 'Iku nara, issho ni ikimashou.',
-        },
-      ],
+      samples: [{
+        tag: '"If you\'re going, let\'s go together."',
+        tiles: [{
+            text: '行くなら',
+            role: 'predicate',
+            gloss: 'if you\'re going (given that)',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '一緒に',
+            role: 'predicate',
+            gloss: 'together'
+          },
+          {
+            text: '行きましょう',
+            role: 'predicate',
+            gloss: 'let\'s go'
+          },
+        ],
+        translation: 'Iku nara, issho ni ikimashou.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "When spring comes, flowers bloom" (spring = 春, become = なる, flower = 花, bloom = 咲きます):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['春になると、花が咲きます', '春になったら、花が咲きます', '春になれば、花が咲きます'],
       answer: '春になると、花が咲きます',
     },
@@ -500,7 +738,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "If it rains, I won\'t go" (rain = 雨, fall = 降る, go = 行きます):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['雨が降ったら、行きません', '雨が降ると、行きません', '雨が降るなら、行きません'],
       answer: '雨が降ったら、行きません',
     },
@@ -508,28 +747,63 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Conditionals',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜と', romaji: '~to', meaning: 'automatic/natural result' },
-        { kana: '〜ば', romaji: '~ba', meaning: 'general "if...then" (formal)' },
-        { kana: '〜たら', romaji: '~tara', meaning: 'flexible one-time hypothetical' },
-        { kana: '〜なら', romaji: '~nara', meaning: '"given that / since you said so"' },
-        { kana: '春になると、花が咲きます', romaji: 'Haru ni naru to, hana ga sakimasu', meaning: 'When spring comes, flowers bloom' },
-        { kana: '雨が降ったら、行きません', romaji: 'Ame ga futtara, ikimasen', meaning: 'If it rains, I won\'t go' },
-        { kana: '行くなら、一緒に行きましょう', romaji: 'Iku nara, issho ni ikimashou', meaning: 'If you\'re going, let\'s go together' },
+      rows: [{
+          kana: '〜と',
+          romaji: '~to',
+          meaning: 'automatic/natural result'
+        },
+        {
+          kana: '〜ば',
+          romaji: '~ba',
+          meaning: 'general "if...then" (formal)'
+        },
+        {
+          kana: '〜たら',
+          romaji: '~tara',
+          meaning: 'flexible one-time hypothetical'
+        },
+        {
+          kana: '〜なら',
+          romaji: '~nara',
+          meaning: '"given that / since you said so"'
+        },
+        {
+          kana: '春になると、花が咲きます',
+          romaji: 'Haru ni naru to, hana ga sakimasu',
+          meaning: 'When spring comes, flowers bloom'
+        },
+        {
+          kana: '雨が降ったら、行きません',
+          romaji: 'Ame ga futtara, ikimasen',
+          meaning: 'If it rains, I won\'t go'
+        },
+        {
+          kana: '行くなら、一緒に行きましょう',
+          romaji: 'Iku nara, issho ni ikimashou',
+          meaning: 'If you\'re going, let\'s go together'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '春に', after: '、花が咲きます。', answer: 'なると', hint: '"When spring comes, flowers bloom."' },
-        { before: '雨が', after: '、行きません。', answer: '降ったら', hint: '"If it rains, I won\'t go."' },
+      questions: [{
+          before: '春に',
+          after: '、花が咲きます。',
+          answer: 'なると',
+          hint: '"When spring comes, flowers bloom."'
+        },
+        {
+          before: '雨が',
+          after: '、行きません。',
+          answer: '降ったら',
+          hint: '"If it rains, I won\'t go."'
+        },
       ],
     },
   ],
-  'n4-shelf-04': [
-    {
+  'n4-shelf-04': [{
       type: 'grammar-intro',
       sectionLabel: 'Volitional & Intention',
       bigIdea: 'The volitional form is the plain-speech "let\'s/I will"; stacking と思う on top turns a decision into a tentative intention — softer than つもりだ.',
@@ -540,48 +814,86 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Forming the volitional',
-      pattern: [
-        { text: '[godan: u→o+う]', role: 'subject' }, { text: '[ichidan: 〜る→よう]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[godan: u→o+う]',
+        role: 'subject'
+      }, {
+        text: '[ichidan: 〜る→よう]',
+        role: 'predicate'
+      }, ],
       explain: ['行く (godan) becomes 行こう (ikou); 食べる (ichidan) becomes 食べよう (tabeyou); する becomes しよう; 来る becomes 来よう.'],
-      samples: [
-        {
-          tag: '"Let\'s watch a movie together next time."',
-          tiles: [
-            { text: '今度、', role: 'subject', gloss: 'next time' },
-            { text: 'いっしょに', role: 'particle', gloss: 'together' },
-            { text: '映画を', role: 'particle', gloss: 'a movie' },
-            { text: '見よう', role: 'predicate', gloss: 'let\'s watch', isNew: true },
-          ],
-          translation: 'Kondo, issho ni eiga o miyou.',
-        },
-      ],
+      samples: [{
+        tag: '"Let\'s watch a movie together next time."',
+        tiles: [{
+            text: '今度、',
+            role: 'subject',
+            gloss: 'next time'
+          },
+          {
+            text: 'いっしょに',
+            role: 'particle',
+            gloss: 'together'
+          },
+          {
+            text: '映画を',
+            role: 'particle',
+            gloss: 'a movie'
+          },
+          {
+            text: '見よう',
+            role: 'predicate',
+            gloss: 'let\'s watch',
+            isNew: true
+          },
+        ],
+        translation: 'Kondo, issho ni eiga o miyou.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜（よ）うと思う: "I\'m thinking of doing..."',
-      pattern: [
-        { text: '[volitional]', role: 'subject' }, { text: 'と思います', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[volitional]',
+        role: 'subject'
+      }, {
+        text: 'と思います',
+        role: 'predicate'
+      }, ],
       explain: ['Stacking と思う on the volitional form softens a bare "I will" into "I\'m thinking of..." — a tentative intention, not a firm commitment.'],
-      samples: [
-        {
-          tag: '"I\'m thinking of going to Japan next year."',
-          tiles: [
-            { text: '来年、', role: 'subject', gloss: 'next year' },
-            { text: '日本へ', role: 'particle', gloss: 'to Japan' },
-            { text: '行こうと', role: 'predicate', gloss: 'thinking of going', isNew: true, smallGloss: true },
-            { text: '思います', role: 'predicate', gloss: 'think' },
-          ],
-          translation: 'Rainen, nihon e ikou to omoimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"I\'m thinking of going to Japan next year."',
+        tiles: [{
+            text: '来年、',
+            role: 'subject',
+            gloss: 'next year'
+          },
+          {
+            text: '日本へ',
+            role: 'particle',
+            gloss: 'to Japan'
+          },
+          {
+            text: '行こうと',
+            role: 'predicate',
+            gloss: 'thinking of going',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '思います',
+            role: 'predicate',
+            gloss: 'think'
+          },
+        ],
+        translation: 'Rainen, nihon e ikou to omoimasu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Let\'s watch a movie together" (movie = 映画, watch = 見る):',
-      before: 'いっしょに映画を', after: '。',
+      before: 'いっしょに映画を',
+      after: '。',
       choices: ['見よう', '見ます', '見たい'],
       answer: '見よう',
     },
@@ -589,7 +901,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I\'m thinking of going to Japan next year" (next year = 来年, Japan = 日本, go = 行く):',
-      before: '来年、日本へ', after: '。',
+      before: '来年、日本へ',
+      after: '。',
       choices: ['行こうと思います', '行きます', '行こう'],
       answer: '行こうと思います',
     },
@@ -597,26 +910,53 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Volitional & Intention',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '行こう', romaji: 'ikou', meaning: 'let\'s go / I will go (godan)' },
-        { kana: '見よう', romaji: 'miyou', meaning: 'let\'s watch / I will watch (ichidan)' },
-        { kana: 'しよう / 来よう', romaji: 'shiyou / koyou', meaning: 'let\'s do / let\'s come (irregular)' },
-        { kana: '〜（よ）うと思います', romaji: '~(y)ou to omoimasu', meaning: 'I\'m thinking of doing...' },
-        { kana: '来年、日本へ行こうと思います', romaji: 'Rainen, nihon e ikou to omoimasu', meaning: 'I\'m thinking of going to Japan next year' },
+      rows: [{
+          kana: '行こう',
+          romaji: 'ikou',
+          meaning: 'let\'s go / I will go (godan)'
+        },
+        {
+          kana: '見よう',
+          romaji: 'miyou',
+          meaning: 'let\'s watch / I will watch (ichidan)'
+        },
+        {
+          kana: 'しよう / 来よう',
+          romaji: 'shiyou / koyou',
+          meaning: 'let\'s do / let\'s come (irregular)'
+        },
+        {
+          kana: '〜（よ）うと思います',
+          romaji: '~(y)ou to omoimasu',
+          meaning: 'I\'m thinking of doing...'
+        },
+        {
+          kana: '来年、日本へ行こうと思います',
+          romaji: 'Rainen, nihon e ikou to omoimasu',
+          meaning: 'I\'m thinking of going to Japan next year'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: 'いっしょに映画を', after: '。', answer: '見よう', hint: '"Let\'s watch a movie together."' },
-        { before: '来年、日本へ', after: '。', answer: '行こうと思います', hint: '"I\'m thinking of going to Japan next year."' },
+      questions: [{
+          before: 'いっしょに映画を',
+          after: '。',
+          answer: '見よう',
+          hint: '"Let\'s watch a movie together."'
+        },
+        {
+          before: '来年、日本へ',
+          after: '。',
+          answer: '行こうと思います',
+          hint: '"I\'m thinking of going to Japan next year."'
+        },
       ],
     },
   ],
-  'n4-shelf-06': [
-    {
+  'n4-shelf-06': [{
       type: 'grammar-intro',
       sectionLabel: 'Comparisons',
       bigIdea: 'To compare, you name the loser with より — the thing compared against, not the winner, takes the marker.',
@@ -627,46 +967,82 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜より: "more ~ than..."',
-      pattern: [
-        { text: '[A]は', role: 'subject' }, { text: '[B]より', role: 'particle' }, { text: '[adjective]です', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[A]は',
+        role: 'subject'
+      }, {
+        text: '[B]より',
+        role: 'particle'
+      }, {
+        text: '[adjective]です',
+        role: 'predicate'
+      }, ],
       explain: ['より marks the thing A is being compared against — B is the "loser" of the comparison, not A.'],
-      samples: [
-        {
-          tag: '"The bullet train is faster than the bus."',
-          tiles: [
-            { text: '新幹線は', role: 'subject', gloss: 'the bullet train' },
-            { text: 'バスより', role: 'particle', gloss: 'than the bus', isNew: true },
-            { text: '速いです', role: 'predicate', gloss: 'is fast' },
-          ],
-          translation: 'Shinkansen wa basu yori hayai desu.',
-        },
-      ],
+      samples: [{
+        tag: '"The bullet train is faster than the bus."',
+        tiles: [{
+            text: '新幹線は',
+            role: 'subject',
+            gloss: 'the bullet train'
+          },
+          {
+            text: 'バスより',
+            role: 'particle',
+            gloss: 'than the bus',
+            isNew: true
+          },
+          {
+            text: '速いです',
+            role: 'predicate',
+            gloss: 'is fast'
+          },
+        ],
+        translation: 'Shinkansen wa basu yori hayai desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜ほど〜ない: "not as ~ as..."',
-      pattern: [
-        { text: '[A]は', role: 'subject' }, { text: '[B]ほど', role: 'particle' }, { text: '[adjective]ないです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[A]は',
+        role: 'subject'
+      }, {
+        text: '[B]ほど',
+        role: 'particle'
+      }, {
+        text: '[adjective]ないです',
+        role: 'predicate'
+      }, ],
       explain: ['ほど always pairs with a negative predicate — there\'s no positive "as ~ as" version of this pattern.'],
-      samples: [
-        {
-          tag: '"Today isn\'t as cold as yesterday."',
-          tiles: [
-            { text: '今日は', role: 'subject', gloss: 'today' },
-            { text: '昨日ほど', role: 'particle', gloss: 'as much as yesterday', isNew: true, smallGloss: true },
-            { text: '寒くないです', role: 'predicate', gloss: 'isn\'t cold' },
-          ],
-          translation: 'Kyou wa kinou hodo samukunai desu.',
-        },
-      ],
+      samples: [{
+        tag: '"Today isn\'t as cold as yesterday."',
+        tiles: [{
+            text: '今日は',
+            role: 'subject',
+            gloss: 'today'
+          },
+          {
+            text: '昨日ほど',
+            role: 'particle',
+            gloss: 'as much as yesterday',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '寒くないです',
+            role: 'predicate',
+            gloss: 'isn\'t cold'
+          },
+        ],
+        translation: 'Kyou wa kinou hodo samukunai desu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "The bullet train is faster than the bus" (bullet train = 新幹線, bus = バス, fast = 速い):',
-      before: '新幹線は', after: '。',
+      before: '新幹線は',
+      after: '。',
       choices: ['バスより速いです', 'バスほど速いです', 'バスが速いです'],
       answer: 'バスより速いです',
     },
@@ -674,7 +1050,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Today isn\'t as cold as yesterday" (today = 今日, yesterday = 昨日, cold = 寒い):',
-      before: '今日は', after: '。',
+      before: '今日は',
+      after: '。',
       choices: ['昨日ほど寒くないです', '昨日より寒いです', '昨日ほど寒いです'],
       answer: '昨日ほど寒くないです',
     },
@@ -682,25 +1059,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Comparisons',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜は〜より〜です', romaji: '~wa ~yori ~desu', meaning: 'A is more ~ than B' },
-        { kana: '〜は〜ほど〜ないです', romaji: '~wa ~hodo ~nai desu', meaning: 'A isn\'t as ~ as B' },
-        { kana: '〜と〜とどちらが〜', romaji: '~to ~to dochira ga ~', meaning: 'which of A and B is more...' },
-        { kana: '新幹線はバスより速いです', romaji: 'Shinkansen wa basu yori hayai desu', meaning: 'The bullet train is faster than the bus' },
+      rows: [{
+          kana: '〜は〜より〜です',
+          romaji: '~wa ~yori ~desu',
+          meaning: 'A is more ~ than B'
+        },
+        {
+          kana: '〜は〜ほど〜ないです',
+          romaji: '~wa ~hodo ~nai desu',
+          meaning: 'A isn\'t as ~ as B'
+        },
+        {
+          kana: '〜と〜とどちらが〜',
+          romaji: '~to ~to dochira ga ~',
+          meaning: 'which of A and B is more...'
+        },
+        {
+          kana: '新幹線はバスより速いです',
+          romaji: 'Shinkansen wa basu yori hayai desu',
+          meaning: 'The bullet train is faster than the bus'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '新幹線は', after: '。', answer: 'バスより速いです', hint: '"The bullet train is faster than the bus."' },
-        { before: '今日は', after: '。', answer: '昨日ほど寒くないです', hint: '"Today isn\'t as cold as yesterday."' },
+      questions: [{
+          before: '新幹線は',
+          after: '。',
+          answer: 'バスより速いです',
+          hint: '"The bullet train is faster than the bus."'
+        },
+        {
+          before: '今日は',
+          after: '。',
+          answer: '昨日ほど寒くないです',
+          hint: '"Today isn\'t as cold as yesterday."'
+        },
       ],
     },
   ],
-  'n4-shelf-07': [
-    {
+  'n4-shelf-07': [{
       type: 'grammar-intro',
       sectionLabel: 'Passive & Causative Verbs',
       bigIdea: 'Passive puts the person something happened to in the subject slot; causative puts the person forcing/allowing the action there — same conjugation family, opposite direction of control.',
@@ -711,46 +1111,80 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '受け身: the passive',
-      pattern: [
-        { text: '[agent]に', role: 'particle' }, { text: '[verb, e-row/られる]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[agent]に',
+        role: 'particle'
+      }, {
+        text: '[verb, e-row/られる]',
+        role: 'predicate'
+      }, ],
       explain: ['The person something happened TO becomes the subject; the person who DID it is marked with に.'],
-      samples: [
-        {
-          tag: '"I was praised by the teacher."',
-          tiles: [
-            { text: '先生に', role: 'particle', gloss: 'by the teacher' },
-            { text: '褒められました', role: 'predicate', gloss: 'was praised', isNew: true, smallGloss: true },
-          ],
-          translation: 'Sensei ni homeraremashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I was praised by the teacher."',
+        tiles: [{
+            text: '先生に',
+            role: 'particle',
+            gloss: 'by the teacher'
+          },
+          {
+            text: '褒められました',
+            role: 'predicate',
+            gloss: 'was praised',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Sensei ni homeraremashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '使役形: the causative',
-      pattern: [
-        { text: '[causer]は', role: 'subject' }, { text: '[target]に', role: 'particle' }, { text: '[verb, a-row/させる]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[causer]は',
+        role: 'subject'
+      }, {
+        text: '[target]に',
+        role: 'particle'
+      }, {
+        text: '[verb, a-row/させる]',
+        role: 'predicate'
+      }, ],
       explain: ['The person forcing or allowing the action becomes the subject; the person made to do it is marked with に.'],
-      samples: [
-        {
-          tag: '"My mother made me eat vegetables."',
-          tiles: [
-            { text: '母は', role: 'subject', gloss: 'my mother' },
-            { text: '私に', role: 'particle', gloss: 'me' },
-            { text: '野菜を', role: 'particle', gloss: 'vegetables' },
-            { text: '食べさせました', role: 'predicate', gloss: 'made [me] eat', isNew: true, smallGloss: true },
-          ],
-          translation: 'Haha wa watashi ni yasai o tabesasemashita.',
-        },
-      ],
+      samples: [{
+        tag: '"My mother made me eat vegetables."',
+        tiles: [{
+            text: '母は',
+            role: 'subject',
+            gloss: 'my mother'
+          },
+          {
+            text: '私に',
+            role: 'particle',
+            gloss: 'me'
+          },
+          {
+            text: '野菜を',
+            role: 'particle',
+            gloss: 'vegetables'
+          },
+          {
+            text: '食べさせました',
+            role: 'predicate',
+            gloss: 'made [me] eat',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Haha wa watashi ni yasai o tabesasemashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I was praised by the teacher" (teacher = 先生, praise = 褒める):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['先生に褒められました', '先生を褒めました', '先生に褒めさせました'],
       answer: '先生に褒められました',
     },
@@ -758,7 +1192,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "My mother made me eat vegetables" (mother = 母, vegetables = 野菜, eat = 食べる):',
-      before: '母は私に野菜を', after: '。',
+      before: '母は私に野菜を',
+      after: '。',
       choices: ['食べさせました', '食べられました', '食べました'],
       answer: '食べさせました',
     },
@@ -766,25 +1201,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Passive & Causative',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜（ら）れる', romaji: '~(ra)reru', meaning: 'passive: was done to' },
-        { kana: '〜（さ）せる', romaji: '~(sa)seru', meaning: 'causative: make/let someone do' },
-        { kana: '先生に褒められました', romaji: 'Sensei ni homeraremashita', meaning: 'I was praised by the teacher' },
-        { kana: '母は私に野菜を食べさせました', romaji: 'Haha wa watashi ni yasai o tabesasemashita', meaning: 'My mother made me eat vegetables' },
+      rows: [{
+          kana: '〜（ら）れる',
+          romaji: '~(ra)reru',
+          meaning: 'passive: was done to'
+        },
+        {
+          kana: '〜（さ）せる',
+          romaji: '~(sa)seru',
+          meaning: 'causative: make/let someone do'
+        },
+        {
+          kana: '先生に褒められました',
+          romaji: 'Sensei ni homeraremashita',
+          meaning: 'I was praised by the teacher'
+        },
+        {
+          kana: '母は私に野菜を食べさせました',
+          romaji: 'Haha wa watashi ni yasai o tabesasemashita',
+          meaning: 'My mother made me eat vegetables'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '先生に', after: '。', answer: '褒められました', hint: '"I was praised by the teacher."' },
-        { before: '母は私に野菜を', after: '。', answer: '食べさせました', hint: '"My mother made me eat vegetables."' },
+      questions: [{
+          before: '先生に',
+          after: '。',
+          answer: '褒められました',
+          hint: '"I was praised by the teacher."'
+        },
+        {
+          before: '母は私に野菜を',
+          after: '。',
+          answer: '食べさせました',
+          hint: '"My mother made me eat vegetables."'
+        },
       ],
     },
   ],
-  'n4-shelf-08': [
-    {
+  'n4-shelf-08': [{
       type: 'grammar-intro',
       sectionLabel: 'Adjective + なる・する',
       bigIdea: 'なる describes something changing on its own; する describes someone deliberately making it that way — same adjective, opposite direction of agency.',
@@ -795,46 +1253,83 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜くなる・〜になる: becoming',
-      pattern: [
-        { text: '[い-adj, drop い]+く', role: 'subject' }, { text: '[な-adj/noun]+に', role: 'subject' }, { text: 'なります', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[い-adj, drop い]+く',
+        role: 'subject'
+      }, {
+        text: '[な-adj/noun]+に',
+        role: 'subject'
+      }, {
+        text: 'なります',
+        role: 'predicate'
+      }, ],
       explain: ['なる marks a spontaneous change — nobody deliberately did this, it just happened.'],
-      samples: [
-        {
-          tag: '"It became autumn, and it got cool."',
-          tiles: [
-            { text: '秋になって、', role: 'subject', gloss: 'it became autumn', isNew: true, smallGloss: true },
-            { text: '涼しく', role: 'predicate', gloss: 'cool', isNew: true },
-            { text: 'なりました', role: 'predicate', gloss: 'became' },
-          ],
-          translation: 'Aki ni natte, suzushiku narimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"It became autumn, and it got cool."',
+        tiles: [{
+            text: '秋になって、',
+            role: 'subject',
+            gloss: 'it became autumn',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '涼しく',
+            role: 'predicate',
+            gloss: 'cool',
+            isNew: true
+          },
+          {
+            text: 'なりました',
+            role: 'predicate',
+            gloss: 'became'
+          },
+        ],
+        translation: 'Aki ni natte, suzushiku narimashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜くする・〜にする: making',
-      pattern: [
-        { text: '[い-adj, drop い]+く', role: 'subject' }, { text: '[な-adj/noun]+に', role: 'subject' }, { text: 'します', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[い-adj, drop い]+く',
+        role: 'subject'
+      }, {
+        text: '[な-adj/noun]+に',
+        role: 'subject'
+      }, {
+        text: 'します',
+        role: 'predicate'
+      }, ],
       explain: ['する marks a deliberate change — someone made it that way on purpose.'],
-      samples: [
-        {
-          tag: '"I made the room clean."',
-          tiles: [
-            { text: '部屋を', role: 'particle', gloss: 'the room' },
-            { text: 'きれいに', role: 'predicate', gloss: 'clean' },
-            { text: 'しました', role: 'predicate', gloss: 'made [it]', isNew: true },
-          ],
-          translation: 'Heya o kirei ni shimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I made the room clean."',
+        tiles: [{
+            text: '部屋を',
+            role: 'particle',
+            gloss: 'the room'
+          },
+          {
+            text: 'きれいに',
+            role: 'predicate',
+            gloss: 'clean'
+          },
+          {
+            text: 'しました',
+            role: 'predicate',
+            gloss: 'made [it]',
+            isNew: true
+          },
+        ],
+        translation: 'Heya o kirei ni shimashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "It became autumn, and it got cool" (autumn = 秋, cool = 涼しい, become = なる):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['秋になって、涼しくなりました', '秋になって、涼しくしました', '秋にして、涼しくなりました'],
       answer: '秋になって、涼しくなりました',
     },
@@ -842,7 +1337,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I made the room clean" (room = 部屋, clean = きれい, make = する):',
-      before: '部屋を', after: '。',
+      before: '部屋を',
+      after: '。',
       choices: ['きれいにしました', 'きれいになりました', 'きれくしました'],
       answer: 'きれいにしました',
     },
@@ -850,25 +1346,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Adjective + なる・する',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜くなる / 〜になる', romaji: '~ku naru / ~ni naru', meaning: 'to become (spontaneous)' },
-        { kana: '〜くする / 〜にする', romaji: '~ku suru / ~ni suru', meaning: 'to make (deliberate)' },
-        { kana: '涼しくなりました', romaji: 'suzushiku narimashita', meaning: 'it got cool' },
-        { kana: 'きれいにしました', romaji: 'kirei ni shimashita', meaning: 'I made it clean' },
+      rows: [{
+          kana: '〜くなる / 〜になる',
+          romaji: '~ku naru / ~ni naru',
+          meaning: 'to become (spontaneous)'
+        },
+        {
+          kana: '〜くする / 〜にする',
+          romaji: '~ku suru / ~ni suru',
+          meaning: 'to make (deliberate)'
+        },
+        {
+          kana: '涼しくなりました',
+          romaji: 'suzushiku narimashita',
+          meaning: 'it got cool'
+        },
+        {
+          kana: 'きれいにしました',
+          romaji: 'kirei ni shimashita',
+          meaning: 'I made it clean'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '秋になって、', after: '。', answer: '涼しくなりました', hint: '"It became autumn, and it got cool."' },
-        { before: '部屋を', after: '。', answer: 'きれいにしました', hint: '"I made the room clean."' },
+      questions: [{
+          before: '秋になって、',
+          after: '。',
+          answer: '涼しくなりました',
+          hint: '"It became autumn, and it got cool."'
+        },
+        {
+          before: '部屋を',
+          after: '。',
+          answer: 'きれいにしました',
+          hint: '"I made the room clean."'
+        },
       ],
     },
   ],
-  'n4-shelf-09': [
-    {
+  'n4-shelf-09': [{
       type: 'grammar-intro',
       sectionLabel: 'Obligation & Necessity',
       bigIdea: 'なければなりません is a double negative — "if you don\'t do X, it won\'t do" — adding up to "must." Its mirror なくてもいいです marks the same action as optional.',
@@ -879,48 +1398,87 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜なければなりません: "must"',
-      pattern: [
-        { text: '[nai-form, drop い]', role: 'subject' }, { text: 'ければなりません', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[nai-form, drop い]',
+        role: 'subject'
+      }, {
+        text: 'ければなりません',
+        role: 'predicate'
+      }, ],
       explain: ['Literally "if [I] don\'t do it, it won\'t do" — the double negative reads as an obligation.'],
-      samples: [
-        {
-          tag: '"I have to submit the report by tomorrow."',
-          tiles: [
-            { text: '明日までに', role: 'particle', gloss: 'by tomorrow' },
-            { text: 'レポートを', role: 'particle', gloss: 'the report' },
-            { text: '出さなければ', role: 'predicate', gloss: 'if [I] don\'t submit', isNew: true, smallGloss: true },
-            { text: 'なりません', role: 'predicate', gloss: 'won\'t do' },
-          ],
-          translation: 'Ashita made ni repooto o dasanakereba narimasen.',
-        },
-      ],
+      samples: [{
+        tag: '"I have to submit the report by tomorrow."',
+        tiles: [{
+            text: '明日までに',
+            role: 'particle',
+            gloss: 'by tomorrow'
+          },
+          {
+            text: 'レポートを',
+            role: 'particle',
+            gloss: 'the report'
+          },
+          {
+            text: '出さなければ',
+            role: 'predicate',
+            gloss: 'if [I] don\'t submit',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: 'なりません',
+            role: 'predicate',
+            gloss: 'won\'t do'
+          },
+        ],
+        translation: 'Ashita made ni repooto o dasanakereba narimasen.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜なくてもいいです: "don\'t have to"',
-      pattern: [
-        { text: '[nai-form, drop い]', role: 'subject' }, { text: 'くてもいいです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[nai-form, drop い]',
+        role: 'subject'
+      }, {
+        text: 'くてもいいです',
+        role: 'predicate'
+      }, ],
       explain: ['Marks the same action as optional — "even if [I] don\'t do it, it\'s fine."'],
-      samples: [
-        {
-          tag: '"I don\'t have to go home early today."',
-          tiles: [
-            { text: '今日は', role: 'subject', gloss: 'today' },
-            { text: '早く', role: 'predicate', gloss: 'early' },
-            { text: '帰らなくても', role: 'predicate', gloss: 'even if [I] don\'t go home', isNew: true, smallGloss: true },
-            { text: 'いいです', role: 'predicate', gloss: 'it\'s fine' },
-          ],
-          translation: 'Kyou wa hayaku kaeranakutemo ii desu.',
-        },
-      ],
+      samples: [{
+        tag: '"I don\'t have to go home early today."',
+        tiles: [{
+            text: '今日は',
+            role: 'subject',
+            gloss: 'today'
+          },
+          {
+            text: '早く',
+            role: 'predicate',
+            gloss: 'early'
+          },
+          {
+            text: '帰らなくても',
+            role: 'predicate',
+            gloss: 'even if [I] don\'t go home',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: 'いいです',
+            role: 'predicate',
+            gloss: 'it\'s fine'
+          },
+        ],
+        translation: 'Kyou wa hayaku kaeranakutemo ii desu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I have to submit the report by tomorrow" (tomorrow = 明日, report = レポート, submit = 出す):',
-      before: '明日までにレポートを', after: '。',
+      before: '明日までにレポートを',
+      after: '。',
       choices: ['出さなければなりません', '出してもいいです', '出さなくてもいいです'],
       answer: '出さなければなりません',
     },
@@ -928,7 +1486,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I don\'t have to go home early today" (today = 今日, early = 早く, go home = 帰る):',
-      before: '今日は早く', after: '。',
+      before: '今日は早く',
+      after: '。',
       choices: ['帰らなくてもいいです', '帰らなければなりません', '帰ってもいいです'],
       answer: '帰らなくてもいいです',
     },
@@ -936,25 +1495,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Obligation & Necessity',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜なければなりません', romaji: '~nakereba narimasen', meaning: 'must do...' },
-        { kana: '〜なくてもいいです', romaji: '~nakutemo ii desu', meaning: 'don\'t have to do...' },
-        { kana: 'レポートを出さなければなりません', romaji: 'Repooto o dasanakereba narimasen', meaning: 'I have to submit the report' },
-        { kana: '早く帰らなくてもいいです', romaji: 'Hayaku kaeranakutemo ii desu', meaning: 'I don\'t have to go home early' },
+      rows: [{
+          kana: '〜なければなりません',
+          romaji: '~nakereba narimasen',
+          meaning: 'must do...'
+        },
+        {
+          kana: '〜なくてもいいです',
+          romaji: '~nakutemo ii desu',
+          meaning: 'don\'t have to do...'
+        },
+        {
+          kana: 'レポートを出さなければなりません',
+          romaji: 'Repooto o dasanakereba narimasen',
+          meaning: 'I have to submit the report'
+        },
+        {
+          kana: '早く帰らなくてもいいです',
+          romaji: 'Hayaku kaeranakutemo ii desu',
+          meaning: 'I don\'t have to go home early'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '明日までにレポートを', after: '。', answer: '出さなければなりません', hint: '"I have to submit the report by tomorrow."' },
-        { before: '今日は早く', after: '。', answer: '帰らなくてもいいです', hint: '"I don\'t have to go home early today."' },
+      questions: [{
+          before: '明日までにレポートを',
+          after: '。',
+          answer: '出さなければなりません',
+          hint: '"I have to submit the report by tomorrow."'
+        },
+        {
+          before: '今日は早く',
+          after: '。',
+          answer: '帰らなくてもいいです',
+          hint: '"I don\'t have to go home early today."'
+        },
       ],
     },
   ],
-  'n4-shelf-10': [
-    {
+  'n4-shelf-10': [{
       type: 'grammar-intro',
       sectionLabel: 'Experience & Continuation',
       bigIdea: 'たことがある reports a life experience regardless of when; ている on a past-tense verb captures what was happening/already true at one specific moment.',
@@ -965,47 +1547,84 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜たことがあります: past experience',
-      pattern: [
-        { text: '[た-form]', role: 'subject' }, { text: 'ことがあります', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[た-form]',
+        role: 'subject'
+      }, {
+        text: 'ことがあります',
+        role: 'predicate'
+      }, ],
       explain: ['Reports something you\'ve experienced at least once — the exact timing doesn\'t matter, only that it happened.'],
-      samples: [
-        {
-          tag: '"I have climbed Mt. Fuji once."',
-          tiles: [
-            { text: '一度、', role: 'predicate', gloss: 'once' },
-            { text: '富士山に', role: 'particle', gloss: 'Mt. Fuji' },
-            { text: '登った', role: 'predicate', gloss: 'climbed', isNew: true },
-            { text: 'ことがあります', role: 'predicate', gloss: 'have [done]', isNew: true, smallGloss: true },
-          ],
-          translation: 'Ichido, Fujisan ni nobotta koto ga arimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"I have climbed Mt. Fuji once."',
+        tiles: [{
+            text: '一度、',
+            role: 'predicate',
+            gloss: 'once'
+          },
+          {
+            text: '富士山に',
+            role: 'particle',
+            gloss: 'Mt. Fuji'
+          },
+          {
+            text: '登った',
+            role: 'predicate',
+            gloss: 'climbed',
+            isNew: true
+          },
+          {
+            text: 'ことがあります',
+            role: 'predicate',
+            gloss: 'have [done]',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Ichido, Fujisan ni nobotta koto ga arimasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜ていました: was doing / had done',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'いました', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'いました',
+        role: 'predicate'
+      }, ],
       explain: ['Past-tense ている captures what was already happening, or already true, at one specific moment in the past.'],
-      samples: [
-        {
-          tag: '"When I called, he was sleeping."',
-          tiles: [
-            { text: '電話をかけたとき、', role: 'subject', gloss: 'when [I] called', isNew: true, smallGloss: true },
-            { text: '彼は', role: 'subject', gloss: 'he' },
-            { text: '寝ていました', role: 'predicate', gloss: 'was sleeping', isNew: true },
-          ],
-          translation: 'Denwa o kaketa toki, kare wa nete imashita.',
-        },
-      ],
+      samples: [{
+        tag: '"When I called, he was sleeping."',
+        tiles: [{
+            text: '電話をかけたとき、',
+            role: 'subject',
+            gloss: 'when [I] called',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '彼は',
+            role: 'subject',
+            gloss: 'he'
+          },
+          {
+            text: '寝ていました',
+            role: 'predicate',
+            gloss: 'was sleeping',
+            isNew: true
+          },
+        ],
+        translation: 'Denwa o kaketa toki, kare wa nete imashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I have climbed Mt. Fuji once" (once = 一度, Mt. Fuji = 富士山, climb = 登る):',
-      before: '一度、富士山に', after: '。',
+      before: '一度、富士山に',
+      after: '。',
       choices: ['登ったことがあります', '登っています', '登ります'],
       answer: '登ったことがあります',
     },
@@ -1013,7 +1632,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "When I called, he was sleeping" (call = 電話をかける, he = 彼, sleep = 寝る):',
-      before: '電話をかけたとき、彼は', after: '。',
+      before: '電話をかけたとき、彼は',
+      after: '。',
       choices: ['寝ていました', '寝たことがあります', '寝ます'],
       answer: '寝ていました',
     },
@@ -1021,25 +1641,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Experience & Continuation',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜たことがあります', romaji: '~ta koto ga arimasu', meaning: 'have done X before' },
-        { kana: '〜ていました', romaji: '~te imashita', meaning: 'was doing / had done' },
-        { kana: '富士山に登ったことがあります', romaji: 'Fujisan ni nobotta koto ga arimasu', meaning: 'I have climbed Mt. Fuji' },
-        { kana: '彼は寝ていました', romaji: 'Kare wa nete imashita', meaning: 'He was sleeping' },
+      rows: [{
+          kana: '〜たことがあります',
+          romaji: '~ta koto ga arimasu',
+          meaning: 'have done X before'
+        },
+        {
+          kana: '〜ていました',
+          romaji: '~te imashita',
+          meaning: 'was doing / had done'
+        },
+        {
+          kana: '富士山に登ったことがあります',
+          romaji: 'Fujisan ni nobotta koto ga arimasu',
+          meaning: 'I have climbed Mt. Fuji'
+        },
+        {
+          kana: '彼は寝ていました',
+          romaji: 'Kare wa nete imashita',
+          meaning: 'He was sleeping'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '一度、富士山に', after: '。', answer: '登ったことがあります', hint: '"I have climbed Mt. Fuji once."' },
-        { before: '電話をかけたとき、彼は', after: '。', answer: '寝ていました', hint: '"When I called, he was sleeping."' },
+      questions: [{
+          before: '一度、富士山に',
+          after: '。',
+          answer: '登ったことがあります',
+          hint: '"I have climbed Mt. Fuji once."'
+        },
+        {
+          before: '電話をかけたとき、彼は',
+          after: '。',
+          answer: '寝ていました',
+          hint: '"When I called, he was sleeping."'
+        },
       ],
     },
   ],
-  'n4-shelf-11': [
-    {
+  'n4-shelf-11': [{
       type: 'grammar-intro',
       sectionLabel: 'Purpose & Preparation',
       bigIdea: 'ために is for goals you deliberately work toward; ように is for goals outside your direct control — improvement, avoidance, or someone else\'s outcome.',
@@ -1050,49 +1693,88 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜ために: "in order to" (deliberate)',
-      pattern: [
-        { text: '[dictionary-form verb]', role: 'subject' }, { text: 'ために、[action]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[dictionary-form verb]',
+        role: 'subject'
+      }, {
+        text: 'ために、[action]',
+        role: 'predicate'
+      }, ],
       explain: ['Use ために when the goal is something you deliberately, intentionally work toward.'],
-      samples: [
-        {
-          tag: '"In order to study Japanese, I\'m going to Japan."',
-          tiles: [
-            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
-            { text: '勉強するために、', role: 'predicate', gloss: 'in order to study', isNew: true, smallGloss: true },
-            { text: '日本へ', role: 'particle', gloss: 'to Japan' },
-            { text: '行きます', role: 'predicate', gloss: 'go' },
-          ],
-          translation: 'Nihongo o benkyou suru tame ni, nihon e ikimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"In order to study Japanese, I\'m going to Japan."',
+        tiles: [{
+            text: '日本語を',
+            role: 'particle',
+            gloss: 'Japanese'
+          },
+          {
+            text: '勉強するために、',
+            role: 'predicate',
+            gloss: 'in order to study',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '日本へ',
+            role: 'particle',
+            gloss: 'to Japan'
+          },
+          {
+            text: '行きます',
+            role: 'predicate',
+            gloss: 'go'
+          },
+        ],
+        translation: 'Nihongo o benkyou suru tame ni, nihon e ikimasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜ように: "so that" (outside direct control)',
-      pattern: [
-        { text: '[potential/non-volitional verb]', role: 'subject' }, { text: 'ように、[action]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[potential/non-volitional verb]',
+        role: 'subject'
+      }, {
+        text: 'ように、[action]',
+        role: 'predicate'
+      }, ],
       explain: ['Use ように when the goal isn\'t something you can just decide to do — spontaneous improvement, avoiding something, or a different subject achieving the outcome.'],
-      samples: [
-        {
-          tag: '"So that I get good at Japanese, I practice every day."',
-          tiles: [
-            { text: '日本語が', role: 'particle', gloss: 'Japanese' },
-            { text: '上手になるように、', role: 'predicate', gloss: 'so that [I] get good at', isNew: true, smallGloss: true },
-            { text: '毎日', role: 'predicate', gloss: 'every day' },
-            { text: '練習しています', role: 'predicate', gloss: 'practice' },
-          ],
-          translation: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu.',
-        },
-      ],
+      samples: [{
+        tag: '"So that I get good at Japanese, I practice every day."',
+        tiles: [{
+            text: '日本語が',
+            role: 'particle',
+            gloss: 'Japanese'
+          },
+          {
+            text: '上手になるように、',
+            role: 'predicate',
+            gloss: 'so that [I] get good at',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '毎日',
+            role: 'predicate',
+            gloss: 'every day'
+          },
+          {
+            text: '練習しています',
+            role: 'predicate',
+            gloss: 'practice'
+          },
+        ],
+        translation: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu.',
+      }, ],
       cultureNote: '上手になる ("to get good at") is a spontaneous change, not something you can will directly — that\'s why it takes ように, not ために.',
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "In order to study Japanese, I\'m going to Japan" (Japanese = 日本語, study = 勉強する, Japan = 日本, go = 行く):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['日本語を勉強するために、日本へ行きます', '日本語が上手になるように、日本へ行きます', '日本語を勉強しますが、日本へ行きます'],
       answer: '日本語を勉強するために、日本へ行きます',
     },
@@ -1100,7 +1782,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "So that I get good at Japanese, I practice every day" (Japanese = 日本語, get good at = 上手になる, practice = 練習する):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['日本語が上手になるように、毎日練習しています', '日本語が上手になるために、毎日練習しています', '日本語を上手にするように、毎日練習しています'],
       answer: '日本語が上手になるように、毎日練習しています',
     },
@@ -1108,25 +1791,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Purpose & Preparation',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜ために', romaji: '~tame ni', meaning: 'in order to (deliberate goal)' },
-        { kana: '〜ように', romaji: '~you ni', meaning: 'so that (goal outside direct control)' },
-        { kana: '日本語を勉強するために、日本へ行きます', romaji: 'Nihongo o benkyou suru tame ni, nihon e ikimasu', meaning: 'In order to study Japanese, I\'m going to Japan' },
-        { kana: '日本語が上手になるように、毎日練習しています', romaji: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu', meaning: 'So that I get good at Japanese, I practice every day' },
+      rows: [{
+          kana: '〜ために',
+          romaji: '~tame ni',
+          meaning: 'in order to (deliberate goal)'
+        },
+        {
+          kana: '〜ように',
+          romaji: '~you ni',
+          meaning: 'so that (goal outside direct control)'
+        },
+        {
+          kana: '日本語を勉強するために、日本へ行きます',
+          romaji: 'Nihongo o benkyou suru tame ni, nihon e ikimasu',
+          meaning: 'In order to study Japanese, I\'m going to Japan'
+        },
+        {
+          kana: '日本語が上手になるように、毎日練習しています',
+          romaji: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu',
+          meaning: 'So that I get good at Japanese, I practice every day'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '日本語を勉強するために、', after: '。', answer: '日本へ行きます', hint: '"In order to study Japanese, I\'m going to Japan."' },
-        { before: '日本語が上手になるように、', after: '。', answer: '毎日練習しています', hint: '"So that I get good at Japanese, I practice every day."' },
+      questions: [{
+          before: '日本語を勉強するために、',
+          after: '。',
+          answer: '日本へ行きます',
+          hint: '"In order to study Japanese, I\'m going to Japan."'
+        },
+        {
+          before: '日本語が上手になるように、',
+          after: '。',
+          answer: '毎日練習しています',
+          hint: '"So that I get good at Japanese, I practice every day."'
+        },
       ],
     },
   ],
-  'n4-shelf-12': [
-    {
+  'n4-shelf-12': [{
       type: 'grammar-intro',
       sectionLabel: 'Everyday Reading Practice',
       bigIdea: 'A casual message from a friend, using grammar from this floor — conditionals, potential form, and て-form permission — all in one everyday context.',
@@ -1139,7 +1845,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What is this message mainly about?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['Weekend movie plans', 'A shopping trip', 'A work meeting'],
       answer: 'Weekend movie plans',
     },
@@ -1147,7 +1854,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'On which day can the writer go in the afternoon?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['Saturday (土曜日)', 'Sunday (日曜日)', 'Friday (金曜日)'],
       answer: 'Saturday (土曜日)',
     },
@@ -1155,7 +1863,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'Why can\'t the writer go on Sunday?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['They have work', 'They are sick', 'They dislike movies'],
       answer: 'They have work',
     },
@@ -1163,19 +1872,45 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'Summary: Everyday Reading Practice',
       headers: ['Phrase', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '今度の週末', romaji: 'kondo no shuumatsu', meaning: 'this coming weekend' },
-        { kana: '見に行こうと思います', romaji: 'mi ni ikou to omoimasu', meaning: 'I\'m thinking of going to see' },
-        { kana: 'もしよかったら', romaji: 'moshi yokattara', meaning: 'if you\'d like (conditional)' },
-        { kana: '土曜日なら', romaji: 'doyoubi nara', meaning: 'if it\'s Saturday' },
-        { kana: '午後に行けます', romaji: 'gogo ni ikemasu', meaning: 'I can go in the afternoon (potential)' },
-        { kana: '仕事があるので', romaji: 'shigoto ga aru node', meaning: 'since I have work' },
-        { kana: '見てもいいですよ', romaji: 'mitemo ii desu yo', meaning: 'it\'s fine to watch (permission)' },
+      rows: [{
+          kana: '今度の週末',
+          romaji: 'kondo no shuumatsu',
+          meaning: 'this coming weekend'
+        },
+        {
+          kana: '見に行こうと思います',
+          romaji: 'mi ni ikou to omoimasu',
+          meaning: 'I\'m thinking of going to see'
+        },
+        {
+          kana: 'もしよかったら',
+          romaji: 'moshi yokattara',
+          meaning: 'if you\'d like (conditional)'
+        },
+        {
+          kana: '土曜日なら',
+          romaji: 'doyoubi nara',
+          meaning: 'if it\'s Saturday'
+        },
+        {
+          kana: '午後に行けます',
+          romaji: 'gogo ni ikemasu',
+          meaning: 'I can go in the afternoon (potential)'
+        },
+        {
+          kana: '仕事があるので',
+          romaji: 'shigoto ga aru node',
+          meaning: 'since I have work'
+        },
+        {
+          kana: '見てもいいですよ',
+          romaji: 'mitemo ii desu yo',
+          meaning: 'it\'s fine to watch (permission)'
+        },
       ],
     },
   ],
-  'n3-shelf-02': [
-    {
+  'n3-shelf-02': [{
       type: 'grammar-intro',
       sectionLabel: 'Causative-Passive',
       recapChips: ['Causative & passive verbs (N4, shelf 7)'],
@@ -1187,21 +1922,36 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Forming the causative-passive',
-      pattern: [
-        { text: '[causative stem]', role: 'subject' }, { text: 'られる／される', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[causative stem]',
+        role: 'subject'
+      }, {
+        text: 'られる／される',
+        role: 'predicate'
+      }, ],
       explain: ['Godan verbs often contract to される (待たせられる → 待たされる) in speech; ichidan verbs keep the full させられる with no contraction.'],
-      samples: [
-        {
-          tag: '"When I was a child, I was made to eat vegetables I disliked."',
-          tiles: [
-            { text: '子供のとき、', role: 'subject', gloss: 'when I was a child' },
-            { text: '嫌いな野菜を', role: 'particle', gloss: 'vegetables I disliked' },
-            { text: '食べさせられました', role: 'predicate', gloss: 'was made to eat', isNew: true, smallGloss: true },
-          ],
-          translation: 'Kodomo no toki, kiraina yasai o tabesaseraremashita.',
-        },
-      ],
+      samples: [{
+        tag: '"When I was a child, I was made to eat vegetables I disliked."',
+        tiles: [{
+            text: '子供のとき、',
+            role: 'subject',
+            gloss: 'when I was a child'
+          },
+          {
+            text: '嫌いな野菜を',
+            role: 'particle',
+            gloss: 'vegetables I disliked'
+          },
+          {
+            text: '食べさせられました',
+            role: 'predicate',
+            gloss: 'was made to eat',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Kodomo no toki, kiraina yasai o tabesaseraremashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
@@ -1209,22 +1959,30 @@ const LESSON_CONTENT = {
       explain: [
         'Causative-passive almost always carries a nuance of reluctance — you didn\'t want to do this, but someone with authority over you made you anyway.',
       ],
-      samples: [
-        {
-          tag: '"I was made to work overtime by my boss."',
-          tiles: [
-            { text: '上司に', role: 'particle', gloss: 'by my boss' },
-            { text: '残業させられました', role: 'predicate', gloss: 'was made to work overtime', isNew: true, smallGloss: true },
-          ],
-          translation: 'Joushi ni zangyou saseraremashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I was made to work overtime by my boss."',
+        tiles: [{
+            text: '上司に',
+            role: 'particle',
+            gloss: 'by my boss'
+          },
+          {
+            text: '残業させられました',
+            role: 'predicate',
+            gloss: 'was made to work overtime',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Joushi ni zangyou saseraremashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I was made to eat vegetables I disliked" (dislike = 嫌いな, vegetables = 野菜, eat = 食べる):',
-      before: '嫌いな野菜を', after: '。',
+      before: '嫌いな野菜を',
+      after: '。',
       choices: ['食べさせられました', '食べさせました', '食べられました'],
       answer: '食べさせられました',
     },
@@ -1232,7 +1990,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I was made to work overtime by my boss" (boss = 上司, overtime = 残業):',
-      before: '上司に', after: '。',
+      before: '上司に',
+      after: '。',
       choices: ['残業させられました', '残業させました', '残業されました'],
       answer: '残業させられました',
     },
@@ -1240,24 +1999,43 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Causative-Passive',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜させられる／〜される', romaji: '~saserareru / ~sareru', meaning: 'was made to do (unwillingly)' },
-        { kana: '食べさせられました', romaji: 'tabesaseraremashita', meaning: 'was made to eat' },
-        { kana: '残業させられました', romaji: 'zangyou saseraremashita', meaning: 'was made to work overtime' },
+      rows: [{
+          kana: '〜させられる／〜される',
+          romaji: '~saserareru / ~sareru',
+          meaning: 'was made to do (unwillingly)'
+        },
+        {
+          kana: '食べさせられました',
+          romaji: 'tabesaseraremashita',
+          meaning: 'was made to eat'
+        },
+        {
+          kana: '残業させられました',
+          romaji: 'zangyou saseraremashita',
+          meaning: 'was made to work overtime'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '子供のとき、嫌いな野菜を', after: '。', answer: '食べさせられました', hint: '"When I was a child, I was made to eat vegetables I disliked."' },
-        { before: '上司に', after: '。', answer: '残業させられました', hint: '"I was made to work overtime by my boss."' },
+      questions: [{
+          before: '子供のとき、嫌いな野菜を',
+          after: '。',
+          answer: '食べさせられました',
+          hint: '"When I was a child, I was made to eat vegetables I disliked."'
+        },
+        {
+          before: '上司に',
+          after: '。',
+          answer: '残業させられました',
+          hint: '"I was made to work overtime by my boss."'
+        },
       ],
     },
   ],
-  'n3-shelf-03': [
-    {
+  'n3-shelf-03': [{
       type: 'grammar-intro',
       sectionLabel: 'Conjecture & Hearsay',
       bigIdea: 'そうだ、ようだ、らしい all mean roughly "seems / apparently," but the source of the impression differs — a visual cue, secondhand info, your own reasoning, or a rumor you half-believe.',
@@ -1268,27 +2046,60 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜そうだ: visual impression vs. hearsay',
-      pattern: [
-        { text: '[verb stem]', role: 'subject' }, { text: 'そうです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[verb stem]',
+        role: 'subject'
+      }, {
+        text: 'そうです',
+        role: 'predicate'
+      }, ],
       explain: ['Two completely different そうだ patterns share the same word: attach it to a verb stem for a visual guess ("looks like it will..."), or to a full plain-form sentence for hearsay ("I heard that...").'],
-      samples: [
-        {
+      samples: [{
           tag: '"The sky is dark. It looks like it\'s going to rain."',
-          tiles: [
-            { text: '空が', role: 'subject', gloss: 'the sky' },
-            { text: '暗いです。', role: 'predicate', gloss: 'is dark' },
-            { text: '雨が', role: 'subject', gloss: 'rain' },
-            { text: '降りそうです', role: 'predicate', gloss: 'looks like it will fall', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '空が',
+              role: 'subject',
+              gloss: 'the sky'
+            },
+            {
+              text: '暗いです。',
+              role: 'predicate',
+              gloss: 'is dark'
+            },
+            {
+              text: '雨が',
+              role: 'subject',
+              gloss: 'rain'
+            },
+            {
+              text: '降りそうです',
+              role: 'predicate',
+              gloss: 'looks like it will fall',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Sora ga kurai desu. Ame ga furisou desu.',
         },
         {
           tag: '"According to the forecast, it will be sunny tomorrow."',
-          tiles: [
-            { text: '天気予報によると、', role: 'particle', gloss: 'according to the forecast' },
-            { text: '明日は', role: 'subject', gloss: 'tomorrow' },
-            { text: '晴れるそうです', role: 'predicate', gloss: 'I heard it will be sunny', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '天気予報によると、',
+              role: 'particle',
+              gloss: 'according to the forecast'
+            },
+            {
+              text: '明日は',
+              role: 'subject',
+              gloss: 'tomorrow'
+            },
+            {
+              text: '晴れるそうです',
+              role: 'predicate',
+              gloss: 'I heard it will be sunny',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Tenki yohou ni yoru to, ashita wa hareru sou desu.',
         },
@@ -1297,27 +2108,43 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜ようだ・〜らしい: judgment vs. rumor',
-      pattern: [
-        { text: '[plain form]', role: 'subject' }, { text: 'ようです／らしいです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form]',
+        role: 'subject'
+      }, {
+        text: 'ようです／らしいです',
+        role: 'predicate'
+      }, ],
       explain: ['ようだ is your own conclusion, reasoned from indirect evidence you\'ve seen or noticed. らしい leans more on what other people say — a rumor stated with some confidence, not your own firsthand judgment.'],
-      samples: [
-        {
-          tag: '"That shop\'s ramen is apparently delicious."',
-          tiles: [
-            { text: 'あの店の', role: 'subject', gloss: 'that shop\'s' },
-            { text: 'ラーメンは', role: 'subject', gloss: 'ramen' },
-            { text: 'おいしいらしいです', role: 'predicate', gloss: 'is apparently delicious', isNew: true, smallGloss: true },
-          ],
-          translation: 'Ano mise no raamen wa oishii rashii desu.',
-        },
-      ],
+      samples: [{
+        tag: '"That shop\'s ramen is apparently delicious."',
+        tiles: [{
+            text: 'あの店の',
+            role: 'subject',
+            gloss: 'that shop\'s'
+          },
+          {
+            text: 'ラーメンは',
+            role: 'subject',
+            gloss: 'ramen'
+          },
+          {
+            text: 'おいしいらしいです',
+            role: 'predicate',
+            gloss: 'is apparently delicious',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Ano mise no raamen wa oishii rashii desu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "It looks like it\'s going to rain" (rain = 雨, fall = 降る):',
-      before: '雨が', after: '。',
+      before: '雨が',
+      after: '。',
       choices: ['降りそうです', '降るそうです', '降るらしいです'],
       answer: '降りそうです',
     },
@@ -1325,7 +2152,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "That shop\'s ramen is apparently delicious" (that shop = あの店, ramen = ラーメン, delicious = おいしい):',
-      before: 'あの店のラーメンは', after: '。',
+      before: 'あの店のラーメンは',
+      after: '。',
       choices: ['おいしいらしいです', 'おいしそうです', 'おいしいです'],
       answer: 'おいしいらしいです',
     },
@@ -1333,27 +2161,58 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Conjecture & Hearsay',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜そうだ (stem)', romaji: '~sou da', meaning: 'looks like (visual impression)' },
-        { kana: '〜そうだ (plain form)', romaji: '~sou da', meaning: 'I heard that... (hearsay)' },
-        { kana: '〜ようだ', romaji: '~you da', meaning: 'seems (own judgment)' },
-        { kana: '〜らしい', romaji: '~rashii', meaning: 'apparently (rumor)' },
-        { kana: '雨が降りそうです', romaji: 'Ame ga furisou desu', meaning: 'It looks like it\'s going to rain' },
-        { kana: 'あの店のラーメンはおいしいらしいです', romaji: 'Ano mise no raamen wa oishii rashii desu', meaning: 'That shop\'s ramen is apparently delicious' },
+      rows: [{
+          kana: '〜そうだ (stem)',
+          romaji: '~sou da',
+          meaning: 'looks like (visual impression)'
+        },
+        {
+          kana: '〜そうだ (plain form)',
+          romaji: '~sou da',
+          meaning: 'I heard that... (hearsay)'
+        },
+        {
+          kana: '〜ようだ',
+          romaji: '~you da',
+          meaning: 'seems (own judgment)'
+        },
+        {
+          kana: '〜らしい',
+          romaji: '~rashii',
+          meaning: 'apparently (rumor)'
+        },
+        {
+          kana: '雨が降りそうです',
+          romaji: 'Ame ga furisou desu',
+          meaning: 'It looks like it\'s going to rain'
+        },
+        {
+          kana: 'あの店のラーメンはおいしいらしいです',
+          romaji: 'Ano mise no raamen wa oishii rashii desu',
+          meaning: 'That shop\'s ramen is apparently delicious'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '空が暗いです。雨が', after: '。', answer: '降りそうです', hint: '"The sky is dark. It looks like it\'s going to rain."' },
-        { before: 'あの店のラーメンは', after: '。', answer: 'おいしいらしいです', hint: '"That shop\'s ramen is apparently delicious."' },
+      questions: [{
+          before: '空が暗いです。雨が',
+          after: '。',
+          answer: '降りそうです',
+          hint: '"The sky is dark. It looks like it\'s going to rain."'
+        },
+        {
+          before: 'あの店のラーメンは',
+          after: '。',
+          answer: 'おいしいらしいです',
+          hint: '"That shop\'s ramen is apparently delicious."'
+        },
       ],
     },
   ],
-  'n3-shelf-04': [
-    {
+  'n3-shelf-04': [{
       type: 'grammar-intro',
       sectionLabel: 'Relative Clauses & Complex Modification',
       bigIdea: 'Japanese doesn\'t have a separate "who/that/which" — a full plain-form clause goes right in front of a noun, like a giant adjective.',
@@ -1364,46 +2223,80 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Clause + noun: no relative pronoun',
-      pattern: [
-        { text: '[clause, plain form]', role: 'subject' }, { text: '[noun]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[clause, plain form]',
+        role: 'subject'
+      }, {
+        text: '[noun]',
+        role: 'predicate'
+      }, ],
       explain: ['The whole clause sits directly in front of the noun, just like a single adjective would — 昨日買った本 is literally "yesterday-bought book."'],
-      samples: [
-        {
-          tag: '"The book I bought yesterday is very interesting."',
-          tiles: [
-            { text: '昨日買った', role: 'subject', gloss: 'bought yesterday', isNew: true, smallGloss: true },
-            { text: '本は', role: 'subject', gloss: 'book' },
-            { text: 'とても', role: 'predicate', gloss: 'very' },
-            { text: '面白いです', role: 'predicate', gloss: 'is interesting' },
-          ],
-          translation: 'Kinou katta hon wa totemo omoshiroi desu.',
-        },
-      ],
+      samples: [{
+        tag: '"The book I bought yesterday is very interesting."',
+        tiles: [{
+            text: '昨日買った',
+            role: 'subject',
+            gloss: 'bought yesterday',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '本は',
+            role: 'subject',
+            gloss: 'book'
+          },
+          {
+            text: 'とても',
+            role: 'predicate',
+            gloss: 'very'
+          },
+          {
+            text: '面白いです',
+            role: 'predicate',
+            gloss: 'is interesting'
+          },
+        ],
+        translation: 'Kinou katta hon wa totemo omoshiroi desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'は→が inside the clause',
       explain: ['Inside a modifying clause, the subject marker switches from は to が — the clause needs its own subject marker, and は is reserved for the sentence\'s outer topic.'],
-      samples: [
-        {
-          tag: '"The person who lives next door is a doctor."',
-          tiles: [
-            { text: '隣に', role: 'particle', gloss: 'next door' },
-            { text: '住んでいる', role: 'predicate', gloss: 'lives (plain form)', isNew: true },
-            { text: '人は', role: 'subject', gloss: 'person' },
-            { text: '医者です', role: 'predicate', gloss: 'is a doctor' },
-          ],
-          translation: 'Tonari ni sunde iru hito wa isha desu.',
-        },
-      ],
+      samples: [{
+        tag: '"The person who lives next door is a doctor."',
+        tiles: [{
+            text: '隣に',
+            role: 'particle',
+            gloss: 'next door'
+          },
+          {
+            text: '住んでいる',
+            role: 'predicate',
+            gloss: 'lives (plain form)',
+            isNew: true
+          },
+          {
+            text: '人は',
+            role: 'subject',
+            gloss: 'person'
+          },
+          {
+            text: '医者です',
+            role: 'predicate',
+            gloss: 'is a doctor'
+          },
+        ],
+        translation: 'Tonari ni sunde iru hito wa isha desu.',
+      }, ],
       cultureNote: 'Inside the clause 隣に住んでいる, the person doing the living has no explicit が-marked subject here because it IS the noun 人 being modified — が would only appear if a different subject were introduced inside the clause.',
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "The book I bought yesterday is very interesting" (yesterday = 昨日, buy = 買う, book = 本, interesting = 面白い):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['昨日買った本はとても面白いです', '昨日買う本はとても面白いです', '本は昨日買って面白いです'],
       answer: '昨日買った本はとても面白いです',
     },
@@ -1411,7 +2304,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "The person who lives next door is a doctor" (next door = 隣, live = 住む, person = 人, doctor = 医者):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['隣に住んでいる人は医者です', '隣は住んでいる人が医者です', '隣に住む人は医者でした'],
       answer: '隣に住んでいる人は医者です',
     },
@@ -1419,24 +2313,43 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Relative Clauses',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '[clause, plain form]+[noun]', romaji: '(no separate word for "that/which")', meaning: 'a clause modifying a noun' },
-        { kana: '昨日買った本', romaji: 'kinou katta hon', meaning: 'the book [I] bought yesterday' },
-        { kana: '隣に住んでいる人', romaji: 'tonari ni sunde iru hito', meaning: 'the person who lives next door' },
+      rows: [{
+          kana: '[clause, plain form]+[noun]',
+          romaji: '(no separate word for "that/which")',
+          meaning: 'a clause modifying a noun'
+        },
+        {
+          kana: '昨日買った本',
+          romaji: 'kinou katta hon',
+          meaning: 'the book [I] bought yesterday'
+        },
+        {
+          kana: '隣に住んでいる人',
+          romaji: 'tonari ni sunde iru hito',
+          meaning: 'the person who lives next door'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '', after: 'はとても面白いです。', answer: '昨日買った本', hint: '"The book I bought yesterday is very interesting."' },
-        { before: '', after: 'は医者です。', answer: '隣に住んでいる人', hint: '"The person who lives next door is a doctor."' },
+      questions: [{
+          before: '',
+          after: 'はとても面白いです。',
+          answer: '昨日買った本',
+          hint: '"The book I bought yesterday is very interesting."'
+        },
+        {
+          before: '',
+          after: 'は医者です。',
+          answer: '隣に住んでいる人',
+          hint: '"The person who lives next door is a doctor."'
+        },
       ],
     },
   ],
-  'n3-shelf-05': [
-    {
+  'n3-shelf-05': [{
       type: 'grammar-intro',
       sectionLabel: 'Formal Written Style (である体)',
       bigIdea: 'である is だ\'s formal-writing cousin — used in essays, news, and reports where です／ます would sound out of place.',
@@ -1447,26 +2360,55 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜である: the written-register だ',
-      pattern: [
-        { text: '[noun／な-adjective]', role: 'subject' }, { text: 'である', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[noun／な-adjective]',
+        role: 'subject'
+      }, {
+        text: 'である',
+        role: 'predicate'
+      }, ],
       explain: ['である attaches to a noun or な-adjective the same place だ or です would — just in a more formal, written register.'],
-      samples: [
-        {
+      samples: [{
           tag: '"This is a Japanese textbook."',
-          tiles: [
-            { text: 'これは', role: 'subject', gloss: 'this' },
-            { text: '日本語の', role: 'particle', gloss: 'Japanese' },
-            { text: '教科書である', role: 'predicate', gloss: 'is a textbook (formal)', isNew: true, smallGloss: true },
+          tiles: [{
+              text: 'これは',
+              role: 'subject',
+              gloss: 'this'
+            },
+            {
+              text: '日本語の',
+              role: 'particle',
+              gloss: 'Japanese'
+            },
+            {
+              text: '教科書である',
+              role: 'predicate',
+              gloss: 'is a textbook (formal)',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Kore wa nihongo no kyoukasho de aru.',
         },
         {
           tag: '"He is a famous writer."',
-          tiles: [
-            { text: '彼は', role: 'subject', gloss: 'he' },
-            { text: '有名な', role: 'predicate', gloss: 'famous' },
-            { text: '作家である', role: 'predicate', gloss: 'is a writer (formal)', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '彼は',
+              role: 'subject',
+              gloss: 'he'
+            },
+            {
+              text: '有名な',
+              role: 'predicate',
+              gloss: 'famous'
+            },
+            {
+              text: '作家である',
+              role: 'predicate',
+              gloss: 'is a writer (formal)',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Kare wa yuumeina sakka de aru.',
         },
@@ -1481,7 +2423,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "This is a Japanese textbook" in である体 (this = これ, Japanese = 日本語, textbook = 教科書):',
-      before: 'これは日本語の', after: '。',
+      before: 'これは日本語の',
+      after: '。',
       choices: ['教科書である', '教科書です', '教科書だった'],
       answer: '教科書である',
     },
@@ -1489,7 +2432,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "He is a famous writer" in である体 (he = 彼, famous = 有名な, writer = 作家):',
-      before: '彼は有名な', after: '。',
+      before: '彼は有名な',
+      after: '。',
       choices: ['作家である', '作家です', '作家でした'],
       answer: '作家である',
     },
@@ -1497,24 +2441,43 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: である体',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜である', romaji: '~de aru', meaning: 'formal written "to be" (essays, reports, news)' },
-        { kana: 'これは日本語の教科書である', romaji: 'Kore wa nihongo no kyoukasho de aru', meaning: 'This is a Japanese textbook' },
-        { kana: '彼は有名な作家である', romaji: 'Kare wa yuumeina sakka de aru', meaning: 'He is a famous writer' },
+      rows: [{
+          kana: '〜である',
+          romaji: '~de aru',
+          meaning: 'formal written "to be" (essays, reports, news)'
+        },
+        {
+          kana: 'これは日本語の教科書である',
+          romaji: 'Kore wa nihongo no kyoukasho de aru',
+          meaning: 'This is a Japanese textbook'
+        },
+        {
+          kana: '彼は有名な作家である',
+          romaji: 'Kare wa yuumeina sakka de aru',
+          meaning: 'He is a famous writer'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: 'これは日本語の', after: '。', answer: '教科書である', hint: '"This is a Japanese textbook" (formal written style).' },
-        { before: '彼は有名な', after: '。', answer: '作家である', hint: '"He is a famous writer" (formal written style).' },
+      questions: [{
+          before: 'これは日本語の',
+          after: '。',
+          answer: '教科書である',
+          hint: '"This is a Japanese textbook" (formal written style).'
+        },
+        {
+          before: '彼は有名な',
+          after: '。',
+          answer: '作家である',
+          hint: '"He is a famous writer" (formal written style).'
+        },
       ],
     },
   ],
-  'n3-shelf-06': [
-    {
+  'n3-shelf-06': [{
       type: 'grammar-intro',
       sectionLabel: 'Advanced Keigo',
       bigIdea: 'Keigo runs two directions — sonkeigo lifts the other person\'s action up, kenjougo lowers your own action down.',
@@ -1525,56 +2488,100 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '尊敬語: raising the other person',
-      pattern: [
-        { text: 'お', role: 'particle' }, { text: '[verb stem]', role: 'subject' }, { text: 'になる', role: 'predicate' },
-      ],
+      pattern: [{
+        text: 'お',
+        role: 'particle'
+      }, {
+        text: '[verb stem]',
+        role: 'subject'
+      }, {
+        text: 'になる',
+        role: 'predicate'
+      }, ],
       explain: ['Use sonkeigo for a customer, boss, teacher, or anyone you\'re showing respect to — never for your own actions.'],
-      samples: [
-        {
-          tag: '"The president has already gone home."',
-          tiles: [
-            { text: '社長は', role: 'subject', gloss: 'the president' },
-            { text: 'もう', role: 'predicate', gloss: 'already' },
-            { text: 'お帰りになりました', role: 'predicate', gloss: 'went home (respectful)', isNew: true, smallGloss: true },
-          ],
-          translation: 'Shachou wa mou okaeri ni narimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"The president has already gone home."',
+        tiles: [{
+            text: '社長は',
+            role: 'subject',
+            gloss: 'the president'
+          },
+          {
+            text: 'もう',
+            role: 'predicate',
+            gloss: 'already'
+          },
+          {
+            text: 'お帰りになりました',
+            role: 'predicate',
+            gloss: 'went home (respectful)',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Shachou wa mou okaeri ni narimashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '謙譲語: lowering yourself',
-      pattern: [
-        { text: 'お', role: 'particle' }, { text: '[verb stem]', role: 'subject' }, { text: 'する／いたす', role: 'predicate' },
-      ],
+      pattern: [{
+        text: 'お',
+        role: 'particle'
+      }, {
+        text: '[verb stem]',
+        role: 'subject'
+      }, {
+        text: 'する／いたす',
+        role: 'predicate'
+      }, ],
       explain: ['Use kenjougo for your OWN actions when speaking to someone above you — humbling yourself is itself a form of respect. いたす is even more formal than する.'],
-      samples: [
-        {
-          tag: '"I will wait here."',
-          tiles: [
-            { text: 'こちらで', role: 'particle', gloss: 'here' },
-            { text: 'お待ちいたします', role: 'predicate', gloss: 'will wait (humble)', isNew: true, smallGloss: true },
-          ],
-          translation: 'Kochira de omachi itashimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"I will wait here."',
+        tiles: [{
+            text: 'こちらで',
+            role: 'particle',
+            gloss: 'here'
+          },
+          {
+            text: 'お待ちいたします',
+            role: 'predicate',
+            gloss: 'will wait (humble)',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Kochira de omachi itashimasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Memorized irregular pairs',
       dividedIntro: true,
       explain: ['Some of the most common verbs skip the お〜になる／お〜する pattern entirely and use their own irregular sonkeigo/kenjougo words instead — these have to be memorized individually.'],
-      terms: [
-        { role: 'subject', name: '言う → おっしゃる (尊敬) / 申す (謙譲)', desc: 'to say' },
-        { role: 'predicate', name: '行く・来る → いらっしゃる (尊敬) / 参る (謙譲)', desc: 'to go / to come' },
-        { role: 'subject', name: '食べる → 召し上がる (尊敬) / いただく (謙譲)', desc: 'to eat' },
+      terms: [{
+          role: 'subject',
+          name: '言う → おっしゃる (尊敬) / 申す (謙譲)',
+          desc: 'to say'
+        },
+        {
+          role: 'predicate',
+          name: '行く・来る → いらっしゃる (尊敬) / 参る (謙譲)',
+          desc: 'to go / to come'
+        },
+        {
+          role: 'subject',
+          name: '食べる → 召し上がる (尊敬) / いただく (謙譲)',
+          desc: 'to eat'
+        },
       ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "The president has already gone home" using sonkeigo (president = 社長, already = もう, go home = 帰る):',
-      before: '社長はもう', after: '。',
+      before: '社長はもう',
+      after: '。',
       choices: ['お帰りになりました', 'お帰りしました', '帰りました'],
       answer: 'お帰りになりました',
     },
@@ -1582,7 +2589,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I will wait here" using kenjougo (here = こちら, wait = 待つ):',
-      before: 'こちらで', after: '。',
+      before: 'こちらで',
+      after: '。',
       choices: ['お待ちいたします', 'お待ちになります', '待ちます'],
       answer: 'お待ちいたします',
     },
@@ -1590,25 +2598,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Advanced Keigo',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: 'お〜になる', romaji: 'o~ni naru', meaning: 'sonkeigo: respectful, for someone else\'s action' },
-        { kana: 'お〜する／いたす', romaji: 'o~suru / itasu', meaning: 'kenjougo: humble, for your own action' },
-        { kana: '社長はお帰りになりました', romaji: 'Shachou wa okaeri ni narimashita', meaning: 'The president went home (respectful)' },
-        { kana: 'こちらでお待ちいたします', romaji: 'Kochira de omachi itashimasu', meaning: 'I will wait here (humble)' },
+      rows: [{
+          kana: 'お〜になる',
+          romaji: 'o~ni naru',
+          meaning: 'sonkeigo: respectful, for someone else\'s action'
+        },
+        {
+          kana: 'お〜する／いたす',
+          romaji: 'o~suru / itasu',
+          meaning: 'kenjougo: humble, for your own action'
+        },
+        {
+          kana: '社長はお帰りになりました',
+          romaji: 'Shachou wa okaeri ni narimashita',
+          meaning: 'The president went home (respectful)'
+        },
+        {
+          kana: 'こちらでお待ちいたします',
+          romaji: 'Kochira de omachi itashimasu',
+          meaning: 'I will wait here (humble)'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '社長はもう', after: '。', answer: 'お帰りになりました', hint: '"The president has already gone home" (sonkeigo).' },
-        { before: 'こちらで', after: '。', answer: 'お待ちいたします', hint: '"I will wait here" (kenjougo).' },
+      questions: [{
+          before: '社長はもう',
+          after: '。',
+          answer: 'お帰りになりました',
+          hint: '"The president has already gone home" (sonkeigo).'
+        },
+        {
+          before: 'こちらで',
+          after: '。',
+          answer: 'お待ちいたします',
+          hint: '"I will wait here" (kenjougo).'
+        },
       ],
     },
   ],
-  'n3-shelf-07': [
-    {
+  'n3-shelf-07': [{
       type: 'grammar-intro',
       sectionLabel: 'Conjunction Nuances',
       bigIdea: 'ものの、くせに、というより all connect contrasting ideas, but the emotional temperature differs — ものの is neutral/formal, くせに is accusatory, and というより isn\'t really contrast at all, it\'s correcting your own word choice.',
@@ -1619,64 +2650,107 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜ものの: neutral concession',
-      pattern: [
-        { text: '[plain form]', role: 'subject' }, { text: 'ものの、[contrast]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form]',
+        role: 'subject'
+      }, {
+        text: 'ものの、[contrast]',
+        role: 'predicate'
+      }, ],
       explain: ['ものの reads as calm and even slightly formal — "that said..." — with no judgment attached to either half.'],
-      samples: [
-        {
-          tag: '"Although the price is high, the quality is very good."',
-          tiles: [
-            { text: '値段は', role: 'subject', gloss: 'the price' },
-            { text: '高いものの、', role: 'predicate', gloss: 'is high, that said', isNew: true, smallGloss: true },
-            { text: '品質は', role: 'subject', gloss: 'the quality' },
-            { text: 'とてもいいです', role: 'predicate', gloss: 'is very good' },
-          ],
-          translation: 'Nedan wa takai monono, hinshitsu wa totemo ii desu.',
-        },
-      ],
+      samples: [{
+        tag: '"Although the price is high, the quality is very good."',
+        tiles: [{
+            text: '値段は',
+            role: 'subject',
+            gloss: 'the price'
+          },
+          {
+            text: '高いものの、',
+            role: 'predicate',
+            gloss: 'is high, that said',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '品質は',
+            role: 'subject',
+            gloss: 'the quality'
+          },
+          {
+            text: 'とてもいいです',
+            role: 'predicate',
+            gloss: 'is very good'
+          },
+        ],
+        translation: 'Nedan wa takai monono, hinshitsu wa totemo ii desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜くせに: critical "even though"',
-      pattern: [
-        { text: '[plain form／な-adj+な]', role: 'subject' }, { text: 'くせに、[criticism]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form／な-adj+な]',
+        role: 'subject'
+      }, {
+        text: 'くせに、[criticism]',
+        role: 'predicate'
+      }, ],
       explain: ['くせに carries real annoyance — it points out a contradiction the speaker finds irritating, not just neutral fact.'],
-      samples: [
-        {
-          tag: '"Even though he was late, he doesn\'t even apologize."',
-          tiles: [
-            { text: '遅刻したくせに、', role: 'subject', gloss: 'even though [he] was late', isNew: true, smallGloss: true },
-            { text: '謝りもしない', role: 'predicate', gloss: 'doesn\'t even apologize', isNew: true },
-          ],
-          translation: 'Chikoku shita kuse ni, ayamari mo shinai.',
-        },
-      ],
+      samples: [{
+        tag: '"Even though he was late, he doesn\'t even apologize."',
+        tiles: [{
+            text: '遅刻したくせに、',
+            role: 'subject',
+            gloss: 'even though [he] was late',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '謝りもしない',
+            role: 'predicate',
+            gloss: 'doesn\'t even apologize',
+            isNew: true
+          },
+        ],
+        translation: 'Chikoku shita kuse ni, ayamari mo shinai.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜というより: self-correction, not contrast',
-      pattern: [
-        { text: '[A]というより、', role: 'subject' }, { text: '[B]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[A]というより、',
+        role: 'subject'
+      }, {
+        text: '[B]',
+        role: 'predicate'
+      }, ],
       explain: ['というより isn\'t contrasting two opposing facts — it\'s the speaker correcting their own word choice: "rather than saying A, it\'s more accurate to say B."'],
-      samples: [
-        {
-          tag: '"It\'s not so much that I like it — I need it."',
-          tiles: [
-            { text: '好きというより、', role: 'subject', gloss: 'rather than saying [I] like it', isNew: true, smallGloss: true },
-            { text: '必要なんです', role: 'predicate', gloss: 'it\'s [that I] need it' },
-          ],
-          translation: 'Suki to iu yori, hitsuyou nan desu.',
-        },
-      ],
+      samples: [{
+        tag: '"It\'s not so much that I like it — I need it."',
+        tiles: [{
+            text: '好きというより、',
+            role: 'subject',
+            gloss: 'rather than saying [I] like it',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '必要なんです',
+            role: 'predicate',
+            gloss: 'it\'s [that I] need it'
+          },
+        ],
+        translation: 'Suki to iu yori, hitsuyou nan desu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Although the price is high, the quality is very good" (price = 値段, high = 高い, quality = 品質):',
-      before: '値段は', after: '。',
+      before: '値段は',
+      after: '。',
       choices: ['高いものの、品質はとてもいいです', '高いくせに、品質はとてもいいです', '高いというより、品質はとてもいいです'],
       answer: '高いものの、品質はとてもいいです',
     },
@@ -1684,7 +2758,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Even though he was late, he doesn\'t even apologize" (be late = 遅刻する, apologize = 謝る):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['遅刻したくせに、謝りもしない', '遅刻したものの、謝りもしない', '遅刻したというより、謝りもしない'],
       answer: '遅刻したくせに、謝りもしない',
     },
@@ -1692,26 +2767,53 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Conjunction Nuances',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜ものの', romaji: '~monono', meaning: 'that said... (neutral concession)' },
-        { kana: '〜くせに', romaji: '~kuse ni', meaning: 'even though... (critical, annoyed)' },
-        { kana: '〜というより', romaji: '~to iu yori', meaning: 'rather than saying A, actually B' },
-        { kana: '値段は高いものの、品質はいいです', romaji: 'Nedan wa takai monono, hinshitsu wa ii desu', meaning: 'Although the price is high, the quality is good' },
-        { kana: '遅刻したくせに、謝りもしない', romaji: 'Chikoku shita kuse ni, ayamari mo shinai', meaning: 'Even though he was late, he doesn\'t even apologize' },
+      rows: [{
+          kana: '〜ものの',
+          romaji: '~monono',
+          meaning: 'that said... (neutral concession)'
+        },
+        {
+          kana: '〜くせに',
+          romaji: '~kuse ni',
+          meaning: 'even though... (critical, annoyed)'
+        },
+        {
+          kana: '〜というより',
+          romaji: '~to iu yori',
+          meaning: 'rather than saying A, actually B'
+        },
+        {
+          kana: '値段は高いものの、品質はいいです',
+          romaji: 'Nedan wa takai monono, hinshitsu wa ii desu',
+          meaning: 'Although the price is high, the quality is good'
+        },
+        {
+          kana: '遅刻したくせに、謝りもしない',
+          romaji: 'Chikoku shita kuse ni, ayamari mo shinai',
+          meaning: 'Even though he was late, he doesn\'t even apologize'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '値段は', after: '。', answer: '高いものの、品質はとてもいいです', hint: '"Although the price is high, the quality is very good."' },
-        { before: '', after: '。', answer: '遅刻したくせに、謝りもしない', hint: '"Even though he was late, he doesn\'t even apologize."' },
+      questions: [{
+          before: '値段は',
+          after: '。',
+          answer: '高いものの、品質はとてもいいです',
+          hint: '"Although the price is high, the quality is very good."'
+        },
+        {
+          before: '',
+          after: '。',
+          answer: '遅刻したくせに、謝りもしない',
+          hint: '"Even though he was late, he doesn\'t even apologize."'
+        },
       ],
     },
   ],
-  'n3-shelf-08': [
-    {
+  'n3-shelf-08': [{
       type: 'grammar-intro',
       sectionLabel: 'Extended Reading Practice',
       bigIdea: 'A short blog-style post about convenience-store culture in Japan, using a relative clause and a conjecture form from this wing\'s earlier shelves.',
@@ -1724,7 +2826,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What does the writer say makes them feel a little better even when tired?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['The clerk\'s smiling greeting', 'The store\'s low prices', 'The store\'s music'],
       answer: 'The clerk\'s smiling greeting',
     },
@@ -1732,7 +2835,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'According to the passage, what else can you do at a convenience store besides buy things (referent: それ／この点)?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['Pay utility bills and receive packages', 'Get a haircut', 'Rent a car'],
       answer: 'Pay utility bills and receive packages',
     },
@@ -1740,7 +2844,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What is the writer\'s overall point about convenience stores?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['They\'ve become an indispensable part of daily life', 'They are too expensive', 'They should open even later'],
       answer: 'They\'ve become an indispensable part of daily life',
     },
@@ -1748,18 +2853,40 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'Summary: Extended Reading Practice',
       headers: ['Phrase', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '近所にできたコンビニ', romaji: 'kinjo ni dekita konbini', meaning: 'the convenience store that opened nearby (relative clause)' },
-        { kana: '24時間開いている店', romaji: 'nijuu-yo jikan aite iru mise', meaning: 'a store that\'s open 24 hours (relative clause)' },
-        { kana: '公共料金の支払い', romaji: 'koukyou ryoukin no shiharai', meaning: 'utility bill payment' },
-        { kana: '荷物の受け取り', romaji: 'nimotsu no uketori', meaning: 'package pickup' },
-        { kana: '〜できるらしい', romaji: '~dekiru rashii', meaning: 'apparently you can... (hearsay)' },
-        { kana: '〜になっているようだ', romaji: '~ni natte iru you da', meaning: 'it seems to have become... (own judgment)' },
+      rows: [{
+          kana: '近所にできたコンビニ',
+          romaji: 'kinjo ni dekita konbini',
+          meaning: 'the convenience store that opened nearby (relative clause)'
+        },
+        {
+          kana: '24時間開いている店',
+          romaji: 'nijuu-yo jikan aite iru mise',
+          meaning: 'a store that\'s open 24 hours (relative clause)'
+        },
+        {
+          kana: '公共料金の支払い',
+          romaji: 'koukyou ryoukin no shiharai',
+          meaning: 'utility bill payment'
+        },
+        {
+          kana: '荷物の受け取り',
+          romaji: 'nimotsu no uketori',
+          meaning: 'package pickup'
+        },
+        {
+          kana: '〜できるらしい',
+          romaji: '~dekiru rashii',
+          meaning: 'apparently you can... (hearsay)'
+        },
+        {
+          kana: '〜になっているようだ',
+          romaji: '~ni natte iru you da',
+          meaning: 'it seems to have become... (own judgment)'
+        },
       ],
     },
   ],
-  'n3-shelf-09': [
-    {
+  'n3-shelf-09': [{
       type: 'grammar-intro',
       sectionLabel: 'Tendency & Appearance',
       bigIdea: 'がち、っぽい、気味 all mean "kind of / tends to," but they don\'t overlap — がち is a bad recurring habit, っぽい is a surface impression, 気味 is a slight symptom you\'re noticing.',
@@ -1770,44 +2897,84 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜がち: a bad recurring habit',
-      pattern: [
-        { text: '[verb stem]', role: 'subject' }, { text: 'がちです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[verb stem]',
+        role: 'subject'
+      }, {
+        text: 'がちです',
+        role: 'predicate'
+      }, ],
       explain: ['がち marks something that happens more often than it should — usually framed as a shortcoming.'],
-      samples: [
-        {
-          tag: '"Lately I tend to skip breakfast."',
-          tiles: [
-            { text: '最近、', role: 'predicate', gloss: 'lately' },
-            { text: '朝ご飯を', role: 'particle', gloss: 'breakfast' },
-            { text: '抜きがちです', role: 'predicate', gloss: 'tend to skip', isNew: true, smallGloss: true },
-          ],
-          translation: 'Saikin, asagohan o nukigachi desu.',
-        },
-      ],
+      samples: [{
+        tag: '"Lately I tend to skip breakfast."',
+        tiles: [{
+            text: '最近、',
+            role: 'predicate',
+            gloss: 'lately'
+          },
+          {
+            text: '朝ご飯を',
+            role: 'particle',
+            gloss: 'breakfast'
+          },
+          {
+            text: '抜きがちです',
+            role: 'predicate',
+            gloss: 'tend to skip',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Saikin, asagohan o nukigachi desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜っぽい・〜気味: surface impression vs. slight symptom',
-      pattern: [
-        { text: '[noun／adj-stem]', role: 'subject' }, { text: 'っぽい／気味', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[noun／adj-stem]',
+        role: 'subject'
+      }, {
+        text: 'っぽい／気味',
+        role: 'predicate'
+      }, ],
       explain: ['っぽい describes how something LOOKS or COMES ACROSS on the surface — an impression, not a deep truth. 気味 flags a slight, often physical or mental symptom you\'ve started to notice in yourself.'],
-      samples: [
-        {
+      samples: [{
           tag: '"He has a childish personality."',
-          tiles: [
-            { text: '彼は', role: 'subject', gloss: 'he' },
-            { text: '子供っぽい', role: 'predicate', gloss: 'childish (-ish)', isNew: true, smallGloss: true },
-            { text: '性格です', role: 'predicate', gloss: 'personality' },
+          tiles: [{
+              text: '彼は',
+              role: 'subject',
+              gloss: 'he'
+            },
+            {
+              text: '子供っぽい',
+              role: 'predicate',
+              gloss: 'childish (-ish)',
+              isNew: true,
+              smallGloss: true
+            },
+            {
+              text: '性格です',
+              role: 'predicate',
+              gloss: 'personality'
+            },
           ],
           translation: 'Kare wa kodomoppoi seikaku desu.',
         },
         {
           tag: '"I\'ve been feeling a bit under the weather lately."',
-          tiles: [
-            { text: '最近、', role: 'predicate', gloss: 'lately' },
-            { text: '風邪気味です', role: 'predicate', gloss: 'a bit of a cold coming on', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '最近、',
+              role: 'predicate',
+              gloss: 'lately'
+            },
+            {
+              text: '風邪気味です',
+              role: 'predicate',
+              gloss: 'a bit of a cold coming on',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Saikin, kazegimi desu.',
         },
@@ -1817,7 +2984,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "Lately I tend to skip breakfast" (lately = 最近, breakfast = 朝ご飯, skip = 抜く):',
-      before: '最近、朝ご飯を', after: '。',
+      before: '最近、朝ご飯を',
+      after: '。',
       choices: ['抜きがちです', '抜きっぽいです', '抜き気味です'],
       answer: '抜きがちです',
     },
@@ -1825,7 +2993,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I\'ve been feeling a bit under the weather lately" (lately = 最近, cold = 風邪):',
-      before: '最近、', after: '。',
+      before: '最近、',
+      after: '。',
       choices: ['風邪気味です', '風邪がちです', '風邪っぽいです'],
       answer: '風邪気味です',
     },
@@ -1833,26 +3002,53 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Tendency & Appearance',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜がち', romaji: '~gachi', meaning: 'tends to (bad recurring habit)' },
-        { kana: '〜っぽい', romaji: '~ppoi', meaning: '-ish (surface impression)' },
-        { kana: '〜気味', romaji: '~gimi', meaning: 'a slight symptom / leaning' },
-        { kana: '朝ご飯を抜きがちです', romaji: 'Asagohan o nukigachi desu', meaning: 'I tend to skip breakfast' },
-        { kana: '風邪気味です', romaji: 'Kazegimi desu', meaning: 'I\'m feeling a bit under the weather' },
+      rows: [{
+          kana: '〜がち',
+          romaji: '~gachi',
+          meaning: 'tends to (bad recurring habit)'
+        },
+        {
+          kana: '〜っぽい',
+          romaji: '~ppoi',
+          meaning: '-ish (surface impression)'
+        },
+        {
+          kana: '〜気味',
+          romaji: '~gimi',
+          meaning: 'a slight symptom / leaning'
+        },
+        {
+          kana: '朝ご飯を抜きがちです',
+          romaji: 'Asagohan o nukigachi desu',
+          meaning: 'I tend to skip breakfast'
+        },
+        {
+          kana: '風邪気味です',
+          romaji: 'Kazegimi desu',
+          meaning: 'I\'m feeling a bit under the weather'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '最近、朝ご飯を', after: '。', answer: '抜きがちです', hint: '"Lately I tend to skip breakfast."' },
-        { before: '最近、', after: '。', answer: '風邪気味です', hint: '"I\'ve been feeling a bit under the weather lately."' },
+      questions: [{
+          before: '最近、朝ご飯を',
+          after: '。',
+          answer: '抜きがちです',
+          hint: '"Lately I tend to skip breakfast."'
+        },
+        {
+          before: '最近、',
+          after: '。',
+          answer: '風邪気味です',
+          hint: '"I\'ve been feeling a bit under the weather lately."'
+        },
       ],
     },
   ],
-  'n3-shelf-10': [
-    {
+  'n3-shelf-10': [{
       type: 'grammar-intro',
       sectionLabel: 'Restriction & Emphasis',
       bigIdea: 'だけ／しか both mean "only," but だけ is neutral while しか forces a negative verb and reads more emphatically final; さえ pushes further into "even this minimal/surprising case."',
@@ -1863,24 +3059,45 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜だけ vs. 〜しか〜ない',
-      pattern: [
-        { text: '[noun]', role: 'subject' }, { text: 'だけ／しか〜ない', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[noun]',
+        role: 'subject'
+      }, {
+        text: 'だけ／しか〜ない',
+        role: 'predicate'
+      }, ],
       explain: ['だけ is neutral and pairs with an affirmative verb. しか MUST pair with a negative verb, and reads as more emphatic — almost complaining about how little there is.'],
-      samples: [
-        {
+      samples: [{
           tag: '"I only have 1,000 yen [and that\'s enough]."',
-          tiles: [
-            { text: '千円だけ', role: 'particle', gloss: 'only 1,000 yen', isNew: true, smallGloss: true },
-            { text: '持っています', role: 'predicate', gloss: 'have' },
+          tiles: [{
+              text: '千円だけ',
+              role: 'particle',
+              gloss: 'only 1,000 yen',
+              isNew: true,
+              smallGloss: true
+            },
+            {
+              text: '持っています',
+              role: 'predicate',
+              gloss: 'have'
+            },
           ],
           translation: 'Sen\'en dake motte imasu.',
         },
         {
           tag: '"I have nothing but 1,000 yen."',
-          tiles: [
-            { text: '千円しか', role: 'particle', gloss: 'nothing but 1,000 yen', isNew: true, smallGloss: true },
-            { text: '持っていません', role: 'predicate', gloss: 'don\'t have' },
+          tiles: [{
+              text: '千円しか',
+              role: 'particle',
+              gloss: 'nothing but 1,000 yen',
+              isNew: true,
+              smallGloss: true
+            },
+            {
+              text: '持っていません',
+              role: 'predicate',
+              gloss: 'don\'t have'
+            },
           ],
           translation: 'Sen\'en shika motte imasen.',
         },
@@ -1889,27 +3106,43 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜さえ: "even"',
-      pattern: [
-        { text: '[noun]', role: 'subject' }, { text: 'さえ、[extreme case]', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[noun]',
+        role: 'subject'
+      }, {
+        text: 'さえ、[extreme case]',
+        role: 'predicate'
+      }, ],
       explain: ['さえ picks a minimal or surprising example to make a point — "even this simplest case is true, so of course everything else is too."'],
-      samples: [
-        {
-          tag: '"It\'s a problem even a child can understand."',
-          tiles: [
-            { text: '子供でさえ', role: 'particle', gloss: 'even a child', isNew: true, smallGloss: true },
-            { text: '分かる', role: 'predicate', gloss: 'can understand' },
-            { text: '問題です', role: 'predicate', gloss: 'is a problem' },
-          ],
-          translation: 'Kodomo de sae wakaru mondai desu.',
-        },
-      ],
+      samples: [{
+        tag: '"It\'s a problem even a child can understand."',
+        tiles: [{
+            text: '子供でさえ',
+            role: 'particle',
+            gloss: 'even a child',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: '分かる',
+            role: 'predicate',
+            gloss: 'can understand'
+          },
+          {
+            text: '問題です',
+            role: 'predicate',
+            gloss: 'is a problem'
+          },
+        ],
+        translation: 'Kodomo de sae wakaru mondai desu.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I have nothing but 1,000 yen" (1,000 yen = 千円, have = 持つ):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['千円しか持っていません', '千円だけ持っています', '千円さえ持っています'],
       answer: '千円しか持っていません',
     },
@@ -1917,7 +3150,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "It\'s a problem even a child can understand" (child = 子供, understand = 分かる, problem = 問題):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['子供でさえ分かる問題です', '子供だけ分かる問題です', '子供しか分かる問題です'],
       answer: '子供でさえ分かる問題です',
     },
@@ -1925,26 +3159,53 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Restriction & Emphasis',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜だけ', romaji: '~dake', meaning: 'only (neutral, affirmative)' },
-        { kana: '〜しか〜ない', romaji: '~shika ~nai', meaning: 'nothing but (emphatic, negative)' },
-        { kana: '〜さえ', romaji: '~sae', meaning: 'even (minimal/extreme case)' },
-        { kana: '千円しか持っていません', romaji: 'Sen\'en shika motte imasen', meaning: 'I have nothing but 1,000 yen' },
-        { kana: '子供でさえ分かる問題です', romaji: 'Kodomo de sae wakaru mondai desu', meaning: 'It\'s a problem even a child can understand' },
+      rows: [{
+          kana: '〜だけ',
+          romaji: '~dake',
+          meaning: 'only (neutral, affirmative)'
+        },
+        {
+          kana: '〜しか〜ない',
+          romaji: '~shika ~nai',
+          meaning: 'nothing but (emphatic, negative)'
+        },
+        {
+          kana: '〜さえ',
+          romaji: '~sae',
+          meaning: 'even (minimal/extreme case)'
+        },
+        {
+          kana: '千円しか持っていません',
+          romaji: 'Sen\'en shika motte imasen',
+          meaning: 'I have nothing but 1,000 yen'
+        },
+        {
+          kana: '子供でさえ分かる問題です',
+          romaji: 'Kodomo de sae wakaru mondai desu',
+          meaning: 'It\'s a problem even a child can understand'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '', after: '持っていません。', answer: '千円しか', hint: '"I have nothing but 1,000 yen."' },
-        { before: '', after: '分かる問題です。', answer: '子供でさえ', hint: '"It\'s a problem even a child can understand."' },
+      questions: [{
+          before: '',
+          after: '持っていません。',
+          answer: '千円しか',
+          hint: '"I have nothing but 1,000 yen."'
+        },
+        {
+          before: '',
+          after: '分かる問題です。',
+          answer: '子供でさえ',
+          hint: '"It\'s a problem even a child can understand."'
+        },
       ],
     },
   ],
-  'n3-shelf-11': [
-    {
+  'n3-shelf-11': [{
       type: 'grammar-intro',
       sectionLabel: 'Abstract Expressions',
       bigIdea: 'はず、わけ、わけではない all turn a clause into an abstract judgment — はず is what should logically follow, わけ explains why something is the way it is, わけではない politely walks back a broad assumption without fully denying it.',
@@ -1955,46 +3216,94 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜はずです: logical expectation',
-      pattern: [
-        { text: '[plain form]', role: 'subject' }, { text: 'はずです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form]',
+        role: 'subject'
+      }, {
+        text: 'はずです',
+        role: 'predicate'
+      }, ],
       explain: ['はず is a confident expectation based on facts you already know — not a guess, a conclusion.'],
-      samples: [
-        {
-          tag: '"He should have already left."',
-          tiles: [
-            { text: '彼は', role: 'subject', gloss: 'he' },
-            { text: 'もう', role: 'predicate', gloss: 'already' },
-            { text: '出発したはずです', role: 'predicate', gloss: 'should have left', isNew: true, smallGloss: true },
-          ],
-          translation: 'Kare wa mou shuppatsu shita hazu desu.',
-        },
-      ],
+      samples: [{
+        tag: '"He should have already left."',
+        tiles: [{
+            text: '彼は',
+            role: 'subject',
+            gloss: 'he'
+          },
+          {
+            text: 'もう',
+            role: 'predicate',
+            gloss: 'already'
+          },
+          {
+            text: '出発したはずです',
+            role: 'predicate',
+            gloss: 'should have left',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Kare wa mou shuppatsu shita hazu desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜わけです・〜わけではない: explaining and softening',
-      pattern: [
-        { text: '[plain form]', role: 'subject' }, { text: 'わけです／わけではない', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[plain form]',
+        role: 'subject'
+      }, {
+        text: 'わけです／わけではない',
+        role: 'predicate'
+      }, ],
       explain: ['わけです connects a reason to its natural conclusion — "given X, that\'s why Y." わけではない partially denies a broad statement someone might assume, without fully rejecting it.'],
-      samples: [
-        {
+      samples: [{
           tag: '"He lived in Japan for a whole 3 years, so that\'s why his Japanese is good."',
-          tiles: [
-            { text: '3年も', role: 'particle', gloss: 'a whole 3 years' },
-            { text: '日本に住んでいたから、', role: 'predicate', gloss: 'since [he] lived in Japan' },
-            { text: '日本語が上手なわけです', role: 'predicate', gloss: 'that\'s why [his] Japanese is good', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '3年も',
+              role: 'particle',
+              gloss: 'a whole 3 years'
+            },
+            {
+              text: '日本に住んでいたから、',
+              role: 'predicate',
+              gloss: 'since [he] lived in Japan'
+            },
+            {
+              text: '日本語が上手なわけです',
+              role: 'predicate',
+              gloss: 'that\'s why [his] Japanese is good',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'San-nen mo nihon ni sunde ita kara, nihongo ga jouzuna wake desu.',
         },
         {
           tag: '"It\'s not that I have no money, but I don\'t want to spend it right now."',
-          tiles: [
-            { text: 'お金が', role: 'subject', gloss: 'money' },
-            { text: 'ないわけではないですが、', role: 'predicate', gloss: 'it\'s not that [I] have none', isNew: true, smallGloss: true },
-            { text: '今は', role: 'subject', gloss: 'right now' },
-            { text: '使いたくないです', role: 'predicate', gloss: 'don\'t want to spend' },
+          tiles: [{
+              text: 'お金が',
+              role: 'subject',
+              gloss: 'money'
+            },
+            {
+              text: 'ないわけではないですが、',
+              role: 'predicate',
+              gloss: 'it\'s not that [I] have none',
+              isNew: true,
+              smallGloss: true
+            },
+            {
+              text: '今は',
+              role: 'subject',
+              gloss: 'right now'
+            },
+            {
+              text: '使いたくないです',
+              role: 'predicate',
+              gloss: 'don\'t want to spend'
+            },
           ],
           translation: 'Okane ga nai wake dewa nai desu ga, ima wa tsukaitakunai desu.',
         },
@@ -2004,7 +3313,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "He should have already left" (he = 彼, already = もう, leave = 出発する):',
-      before: '彼はもう', after: '。',
+      before: '彼はもう',
+      after: '。',
       choices: ['出発したはずです', '出発したわけです', '出発したらしいです'],
       answer: '出発したはずです',
     },
@@ -2012,7 +3322,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "It\'s not that I have no money" (money = お金, have = ある):',
-      before: 'お金が', after: 'が、今は使いたくないです。',
+      before: 'お金が',
+      after: 'が、今は使いたくないです。',
       choices: ['ないわけではないです', 'ないはずです', 'ないわけです'],
       answer: 'ないわけではないです',
     },
@@ -2020,26 +3331,53 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Abstract Expressions',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜はずです', romaji: '~hazu desu', meaning: 'should be the case (expectation)' },
-        { kana: '〜わけです', romaji: '~wake desu', meaning: 'that\'s why / it means that (conclusion)' },
-        { kana: '〜わけではないです', romaji: '~wake dewa nai desu', meaning: 'it\'s not that... (partial denial)' },
-        { kana: '彼はもう出発したはずです', romaji: 'Kare wa mou shuppatsu shita hazu desu', meaning: 'He should have already left' },
-        { kana: 'お金がないわけではないです', romaji: 'Okane ga nai wake dewa nai desu', meaning: 'It\'s not that I have no money' },
+      rows: [{
+          kana: '〜はずです',
+          romaji: '~hazu desu',
+          meaning: 'should be the case (expectation)'
+        },
+        {
+          kana: '〜わけです',
+          romaji: '~wake desu',
+          meaning: 'that\'s why / it means that (conclusion)'
+        },
+        {
+          kana: '〜わけではないです',
+          romaji: '~wake dewa nai desu',
+          meaning: 'it\'s not that... (partial denial)'
+        },
+        {
+          kana: '彼はもう出発したはずです',
+          romaji: 'Kare wa mou shuppatsu shita hazu desu',
+          meaning: 'He should have already left'
+        },
+        {
+          kana: 'お金がないわけではないです',
+          romaji: 'Okane ga nai wake dewa nai desu',
+          meaning: 'It\'s not that I have no money'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '彼はもう', after: '。', answer: '出発したはずです', hint: '"He should have already left."' },
-        { before: 'お金が', after: 'が、今は使いたくないです。', answer: 'ないわけではないです', hint: '"It\'s not that I have no money, but I don\'t want to spend it right now."' },
+      questions: [{
+          before: '彼はもう',
+          after: '。',
+          answer: '出発したはずです',
+          hint: '"He should have already left."'
+        },
+        {
+          before: 'お金が',
+          after: 'が、今は使いたくないです。',
+          answer: 'ないわけではないです',
+          hint: '"It\'s not that I have no money, but I don\'t want to spend it right now."'
+        },
       ],
     },
   ],
-  'n3-shelf-12': [
-    {
+  'n3-shelf-12': [{
       type: 'grammar-intro',
       sectionLabel: 'Advanced Reading Practice',
       bigIdea: 'An essay-style passage in である体 about Japan\'s shifting work culture, weaving in keigo, an advanced conjunction, and an abstract expression from this wing\'s earlier shelves.',
@@ -2052,7 +3390,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What claim does the writer make about the meaning of this shift toward remote work?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['It reflects a shift in Japanese society\'s values', 'It has no real significance', 'It will disappear soon'],
       answer: 'It reflects a shift in Japanese society\'s values',
     },
@@ -2060,7 +3399,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What does 「この変化」("this change") refer to?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['The spread of remote work', 'A rise in commute times', 'A change in company leadership'],
       answer: 'The spread of remote work',
     },
@@ -2068,7 +3408,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Comprehension check',
       prompt: 'What is the writer\'s overall stance on the future of remote work?',
-      before: '', after: '',
+      before: '',
+      after: '',
       choices: ['Its possibilities will likely keep expanding', 'It should be banned entirely', 'It has already failed'],
       answer: 'Its possibilities will likely keep expanding',
     },
@@ -2076,13 +3417,36 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'Summary: Advanced Reading Practice',
       headers: ['Phrase', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '動きが広がっている', romaji: 'ugoki ga hirogatte iru', meaning: 'the movement is spreading' },
-        { kana: '短くなるものの', romaji: 'mijikaku naru monono', meaning: 'although it becomes shorter (concession)' },
-        { kana: 'とおっしゃっていた', romaji: 'to osshatte ita', meaning: 'said [quoting, sonkeigo]' },
-        { kana: '単なる問題というより', romaji: 'tannaru mondai to iu yori', meaning: 'rather than simply a matter of...' },
-        { kana: 'できるわけではない', romaji: 'dekiru wake de wa nai', meaning: 'it\'s not that [it] can be done (partial denial)' },
-        { kana: '広がっているはずである', romaji: 'hirogatte iru hazu de aru', meaning: 'should be expanding (である体 + expectation)' },
+      rows: [{
+          kana: '動きが広がっている',
+          romaji: 'ugoki ga hirogatte iru',
+          meaning: 'the movement is spreading'
+        },
+        {
+          kana: '短くなるものの',
+          romaji: 'mijikaku naru monono',
+          meaning: 'although it becomes shorter (concession)'
+        },
+        {
+          kana: 'とおっしゃっていた',
+          romaji: 'to osshatte ita',
+          meaning: 'said [quoting, sonkeigo]'
+        },
+        {
+          kana: '単なる問題というより',
+          romaji: 'tannaru mondai to iu yori',
+          meaning: 'rather than simply a matter of...'
+        },
+        {
+          kana: 'できるわけではない',
+          romaji: 'dekiru wake de wa nai',
+          meaning: 'it\'s not that [it] can be done (partial denial)'
+        },
+        {
+          kana: '広がっているはずである',
+          romaji: 'hirogatte iru hazu de aru',
+          meaning: 'should be expanding (である体 + expectation)'
+        },
       ],
     },
   ],
@@ -2090,8 +3454,7 @@ const LESSON_CONTENT = {
   'n4-review-2': buildPlaceholderLesson('N4 Vocabulary & Usage Review'),
   'n3-review-1': buildPlaceholderLesson('N3 Grammar Expansion Review'),
   'n3-review-2': buildPlaceholderLesson('N3 Nuance & Conversation Review'),
-  'n4-shelf-01': [
-    {
+  'n4-shelf-01': [{
       type: 'grammar-intro',
       sectionLabel: 'て-form Requests & Permission',
       recapChips: ['て-form itself (N5, shelf 13)'],
@@ -2103,45 +3466,72 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜てもいいです: "You may..."',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'もいいです', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'もいいです',
+        role: 'predicate'
+      }, ],
       explain: ['Grants permission — literally "even if you do [X], it\'s fine."'],
-      samples: [
-        {
-          tag: '"You may go home."',
-          tiles: [
-            { text: '帰っても', role: 'subject', gloss: 'even if you go home', isNew: true, smallGloss: true },
-            { text: 'いいです', role: 'predicate', gloss: 'it\'s fine' },
-          ],
-          translation: 'Kaettemo ii desu.',
-        },
-      ],
+      samples: [{
+        tag: '"You may go home."',
+        tiles: [{
+            text: '帰っても',
+            role: 'subject',
+            gloss: 'even if you go home',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: 'いいです',
+            role: 'predicate',
+            gloss: 'it\'s fine'
+          },
+        ],
+        translation: 'Kaettemo ii desu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜てはいけません: "You must not..."',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'はいけません', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'はいけません',
+        role: 'predicate'
+      }, ],
       explain: ['Denies permission — "as for doing [X], it won\'t do."'],
-      samples: [
-        {
-          tag: '"You must not eat here."',
-          tiles: [
-            { text: 'ここで', role: 'subject', gloss: 'here' },
-            { text: '食べては', role: 'predicate', gloss: 'as for eating', isNew: true, smallGloss: true },
-            { text: 'いけません', role: 'predicate', gloss: 'won\'t do' },
-          ],
-          translation: 'Koko de tabete wa ikemasen.',
-        },
-      ],
+      samples: [{
+        tag: '"You must not eat here."',
+        tiles: [{
+            text: 'ここで',
+            role: 'subject',
+            gloss: 'here'
+          },
+          {
+            text: '食べては',
+            role: 'predicate',
+            gloss: 'as for eating',
+            isNew: true,
+            smallGloss: true
+          },
+          {
+            text: 'いけません',
+            role: 'predicate',
+            gloss: 'won\'t do'
+          },
+        ],
+        translation: 'Koko de tabete wa ikemasen.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "You may sit" (sit = 座って):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['座ってもいいです', '座ってはいけません', '座ります'],
       answer: '座ってもいいです',
     },
@@ -2149,7 +3539,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "You must not write here" (here = ここで, write = 書いて):',
-      before: '', after: '。',
+      before: '',
+      after: '。',
       choices: ['ここで書いてはいけません', 'ここで書いてもいいです', 'ここで書きます'],
       answer: 'ここで書いてはいけません',
     },
@@ -2157,25 +3548,48 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Permission',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜てもいいです', romaji: '~temo ii desu', meaning: 'you may...' },
-        { kana: '〜てはいけません', romaji: '~tewa ikemasen', meaning: 'you must not...' },
-        { kana: '帰ってもいいです', romaji: 'kaettemo ii desu', meaning: 'you may go home' },
-        { kana: '食べてはいけません', romaji: 'tabetewa ikemasen', meaning: 'you must not eat' },
+      rows: [{
+          kana: '〜てもいいです',
+          romaji: '~temo ii desu',
+          meaning: 'you may...'
+        },
+        {
+          kana: '〜てはいけません',
+          romaji: '~tewa ikemasen',
+          meaning: 'you must not...'
+        },
+        {
+          kana: '帰ってもいいです',
+          romaji: 'kaettemo ii desu',
+          meaning: 'you may go home'
+        },
+        {
+          kana: '食べてはいけません',
+          romaji: 'tabetewa ikemasen',
+          meaning: 'you must not eat'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '座って', after: '。', answer: 'もいいです', hint: '"You may sit."' },
-        { before: 'ここで書いて', after: '。', answer: 'はいけません', hint: '"You must not write here."' },
+      questions: [{
+          before: '座って',
+          after: '。',
+          answer: 'もいいです',
+          hint: '"You may sit."'
+        },
+        {
+          before: 'ここで書いて',
+          after: '。',
+          answer: 'はいけません',
+          hint: '"You must not write here."'
+        },
       ],
     },
   ],
-  'n4-shelf-05': [
-    {
+  'n4-shelf-05': [{
       type: 'grammar-intro',
       sectionLabel: 'Giving & Receiving',
       bigIdea: 'Japanese has three different verbs for "give/receive" depending on WHO is giving to WHOM — English just uses "give" for all of it.',
@@ -2186,68 +3600,141 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'あげる: giving (away from you)',
-      pattern: [
-        { text: '[giver]は', role: 'subject' }, { text: '[receiver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'あげます', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[giver]は',
+        role: 'subject'
+      }, {
+        text: '[receiver]に',
+        role: 'particle'
+      }, {
+        text: '[thing]を',
+        role: 'particle'
+      }, {
+        text: 'あげます',
+        role: 'predicate'
+      }, ],
       explain: ['Use あげる when you (or someone else) give something to another person — the giving moves away from the speaker\'s side.'],
-      samples: [
-        {
-          tag: '"I gave my friend a book."',
-          tiles: [
-            { text: '私は', role: 'subject', gloss: 'I' },
-            { text: '友達に', role: 'particle', gloss: 'to my friend' },
-            { text: '本を', role: 'particle', gloss: 'a book' },
-            { text: 'あげました', role: 'predicate', gloss: 'gave', isNew: true },
-          ],
-          translation: 'Watashi wa tomodachi ni hon o agemashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I gave my friend a book."',
+        tiles: [{
+            text: '私は',
+            role: 'subject',
+            gloss: 'I'
+          },
+          {
+            text: '友達に',
+            role: 'particle',
+            gloss: 'to my friend'
+          },
+          {
+            text: '本を',
+            role: 'particle',
+            gloss: 'a book'
+          },
+          {
+            text: 'あげました',
+            role: 'predicate',
+            gloss: 'gave',
+            isNew: true
+          },
+        ],
+        translation: 'Watashi wa tomodachi ni hon o agemashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'もらう: receiving',
-      pattern: [
-        { text: '[receiver]は', role: 'subject' }, { text: '[giver]に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'もらいます', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[receiver]は',
+        role: 'subject'
+      }, {
+        text: '[giver]に',
+        role: 'particle'
+      }, {
+        text: '[thing]を',
+        role: 'particle'
+      }, {
+        text: 'もらいます',
+        role: 'predicate'
+      }, ],
       explain: ['もらう flips the perspective to the receiver\'s side — same event as あげる, described from the other direction.'],
-      samples: [
-        {
-          tag: '"I received a book from my friend."',
-          tiles: [
-            { text: '私は', role: 'subject', gloss: 'I' },
-            { text: '友達に', role: 'particle', gloss: 'from my friend' },
-            { text: '本を', role: 'particle', gloss: 'a book' },
-            { text: 'もらいました', role: 'predicate', gloss: 'received', isNew: true },
-          ],
-          translation: 'Watashi wa tomodachi ni hon o moraimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I received a book from my friend."',
+        tiles: [{
+            text: '私は',
+            role: 'subject',
+            gloss: 'I'
+          },
+          {
+            text: '友達に',
+            role: 'particle',
+            gloss: 'from my friend'
+          },
+          {
+            text: '本を',
+            role: 'particle',
+            gloss: 'a book'
+          },
+          {
+            text: 'もらいました',
+            role: 'predicate',
+            gloss: 'received',
+            isNew: true
+          },
+        ],
+        translation: 'Watashi wa tomodachi ni hon o moraimashita.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'くれる: giving (toward you)',
-      pattern: [
-        { text: '[giver]は', role: 'subject' }, { text: '私に', role: 'particle' }, { text: '[thing]を', role: 'particle' }, { text: 'くれます', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[giver]は',
+        role: 'subject'
+      }, {
+        text: '私に',
+        role: 'particle'
+      }, {
+        text: '[thing]を',
+        role: 'particle'
+      }, {
+        text: 'くれます',
+        role: 'predicate'
+      }, ],
       explain: ['くれる is only for gifts moving TOWARD the speaker (or the speaker\'s in-group) — never used for the speaker\'s own giving.'],
-      samples: [
-        {
-          tag: '"My friend gave me a book."',
-          tiles: [
-            { text: '友達は', role: 'subject', gloss: 'my friend' },
-            { text: '私に', role: 'particle', gloss: 'to me' },
-            { text: '本を', role: 'particle', gloss: 'a book' },
-            { text: 'くれました', role: 'predicate', gloss: 'gave (to me)', isNew: true },
-          ],
-          translation: 'Tomodachi wa watashi ni hon o kuremashita.',
-        },
-      ],
+      samples: [{
+        tag: '"My friend gave me a book."',
+        tiles: [{
+            text: '友達は',
+            role: 'subject',
+            gloss: 'my friend'
+          },
+          {
+            text: '私に',
+            role: 'particle',
+            gloss: 'to me'
+          },
+          {
+            text: '本を',
+            role: 'particle',
+            gloss: 'a book'
+          },
+          {
+            text: 'くれました',
+            role: 'predicate',
+            gloss: 'gave (to me)',
+            isNew: true
+          },
+        ],
+        translation: 'Tomodachi wa watashi ni hon o kuremashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "My friend gave me a book" (friend = 友達, book = 本):',
-      before: '友達は私に本を', after: '。',
+      before: '友達は私に本を',
+      after: '。',
       choices: ['くれました', 'あげました', 'もらいました'],
       answer: 'くれました',
     },
@@ -2255,36 +3742,70 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I gave my friend a book":',
-      before: '私は友達に本を', after: '。',
+      before: '私は友達に本を',
+      after: '。',
       choices: ['あげました', 'くれました', 'もらいました'],
       answer: 'あげました',
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜てあげる・〜てくれる: doing someone a favor',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'あげる／くれる', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'あげる／くれる',
+        role: 'predicate'
+      }, ],
       explain: [
         'Attach あげる or くれる to a て-form instead of a noun, and the verb now describes a FAVOR — an action done for someone, not just a thing handed over. The same away-from-you (あげる) / toward-you (くれる) direction rules from the bare verbs still apply.',
       ],
-      samples: [
-        {
+      samples: [{
           tag: '"I taught my friend Japanese (as a favor)."',
-          tiles: [
-            { text: '私は', role: 'subject', gloss: 'I' },
-            { text: '友達に', role: 'particle', gloss: 'to my friend' },
-            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
-            { text: '教えてあげました', role: 'predicate', gloss: 'taught, as a favor', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '私は',
+              role: 'subject',
+              gloss: 'I'
+            },
+            {
+              text: '友達に',
+              role: 'particle',
+              gloss: 'to my friend'
+            },
+            {
+              text: '日本語を',
+              role: 'particle',
+              gloss: 'Japanese'
+            },
+            {
+              text: '教えてあげました',
+              role: 'predicate',
+              gloss: 'taught, as a favor',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Watashi wa tomodachi ni nihongo o oshiete agemashita.',
         },
         {
           tag: '"My friend helped me with my homework."',
-          tiles: [
-            { text: '友達が', role: 'subject', gloss: 'my friend' },
-            { text: '宿題を', role: 'particle', gloss: 'homework' },
-            { text: '手伝ってくれました', role: 'predicate', gloss: 'helped [me], as a favor', isNew: true, smallGloss: true },
+          tiles: [{
+              text: '友達が',
+              role: 'subject',
+              gloss: 'my friend'
+            },
+            {
+              text: '宿題を',
+              role: 'particle',
+              gloss: 'homework'
+            },
+            {
+              text: '手伝ってくれました',
+              role: 'predicate',
+              gloss: 'helped [me], as a favor',
+              isNew: true,
+              smallGloss: true
+            },
           ],
           translation: 'Tomodachi ga shukudai o tetsudatte kuremashita.',
         },
@@ -2293,30 +3814,50 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜てもらう: having someone do you a favor',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'もらう', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'もらう',
+        role: 'predicate'
+      }, ],
       explain: [
         'てもらう flips the perspective to the receiver\'s side, same as bare もらう — "I had [someone] do [X] for me," described from your own point of view.',
       ],
-      samples: [
-        {
-          tag: '"I had my friend help me with my homework."',
-          tiles: [
-            { text: '私は', role: 'subject', gloss: 'I' },
-            { text: '友達に', role: 'particle', gloss: 'from my friend' },
-            { text: '宿題を', role: 'particle', gloss: 'homework' },
-            { text: '手伝ってもらいました', role: 'predicate', gloss: 'had [them] help, as a favor', isNew: true, smallGloss: true },
-          ],
-          translation: 'Watashi wa tomodachi ni shukudai o tetsudatte moraimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I had my friend help me with my homework."',
+        tiles: [{
+            text: '私は',
+            role: 'subject',
+            gloss: 'I'
+          },
+          {
+            text: '友達に',
+            role: 'particle',
+            gloss: 'from my friend'
+          },
+          {
+            text: '宿題を',
+            role: 'particle',
+            gloss: 'homework'
+          },
+          {
+            text: '手伝ってもらいました',
+            role: 'predicate',
+            gloss: 'had [them] help, as a favor',
+            isNew: true,
+            smallGloss: true
+          },
+        ],
+        translation: 'Watashi wa tomodachi ni shukudai o tetsudatte moraimashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "My friend helped me with my homework" (friend = 友達, homework = 宿題, help = 手伝う):',
-      before: '友達が', after: '。',
+      before: '友達が',
+      after: '。',
       choices: ['宿題を手伝ってくれました', '宿題を手伝ってあげました', '宿題を手伝ってもらいました'],
       answer: '宿題を手伝ってくれました',
     },
@@ -2324,28 +3865,63 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: Giving & Receiving',
       headers: ['Verb', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: 'あげる', romaji: 'ageru', meaning: 'give (away from speaker)' },
-        { kana: 'もらう', romaji: 'morau', meaning: 'receive' },
-        { kana: 'くれる', romaji: 'kureru', meaning: 'give (toward speaker)' },
-        { kana: '〜てあげる', romaji: '~te ageru', meaning: 'do a favor for someone (away from speaker)' },
-        { kana: '〜てもらう', romaji: '~te morau', meaning: 'have someone do a favor for you' },
-        { kana: '〜てくれる', romaji: '~te kureru', meaning: 'someone does you a favor (toward speaker)' },
-        { kana: '友達が宿題を手伝ってくれました', romaji: 'Tomodachi ga shukudai o tetsudatte kuremashita', meaning: 'My friend helped me with my homework' },
+      rows: [{
+          kana: 'あげる',
+          romaji: 'ageru',
+          meaning: 'give (away from speaker)'
+        },
+        {
+          kana: 'もらう',
+          romaji: 'morau',
+          meaning: 'receive'
+        },
+        {
+          kana: 'くれる',
+          romaji: 'kureru',
+          meaning: 'give (toward speaker)'
+        },
+        {
+          kana: '〜てあげる',
+          romaji: '~te ageru',
+          meaning: 'do a favor for someone (away from speaker)'
+        },
+        {
+          kana: '〜てもらう',
+          romaji: '~te morau',
+          meaning: 'have someone do a favor for you'
+        },
+        {
+          kana: '〜てくれる',
+          romaji: '~te kureru',
+          meaning: 'someone does you a favor (toward speaker)'
+        },
+        {
+          kana: '友達が宿題を手伝ってくれました',
+          romaji: 'Tomodachi ga shukudai o tetsudatte kuremashita',
+          meaning: 'My friend helped me with my homework'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: '友達は私に本を', after: '。', answer: 'くれました', hint: '"My friend gave me a book."' },
-        { before: '私は友達に本を', after: '。', answer: 'あげました', hint: '"I gave my friend a book."' },
+      questions: [{
+          before: '友達は私に本を',
+          after: '。',
+          answer: 'くれました',
+          hint: '"My friend gave me a book."'
+        },
+        {
+          before: '私は友達に本を',
+          after: '。',
+          answer: 'あげました',
+          hint: '"I gave my friend a book."'
+        },
       ],
     },
   ],
-  'n3-shelf-01': [
-    {
+  'n3-shelf-01': [{
       type: 'grammar-intro',
       sectionLabel: '〜ておく・〜てしまう',
       recapChips: ['て-form itself (N4, shelf 1)'],
@@ -2357,47 +3933,81 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: '〜ておく: preparing / leaving as-is',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'おきます', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'おきます',
+        role: 'predicate'
+      }, ],
       explain: ['ておく marks an action done in advance, in preparation for something later — or simply leaving something as it is on purpose.'],
-      samples: [
-        {
-          tag: '"I\'ll buy the tickets in advance."',
-          tiles: [
-            { text: 'チケットを', role: 'subject', gloss: 'tickets' },
-            { text: '買って', role: 'predicate', gloss: 'buy (て-form)' },
-            { text: 'おきます', role: 'predicate', gloss: 'in advance', isNew: true },
-          ],
-          translation: 'Chiketto o katte okimasu.',
-        },
-      ],
+      samples: [{
+        tag: '"I\'ll buy the tickets in advance."',
+        tiles: [{
+            text: 'チケットを',
+            role: 'subject',
+            gloss: 'tickets'
+          },
+          {
+            text: '買って',
+            role: 'predicate',
+            gloss: 'buy (て-form)'
+          },
+          {
+            text: 'おきます',
+            role: 'predicate',
+            gloss: 'in advance',
+            isNew: true
+          },
+        ],
+        translation: 'Chiketto o katte okimasu.',
+      }, ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: '〜てしまう: completing / regret',
-      pattern: [
-        { text: '[て-form]', role: 'subject' }, { text: 'しまいます', role: 'predicate' },
-      ],
+      pattern: [{
+        text: '[て-form]',
+        role: 'subject'
+      }, {
+        text: 'しまいます',
+        role: 'predicate'
+      }, ],
       explain: ['てしまう marks an action finished completely — often with a nuance of "and now I can\'t undo it" or mild regret.'],
-      samples: [
-        {
-          tag: '"I ended up reading the whole book."',
-          tiles: [
-            { text: '本を', role: 'subject', gloss: 'the book' },
-            { text: '全部', role: 'predicate', gloss: 'all', isNew: true },
-            { text: '読んで', role: 'predicate', gloss: 'read (て-form)' },
-            { text: 'しまいました', role: 'predicate', gloss: 'ended up (completely)', isNew: true },
-          ],
-          translation: 'Hon o zenbu yonde shimaimashita.',
-        },
-      ],
+      samples: [{
+        tag: '"I ended up reading the whole book."',
+        tiles: [{
+            text: '本を',
+            role: 'subject',
+            gloss: 'the book'
+          },
+          {
+            text: '全部',
+            role: 'predicate',
+            gloss: 'all',
+            isNew: true
+          },
+          {
+            text: '読んで',
+            role: 'predicate',
+            gloss: 'read (て-form)'
+          },
+          {
+            text: 'しまいました',
+            role: 'predicate',
+            gloss: 'ended up (completely)',
+            isNew: true
+          },
+        ],
+        translation: 'Hon o zenbu yonde shimaimashita.',
+      }, ],
     },
     {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I\'ll buy the tickets in advance" (tickets = チケット, buy = 買って):',
-      before: 'チケットを買って', after: '。',
+      before: 'チケットを買って',
+      after: '。',
       choices: ['おきます', 'しまいます', 'あります'],
       answer: 'おきます',
     },
@@ -2405,7 +4015,8 @@ const LESSON_CONTENT = {
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "I ended up reading the whole book" (book = 本, all = 全部, read = 読んで):',
-      before: '本を全部読んで', after: '。',
+      before: '本を全部読んで',
+      after: '。',
       choices: ['しまいました', 'おきました', 'もらいました'],
       answer: 'しまいました',
     },
@@ -2413,20 +4024,44 @@ const LESSON_CONTENT = {
       type: 'summary',
       title: 'New Patterns: 〜ておく・〜てしまう',
       headers: ['Pattern', 'Romaji', 'Meaning'],
-      rows: [
-        { kana: '〜ておく', romaji: '~te oku', meaning: 'do in advance / leave as-is' },
-        { kana: '〜てしまう', romaji: '~te shimau', meaning: 'do completely / regretfully' },
-        { kana: '買っておきます', romaji: 'katte okimasu', meaning: 'buy in advance' },
-        { kana: '読んでしまいました', romaji: 'yonde shimaimashita', meaning: 'ended up reading (all of it)' },
+      rows: [{
+          kana: '〜ておく',
+          romaji: '~te oku',
+          meaning: 'do in advance / leave as-is'
+        },
+        {
+          kana: '〜てしまう',
+          romaji: '~te shimau',
+          meaning: 'do completely / regretfully'
+        },
+        {
+          kana: '買っておきます',
+          romaji: 'katte okimasu',
+          meaning: 'buy in advance'
+        },
+        {
+          kana: '読んでしまいました',
+          romaji: 'yonde shimaimashita',
+          meaning: 'ended up reading (all of it)'
+        },
       ],
     },
     {
       type: 'quiz-fill',
       sectionLabel: 'Final check',
       intro: 'Fill in each blank, then check your answers.',
-      questions: [
-        { before: 'チケットを買って', after: '。', answer: 'おきます', hint: '"I\'ll buy the tickets in advance."' },
-        { before: '本を全部読んで', after: '。', answer: 'しまいました', hint: '"I ended up reading the whole book."' },
+      questions: [{
+          before: 'チケットを買って',
+          after: '。',
+          answer: 'おきます',
+          hint: '"I\'ll buy the tickets in advance."'
+        },
+        {
+          before: '本を全部読んで',
+          after: '。',
+          answer: 'しまいました',
+          hint: '"I ended up reading the whole book."'
+        },
       ],
     },
   ],
@@ -2473,7 +4108,11 @@ function appendGreetingSummary(pages, lessonTitle) {
     type: 'summary',
     title: `Summary: ${lessonTitle}`,
     headers: ['Phrase', 'Romaji', 'Meaning'],
-    rows: greetings.map((p) => ({ kana: p.kana, romaji: p.romaji, meaning: p.meaning })),
+    rows: greetings.map((p) => ({
+      kana: p.kana,
+      romaji: p.romaji,
+      meaning: p.meaning
+    })),
   };
   return [...pages, summaryPage];
 }
@@ -2494,7 +4133,10 @@ function resolveConversationTurns(pages, playerColorId) {
       ...page,
       turns: page.turns.map((t) => {
         const colorId = t.speaker === 'player' ? playerColorId : senseiColorId;
-        return { ...t, spritePath: ACTION_SPRITE_PATHS[t.action][colorId] };
+        return {
+          ...t,
+          spritePath: ACTION_SPRITE_PATHS[t.action][colorId]
+        };
       }),
     };
   });
@@ -2507,7 +4149,10 @@ function resolveDynamicDiagrams(pages, playerColorId) {
   const senseiColorId = playerColorId === 'orange' ? 'black' : 'orange';
   return pages.map((page) => {
     if (typeof page.diagramSvg !== 'function') return page;
-    return { ...page, diagramSvg: page.diagramSvg(playerColorId, senseiColorId) };
+    return {
+      ...page,
+      diagramSvg: page.diagramSvg(playerColorId, senseiColorId)
+    };
   });
 }
 
@@ -2598,11 +4243,24 @@ const atriumTop = 420;
 const atriumHeight = 610;
 
 const LAYOUT = {
-  shelfW, shelfH, leftColX, rightColX, rowStep,
-  wing1RowY, wing2RowY, wing3RowY,
-  review1Y, review2Y, review3Y,
-  centerpieceY, entryY, entryX,
-  atriumLeft, atriumWidth, atriumTop, atriumHeight,
+  shelfW,
+  shelfH,
+  leftColX,
+  rightColX,
+  rowStep,
+  wing1RowY,
+  wing2RowY,
+  wing3RowY,
+  review1Y,
+  review2Y,
+  review3Y,
+  centerpieceY,
+  entryY,
+  entryX,
+  atriumLeft,
+  atriumWidth,
+  atriumTop,
+  atriumHeight,
 };
 
 // -- Progression data: lessons, prereqs, review piles, exam gate (Tasks 5-7) --
@@ -2615,34 +4273,106 @@ const LAYOUT = {
 // get placeholder pages in Task 7.
 const LESSON_DATA = [
   // N4 side (left column) — Grammar Foundations wing.
-  { id: 'n4-shelf-01', title: 'て-form Requests & Permission' },
-  { id: 'n4-shelf-02', title: 'Potential Form' },
-  { id: 'n4-shelf-03', title: 'Conditionals (と・ば・たら・なら)' },
-  { id: 'n4-shelf-04', title: 'Volitional & Intention' },
+  {
+    id: 'n4-shelf-01',
+    title: 'て-form Requests & Permission'
+  },
+  {
+    id: 'n4-shelf-02',
+    title: 'Potential Form'
+  },
+  {
+    id: 'n4-shelf-03',
+    title: 'Conditionals (と・ば・たら・なら)'
+  },
+  {
+    id: 'n4-shelf-04',
+    title: 'Volitional & Intention'
+  },
   // N4 side (left column) — Vocabulary & Usage wing.
-  { id: 'n4-shelf-05', title: 'Giving & Receiving' },
-  { id: 'n4-shelf-06', title: 'Comparisons' },
-  { id: 'n4-shelf-07', title: 'Passive & Causative Verbs' },
-  { id: 'n4-shelf-08', title: 'Adjective + なる・する' },
-  { id: 'n4-shelf-09', title: 'Obligation & Necessity' },
-  { id: 'n4-shelf-10', title: 'Experience & Continuation' },
-  { id: 'n4-shelf-11', title: 'Purpose & Preparation' },
-  { id: 'n4-shelf-12', title: 'Everyday Reading Practice' },
+  {
+    id: 'n4-shelf-05',
+    title: 'Giving & Receiving'
+  },
+  {
+    id: 'n4-shelf-06',
+    title: 'Comparisons'
+  },
+  {
+    id: 'n4-shelf-07',
+    title: 'Passive & Causative Verbs'
+  },
+  {
+    id: 'n4-shelf-08',
+    title: 'Adjective + なる・する'
+  },
+  {
+    id: 'n4-shelf-09',
+    title: 'Obligation & Necessity'
+  },
+  {
+    id: 'n4-shelf-10',
+    title: 'Experience & Continuation'
+  },
+  {
+    id: 'n4-shelf-11',
+    title: 'Purpose & Preparation'
+  },
+  {
+    id: 'n4-shelf-12',
+    title: 'Everyday Reading Practice'
+  },
   // N3 side (right column) — Grammar Expansion wing. Locked behind
   // n3-exam-gate until both N4 review piles are complete.
-  { id: 'n3-shelf-01', title: '〜ておく・〜てしまう' },
-  { id: 'n3-shelf-02', title: 'Causative-Passive' },
-  { id: 'n3-shelf-03', title: 'Conjecture & Hearsay (そうだ・ようだ・らしい)' },
-  { id: 'n3-shelf-04', title: 'Relative Clauses & Complex Modification' },
+  {
+    id: 'n3-shelf-01',
+    title: '〜ておく・〜てしまう'
+  },
+  {
+    id: 'n3-shelf-02',
+    title: 'Causative-Passive'
+  },
+  {
+    id: 'n3-shelf-03',
+    title: 'Conjecture & Hearsay (そうだ・ようだ・らしい)'
+  },
+  {
+    id: 'n3-shelf-04',
+    title: 'Relative Clauses & Complex Modification'
+  },
   // N3 side (right column) — Nuance & Conversation wing.
-  { id: 'n3-shelf-05', title: 'Formal Written Style (である体)' },
-  { id: 'n3-shelf-06', title: 'Advanced Keigo' },
-  { id: 'n3-shelf-07', title: 'Conjunction Nuances (ものの・くせに・というより)' },
-  { id: 'n3-shelf-08', title: 'Extended Reading Practice' },
-  { id: 'n3-shelf-09', title: 'Tendency & Appearance' },
-  { id: 'n3-shelf-10', title: 'Restriction & Emphasis' },
-  { id: 'n3-shelf-11', title: 'Abstract Expressions' },
-  { id: 'n3-shelf-12', title: 'Advanced Reading Practice' },
+  {
+    id: 'n3-shelf-05',
+    title: 'Formal Written Style (である体)'
+  },
+  {
+    id: 'n3-shelf-06',
+    title: 'Advanced Keigo'
+  },
+  {
+    id: 'n3-shelf-07',
+    title: 'Conjunction Nuances (ものの・くせに・というより)'
+  },
+  {
+    id: 'n3-shelf-08',
+    title: 'Extended Reading Practice'
+  },
+  {
+    id: 'n3-shelf-09',
+    title: 'Tendency & Appearance'
+  },
+  {
+    id: 'n3-shelf-10',
+    title: 'Restriction & Emphasis'
+  },
+  {
+    id: 'n3-shelf-11',
+    title: 'Abstract Expressions'
+  },
+  {
+    id: 'n3-shelf-12',
+    title: 'Advanced Reading Practice'
+  },
 ];
 
 // N4 chain (left column) — n4-shelf-01 is always available, it's the
@@ -2658,17 +4388,29 @@ const LESSON_DATA = [
 // into two real 4-shelf review checkpoints, same as N3's mirror.
 const SHELF_PREREQ = {
   'n4-shelf-01': 'n4-exam-gate',
-  'n4-shelf-02': 'n4-shelf-01', 'n4-shelf-03': 'n4-shelf-02', 'n4-shelf-04': 'n4-shelf-03',
+  'n4-shelf-02': 'n4-shelf-01',
+  'n4-shelf-03': 'n4-shelf-02',
+  'n4-shelf-04': 'n4-shelf-03',
   'n4-shelf-05': 'n4-review-1',
-  'n4-shelf-06': 'n4-shelf-05', 'n4-shelf-07': 'n4-shelf-06', 'n4-shelf-08': 'n4-shelf-07',
+  'n4-shelf-06': 'n4-shelf-05',
+  'n4-shelf-07': 'n4-shelf-06',
+  'n4-shelf-08': 'n4-shelf-07',
   'n4-shelf-09': 'n4-review-2',
-  'n4-shelf-10': 'n4-shelf-09', 'n4-shelf-11': 'n4-shelf-10', 'n4-shelf-12': 'n4-shelf-11',
+  'n4-shelf-10': 'n4-shelf-09',
+  'n4-shelf-11': 'n4-shelf-10',
+  'n4-shelf-12': 'n4-shelf-11',
   'n3-shelf-01': 'n3-exam-gate',
-  'n3-shelf-02': 'n3-shelf-01', 'n3-shelf-03': 'n3-shelf-02', 'n3-shelf-04': 'n3-shelf-03',
+  'n3-shelf-02': 'n3-shelf-01',
+  'n3-shelf-03': 'n3-shelf-02',
+  'n3-shelf-04': 'n3-shelf-03',
   'n3-shelf-05': 'n3-review-1',
-  'n3-shelf-06': 'n3-shelf-05', 'n3-shelf-07': 'n3-shelf-06', 'n3-shelf-08': 'n3-shelf-07',
+  'n3-shelf-06': 'n3-shelf-05',
+  'n3-shelf-07': 'n3-shelf-06',
+  'n3-shelf-08': 'n3-shelf-07',
   'n3-shelf-09': 'n3-review-2',
-  'n3-shelf-10': 'n3-shelf-09', 'n3-shelf-11': 'n3-shelf-10', 'n3-shelf-12': 'n3-shelf-11',
+  'n3-shelf-10': 'n3-shelf-09',
+  'n3-shelf-11': 'n3-shelf-10',
+  'n3-shelf-12': 'n3-shelf-11',
 };
 
 // Six review piles now: 3 for N4 progression, 3 for N3 progression — one
@@ -2677,13 +4419,36 @@ const SHELF_PREREQ = {
 // review pile's requires array lists all shelves that must be completed
 // before this pile becomes available (same pattern as SHELF_PREREQ, but
 // review piles are accessed via BOOK_PILE_DATA in buildBookPiles()).
-const BOOK_PILE_DATA = [
-  { id: 'n4-review-1', title: 'N4 Grammar Foundations Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
-  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
-  { id: 'n4-review-3', title: 'N4 Advanced Usage Review', requires: ['n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12'] },
-  { id: 'n3-review-1', title: 'N3 Grammar Expansion Review', requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04'] },
-  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08'] },
-  { id: 'n3-review-3', title: 'N3 Advanced Expression Review', requires: ['n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12'] },
+const BOOK_PILE_DATA = [{
+    id: 'n4-review-1',
+    title: 'N4 Grammar Foundations Review',
+    requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04']
+  },
+  {
+    id: 'n4-review-2',
+    title: 'N4 Vocabulary & Usage Review',
+    requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08']
+  },
+  {
+    id: 'n4-review-3',
+    title: 'N4 Advanced Usage Review',
+    requires: ['n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12']
+  },
+  {
+    id: 'n3-review-1',
+    title: 'N3 Grammar Expansion Review',
+    requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04']
+  },
+  {
+    id: 'n3-review-2',
+    title: 'N3 Nuance & Conversation Review',
+    requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08']
+  },
+  {
+    id: 'n3-review-3',
+    title: 'N3 Advanced Expression Review',
+    requires: ['n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12']
+  },
 ];
 
 // The N4→N3 gate: reuses the same quiz-gate mechanic N5's staircase has
@@ -2694,10 +4459,26 @@ const BOOK_PILE_DATA = [
 // locked until this exam is passed. Requires all 3 N4 review piles now
 // (was 2, back when N4 only had 2 piles total).
 const EXAM_GATE_DATA = {
-  n4: { id: 'n4-exam-gate', title: 'N4 Entrance Exam', requires: [] },
-  n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2', 'n4-review-3'] },
-  n2: { id: 'n2-exam-gate', title: 'N2 Entrance Exam', requires: [] },
-  n1: { id: 'n1-exam-gate', title: 'N1 Entrance Exam', requires: [] },
+  n4: {
+    id: 'n4-exam-gate',
+    title: 'N4 Entrance Exam',
+    requires: []
+  },
+  n3: {
+    id: 'n3-exam-gate',
+    title: 'N3 Entrance Exam',
+    requires: ['n4-review-1', 'n4-review-2', 'n4-review-3']
+  },
+  n2: {
+    id: 'n2-exam-gate',
+    title: 'N2 Entrance Exam',
+    requires: []
+  },
+  n1: {
+    id: 'n1-exam-gate',
+    title: 'N1 Entrance Exam',
+    requires: []
+  },
 };
 
 // -- Shelf-decoration helpers (Task 6) -----------------------------------
@@ -2711,6 +4492,7 @@ const EXAM_GATE_DATA = {
 // render with the same plaque/trinket/checkmark chrome.
 
 let bookshelfLabelSeq = 0;
+
 function createBookshelfLabel(scene, x, y, text, options = {}) {
   const fontSize = options.fontSize || 6;
   const paddingX = options.paddingX || 6;
@@ -2722,8 +4504,14 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
   const rivet = '#c9a66b';
   const ink = '#e8d4a8';
   const textStyle = {
-    fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
-    align: 'center', wordWrap: { width: maxWidth - paddingX * 2, useAdvancedWrap: true },
+    fontFamily: '"Press Start 2P", "DotGothic16", monospace',
+    fontSize: fontSize + 'px',
+    color: ink,
+    align: 'center',
+    wordWrap: {
+      width: maxWidth - paddingX * 2,
+      useAdvancedWrap: true
+    },
   };
 
   // Measure first (throwaway, invisible) so the plaque background can be
@@ -2763,7 +4551,12 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
 
   const bg = scene.add.image(x, y, key).setOrigin(0.5, 0);
   const label = scene.add.text(x, y + paddingY, text, textStyle).setOrigin(0.5, 0);
-  return { bg, label, width: tagW, height: tagH };
+  return {
+    bg,
+    label,
+    width: tagW,
+    height: tagH
+  };
 }
 
 // Tiny retro-tech "available" trinket + "completed" badge, same as N5's
@@ -2775,6 +4568,7 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
 // no other floor's script — no actual collision risk, just kept
 // consistent with this file's n4-prefixing convention elsewhere.
 let n4ShelfTrinketAnimKey = null;
+
 function buildShelfTrinketAnim(scene) {
   if (n4ShelfTrinketAnimKey) return n4ShelfTrinketAnimKey;
   n4ShelfTrinketAnimKey = 'n4ShelfTrinketLoad';
@@ -2824,12 +4618,20 @@ function buildShelfTrinketAnim(scene) {
     frameKeys.push(key);
   }
 
-  const frames = frameKeys.concat(frameKeys.slice(1, -1).reverse()).map((key) => ({ key }));
-  scene.anims.create({ key: n4ShelfTrinketAnimKey, frames, frameRate: 3, repeat: -1 });
+  const frames = frameKeys.concat(frameKeys.slice(1, -1).reverse()).map((key) => ({
+    key
+  }));
+  scene.anims.create({
+    key: n4ShelfTrinketAnimKey,
+    frames,
+    frameRate: 3,
+    repeat: -1
+  });
   return n4ShelfTrinketAnimKey;
 }
 
 let n4ShelfCompleteKey = null;
+
 function drawShelfCompleteTexture(scene) {
   if (n4ShelfCompleteKey) return n4ShelfCompleteKey;
   n4ShelfCompleteKey = 'n4ShelfCompleteTex';
@@ -2892,7 +4694,9 @@ function drawDoorTexture(scene, key, config) {
   if (scene.textures.exists(key)) return key;
   const w = 48;
   const h = 72;
-  const { locked } = config;
+  const {
+    locked
+  } = config;
   const tex = scene.textures.createCanvas(key, w, h);
   const ctx = tex.getContext();
   ctx.imageSmoothingEnabled = false;
@@ -2908,18 +4712,22 @@ function drawDoorTexture(scene, key, config) {
   const glow = '#f0c674';
 
   // Door frame (outer trim).
-  ctx.fillStyle = frameDark; ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = frameLight; ctx.fillRect(2, 2, w - 4, h - 4);
+  ctx.fillStyle = frameDark;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = frameLight;
+  ctx.fillRect(2, 2, w - 4, h - 4);
 
   const gap = locked ? 0 : 6; // leaves parted when unlocked
   const leafW = (w - 4 - gap) / 2;
 
   [0, 1].forEach((i) => {
     const lx = 2 + i * (leafW + gap);
-    ctx.fillStyle = woodBase; ctx.fillRect(lx, 4, leafW, h - 8);
+    ctx.fillStyle = woodBase;
+    ctx.fillRect(lx, 4, leafW, h - 8);
     // Vertical plank lines.
     for (let px = 4; px < leafW - 2; px += 6) {
-      ctx.fillStyle = woodGrain; ctx.fillRect(lx + px, 4, 1, h - 8);
+      ctx.fillStyle = woodGrain;
+      ctx.fillRect(lx + px, 4, 1, h - 8);
     }
     // Iron corner braces.
     ctx.fillStyle = iron;
@@ -2932,15 +4740,21 @@ function drawDoorTexture(scene, key, config) {
 
   if (locked) {
     // Keyhole/lock plate, centered on the seam.
-    ctx.fillStyle = brass; ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 12);
-    ctx.fillStyle = brassHi; ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 1);
-    ctx.fillStyle = iron; ctx.fillRect(w / 2 - 1, h / 2 - 3, 2, 2);
+    ctx.fillStyle = brass;
+    ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 12);
+    ctx.fillStyle = brassHi;
+    ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 1);
+    ctx.fillStyle = iron;
+    ctx.fillRect(w / 2 - 1, h / 2 - 3, 2, 2);
     ctx.fillRect(w / 2 - 1, h / 2, 2, 4);
   } else {
     // Warm light glowing through the parted gap.
-    ctx.fillStyle = glow; ctx.globalAlpha = 0.85; ctx.fillRect(w / 2 - gap / 2, 4, gap, h - 8);
+    ctx.fillStyle = glow;
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(w / 2 - gap / 2, 4, gap, h - 8);
     ctx.globalAlpha = 1;
-    ctx.fillStyle = brassHi; ctx.fillRect(w / 2 - gap / 2 - 1, 4, 1, h - 8);
+    ctx.fillStyle = brassHi;
+    ctx.fillRect(w / 2 - gap / 2 - 1, 4, 1, h - 8);
     ctx.fillRect(w / 2 + gap / 2, 4, 1, h - 8);
   }
 
@@ -2949,7 +4763,9 @@ function drawDoorTexture(scene, key, config) {
 }
 
 class N4LibraryScene extends Phaser.Scene {
-  constructor() { super('N4LibraryScene'); }
+  constructor() {
+    super('N4LibraryScene');
+  }
 
   preload() {
     // Phaser's texture cache is per-Game-instance, and N4 is a separate
@@ -3065,7 +4881,11 @@ class N4LibraryScene extends Phaser.Scene {
       }
       data.push(row);
     }
-    const map = this.make.tilemap({ data, tileWidth: TILE_SIZE, tileHeight: TILE_SIZE });
+    const map = this.make.tilemap({
+      data,
+      tileWidth: TILE_SIZE,
+      tileHeight: TILE_SIZE
+    });
     const tileset = map.addTilesetImage('n4LibraryTiles', null, TILE_SIZE, TILE_SIZE);
     map.createLayer(0, tileset, 0, 0);
     this.floorTilemap = map;
@@ -3077,7 +4897,10 @@ class N4LibraryScene extends Phaser.Scene {
 
   buildWalls() {
     const blockSize = 32; // was TILE_SIZE (16) via image crop — see Task 2
-    const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', { blockW: blockSize, blockH: blockSize });
+    const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', {
+      blockW: blockSize,
+      blockH: blockSize
+    });
     const wallGroup = this.physics.add.staticGroup();
 
     // Top/bottom strips — WORLD_W (800) divides evenly by 32 (25 blocks),
@@ -3180,8 +5003,12 @@ class N4LibraryScene extends Phaser.Scene {
     // equivalent yet, so those 4 stay literal; rugBase/rugMotif reuse
     // N4_PALETTE.carpet/gold directly rather than duplicating the hex.
     const n4RugPalette = {
-      rugDark: 0x2a0d1a, rugFringeLight: 0x3a1526, rugBase: N4_PALETTE.carpet,
-      rugWeave: 0x4a1524, rugMotif: N4_PALETTE.gold, rugMotifShade: 0xa87f3a,
+      rugDark: 0x2a0d1a,
+      rugFringeLight: 0x3a1526,
+      rugBase: N4_PALETTE.carpet,
+      rugWeave: 0x4a1524,
+      rugMotif: N4_PALETTE.gold,
+      rugMotifShade: 0xa87f3a,
     };
 
     // Center-corridor rug — same hand-drawn woven-runner technique as
@@ -3280,7 +5107,10 @@ class N4LibraryScene extends Phaser.Scene {
         ctx.strokeStyle = 'rgba(25, 10, 5, .36)';
         ctx.lineWidth = 1;
         for (let grain = 7; grain < 52; grain += 13) {
-          ctx.beginPath(); ctx.moveTo(x + grain, y + 5); ctx.lineTo(x + grain + 8, y + 6); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x + grain, y + 5);
+          ctx.lineTo(x + grain + 8, y + 6);
+          ctx.stroke();
         }
       }
     }
@@ -3299,7 +5129,10 @@ class N4LibraryScene extends Phaser.Scene {
     const g = this.add.graphics().setDepth(0);
     g.fillStyle(0x160f0c, 1).fillRect(left, top, width, height);
     buildOpenAtriumVoid(this, g, {
-      left: left + 14, top: top + 16, width: width - 28, height: height - 32,
+      left: left + 14,
+      top: top + 16,
+      width: width - 28,
+      height: height - 32,
       corridorColor: N4_PALETTE.carpet,
     });
     // Rear walkway strip's own dark fill + trim lines were removed per
@@ -3313,16 +5146,28 @@ class N4LibraryScene extends Phaser.Scene {
     // player could walk straight into it. Drawn AFTER the void/walkway
     // (so it sits visually on top, at the atrium's outer edge) and
     // BEFORE the label (so the label still floats above everything).
-    buildAtriumFence(this, { left, top, width, height, wallGroup: this.wallGroup });
+    buildAtriumFence(this, {
+      left,
+      top,
+      width,
+      height,
+      wallGroup: this.wallGroup
+    });
     // "OPEN ATRIUM / FIRST-FLOOR LIBRARY" label, centered inside the
     // atrium void, floating over the illustrated content.
     const labelX = left + width / 2;
     const labelY = top + height / 2 - 20;
     this.add.text(labelX, labelY, 'OPEN ATRIUM', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8d4a8', align: 'center',
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '12px',
+      color: '#e8d4a8',
+      align: 'center',
     }).setOrigin(0.5).setDepth(4);
     this.add.text(labelX, labelY + 28, 'FIRST-FLOOR LIBRARY', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#a89068', align: 'center',
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#a89068',
+      align: 'center',
     }).setOrigin(0.5).setDepth(4);
   }
 
@@ -3343,7 +5188,11 @@ class N4LibraryScene extends Phaser.Scene {
     const y = 1080; // clear of wing1's south row (ends y=1020) and the exam-gate row (896-1132 doesn't overlap this x)
 
     const placeJukebox = (x, tuneLabel) => createDecorativeProp(this, {
-      x, y, textureKey: texKey, scale, depth: 2,
+      x,
+      y,
+      textureKey: texKey,
+      scale,
+      depth: 2,
       onClick: () => {
         showToast(`The jukebox hums an old ${tuneLabel} tune...`);
         this.spawnNoteFlourish(x, y);
@@ -3360,11 +5209,21 @@ class N4LibraryScene extends Phaser.Scene {
     const count = 4;
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
-      const note = this.add.text(x, y, '♪', { fontSize: '16px', color: '#e8d4a8' })
+      const note = this.add.text(x, y, '♪', {
+          fontSize: '16px',
+          color: '#e8d4a8'
+        })
         .setOrigin(0.5).setDepth(10);
       this.tweens.add({
-        targets: note, x: x + Math.cos(angle) * 30, y: y + Math.sin(angle) * 30 - 20,
-        alpha: { from: 1, to: 0 }, duration: 800, ease: 'Cubic.Out',
+        targets: note,
+        x: x + Math.cos(angle) * 30,
+        y: y + Math.sin(angle) * 30 - 20,
+        alpha: {
+          from: 1,
+          to: 0
+        },
+        duration: 800,
+        ease: 'Cubic.Out',
         onComplete: () => note.destroy(),
       });
     }
@@ -3409,7 +5268,12 @@ class N4LibraryScene extends Phaser.Scene {
     const trinketAnimKey = buildShelfTrinketAnim(this);
     // Favorite icon: crop savePointRaw down to its tight 624x624 content
     // box, same as N5's (n5-phaser-game.js:8301).
-    const favoriteDiskKey = cropToTexture(this, 'savePointRaw', { x: 200, y: 200, w: 624, h: 624 }, 'n4FavoriteDiskTex');
+    const favoriteDiskKey = cropToTexture(this, 'savePointRaw', {
+      x: 200,
+      y: 200,
+      w: 624,
+      h: 624
+    }, 'n4FavoriteDiskTex');
 
     LESSON_DATA.forEach((lesson, i) => {
       const [x, y] = positions[i];
@@ -3454,14 +5318,28 @@ class N4LibraryScene extends Phaser.Scene {
       // column would have to cross the near column's collision box.
       // Interaction still works via distance checks (TRIGGER_RANGE), not
       // physical contact.
-      sprite.setInteractive({ useHandCursor: true });
+      sprite.setInteractive({
+        useHandCursor: true
+      });
       sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
 
       const entry = {
-        id: lesson.id, kind: 'shelf', title: lesson.title,
-        sprite, glow, completeBadge, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
-        x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
-        baseScale: 1, displayW: shelfW, displayH: shelfH,
+        id: lesson.id,
+        kind: 'shelf',
+        title: lesson.title,
+        sprite,
+        glow,
+        completeBadge,
+        stamp,
+        favIcon,
+        lockedKey,
+        filledKey: filledKeys[i % filledKeys.length],
+        x: x + shelfW / 2,
+        y: y + shelfH / 2,
+        prereq: SHELF_PREREQ[lesson.id],
+        baseScale: 1,
+        displayW: shelfW,
+        displayH: shelfH,
       };
       this.interactives.push(entry);
     });
@@ -3485,34 +5363,75 @@ class N4LibraryScene extends Phaser.Scene {
     const w = ASSET_RECTS.bookPileTall.w * scale;
     const h = ASSET_RECTS.bookPileTall.h * scale;
     const positions = {
-      'n4-review-1': { x: gapLeft + 16, y: LAYOUT.review1Y },
-      'n4-review-2': { x: gapLeft + 16, y: LAYOUT.review2Y },
-      'n4-review-3': { x: gapLeft + 16, y: LAYOUT.review3Y },
-      'n3-review-1': { x: gapRight - 16 - w, y: LAYOUT.review1Y },
-      'n3-review-2': { x: gapRight - 16 - w, y: LAYOUT.review2Y },
-      'n3-review-3': { x: gapRight - 16 - w, y: LAYOUT.review3Y },
+      'n4-review-1': {
+        x: gapLeft + 16,
+        y: LAYOUT.review1Y
+      },
+      'n4-review-2': {
+        x: gapLeft + 16,
+        y: LAYOUT.review2Y
+      },
+      'n4-review-3': {
+        x: gapLeft + 16,
+        y: LAYOUT.review3Y
+      },
+      'n3-review-1': {
+        x: gapRight - 16 - w,
+        y: LAYOUT.review1Y
+      },
+      'n3-review-2': {
+        x: gapRight - 16 - w,
+        y: LAYOUT.review2Y
+      },
+      'n3-review-3': {
+        x: gapRight - 16 - w,
+        y: LAYOUT.review3Y
+      },
     };
 
     BOOK_PILE_DATA.forEach((pile) => {
       const pos = positions[pile.id];
       const sprite = this.add.image(pos.x, pos.y, bookKey).setOrigin(0, 0)
         .setDisplaySize(w, h).setDepth(1);
-      const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', { fontSize: '18px' })
+      const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', {
+          fontSize: '18px'
+        })
         .setOrigin(0.5).setDepth(4).setVisible(false);
-      const stamp = this.add.text(pos.x + w - 8, pos.y - 6, '✅', { fontSize: '18px' })
+      const stamp = this.add.text(pos.x + w - 8, pos.y - 6, '✅', {
+          fontSize: '18px'
+        })
         .setOrigin(0.5).setDepth(4).setVisible(false);
-      this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+      this.tweens.add({
+        targets: glow,
+        alpha: {
+          from: 1,
+          to: 0.35
+        },
+        duration: 650,
+        yoyo: true,
+        repeat: -1
+      });
 
       // Non-solid, same reasoning as shelves — keeps auto-walk routing
       // simple and reliable for every interactive on this floor.
-      sprite.setInteractive({ useHandCursor: true });
+      sprite.setInteractive({
+        useHandCursor: true
+      });
       sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
 
       const entry = {
-        id: pile.id, kind: 'pile', title: pile.title,
-        sprite, glow, stamp, requires: pile.requires,
-        x: pos.x + w / 2, y: pos.y + h / 2,
-        baseScale: scale, displayW: w, displayH: h,
+        id: pile.id,
+        kind: 'pile',
+        title: pile.title,
+        sprite,
+        glow,
+        stamp,
+        requires: pile.requires,
+        x: pos.x + w / 2,
+        y: pos.y + h / 2,
+        baseScale: scale,
+        displayW: w,
+        displayH: h,
       };
       this.interactives.push(entry);
     });
@@ -3544,7 +5463,19 @@ class N4LibraryScene extends Phaser.Scene {
   // (wired via updateDoorGateTextures(), called from the refreshAllStates
   // wrapper below the class) — used by the N2 gate.
   createExamGateEntry(config) {
-    const { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale, hideSprite, doorTextures } = config;
+    const {
+      id,
+      title,
+      x,
+      y,
+      requires,
+      quizGateKey,
+      onPass,
+      bookKey,
+      scale,
+      hideSprite,
+      doorTextures
+    } = config;
     const w = doorTextures ? 48 * scale : ASSET_RECTS.bookPileTall.w * scale;
     const h = doorTextures ? 72 * scale : ASSET_RECTS.bookPileTall.h * scale;
     const initialKey = doorTextures ? doorTextures.locked : bookKey;
@@ -3554,15 +5485,44 @@ class N4LibraryScene extends Phaser.Scene {
     // .setVisible() on these for every pile-kind entry, so they must
     // exist, but with no text content there's nothing to actually see
     // regardless of visibility, keeping "no object" true for the veil.
-    const glow = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '⭐', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const stamp = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '✅', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    if (!hideSprite) this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+    const glow = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '⭐', {
+      fontSize: '18px'
+    }).setOrigin(.5).setDepth(4).setVisible(false);
+    const stamp = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '✅', {
+      fontSize: '18px'
+    }).setOrigin(.5).setDepth(4).setVisible(false);
+    if (!hideSprite) this.tweens.add({
+      targets: glow,
+      alpha: {
+        from: 1,
+        to: 0.35
+      },
+      duration: 650,
+      yoyo: true,
+      repeat: -1
+    });
     const entry = {
-      id, kind: 'pile', title, sprite, glow, stamp, requires,
-      x: x + w / 2, y: y + h / 2, baseScale: scale, isExamGate: true, quizGateKey, onPass,
-      displayW: w, displayH: h, hideSprite: !!hideSprite, doorTextures,
+      id,
+      kind: 'pile',
+      title,
+      sprite,
+      glow,
+      stamp,
+      requires,
+      x: x + w / 2,
+      y: y + h / 2,
+      baseScale: scale,
+      isExamGate: true,
+      quizGateKey,
+      onPass,
+      displayW: w,
+      displayH: h,
+      hideSprite: !!hideSprite,
+      doorTextures,
     };
-    sprite.setInteractive({ useHandCursor: true });
+    sprite.setInteractive({
+      useHandCursor: true
+    });
     sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
     if (!hideSprite && !doorTextures) {
       // Doors carry their own "N2"/level plaque via createBookshelfLabel
@@ -3570,7 +5530,9 @@ class N4LibraryScene extends Phaser.Scene {
       // caps-lock title text — a wooden plaque reads more "native to the
       // wing" for a door than book-pile gates' simple text label.
       this.add.text(x + w / 2, y - 18, title.toUpperCase(), {
-        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8',
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '7px',
+        color: '#e8d4a8',
       }).setOrigin(.5).setDepth(4);
     }
     this.interactives.push(entry);
@@ -3591,9 +5553,14 @@ class N4LibraryScene extends Phaser.Scene {
     // both the shelf column and the atrium's rope-and-brass rail.
     const gateY = 1070;
     this.createExamGateEntry({
-      id: EXAM_GATE_DATA.n4.id, title: EXAM_GATE_DATA.n4.title,
-      x: 265, y: gateY, requires: EXAM_GATE_DATA.n4.requires,
-      quizGateKey: N4_ENTRANCE_GATE_KEY, bookKey, scale,
+      id: EXAM_GATE_DATA.n4.id,
+      title: EXAM_GATE_DATA.n4.title,
+      x: 265,
+      y: gateY,
+      requires: EXAM_GATE_DATA.n4.requires,
+      quizGateKey: N4_ENTRANCE_GATE_KEY,
+      bookKey,
+      scale,
       onPass: () => showToast('The N4 balcony is permanently open.'),
     });
     const w = ASSET_RECTS.bookPileTall.w * scale;
@@ -3605,9 +5572,15 @@ class N4LibraryScene extends Phaser.Scene {
     // unchanged — hideSprite only removes what the player SEES, not the
     // interaction or unlock logic.
     this.createExamGateEntry({
-      id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
-      x: WORLD_W - 265 - w, y: gateY, requires: EXAM_GATE_DATA.n3.requires,
-      quizGateKey: QUIZ_GATE_KEY, bookKey, scale, hideSprite: true,
+      id: EXAM_GATE_DATA.n3.id,
+      title: EXAM_GATE_DATA.n3.title,
+      x: WORLD_W - 265 - w,
+      y: gateY,
+      requires: EXAM_GATE_DATA.n3.requires,
+      quizGateKey: QUIZ_GATE_KEY,
+      bookKey,
+      scale,
+      hideSprite: true,
       onPass: () => showToast('The N3 balcony is permanently open.'),
     });
 
@@ -3621,49 +5594,64 @@ class N4LibraryScene extends Phaser.Scene {
     // a future pass can add N1's own door once this one's design and
     // position are confirmed live.
     const doorScale = 1.4;
-    const n2LockedKey = drawDoorTexture(this, 'n4N2DoorLockedTex', { locked: true });
-    const n2UnlockedKey = drawDoorTexture(this, 'n4N2DoorUnlockedTex', { locked: false });
+    const n2LockedKey = drawDoorTexture(this, 'n4N2DoorLockedTex', {
+      locked: true
+    });
+    const n2UnlockedKey = drawDoorTexture(this, 'n4N2DoorUnlockedTex', {
+      locked: false
+    });
     const n2DoorW = 48 * doorScale;
     const n2X = WORLD_W - 64 - n2DoorW - 8; // flush toward the N3 (east) spine, top-right corner
     const n2Y = 115; // as far north as the top wall band allows
     const n2Entry = this.createExamGateEntry({
-      id: EXAM_GATE_DATA.n2.id, title: EXAM_GATE_DATA.n2.title,
-      x: n2X, y: n2Y, requires: EXAM_GATE_DATA.n2.requires,
-      quizGateKey: N2_ENTRANCE_GATE_KEY, scale: doorScale,
-      doorTextures: { locked: n2LockedKey, unlocked: n2UnlockedKey },
+      id: EXAM_GATE_DATA.n2.id,
+      title: EXAM_GATE_DATA.n2.title,
+      x: n2X,
+      y: n2Y,
+      requires: EXAM_GATE_DATA.n2.requires,
+      quizGateKey: N2_ENTRANCE_GATE_KEY,
+      scale: doorScale,
+      doorTextures: {
+        locked: n2LockedKey,
+        unlocked: n2UnlockedKey
+      },
       onPass: () => showToast('The N2 door creaks open... nothing beyond it yet.'),
     });
     const doorLabel = createBookshelfLabel(this, n2Entry.x, n2Entry.y + (72 * doorScale) / 2 - 6, 'N2 Entrance Exam', {
-      fontSize: 6, maxWidth: 90,
+      fontSize: 6,
+      maxWidth: 90,
     });
     doorLabel.bg.setDepth(3);
     doorLabel.label.setDepth(4);
   }
 
-  // Frosted threshold veil across "the hall going to the N3 wing" — the
-  // corridor gap between the atrium's right edge and the N3 shelf
-  // column — while n3-exam-gate is locked. Two corrections from the
-  // first version, per explicit follow-up feedback:
-  //   1. Height was tied to LAYOUT.entryY, which grew a lot once the
-  //      stairs/spawn moved into the SW corner — the veil ended up
-  //      stretching almost the full map height, reading as "smeared
-  //      across the wing" rather than a doorway. Now a fixed, compact
-  //      band positioned right at the entrance to the gap (just south
-  //      of the atrium's own top edge), not tied to entryY at all.
-  //   2. It's now a REAL solid wall (a collision rectangle added to
-  //      wallGroup, matching its visual footprint) — the player
-  //      genuinely cannot walk through it, not just a visual overlay.
-  //      Confirmed safe for N4: N4's own auto-walk paths all move
-  //      westward from the center corridor (x=400) toward N4's
-  //      shelves (x=70-254), never entering this eastward gap
-  //      (x≈496-538), so blocking it only affects N3-bound routes.
+  // Frosted threshold veil across the CENTER hall — literally where the
+  // corridor rug lies (corridorX = WORLD_W/2), not tucked into the N3-
+  // side gap — while n3-exam-gate is locked, per explicit follow-up
+  // feedback. This is the one spot every click-to-walk route in the
+  // scene passes through (see handleInteractiveClick's shared 3-
+  // waypoint route, always via x = worldW/2), so putting real collision
+  // here needed a matching fix: the N4LibraryScene.prototype patch below
+  // this class detours the route around the wall's east edge whenever a
+  // path would cross it, instead of leaving the player stuck against
+  // solid collision mid-route. Position/size are a fixed, compact band
+  // (not tied to LAYOUT.entryY, which grew a lot once spawn moved into
+  // the SW corner) sitting in open floor between N2's door (ends y=216)
+  // and wing3 (starts y=442) — clear of every current interactive on
+  // both sides, though the detour patch is what actually guarantees
+  // reachability, not this placement choice.
   buildN3Mist() {
-    const top = LAYOUT.atriumTop + 10;
-    const height = 150;
-    const veilLeft = LAYOUT.atriumLeft + LAYOUT.atriumWidth + 8;
-    const veilWidth = LAYOUT.rightColX[0] - veilLeft - 8;
+    const top = 280;
+    const height = 140;
+    const veilWidth = 80;
+    const veilLeft = WORLD_W / 2 - veilWidth / 2;
 
-    this.n3MistShapes = buildThresholdVeil(this, { x: veilLeft, top, height, width: veilWidth });
+    this.n3MistShapes = buildThresholdVeil(this, {
+      x: veilLeft,
+      top,
+      height,
+      width: veilWidth
+    });
     const block = this.add.rectangle(veilLeft + veilWidth / 2, top + height / 2, veilWidth, height, 0x000000, 0);
     this.physics.add.existing(block, true);
     this.wallGroup.add(block);
@@ -3693,7 +5681,10 @@ class N4LibraryScene extends Phaser.Scene {
       this.n3MistBlock = null;
     }
     this.tweens.add({
-      targets: this.n3MistShapes, alpha: 0, duration: 900, ease: 'Sine.In',
+      targets: this.n3MistShapes,
+      alpha: 0,
+      duration: 900,
+      ease: 'Sine.In',
       onComplete: () => this.n3MistShapes.forEach((s) => s.setVisible(false)),
     });
   }
@@ -3742,9 +5733,9 @@ class N4LibraryScene extends Phaser.Scene {
     const vel = this.player.body.velocity;
     const moving = Math.abs(vel.x) > 0.5 || Math.abs(vel.y) > 0.5;
     if (moving) {
-      const dir = Math.abs(vel.x) > Math.abs(vel.y)
-        ? (vel.x > 0 ? 'right' : 'left')
-        : (vel.y > 0 ? 'down' : 'up');
+      const dir = Math.abs(vel.x) > Math.abs(vel.y) ?
+        (vel.x > 0 ? 'right' : 'left') :
+        (vel.y > 0 ? 'down' : 'up');
       this.player.play(`${this.catColorId}-walk-${dir}`, true);
     } else {
       this.player.play(`${this.catColorId}-idle`, true);
@@ -3873,6 +5864,63 @@ N4LibraryScene.prototype.updateDoorGateTextures = function () {
   });
 };
 
+// Wraps the shared engine's handleInteractiveClick() so click-to-walk
+// routing can detour around this.n3MistBlock when it exists.
+//
+// Why this exists: the shared routing (library-scene-shared.js) always
+// sends the player through ONE fixed vertical line (x = worldW/2) on the
+// way to ANY interactive, regardless of which side of the map it's on.
+// Putting the N3 threshold wall's solid collision on that exact line —
+// which is what "in the center hall, where the carpet lies" requires —
+// would silently strand click-to-walk for EVERY interactive whose route
+// crosses the wall's Y-band, on BOTH sides (N4 and N3 share the same
+// Y-levels, mirrored), not just N3's. Confirmed by tracing the geometry
+// before writing any of this: with the wall placed anywhere between the
+// entry point and the shelves, nearly every shelf/pile in the floor
+// becomes unreachable by click — worth fixing properly rather than
+// picking "a Y-band nothing currently uses" and hoping a future
+// shelf/pile never lands on it.
+//
+// The fix: after the shared method builds its normal 3-waypoint route,
+// check whether the route's vertical segment would cross the wall's
+// body bounds; if so, splice in a short detour around the wall's east
+// edge instead of letting the player walk into (and get stuck on) solid
+// collision. Once n3-exam-gate is passed, this.n3MistBlock is null
+// (removed in updateN3MistState()) and every route goes back to the
+// plain 3-waypoint path with zero overhead.
+const sharedHandleInteractiveClick = N4LibraryScene.prototype.handleInteractiveClick;
+N4LibraryScene.prototype.handleInteractiveClick = function (entry) {
+  sharedHandleInteractiveClick.call(this, entry);
+  if (!this.moveQueue || !this.n3MistBlock) return;
+  const b = this.n3MistBlock.body;
+  const [wp0, wp1, wp2] = this.moveQueue;
+  if (!wp1) return; // already close enough to interact directly — no route to patch
+  const segX = wp0.x; // the shared route's fixed vertical line
+  if (segX < b.left - 24 || segX > b.right + 24) return; // route doesn't run through the wall's x at all
+  const segYMin = Math.min(wp0.y, wp1.y);
+  const segYMax = Math.max(wp0.y, wp1.y);
+  if (segYMax < b.top - 10 || segYMin > b.bottom + 10) return; // no vertical overlap with the wall
+  const detourX = b.right + 24;
+  this.moveQueue = [{
+      x: segX,
+      y: wp0.y
+    },
+    {
+      x: detourX,
+      y: b.top - 12
+    },
+    {
+      x: detourX,
+      y: b.bottom + 12
+    },
+    {
+      x: segX,
+      y: wp1.y
+    },
+    wp2,
+  ].filter((wp) => wp);
+};
+
 const n4PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'phaserGame',
@@ -3885,7 +5933,9 @@ const n4PhaserGame = new Phaser.Game({
   pixelArt: true,
   physics: {
     default: 'arcade',
-    arcade: { debug: false },
+    arcade: {
+      debug: false
+    },
   },
   scale: {
     mode: Phaser.Scale.FIT,
@@ -3903,7 +5953,7 @@ window.__n4Game = n4PhaserGame;
 // (found in this.interactives, not a newly-constructed object) so
 // openInteraction() routes through the exact same openQuizGateMenu/
 // openQuizAttemptMenu path a walk-up interaction uses.
-document.getElementById('n3GateExamBtn')?.addEventListener('click', () => {
+document.getElementById('n3GateExamBtn') ? .addEventListener('click', () => {
   if (!n4PhaserGame.scene.isActive('N4LibraryScene')) return;
   const libraryScene = n4PhaserGame.scene.getScene('N4LibraryScene');
   if (libraryScene.panelOpen) return; // don't stack over an open lesson/review/gate panel
