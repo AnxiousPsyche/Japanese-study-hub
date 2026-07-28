@@ -7598,6 +7598,9 @@ class LibraryScene extends Phaser.Scene {
     // static pose in buildReceptionSensei via cropToTexture instead, at
     // its actual alpha-scanned bounds (x:0, w:28) — see that function.
     this.load.image('calicoSenseiRaw', '../../assets/images/avatars/calico-sensei-idle.png');
+    // Decorative jukebox — same asset/crop N4/N3 use (cropJukeboxTexture,
+    // library-scene-shared.js), added here so N5's hall gets one too.
+    this.load.image('jukebox', '../../assets/images/ui/jukebox-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -7978,6 +7981,22 @@ class LibraryScene extends Phaser.Scene {
     drawWovenRug(this, 'corridorRugTex', corridorWidth, corridorRugRepeatH);
     this.add.tileSprite(corridorX, corridorMidY, corridorWidth, corridorHeight, 'corridorRugTex')
       .setDepth(0);
+
+    // Decorative jukebox, flush against the west wall in the gap between
+    // the top wall band and the first shelf zone — same asset/crop N4/N3
+    // use (cropJukeboxTexture, library-scene-shared.js), so every floor's
+    // hall has one. Visual-only (no audio asset supplied), non-solid.
+    const jukeboxTexKey = cropJukeboxTexture(this, 'n5JukeboxTex');
+    const jukeboxScale = 0.16;
+    const jukeboxW = 620 * jukeboxScale;
+    const jukeboxX = LAYOUT.leftColX[0] + jukeboxW / 2;
+    const jukeboxY = (460 + zone1Row0) / 2;
+    createDecorativeProp(this, {
+      x: jukeboxX, y: jukeboxY, textureKey: jukeboxTexKey, scale: jukeboxScale, depth: 2,
+      onClick: () => {
+        showToast('The jukebox hums an old N5 tune...');
+      },
+    });
 
     // Per-shelf-row decor: P/T&C/RV sit in the gap between the left and
     // right shelf columns AT THE SAME ROW HEIGHT as the shelves next to

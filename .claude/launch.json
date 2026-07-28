@@ -1950,6 +1950,46 @@
         "27753"
       ],
       "port": 27753
+    },
+    {
+      "name": "jp-library-static-mezzanine-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27864"
+      ],
+      "port": 27864
+    },
+    {
+      "name": "jp-library-static-mezzanine-v4",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27975"
+      ],
+      "port": 27975
+    },
+    {
+      "name": "jp-library-static-mezzanine-v5",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28086"
+      ],
+      "port": 28086
+    },
+    {
+      "name": "jp-library-static-mezzanine-v6",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28197"
+      ],
+      "port": 28197
     }
   ],
   "autoVerify": true

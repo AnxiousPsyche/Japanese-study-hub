@@ -16,10 +16,24 @@
 // exam gate, and the player all arrive in Tasks 3-6.
 
 const TILE_SIZE = 16;
-const GRID_COLS = 72;
-const GRID_ROWS = 130; // revised down from 180 — see Task 4 (only 2 physical shelf-rows needed, not 4)
-const WORLD_W = GRID_COLS * TILE_SIZE; // 1152
-const WORLD_H = GRID_ROWS * TILE_SIZE; // 2080
+// Shrunk (was 72x130 / 1152x2080) so the walk from the stairs-landing
+// spawn point to the nearest shelf is exactly 12 tiles — every other
+// gap in LAYOUT (below) shrinks by the same ratio (R ≈ 0.4528, derived
+// from the 12-tile constraint itself: old gap was 424px/26.5 tiles, new
+// is 192px/12 tiles). Sprite footprints (shelfW/H, pile/gate sizes,
+// stair-landing crop) are NOT scaled down — only the empty-floor gaps
+// between them shrink, since these are hand-cropped pixel art and
+// resizing by a non-clean ratio would blur/distort them at this game's
+// pixelArt:true nearest-neighbor rendering. See the design-approval
+// message in this session's history for the full gap-by-gap derivation.
+// GRID_COLS must stay even — buildWalls()'s top/bottom brick strips loop
+// in 32px (2-tile) blocks with no remainder handling (unlike the
+// left/right strips, which already clip their last tile); an odd
+// GRID_COLS would leave a 1-tile gap in those strips.
+const GRID_COLS = 50;
+const GRID_ROWS = 86;
+const WORLD_W = GRID_COLS * TILE_SIZE; // 800
+const WORLD_H = GRID_ROWS * TILE_SIZE; // 1376
 
 // -- Movement/collision constants, copied verbatim from n5-phaser-game.js --
 const ARRIVE_THRESHOLD = 74; // px — how close auto-walk needs to get before stopping, n5-phaser-game.js:7242
@@ -60,14 +74,20 @@ const ASSET_RECTS = {
   // cols 75-140) — a clean, unmerged isolation.
   grandfatherClock: { x: 79, y: 24, w: 58, h: 120 },
   // Same staircase crop N5's own buildTopBand() uses (n5-phaser-game.js's
-  // ASSET_RECTS.staircase, verbatim rect) — this floor's spawn landmark
-  // reuses that real art rather than inventing new pixel art, so it
-  // genuinely reads as "the top of the same stairs N5's player just
-  // climbed." Only the top ~53% of this 300px-tall crop is opaque
-  // content (see N5's own stairContentBottom comment) — the rest is
-  // transparent padding, same source image N4 already loads as
-  // 'libAssetPack'.
+  // ASSET_RECTS.staircase, verbatim rect) — kept for reference; only
+  // lastStairStep below is actually used by buildStairsLandmark() now
+  // (see that function's comment for why). Only the top ~53% of this
+  // 300px-tall crop is opaque content — the rest is transparent padding.
   staircase: { x: 935, y: 0, w: 100, h: 300 },
+  // The bottom-most tread of the same staircase asset — its rounded
+  // drop-shadow terminus is the actual real end of the opaque content
+  // (confirmed by alpha-scanning zoomed crops of the source sheet: the
+  // staircase's visible steps end around source row 165, this rect
+  // captures just the last one plus its shadow). Used as a small "one
+  // step visible, the rest continues off-world toward N5" landmark at
+  // the spawn corner, per explicit request to crop this real asset
+  // rather than hand-draw new stair art.
+  lastStairStep: { x: 935, y: 140, w: 100, h: 35 },
 };
 
 // Distinct accent palette for this floor (deeper wine/green/wood instead
@@ -2501,28 +2521,9 @@ function furigana(word, reading) {
   return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
 }
 
-// Crops a padded window around the jukebox artwork's opaque content
-// and zeroes any residual low-alpha pixels (<20/255) left over from
-// the source file's soft vignette background, so the destination
-// texture reads as a clean cutout against the mezzanine floor instead
-// of a faint translucent square.
-function cropJukeboxTexture(scene) {
-  const destKey = 'n4JukeboxTex';
-  const srcImage = scene.textures.get('jukebox').getSourceImage();
-  const rect = { x: 202, y: 82, w: 620, h: 870 }; // padded around the measured x:242-782, y:122-912 opaque bbox
-  const tex = scene.textures.createCanvas(destKey, rect.w, rect.h);
-  const ctx = tex.getContext();
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
-  const imageData = ctx.getImageData(0, 0, rect.w, rect.h);
-  const data = imageData.data;
-  for (let i = 3; i < data.length; i += 4) {
-    if (data[i] < 20) data[i] = 0;
-  }
-  ctx.putImageData(imageData, 0, 0);
-  tex.refresh();
-  return destKey;
-}
+// cropJukeboxTexture moved to library-scene-shared.js (Task: jukebox in
+// every floor's hall, N4/N3/N5 alike) — reusable now that more than one
+// scene needs the same crop, instead of a copy per file.
 
 // -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
 // North (top) = deeper into the building, toward a future N2 stub (not
@@ -2536,43 +2537,72 @@ function cropJukeboxTexture(scene) {
 // rendered shelf/furniture sizes, exactly as every N5 row/gap constant
 // was tuned over many rounds (see that file's own comments for
 // precedent) — this is normal for this codebase, not a gap in this plan.
-const shelfW = 87; // same "big furniture" reference size N5 uses
+const shelfW = 87; // same "big furniture" reference size N5 uses — unchanged, real pixel art
 const shelfH = 64;
-const leftColX = [70, 178]; // N4's outer/rear side of the atrium
-const rightColX = [WORLD_W - 265, WORLD_W - 157]; // N3, mirrored
-const rowStep = shelfH + 12; // vertical gap between two shelf rows in the same 2x2 group
+// leftColX/rightColX: mirror formula (rightColX = WORLD_W - x - shelfW,
+// applied to leftColX in that order) is what actually keeps the atrium
+// symmetric — WORLD_W above was chosen specifically so this mirror
+// lands the right column exactly where the atrium's own left/right
+// symmetry expects it. Don't hand-edit one side without recomputing
+// the other from this same formula.
+const leftColX = [70, 167];
+const rightColX = [WORLD_W - leftColX[1] - shelfW, WORLD_W - leftColX[0] - shelfW];
+const rowStep = shelfH + 5; // vertical gap between two shelf rows in the same 2x2 group
 
 // Smaller Y = further north (deeper in). N3's shelves sit in the SAME
 // rows as N4's (just the right column) — visible-but-locked the whole
 // time, same as seeing a locked door before you have the key.
 //
-// Three 4-shelf groups per side now (was 4-then-8), each its own 2x2
-// grid with its own review pile — matches N5's own "1 review pile per
-// 4 shelves" cadence exactly (see n5-phaser-game.js's BOOK_PILE_DATA/
-// SHELF_PREREQ). North-to-south (deepest group first): wing3 (shelves
-// 09-12, nearest the N2/N1 gates) -> review-3 -> wing2 (05-08) ->
-// review-2 -> wing1 (01-04, nearest entry) -> review-1... walking order
-// from spawn is the reverse: review-1 gates wing2, review-2 gates
-// wing3, review-3 just gates n3-exam-gate (no further shelf group).
-const wing3RowY = [660, 660 + rowStep]; // shelves 09-12
-const review3Y = 610; // gates nothing further (last N4/N3 group) — required by n3-exam-gate
-const wing2RowY = [860, 860 + rowStep]; // shelves 05-08
-const review2Y = 820; // N4 review-2 (left) / N3 review-2 (right) — gates shelf-09
-const wing1RowY = [1060, 1060 + rowStep]; // shelves 01-04, nearest entry
-const review1Y = 1020; // N4 review-1 (left) / N3 review-1 (right) — gates shelf-05
-const centerpieceY = 1360; // N4/N3's globe-equivalent decorative landmark
-const entryY = 1560; // player spawn / arrival from N5, south-most
-// Spawn/arrival rug/stairs-landmark X — was WORLD_W/2 (dead center). Moved
-// to the west side, near the left wall, so the player visibly arrives
-// beside the "top of the stairs" landmark (buildStairsLandmark()) instead
-// of on a bare center rug with no visual tie to how they got here.
-const entryX = 160;
+// Three 4-shelf groups per side, each its own 2x2 grid with its own
+// review pile — matches N5's own "1 review pile per 4 shelves" cadence
+// exactly (see n5-phaser-game.js's BOOK_PILE_DATA/SHELF_PREREQ).
+// North-to-south (deepest group first): wing3 (shelves 09-12, nearest
+// the N2/N1 gates) -> review-3 -> wing2 (05-08) -> review-2 -> wing1
+// (01-04, nearest entry) -> review-1... walking order from spawn is the
+// reverse: review-1 gates wing2, review-2 gates wing3, review-3 just
+// gates n3-exam-gate (no further shelf group).
+//
+// All Y values below were rederived (not just proportionally scaled)
+// from a full gap-by-gap breakdown of the old layout, shrinking every
+// pure-floor-space gap by a single ratio (R = 12-tile target ÷ old
+// stairs-to-shelf distance) while leaving every sprite's own footprint
+// (shelfH, pile/gate heights) untouched — see this session's design
+// discussion for the full derivation. Verified by construction to leave
+// a positive gap between every consecutive pair.
+const wing3RowY = [442, 511]; // shelves 09-12
+const review3Y = 385; // gates nothing further (last N4/N3 group) — required by n3-exam-gate
+const wing2RowY = [664, 733]; // shelves 05-08
+const review2Y = 593; // N4 review-2 (left) / N3 review-2 (right) — gates shelf-09
+const wing1RowY = [887, 956]; // shelves 01-04, nearest entry
+const review1Y = 815; // N4 review-1 (left) / N3 review-1 (right) — gates shelf-05
+const centerpieceY = 1062; // N4/N3's globe-equivalent decorative landmark
+// Player spawn — moved into the literal southwest corner per explicit
+// follow-up feedback (flush against both the west wall and the south
+// wall, matching the annotated screenshot), just a few pixels north of
+// the stairs landing itself. NOTE: this REOPENS the "exactly 12 tiles
+// from stairs to first shelf" constraint from the map-shrink pass —
+// the distance from here to wing1RowY[1] is no longer 192px/12 tiles
+// (it's now ~330px/~20.6 tiles). Flagged, not silently dropped — see
+// this session's report for the tradeoff; ask if wing1 should move
+// closer to restore the exact 12-tile distance from this new spawn.
+const entryY = 1313; // a few px north of the last-stair-step landmark's own top edge (see buildStairsLandmark)
+const entryX = 94; // centered on the last-stair-step landmark's own footprint
+
+// Atrium bounding rect — was local to buildAtrium(); promoted to LAYOUT
+// since the C-shape wing walls (buildWingWalls()) and the rope-and-brass
+// fence (buildAtriumFence()) both need these same bounds to align their
+// geometry against it.
+const atriumLeft = 312;
+const atriumWidth = WORLD_W - 2 * atriumLeft; // symmetric by construction, same mirror principle as rightColX
+const atriumTop = 420;
+const atriumHeight = 610;
 
 const LAYOUT = {
   shelfW, shelfH, leftColX, rightColX, rowStep,
   wing1RowY, wing2RowY, wing3RowY,
   review1Y, review2Y, review3Y,
   centerpieceY, entryY, entryX,
+  atriumLeft, atriumWidth, atriumTop, atriumHeight,
 };
 
 // -- Progression data: lessons, prereqs, review piles, exam gate (Tasks 5-7) --
@@ -2851,6 +2881,73 @@ function drawShelfCompleteTexture(scene) {
   return n4ShelfCompleteKey;
 }
 
+// Procedural exam-gate DOOR texture — locked (closed, iron-braced, a
+// keyhole) and unlocked (leaves parted, warm light in the gap) variants
+// of the same door frame, matching this file's existing wood/brass
+// palette (N4_PALETTE, the rope-and-brass fence's brass tones). Reusable
+// for any future level's own entrance door — pass a distinct `key` per
+// state per level (Phaser throws on re-registering a canvas key).
+// config: { locked: boolean }
+function drawDoorTexture(scene, key, config) {
+  if (scene.textures.exists(key)) return key;
+  const w = 48;
+  const h = 72;
+  const { locked } = config;
+  const tex = scene.textures.createCanvas(key, w, h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+
+  const frameDark = '#241209';
+  const frameLight = '#5a3220';
+  const woodBase = locked ? '#4a2d1d' : '#5a3a24';
+  const woodGrain = locked ? '#3a2415' : '#4a2c18';
+  const iron = '#1c1c1a';
+  const ironHi = '#4a4a44';
+  const brass = '#c9a24c';
+  const brassHi = '#f0d080';
+  const glow = '#f0c674';
+
+  // Door frame (outer trim).
+  ctx.fillStyle = frameDark; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = frameLight; ctx.fillRect(2, 2, w - 4, h - 4);
+
+  const gap = locked ? 0 : 6; // leaves parted when unlocked
+  const leafW = (w - 4 - gap) / 2;
+
+  [0, 1].forEach((i) => {
+    const lx = 2 + i * (leafW + gap);
+    ctx.fillStyle = woodBase; ctx.fillRect(lx, 4, leafW, h - 8);
+    // Vertical plank lines.
+    for (let px = 4; px < leafW - 2; px += 6) {
+      ctx.fillStyle = woodGrain; ctx.fillRect(lx + px, 4, 1, h - 8);
+    }
+    // Iron corner braces.
+    ctx.fillStyle = iron;
+    ctx.fillRect(lx, 4, leafW, 4);
+    ctx.fillRect(lx, h - 8, leafW, 4);
+    ctx.fillStyle = ironHi;
+    ctx.fillRect(lx, 4, leafW, 1);
+    ctx.fillRect(lx, h - 8, leafW, 1);
+  });
+
+  if (locked) {
+    // Keyhole/lock plate, centered on the seam.
+    ctx.fillStyle = brass; ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 12);
+    ctx.fillStyle = brassHi; ctx.fillRect(w / 2 - 4, h / 2 - 6, 8, 1);
+    ctx.fillStyle = iron; ctx.fillRect(w / 2 - 1, h / 2 - 3, 2, 2);
+    ctx.fillRect(w / 2 - 1, h / 2, 2, 4);
+  } else {
+    // Warm light glowing through the parted gap.
+    ctx.fillStyle = glow; ctx.globalAlpha = 0.85; ctx.fillRect(w / 2 - gap / 2, 4, gap, h - 8);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = brassHi; ctx.fillRect(w / 2 - gap / 2 - 1, 4, 1, h - 8);
+    ctx.fillRect(w / 2 + gap / 2, 4, 1, h - 8);
+  }
+
+  tex.refresh();
+  return key;
+}
+
 class N4LibraryScene extends Phaser.Scene {
   constructor() { super('N4LibraryScene'); }
 
@@ -2917,6 +3014,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.furnitureSprites = {};
     this.buildFloor();
     this.buildWalls();
+    this.buildWingCorners();
     this.buildTopBand();
     this.buildFurniture();
     this.buildJukebox();
@@ -2925,6 +3023,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildShelves();
     this.buildBookPiles();
     this.buildExamGate(); // Task 6 — the one interactive N5 has no equivalent of
+    this.buildN3Mist();
     this.buildPlayer();
     this.wireInput();
     this.refreshAllStates();
@@ -2981,8 +3080,9 @@ class N4LibraryScene extends Phaser.Scene {
     const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', { blockW: blockSize, blockH: blockSize });
     const wallGroup = this.physics.add.staticGroup();
 
-    // Top/bottom strips — WORLD_W (1152) divides evenly by 32 (36 tiles),
-    // so no remainder handling needed on this axis. Constrain height to
+    // Top/bottom strips — WORLD_W (800) divides evenly by 32 (25 blocks),
+    // so no remainder handling needed on this axis (GRID_COLS is kept
+    // even for exactly this reason — see its own comment). Constrain height to
     // TILE_SIZE (16px) instead of full blockSize (32px) to avoid overwriting
     // buildFloor()'s border-row tiles at the top/bottom edges.
     for (let x = 0; x < WORLD_W; x += blockSize) {
@@ -3011,6 +3111,39 @@ class N4LibraryScene extends Phaser.Scene {
         .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
     }
     this.wallGroup = wallGroup;
+  }
+
+  // C/reverse-C wing shaping — two short wall "corner" stubs per wing
+  // (top and bottom, where the spine meets the wing's outermost shelf
+  // group), reusing the exact brick texture buildWalls() just created
+  // for the spine itself (same key — must not re-create it, Phaser
+  // throws on re-registering a canvas key). This is a deliberately
+  // narrow way to add real new wall geometry (not just decoration)
+  // without touching the shelf-to-atrium corridor the rope-and-brass
+  // rail runs along, or blocking the center corridor's own north-south
+  // path — a full concave floor reshape (moving the atrium's own edge
+  // in/out per wing-band) risked breaking existing shelf/corridor
+  // reachability math for a purely cosmetic gain, so this session scoped
+  // the "full geometric reshape" down to these four corner turns instead.
+  buildWingCorners() {
+    const stubW = 40;
+    const stubH = 16;
+    const brickKey = 'n4BrickWallTex';
+
+    const addStub = (x, y, w) => {
+      this.add.tileSprite(x, y, w, stubH, brickKey).setOrigin(0, 0).setDepth(0);
+      const block = this.add.rectangle(x + w / 2, y + stubH / 2, w, stubH, 0x000000, 0);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
+    };
+
+    const topY = LAYOUT.wing3RowY[0] - stubH - 6; // in the gap between review-3's pile and wing3
+    const bottomY = LAYOUT.wing1RowY[1] + LAYOUT.shelfH + 10; // just south of wing1's south row
+
+    addStub(64, topY, stubW); // N4 spine (west, x=64 inner edge) juts east
+    addStub(64, bottomY, stubW);
+    addStub(WORLD_W - 64 - stubW, topY, stubW); // N3 spine (east), mirrored, juts west
+    addStub(WORLD_W - 64 - stubW, bottomY, stubW);
   }
 
   buildTopBand() {
@@ -3100,33 +3233,29 @@ class N4LibraryScene extends Phaser.Scene {
     this.add.image(LAYOUT.entryX, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
   }
 
-  // "Top of the stairs" landmark at the west-side spawn point — reuses
-  // N5's own real staircase art crop (ASSET_RECTS.staircase, same source
-  // sheet) rather than inventing new pixel art, so arriving here reads as
-  // "the top of the same stairs the player just climbed in N5," not an
-  // unrelated new piece of furniture. Solid (the player can't walk into
-  // the painted stair art), like N5's own staircase collision block, but
-  // purely decorative here — no interaction, no return trip (out of
-  // scope; see SUMMARY.md's "no return staircase" note).
+  // "Top of the stairs" landing at the west-side spawn point — a small,
+  // purpose-built top-down composition (brick wall columns flanking a
+  // dark floor corridor, a few visible stair treads) — REPLACED per
+  // explicit follow-up feedback ("that's the last step in the
+  // libassetpack-tiled.png stairs, just crop it") with a direct crop of
+  // the real asset's bottom-most tread (ASSET_RECTS.lastStairStep,
+  // captured at its rounded drop-shadow terminus — the genuine end of
+  // the staircase's opaque content). "I don't care if the 1 step is
+  // only seen" — this is deliberately a single small tread, not a full
+  // staircase composition; the rest is implied to continue south,
+  // off-world, toward N5. Flush against the literal southwest corner
+  // (both the west wall's inner edge and the south wall). Purely
+  // decorative (non-solid) — it's a single tread graphic, not a
+  // structure the player could plausibly collide with.
   buildStairsLandmark() {
-    const rect = ASSET_RECTS.staircase;
-    const scale = 0.55;
+    const rect = ASSET_RECTS.lastStairStep;
+    const scale = 0.6;
     const w = rect.w * scale;
     const h = rect.h * scale;
-    const x = 66; // flush against the west wall's inner edge (wall strip ends at x=64)
-    const y = LAYOUT.entryY - 160;
-    const key = cropToTexture(this, 'libAssetPack', rect, 'n4StaircaseTex');
+    const x = 64; // flush against the west wall's inner edge
+    const y = (GRID_ROWS - 2) * TILE_SIZE - h; // flush against the south wall strip
+    const key = cropToTexture(this, 'libAssetPack', rect, 'n4LastStairStepTex');
     this.add.image(x, y, key).setOrigin(0, 0).setDepth(1).setDisplaySize(w, h);
-
-    // Only the top ~53% of the crop is opaque content (same ratio N5's own
-    // stairContentBottom uses) — block just that region, not the full
-    // transparent-padded bounding box, so the player can walk right up to
-    // the visible base of the stairs instead of stopping short of it.
-    const contentBottom = h * (160 / 300);
-    const block = this.add.rectangle(x + w / 2, y + contentBottom / 2, w, contentBottom, 0x000000, 0)
-      .setOrigin(0.5, 0.5);
-    this.physics.add.existing(block, true);
-    this.wallGroup.add(block);
   }
 
   // The mezzanine's floor is drawn in layers rather than borrowed from a
@@ -3163,33 +3292,28 @@ class N4LibraryScene extends Phaser.Scene {
   // subdued lower level, trim, posts, and rail caps preserve a clear view
   // down while keeping the traversal route entirely on the balconies.
   buildAtrium() {
-    const left = 392;
-    const width = WORLD_W - left * 2;
-    const top = 510;
-    const height = 910;
+    const left = LAYOUT.atriumLeft;
+    const width = LAYOUT.atriumWidth;
+    const top = LAYOUT.atriumTop;
+    const height = LAYOUT.atriumHeight;
     const g = this.add.graphics().setDepth(0);
     g.fillStyle(0x160f0c, 1).fillRect(left, top, width, height);
     buildOpenAtriumVoid(this, g, {
       left: left + 14, top: top + 16, width: width - 28, height: height - 32,
       corridorColor: N4_PALETTE.carpet,
     });
-    // Rear walkway strip — a horizontal band above the top of the atrium
-    // void (at the scene's very back / topmost), just visual space, not
-    // an interactive or path (the player can't walk behind the atrium
-    // because the bounds are set up to lock off the north corridor access).
-    const walkwayTop = top - 42;
-    const walkwayH = 42;
-    g.fillStyle(0x2a2118, 1).fillRect(left, walkwayTop, width, walkwayH);
-    // Rear walkway trim (a double line giving it depth)
-    g.lineStyle(1, 0x1a0f0a, 0.85).lineBetween(left, walkwayTop + 1, left + width, walkwayTop + 1)
-      .lineBetween(left, walkwayTop + walkwayH - 1, left + width, walkwayTop + walkwayH - 1);
-    // Full-perimeter guard rail (heavy, gold-capped posts — mockup Option
-    // B) doubles as the actual collision boundary: the void previously had
-    // NO physics body at all, so the player could walk straight into it.
-    // Drawn AFTER the void/walkway (so it sits visually on top, at the
-    // atrium's outer edge) and BEFORE the label (so the label still floats
-    // above everything).
-    buildAtriumFence(this, { left, top, width, height, wallGroup: this.wallGroup, postGap: 92 });
+    // Rear walkway strip's own dark fill + trim lines were removed per
+    // explicit feedback — it read as a flat black rectangle sitting
+    // above the rope-and-brass rail, not as a walkway. That floor space
+    // (just above the atrium's top edge) now shows the ordinary hardwood
+    // floor texture instead of a distinct filled band; the space itself
+    // is unchanged, only its dedicated dark overlay is gone.
+    // Full-perimeter rope-and-brass rail doubles as the actual collision
+    // boundary: the void previously had NO physics body at all, so the
+    // player could walk straight into it. Drawn AFTER the void/walkway
+    // (so it sits visually on top, at the atrium's outer edge) and
+    // BEFORE the label (so the label still floats above everything).
+    buildAtriumFence(this, { left, top, width, height, wallGroup: this.wallGroup });
     // "OPEN ATRIUM / FIRST-FLOOR LIBRARY" label, centered inside the
     // atrium void, floating over the illustrated content.
     const labelX = left + width / 2;
@@ -3202,22 +3326,31 @@ class N4LibraryScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(4);
   }
 
-  // Decorative jukebox prop — visual-only this pass (no real audio;
-  // n4-dashboard.html doesn't load music-player.js and no audio asset
-  // was supplied). Placed along the rear walkway, non-solid like every
-  // other decor piece on this floor.
+  // Decorative jukebox props — one per wing, each flush against that
+  // wing's own spine wall ("in front of the wall," per explicit
+  // feedback — the previous single copy floated on the open rear
+  // walkway with no wall behind it). Visual-only this pass (no real
+  // audio; n4-dashboard.html doesn't load music-player.js and no audio
+  // asset was supplied) — "the listening machine" is the intent for a
+  // future pass, not this one. Non-solid, like every other decor piece.
+  // Crops the shared texture ONCE (cropJukeboxTexture, now in
+  // library-scene-shared.js) and reuses that one key for both wing
+  // instances — re-cropping with the same destKey would throw.
   buildJukebox() {
-    const texKey = cropJukeboxTexture(this);
-    const x = 470;
-    const y = 480; // on the rear walkway strip (buildAtrium()'s walkway spans roughly y 452-494)
+    const texKey = cropJukeboxTexture(this, 'n4JukeboxTex');
     const scale = 0.16; // source crop is 620x870 — scales down to a footprint similar to the centerpiece clock
-    createDecorativeProp(this, {
+    const w = 620 * scale;
+    const y = 1080; // clear of wing1's south row (ends y=1020) and the exam-gate row (896-1132 doesn't overlap this x)
+
+    const placeJukebox = (x, tuneLabel) => createDecorativeProp(this, {
       x, y, textureKey: texKey, scale, depth: 2,
       onClick: () => {
-        showToast('The jukebox hums an old N4 tune...');
+        showToast(`The jukebox hums an old ${tuneLabel} tune...`);
         this.spawnNoteFlourish(x, y);
       },
     });
+    placeJukebox(64 + w / 2, 'N4'); // flush against the N4 (west) spine wall
+    placeJukebox(WORLD_W - 64 - w / 2, 'N3'); // flush against the N3 (east) spine wall, mirrored
   }
 
   // Same particle technique as spawnPassSparkle (library-scene-shared.js)
@@ -3328,7 +3461,7 @@ class N4LibraryScene extends Phaser.Scene {
         id: lesson.id, kind: 'shelf', title: lesson.title,
         sprite, glow, completeBadge, stamp, favIcon, lockedKey, filledKey: filledKeys[i % filledKeys.length],
         x: x + shelfW / 2, y: y + shelfH / 2, prereq: SHELF_PREREQ[lesson.id],
-        baseScale: 1,
+        baseScale: 1, displayW: shelfW, displayH: shelfH,
       };
       this.interactives.push(entry);
     });
@@ -3379,7 +3512,7 @@ class N4LibraryScene extends Phaser.Scene {
         id: pile.id, kind: 'pile', title: pile.title,
         sprite, glow, stamp, requires: pile.requires,
         x: pos.x + w / 2, y: pos.y + h / 2,
-        baseScale: scale,
+        baseScale: scale, displayW: w, displayH: h,
       };
       this.interactives.push(entry);
     });
@@ -3399,24 +3532,47 @@ class N4LibraryScene extends Phaser.Scene {
   // scaled), glow (available-state pulse) / stamp (completed) icons, a
   // floating title label, and the this.interactives entry. Replaces the
   // hand-duplicated N4/N3 block buildExamGate() used to write out twice.
-  // config: { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale }
+  // config: { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale, hideSprite?, doorTextures? }
+  // hideSprite: true builds a click/proximity hitbox with NO visible book-
+  // pile sprite, glow pulse, or floating title label — used by the N3 gate
+  // now that its "locked" state is presented as a threshold veil instead
+  // of a physical gate object (see buildN3Mist()); the interactive itself
+  // (and its 3-attempt/24h-cooldown quiz-gate logic) is otherwise identical.
+  // doorTextures: { locked, unlocked } — two texture keys (see
+  // drawDoorTexture) to use INSTEAD of the book-pile crop, with the
+  // sprite swapping between them as the gate's progress state changes
+  // (wired via updateDoorGateTextures(), called from the refreshAllStates
+  // wrapper below the class) — used by the N2 gate.
   createExamGateEntry(config) {
-    const { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale } = config;
-    const w = ASSET_RECTS.bookPileTall.w * scale;
-    const h = ASSET_RECTS.bookPileTall.h * scale;
-    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
-    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+    const { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale, hideSprite, doorTextures } = config;
+    const w = doorTextures ? 48 * scale : ASSET_RECTS.bookPileTall.w * scale;
+    const h = doorTextures ? 72 * scale : ASSET_RECTS.bookPileTall.h * scale;
+    const initialKey = doorTextures ? doorTextures.locked : bookKey;
+    const sprite = this.add.image(x, y, initialKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
+    if (hideSprite) sprite.setAlpha(0);
+    // Empty-text glow/stamp when hidden — refreshAllStates() always calls
+    // .setVisible() on these for every pile-kind entry, so they must
+    // exist, but with no text content there's nothing to actually see
+    // regardless of visibility, keeping "no object" true for the veil.
+    const glow = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '⭐', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    const stamp = this.add.text(x + w - 8, y - 6, hideSprite ? '' : '✅', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    if (!hideSprite) this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
     const entry = {
       id, kind: 'pile', title, sprite, glow, stamp, requires,
       x: x + w / 2, y: y + h / 2, baseScale: scale, isExamGate: true, quizGateKey, onPass,
+      displayW: w, displayH: h, hideSprite: !!hideSprite, doorTextures,
     };
     sprite.setInteractive({ useHandCursor: true });
     sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
-    this.add.text(x + w / 2, y - 18, title.toUpperCase(), {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8',
-    }).setOrigin(.5).setDepth(4);
+    if (!hideSprite && !doorTextures) {
+      // Doors carry their own "N2"/level plaque via createBookshelfLabel
+      // (built by the caller, buildExamGate()) instead of this floating
+      // caps-lock title text — a wooden plaque reads more "native to the
+      // wing" for a door than book-pile gates' simple text label.
+      this.add.text(x + w / 2, y - 18, title.toUpperCase(), {
+        fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8',
+      }).setOrigin(.5).setDepth(4);
+    }
     this.interactives.push(entry);
     return entry;
   }
@@ -3429,37 +3585,116 @@ class N4LibraryScene extends Phaser.Scene {
     // buildExamGate(), so this.bookPileTexKey is guaranteed to exist.
     const bookKey = this.bookPileTexKey;
     const scale = 1.3; // larger than the 0.7 review piles — reads as the floor's one landmark gate, not just another pile
+    // Positioned in the corridor gap between the shelf column and the
+    // atrium (same gapLeft/gapRight math buildBookPiles() uses for review
+    // piles), just north of the spawn point — small margin kept clear of
+    // both the shelf column and the atrium's rope-and-brass rail.
+    const gateY = 1070;
     this.createExamGateEntry({
       id: EXAM_GATE_DATA.n4.id, title: EXAM_GATE_DATA.n4.title,
-      x: 322, y: 1515, requires: EXAM_GATE_DATA.n4.requires,
+      x: 265, y: gateY, requires: EXAM_GATE_DATA.n4.requires,
       quizGateKey: N4_ENTRANCE_GATE_KEY, bookKey, scale,
       onPass: () => showToast('The N4 balcony is permanently open.'),
     });
     const w = ASSET_RECTS.bookPileTall.w * scale;
+    // N3's gate has no visible sprite/label/glow at all now — its
+    // "locked" state is presented as the full-wing violet mist
+    // (buildN3Mist()) instead of a physical gate object, per explicit
+    // design change. The interactive itself (this exact x/y, its
+    // requires/quizGateKey/onPass, the 3-attempt/24h-cooldown flow) is
+    // unchanged — hideSprite only removes what the player SEES, not the
+    // interaction or unlock logic.
     this.createExamGateEntry({
       id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
-      x: WORLD_W - 322 - w, y: 1515, requires: EXAM_GATE_DATA.n3.requires,
-      quizGateKey: QUIZ_GATE_KEY, bookKey, scale,
+      x: WORLD_W - 265 - w, y: gateY, requires: EXAM_GATE_DATA.n3.requires,
+      quizGateKey: QUIZ_GATE_KEY, bookKey, scale, hideSprite: true,
       onPass: () => showToast('The N3 balcony is permanently open.'),
     });
 
-    // N2/N1 — left wing, per explicit instruction (breaks the natural
-    // N4->N3->N2->N1 left/right progression on purpose; see design spec
-    // Item 4). Placed in the open band between the rear walkway and the
-    // northmost shelf row (wing3, LAYOUT.wing3RowY[0] = 660), clear of
-    // every left-wing shelf position.
-    const gateScale = 1.0; // smaller than the 1.3 entry gates — these read as "future" landmarks, not the floor's primary gate
-    this.createExamGateEntry({
+    // N2 — a real pixel-art DOOR (drawDoorTexture) in the very top-right
+    // corner of the N3 (right) wing — moved here per explicit follow-up
+    // correction (an earlier version placed it in the N4/left wing,
+    // matching this pass's ORIGINAL spec; the live feedback overrode
+    // that in favor of the N3 side instead). Positioned flush toward
+    // the east spine wall (WORLD_W - 64 inner edge) and as far north as
+    // the top wall band allows. N1 is dropped for this pass entirely —
+    // a future pass can add N1's own door once this one's design and
+    // position are confirmed live.
+    const doorScale = 1.4;
+    const n2LockedKey = drawDoorTexture(this, 'n4N2DoorLockedTex', { locked: true });
+    const n2UnlockedKey = drawDoorTexture(this, 'n4N2DoorUnlockedTex', { locked: false });
+    const n2DoorW = 48 * doorScale;
+    const n2X = WORLD_W - 64 - n2DoorW - 8; // flush toward the N3 (east) spine, top-right corner
+    const n2Y = 115; // as far north as the top wall band allows
+    const n2Entry = this.createExamGateEntry({
       id: EXAM_GATE_DATA.n2.id, title: EXAM_GATE_DATA.n2.title,
-      x: 100, y: 520, requires: EXAM_GATE_DATA.n2.requires,
-      quizGateKey: N2_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
-      onPass: () => showToast('The N2 gate creaks open... nothing beyond it yet.'),
+      x: n2X, y: n2Y, requires: EXAM_GATE_DATA.n2.requires,
+      quizGateKey: N2_ENTRANCE_GATE_KEY, scale: doorScale,
+      doorTextures: { locked: n2LockedKey, unlocked: n2UnlockedKey },
+      onPass: () => showToast('The N2 door creaks open... nothing beyond it yet.'),
     });
-    this.createExamGateEntry({
-      id: EXAM_GATE_DATA.n1.id, title: EXAM_GATE_DATA.n1.title,
-      x: 220, y: 520, requires: EXAM_GATE_DATA.n1.requires,
-      quizGateKey: N1_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
-      onPass: () => showToast('The N1 gate creaks open... nothing beyond it yet.'),
+    const doorLabel = createBookshelfLabel(this, n2Entry.x, n2Entry.y + (72 * doorScale) / 2 - 6, 'N2 Entrance Exam', {
+      fontSize: 6, maxWidth: 90,
+    });
+    doorLabel.bg.setDepth(3);
+    doorLabel.label.setDepth(4);
+  }
+
+  // Frosted threshold veil across "the hall going to the N3 wing" — the
+  // corridor gap between the atrium's right edge and the N3 shelf
+  // column — while n3-exam-gate is locked. Two corrections from the
+  // first version, per explicit follow-up feedback:
+  //   1. Height was tied to LAYOUT.entryY, which grew a lot once the
+  //      stairs/spawn moved into the SW corner — the veil ended up
+  //      stretching almost the full map height, reading as "smeared
+  //      across the wing" rather than a doorway. Now a fixed, compact
+  //      band positioned right at the entrance to the gap (just south
+  //      of the atrium's own top edge), not tied to entryY at all.
+  //   2. It's now a REAL solid wall (a collision rectangle added to
+  //      wallGroup, matching its visual footprint) — the player
+  //      genuinely cannot walk through it, not just a visual overlay.
+  //      Confirmed safe for N4: N4's own auto-walk paths all move
+  //      westward from the center corridor (x=400) toward N4's
+  //      shelves (x=70-254), never entering this eastward gap
+  //      (x≈496-538), so blocking it only affects N3-bound routes.
+  buildN3Mist() {
+    const top = LAYOUT.atriumTop + 10;
+    const height = 150;
+    const veilLeft = LAYOUT.atriumLeft + LAYOUT.atriumWidth + 8;
+    const veilWidth = LAYOUT.rightColX[0] - veilLeft - 8;
+
+    this.n3MistShapes = buildThresholdVeil(this, { x: veilLeft, top, height, width: veilWidth });
+    const block = this.add.rectangle(veilLeft + veilWidth / 2, top + height / 2, veilWidth, height, 0x000000, 0);
+    this.physics.add.existing(block, true);
+    this.wallGroup.add(block);
+    this.n3MistBlock = block;
+
+    this.n3MistLifted = !!this.progress['n3-exam-gate'];
+    if (this.n3MistLifted) {
+      this.n3MistShapes.forEach((s) => s.setVisible(false));
+      this.wallGroup.remove(block, true, true); // already unlocked on load — no barrier, no leftover collider
+    }
+  }
+
+  // Called after every refreshAllStates() (wrapped onto the prototype
+  // just below this class, after Object.assign) — fades the veil out
+  // exactly once, the first time n3-exam-gate's progress flips to
+  // passed, and never re-shows it (a permanent lift, per the design's
+  // explicit "lifts permanently" requirement). Also removes the solid
+  // collision block immediately (not tied to the fade animation's
+  // duration) — the barrier lifting is a state change, not something
+  // that needs to visually "solidify away."
+  updateN3MistState() {
+    if (this.n3MistLifted || !this.n3MistShapes) return;
+    if (!this.progress['n3-exam-gate']) return;
+    this.n3MistLifted = true;
+    if (this.n3MistBlock) {
+      this.wallGroup.remove(this.n3MistBlock, true, true);
+      this.n3MistBlock = null;
+    }
+    this.tweens.add({
+      targets: this.n3MistShapes, alpha: 0, duration: 900, ease: 'Sine.In',
+      onComplete: () => this.n3MistShapes.forEach((s) => s.setVisible(false)),
     });
   }
 
@@ -3588,13 +3823,55 @@ class N4LibraryScene extends Phaser.Scene {
 
     // Proximity highlight: scale up whichever interactive is nearest
     // and in range (visual "you can interact here" cue), reset others.
+    // Uses setDisplaySize (against each entry's own stored displayW/
+    // displayH), NOT setScale(baseScale) — setScale multiplies the
+    // sprite's NATIVE texture size, which silently overrides whatever
+    // setDisplaySize() the entry was built with (confirmed: this is why
+    // shelves/piles/gates previously rendered at their raw crop size
+    // instead of LAYOUT's requested dimensions — every entry now carries
+    // its own intended display size explicitly instead of relying on
+    // native-size-relative scaling).
     const near = this.nearestInRange();
+    const pulse = 1.08;
     this.interactives.forEach((entry) => {
-      entry.sprite.setScale(entry.baseScale * (entry === near ? 1.08 : 1));
+      if (entry.displayW == null) return; // npc-kind entries have no sprite display size to pulse
+      const factor = entry === near ? pulse : 1;
+      entry.sprite.setDisplaySize(entry.displayW * factor, entry.displayH * factor);
     });
   }
 }
 Object.assign(N4LibraryScene.prototype, LibrarySceneEngine);
+
+// Wraps the shared engine's refreshAllStates() (just assigned above) so
+// every progress-state refresh also checks whether N3's mist should
+// lift — done this way (patching the prototype after Object.assign,
+// not adding a same-named method to the class body) because a class-body
+// method of the same name would just get clobbered by the Object.assign
+// call above; library-scene-shared.js itself stays untouched, so N5
+// (which has no mist concept) is completely unaffected.
+const sharedRefreshAllStates = N4LibraryScene.prototype.refreshAllStates;
+N4LibraryScene.prototype.refreshAllStates = function () {
+  sharedRefreshAllStates.call(this);
+  this.updateN3MistState();
+  this.updateDoorGateTextures();
+};
+
+// Swaps a door-gate's sprite between its locked/unlocked textures
+// (drawDoorTexture) as progress changes — the shared refreshAllStates()
+// only knows how to texture-swap kind:'shelf' entries (locked/filled
+// crops); door gates are kind:'pile' (same interaction model as every
+// other exam gate), so this is a small N4-only extension rather than
+// touching the shared engine for one gate type. Only entries built with
+// createExamGateEntry's `doorTextures` config are affected (currently
+// just N2) — every other entry has `doorTextures` undefined and this
+// loop skips it immediately.
+N4LibraryScene.prototype.updateDoorGateTextures = function () {
+  this.interactives.forEach((entry) => {
+    if (!entry.doorTextures) return;
+    const unlocked = !!this.progress[entry.id];
+    entry.sprite.setTexture(unlocked ? entry.doorTextures.unlocked : entry.doorTextures.locked);
+  });
+};
 
 const n4PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,

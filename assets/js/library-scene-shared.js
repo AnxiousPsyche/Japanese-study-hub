@@ -323,51 +323,130 @@ function buildOpenAtriumVoid(scene, g, config) {
   }
 }
 
-// Builds a full-perimeter guard rail around a mezzanine's open atrium —
-// heavy gold-capped wood posts + a double rail line, reusing the exact
-// wood/gold palette the atrium's own frame trim already uses — AND a
-// single invisible collision rectangle covering the whole atrium
-// footprint, added to the caller's wallGroup, so the player genuinely
-// cannot walk into the void (the previous version had no collision at
-// all here). Reusable by any future mezzanine floor with the same
-// layout — pass that floor's own wallGroup.
+// Builds a "rope and brass" nautical-library guard rail around a
+// mezzanine's open atrium — polished, tapered brass posts (thicker base,
+// narrower rounded-cap tip) with thick hemp rope strung between each
+// consecutive pair in a catenary sag — AND a single invisible collision
+// rectangle covering the whole atrium footprint, added to the caller's
+// wallGroup, so the player genuinely cannot walk into the void.
+// Deliberately no solid infill anywhere (no panel behind the rope) —
+// the sightline into the void stays fully open between posts and
+// above/below the rope, per the design's explicit "don't block the
+// view" requirement. Reusable by any future mezzanine floor with the
+// same layout — pass that floor's own wallGroup.
+//
+// Lighting note: this codebase has no actual lantern/light-source
+// objects (checked — there's no such system in either floor's scene
+// code, despite "lantern lighting" appearing in this floor's original
+// design-spec prose). Posts get a fixed-direction highlight/shadow
+// instead (brighter edge toward the atrium's own center, consistent
+// with the depth-gradient lighting `buildOpenAtriumVoid` already fakes
+// the same way) rather than querying a light system that doesn't exist.
+//
 // config: { left, top, width, height, wallGroup, postGap? }
 function buildAtriumFence(scene, config) {
   const { left, top, width, height, wallGroup } = config;
-  const postGap = config.postGap || 84;
+  const postGap = config.postGap || 96; // ~6 tiles at TILE_SIZE=16, within the 5-7 tile spec range
+  const cx0 = left + width / 2;
+  const cy0 = top + height / 2;
   const g = scene.add.graphics().setDepth(3);
-  const wood = 0x4a2d1d;
-  const gold = 0xc9a66b;
-  const cap = 0xe8d4a8;
-  const postW = 7;
 
-  const drawPost = (cx, cy, horizontal) => {
-    const w = horizontal ? postW : 10;
-    const h = horizontal ? 10 : postW;
-    g.fillStyle(wood, 1).fillRect(cx - w / 2, cy - h / 2, w, h);
-    g.fillStyle(gold, 1);
-    if (horizontal) g.fillRect(cx - w / 2 - 1, cy - h / 2 - 2, w + 2, 3);
-    else g.fillRect(cx - w / 2 - 2, cy - h / 2 - 1, 3, h + 2);
-    g.fillStyle(cap, 1).fillRect(cx - 1, cy - h / 2 - (horizontal ? 3 : 0) - 1, 2, 2);
-  };
+  const brassBase = 0x6b4a1e;
+  const brassShaft = 0xc9a24c; // matches N4_PALETTE.gold
+  const brassHi = 0xf0d080;
+  const brassCap = 0xfbe7a8;
+  const ropeTop = 0xc9a66b; // warm tan/hemp
+  const ropeUnder = 0x6b4a2e; // darker shaded underside
 
-  // Double rail line (gold core, dark wood outline) around the whole
-  // perimeter, matching the atrium's existing outer-frame gold trim.
-  g.lineStyle(5, wood, 1).strokeRect(left, top, width, height);
-  g.lineStyle(2, gold, 0.9).strokeRect(left, top, width, height);
-
-  // Posts along the top/bottom edges (horizontal runs)...
-  for (let x = left; x <= left + width; x += postGap) {
-    drawPost(x, top, true);
-    drawPost(x, top + height, true);
+  // One tapered brass post, base at (cx,cy) on the rail line, tapering
+  // AWAY from the atrium's own center (reads as "standing up" out of
+  // the balcony edge). `along` is the axis the post's rail edge runs
+  // along ('x' for top/bottom edges, 'y' for left/right edges).
+  function drawPost(cx, cy, along) {
+    const baseW = 6, tipW = 3, postLen = 11, capR = 2;
+    // Outward direction: away from the atrium's center point.
+    const outX = along === 'x' ? 0 : Math.sign(cx - cx0) || 1;
+    const outY = along === 'x' ? (Math.sign(cy - cy0) || 1) : 0;
+    // Base rect (wide, at the rail line) then a narrower tip rect
+    // further along the outward direction — a simple 2-step taper that
+    // reads clearly at this pixel scale.
+    if (along === 'x') {
+      const baseH = postLen * 0.6, tipH = postLen * 0.4;
+      const baseY = outY > 0 ? cy : cy - baseH;
+      g.fillStyle(brassBase, 1).fillRect(cx - baseW / 2, baseY, baseW, baseH);
+      const tipY = outY > 0 ? cy + baseH : cy - baseH - tipH;
+      g.fillStyle(brassShaft, 1).fillRect(cx - tipW / 2, tipY, tipW, tipH);
+      // Highlight toward atrium center (inward, opposite of outward), shadow on the far side.
+      const hiX = cx - baseW / 2;
+      g.fillStyle(brassHi, 0.8).fillRect(hiX, baseY, 1, baseH + tipH);
+      g.fillStyle(brassBase, 0.9).fillRect(cx + baseW / 2 - 1, baseY, 1, baseH);
+      g.fillStyle(brassCap, 1).fillRect(cx - capR / 2, tipY - (outY > 0 ? 0 : capR), capR, capR);
+    } else {
+      const baseW2 = postLen * 0.6, tipW2 = postLen * 0.4;
+      const baseX = outX > 0 ? cx : cx - baseW2;
+      g.fillStyle(brassBase, 1).fillRect(baseX, cy - baseW / 2, baseW2, baseW);
+      const tipX = outX > 0 ? cx + baseW2 : cx - baseW2 - tipW2;
+      g.fillStyle(brassShaft, 1).fillRect(tipX, cy - tipW / 2, tipW2, tipW);
+      const hiY = cy - baseW / 2;
+      g.fillStyle(brassHi, 0.8).fillRect(baseX, hiY, baseW2 + tipW2, 1);
+      g.fillStyle(brassBase, 0.9).fillRect(baseX, cy + baseW / 2 - 1, baseW2, 1);
+      g.fillStyle(brassCap, 1).fillRect(tipX - (outX > 0 ? 0 : capR), cy - capR / 2, capR, capR);
+    }
   }
-  // ...and the left/right edges (vertical runs) — corners get a post
-  // from both loops, which is fine (a post at a corner reads correctly
-  // either way).
-  for (let y = top; y <= top + height; y += postGap) {
-    drawPost(left, y, false);
-    drawPost(left + width, y, false);
+
+  // Thick sagging rope between two posts on the same edge — sampled
+  // points along a parabolic catenary approximation, bulging toward the
+  // atrium's own center (a simplification: a true vertical-run rope
+  // wouldn't sag sideways under gravity, but bulging inward reads as
+  // "slack rope over the gap" consistently for every edge, matches the
+  // spec's "rising back up to meet the next post at post-cap height").
+  // Drawn as two overlapping stroked curves (a lighter top strand, a
+  // darker underside strand offset by 1px) so the rope reads as round,
+  // not flat.
+  function drawRope(x1, y1, x2, y2, along) {
+    const sag = 7;
+    const steps = 14;
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const bulge = sag * 4 * t * (1 - t);
+      const px = x1 + (x2 - x1) * t;
+      const py = y1 + (y2 - y1) * t;
+      if (along === 'x') {
+        const dir = Math.sign(cy0 - py) || 1; // toward atrium center vertically
+        pts.push([px, py + dir * bulge]);
+      } else {
+        const dir = Math.sign(cx0 - px) || 1; // toward atrium center horizontally
+        pts.push([px + dir * bulge, py]);
+      }
+    }
+    const strokePts = (offset, color, thickness) => {
+      g.lineStyle(thickness, color, 1).beginPath();
+      g.moveTo(pts[0][0] + offset.x, pts[0][1] + offset.y);
+      for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0] + offset.x, pts[i][1] + offset.y);
+      g.strokePath();
+    };
+    strokePts({ x: 0, y: 1 }, ropeUnder, 3);
+    strokePts({ x: 0, y: -1 }, ropeTop, 3);
   }
+
+  // Top/bottom edges (horizontal runs).
+  [top, top + height].forEach((edgeY) => {
+    const posts = [];
+    for (let x = left; x <= left + width; x += postGap) posts.push(x);
+    if (posts[posts.length - 1] !== left + width) posts.push(left + width);
+    posts.forEach((x) => drawPost(x, edgeY, 'x'));
+    for (let i = 0; i < posts.length - 1; i++) drawRope(posts[i], edgeY, posts[i + 1], edgeY, 'x');
+  });
+  // Left/right edges (vertical runs) — these are the wings' actual
+  // atrium-facing edges, the ones the design spec cares about most.
+  [left, left + width].forEach((edgeX) => {
+    const posts = [];
+    for (let y = top; y <= top + height; y += postGap) posts.push(y);
+    if (posts[posts.length - 1] !== top + height) posts.push(top + height);
+    posts.forEach((y) => drawPost(edgeX, y, 'y'));
+    for (let i = 0; i < posts.length - 1; i++) drawRope(edgeX, posts[i], edgeX, posts[i + 1], 'y');
+  });
 
   // One solid rectangle covering the whole atrium footprint — simpler
   // and more robust than trying to collide against the visual rail
@@ -619,7 +698,11 @@ const LibrarySceneEngine = {
         entry.favIcon.setVisible(!!this.favorites[entry.id]);
         entry.completeBadge.setVisible(state === 'completed');
       }
-      entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
+      // entry.hideSprite: true opts an entry out of the generic lock-dim
+      // alpha (its sprite is intentionally invisible for a reason other
+      // than "locked", e.g. a click-hitbox with no visual of its own —
+      // this line would otherwise fight that every time state changes).
+      if (!entry.hideSprite) entry.sprite.setAlpha(state === 'locked' ? 0.55 : 1);
       entry.glow.setVisible(state === 'available');
       entry.stamp.setVisible(state === 'completed');
     });
@@ -752,6 +835,82 @@ const LibrarySceneEngine = {
   },
 };
 
+// Crops a padded window around the jukebox artwork's opaque content and
+// zeroes any residual low-alpha pixels (<20/255) left over from the
+// source file's soft vignette background, so the destination texture
+// reads as a clean cutout against the floor instead of a faint
+// translucent square. Reusable across every floor's scene that loads
+// the 'jukebox' image key — pass a scene-unique destKey (Phaser throws
+// on re-registering a canvas key), but the SAME destKey can be reused
+// for multiple decorative-prop instances within one scene (e.g. one
+// jukebox per wing) since they all read the one cropped texture.
+function cropJukeboxTexture(scene, destKey) {
+  const srcImage = scene.textures.get('jukebox').getSourceImage();
+  const rect = { x: 202, y: 82, w: 620, h: 870 }; // padded around the measured x:242-782, y:122-912 opaque bbox
+  const tex = scene.textures.createCanvas(destKey, rect.w, rect.h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+  const imageData = ctx.getImageData(0, 0, rect.w, rect.h);
+  const data = imageData.data;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] < 20) data[i] = 0;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  tex.refresh();
+  return destKey;
+}
+
+// Builds a narrow "frosted glass" threshold veil across a corridor gap —
+// a dithered field of small semi-transparent tiles (no CSS blur/glow
+// filter — a genuine pixel-art dither, matching this file's other
+// procedural textures) framed by two dark wood door-posts, reading as
+// "there's a fogged doorway here" rather than "the whole room changed
+// color." Reusable by any gated corridor/hallway, not just N3's —
+// caller owns the fade-out-on-unlock logic (this only builds the visual
+// shapes and returns them).
+// config: { x, top, height, width?, tint? } — x/top/height define the
+// veil's rect; width defaults to a narrow doorway (44px).
+// Returns the array of created GameObjects (for the caller to fade/hide).
+function buildThresholdVeil(scene, config) {
+  const { x, top, height } = config;
+  const width = config.width || 44;
+  const tint = config.tint !== undefined ? config.tint : 0xc8bee0;
+  const postColor = 0x241209;
+
+  const shapes = [];
+  const g = scene.add.graphics().setDepth(4);
+  // Dithered frosted-glass field — small semi-transparent squares at
+  // randomized-but-deterministic positions, denser toward the center of
+  // the doorway, thinning near the posts.
+  let seed = 7;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed / 0x7fffffff;
+  };
+  for (let ty = top; ty < top + height; ty += 4) {
+    for (let tx = x; tx < x + width; tx += 4) {
+      if (rand() > 0.55) continue;
+      const alpha = 0.10 + rand() * 0.14;
+      g.fillStyle(tint, alpha).fillRect(tx + (rand() * 2 - 1), ty, 3, 3);
+    }
+  }
+  g.fillStyle(tint, 0.08).fillRect(x, top, width, height);
+  shapes.push(g);
+
+  // Door-posts framing the veil on both sides — same dark wood as this
+  // file's other architectural trim, giving the fog a literal "doorway"
+  // to sit inside rather than floating in open floor.
+  [x - 4, x + width].forEach((postX) => {
+    const post = scene.add.rectangle(postX, top, 4, height, postColor).setOrigin(0, 0).setDepth(4);
+    shapes.push(post);
+  });
+
+  return shapes;
+}
+
+window.buildThresholdVeil = buildThresholdVeil;
+window.cropJukeboxTexture = cropJukeboxTexture;
 window.LibrarySceneEngine = LibrarySceneEngine;
 window.cropToTexture = cropToTexture;
 window.drawWovenRug = drawWovenRug;
