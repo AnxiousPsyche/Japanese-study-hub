@@ -21,9 +21,9 @@
     (`n3-exam-gate`, same 3-attempt/24h-cooldown mechanic as N5's staircase) that keeps the entire
     N3 column genuinely locked until both N4 review piles are done. **Only 3 shelves have full
     lesson content** (`n4-shelf-01`, `n4-shelf-05`, `n3-shelf-01` — the flagships); the other 21
-    shelves and all 4 review piles have short placeholder pages (mark progress, unlock the next
-    shelf, no real grammar content yet). Own localStorage namespace (`nekoBunko.n4.*`), confirmed
-    non-colliding with N5's.
+    shelves and all 6 review piles (see "Mezzanine revision pass" below — was 4 piles, now 6) have
+    short placeholder pages (mark progress, unlock the next shelf, no real grammar content yet).
+    Own localStorage namespace (`nekoBunko.n4.*`), confirmed non-colliding with N5's.
   - A HUD shortcut button ("N3 gate exam," top nav bar on the N4 dashboard) opens the exam gate
     directly once both N4 reviews are done, without needing to walk there — same interaction path
     as walking up to the gate, not a separate mechanism.
@@ -132,12 +132,19 @@ Flagged during the final whole-branch review as real, non-urgent maintenance deb
 
 ## 3. How to resume
 
-Name a specific item from section 2 above, or say "write the next N4/N3 lesson" and name which
-shelf. Full task-by-task build history, including every per-task independent review's findings,
-is in `docs/superpowers/plans/2026-07-27-n4-second-floor.md` (original floor build) and
-`docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md` (mezzanine polish pass). If
-the worktrees at `.claude/worktrees/n4-second-floor` and `.claude/worktrees/n4-mezzanine-polish`
-still exist, each has its own `.superpowers/sdd/**/progress.md` with the complete review ledger
-for that pass — both branches are already fully merged into `main`, so the worktrees themselves
-are just historical review records at this point, safe to remove whenever they're in the way. No
-re-deriving context needed.
+If picking this up mid-session: check `git status`/`git diff` first — the shelf-position fix and
+the atrium/fence/staircase/review-pile mezzanine revision (section 1 above) are real, verified
+changes sitting uncommitted in `assets/js/n4-phaser-game.js` and `assets/js/library-scene-shared.js`
+right now, not yet a commit or a spec/plan doc (this pass moved fast off direct user feedback +
+live debugging rather than the usual brainstorm→spec→plan flow). Check whether the background
+lesson-research agent has returned before starting new work that assumes `LESSON_CONTENT` is still
+3-shelves-only.
+
+Otherwise, name a specific item from section 2 above, or say "write the next N4/N3 lesson" and
+name which shelf. Full task-by-task build history for the ORIGINAL floor build + the prior
+mezzanine polish pass (both already merged to `main`), including every per-task independent
+review's findings, is in `docs/superpowers/plans/2026-07-27-n4-second-floor.md` and
+`docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md`. If the worktrees at
+`.claude/worktrees/n4-second-floor` and `.claude/worktrees/n4-mezzanine-polish` still exist, each
+has its own `.superpowers/sdd/**/progress.md` with the complete review ledger for that pass — safe
+to remove whenever they're in the way, no re-deriving context needed from them.

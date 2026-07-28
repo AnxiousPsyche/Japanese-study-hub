@@ -282,27 +282,1790 @@ function buildPlaceholderLesson(title) {
 }
 
 const LESSON_CONTENT = {
-  'n4-shelf-02': buildPlaceholderLesson('Potential Form'),
-  'n4-shelf-03': buildPlaceholderLesson('Conditionals (と・ば・たら・なら)'),
-  'n4-shelf-04': buildPlaceholderLesson('Volitional & Intention'),
-  'n4-shelf-06': buildPlaceholderLesson('Comparisons'),
-  'n4-shelf-07': buildPlaceholderLesson('Passive & Causative Verbs'),
-  'n4-shelf-08': buildPlaceholderLesson('Adjective + なる・する'),
-  'n4-shelf-09': buildPlaceholderLesson('Obligation & Necessity'),
-  'n4-shelf-10': buildPlaceholderLesson('Experience & Continuation'),
-  'n4-shelf-11': buildPlaceholderLesson('Purpose & Preparation'),
-  'n4-shelf-12': buildPlaceholderLesson('Everyday Reading Practice'),
-  'n3-shelf-02': buildPlaceholderLesson('Causative-Passive'),
-  'n3-shelf-03': buildPlaceholderLesson('Conjecture & Hearsay (そうだ・ようだ・らしい)'),
-  'n3-shelf-04': buildPlaceholderLesson('Relative Clauses & Complex Modification'),
-  'n3-shelf-05': buildPlaceholderLesson('Formal Written Style (である体)'),
-  'n3-shelf-06': buildPlaceholderLesson('Advanced Keigo'),
-  'n3-shelf-07': buildPlaceholderLesson('Conjunction Nuances (ものの・くせに・というより)'),
-  'n3-shelf-08': buildPlaceholderLesson('Extended Reading Practice'),
-  'n3-shelf-09': buildPlaceholderLesson('Tendency & Appearance'),
-  'n3-shelf-10': buildPlaceholderLesson('Restriction & Emphasis'),
-  'n3-shelf-11': buildPlaceholderLesson('Abstract Expressions'),
-  'n3-shelf-12': buildPlaceholderLesson('Advanced Reading Practice'),
+  'n4-shelf-02': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Potential Form: "Can Do"',
+      bigIdea: 'The potential form turns any verb into its own "can do" — no separate ことができる construction needed once you know the conjugation.',
+      explain: [
+        'Every verb has a potential form: ichidan verbs swap る for られる, godan verbs shift their final u-row sound to the matching e-row sound and add る, and the two irregulars する/来る each have their own form. One more twist: the direct object marker を often shifts to が once a verb goes potential.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Ichidan: 〜る → 〜られる',
+      pattern: [
+        { text: '[verb stem]', role: 'subject' }, { text: 'られる', role: 'predicate' },
+      ],
+      explain: ['Drop る and add られる — the same simple swap as every other ichidan conjugation you\'ve learned.'],
+      samples: [
+        {
+          tag: '"I can eat natto."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '納豆が', role: 'particle', gloss: 'natto' },
+            { text: '食べられます', role: 'predicate', gloss: 'can eat', isNew: true, smallGloss: true },
+          ],
+          translation: 'Watashi wa nattou ga taberaremasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Godan: final u-row → e-row + る',
+      pattern: [
+        { text: '[verb stem, u→e]', role: 'subject' }, { text: 'る', role: 'predicate' },
+      ],
+      explain: ['Swap the verb\'s final u-sound for its e-row match, then add る — 話す (hanasu) becomes 話せる (hanaseru).'],
+      samples: [
+        {
+          tag: '"I can speak Japanese."',
+          tiles: [
+            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
+            { text: '話せます', role: 'predicate', gloss: 'can speak', isNew: true },
+          ],
+          translation: 'Nihongo o hanasemasu.',
+        },
+        {
+          tag: '"Can you read kanji?"',
+          tiles: [
+            { text: '漢字が', role: 'particle', gloss: 'kanji' },
+            { text: '読めますか', role: 'predicate', gloss: 'can you read?', isNew: true },
+          ],
+          translation: 'Kanji ga yomemasu ka?',
+        },
+      ],
+      cultureNote: 'Notice 漢字 takes が, not を, in the second sample — once a verb goes potential, its direct object often shifts from を to が.',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Irregular: する → できる, 来る → 来られる',
+      explain: [
+        'する doesn\'t become される for potential — it swaps to a whole new word, できる ("to be able to do"). 来る follows the ichidan-style swap, becoming 来られる (korareru).',
+      ],
+      samples: [
+        {
+          tag: '"I can do this job."',
+          tiles: [
+            { text: 'この仕事が', role: 'particle', gloss: 'this job' },
+            { text: 'できます', role: 'predicate', gloss: 'can do', isNew: true },
+          ],
+          translation: 'Kono shigoto ga dekimasu.',
+        },
+        {
+          tag: '"I can come tomorrow."',
+          tiles: [
+            { text: '明日', role: 'particle', gloss: 'tomorrow' },
+            { text: '来られます', role: 'predicate', gloss: 'can come', isNew: true, smallGloss: true },
+          ],
+          translation: 'Ashita koraremasu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I can speak Japanese" (Japanese = 日本語, speak = 話す):',
+      before: '', after: '。',
+      choices: ['日本語を話せます', '日本語を話します', '日本語を話しました'],
+      answer: '日本語を話せます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Can you read kanji?" (kanji = 漢字, read = 読む):',
+      before: '', after: 'か。',
+      choices: ['漢字が読めます', '漢字を読みます', '漢字が読みました'],
+      answer: '漢字が読めます',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Potential Form',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜られる (ichidan)', romaji: '~rareru', meaning: 'can do (ichidan verbs)' },
+        { kana: '〜る→〜える (godan)', romaji: '~eru', meaning: 'can do (godan verbs)' },
+        { kana: 'できる', romaji: 'dekiru', meaning: 'can do (from する)' },
+        { kana: '来られる', romaji: 'korareru', meaning: 'can come' },
+        { kana: '日本語を話せます', romaji: 'Nihongo o hanasemasu', meaning: 'I can speak Japanese' },
+        { kana: '漢字が読めますか', romaji: 'Kanji ga yomemasu ka', meaning: 'Can you read kanji?' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '日本語を', after: '。', answer: '話せます', hint: '"I can speak Japanese."' },
+        { before: '漢字が', after: 'か。', answer: '読めます', hint: '"Can you read kanji?"' },
+      ],
+    },
+  ],
+  'n4-shelf-03': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Conditionals: と・ば・たら・なら',
+      bigIdea: 'Japanese doesn\'t have one "if" — it has four, split by whether the outcome is automatic, a rule, a one-off guess, or advice reacting to what was just said.',
+      explain: [
+        'と marks an automatic, natural result. ば marks a general "if...then" rule, more formal in tone. たら is the flexible, one-time hypothetical you\'ll hear most often in speech. なら reacts to something already said — "given that/since you mentioned it."',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'と: automatic result',
+      pattern: [
+        { text: '[plain form]', role: 'subject' }, { text: 'と、[result]', role: 'predicate' },
+      ],
+      explain: ['Use と when B always, naturally follows A — a law of nature, a habit, a fixed rule. Not for one-time plans or invitations.'],
+      samples: [
+        {
+          tag: '"When spring comes, flowers bloom."',
+          tiles: [
+            { text: '春に', role: 'particle', gloss: 'spring' },
+            { text: 'なると', role: 'predicate', gloss: 'when it becomes', isNew: true },
+            { text: '花が', role: 'particle', gloss: 'flowers' },
+            { text: '咲きます', role: 'predicate', gloss: 'bloom' },
+          ],
+          translation: 'Haru ni naru to, hana ga sakimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'たら: one-time hypothetical',
+      pattern: [
+        { text: '[た-form]+ら', role: 'subject' }, { text: '、[result]', role: 'predicate' },
+      ],
+      explain: ['Built on the plain past (た-form) plus ら. The most flexible, everyday way to say "if" — a one-off guess about a specific situation, most common in casual speech.'],
+      samples: [
+        {
+          tag: '"If it rains, I won\'t go."',
+          tiles: [
+            { text: '雨が', role: 'particle', gloss: 'rain' },
+            { text: '降ったら', role: 'predicate', gloss: 'if it falls', isNew: true },
+            { text: '行きません', role: 'predicate', gloss: 'won\'t go' },
+          ],
+          translation: 'Ame ga futtara, ikimasen.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ば: general rule (and なら: reacting to context)',
+      explain: [
+        'ば attaches to the verb\'s e-row stem + ば (行けば, "if [one] goes") and reads slightly more formal or bookish than たら — good for general truths and advice.',
+        'なら doesn\'t react to a hypothetical future — it reacts to something the other person JUST said. If a friend says "I\'m going," 行くなら responds directly to that plan, not to some unrelated guess about going.',
+      ],
+      samples: [
+        {
+          tag: '"If you\'re going, let\'s go together."',
+          tiles: [
+            { text: '行くなら', role: 'predicate', gloss: 'if you\'re going (given that)', isNew: true, smallGloss: true },
+            { text: '一緒に', role: 'predicate', gloss: 'together' },
+            { text: '行きましょう', role: 'predicate', gloss: 'let\'s go' },
+          ],
+          translation: 'Iku nara, issho ni ikimashou.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "When spring comes, flowers bloom" (spring = 春, become = なる, flower = 花, bloom = 咲きます):',
+      before: '', after: '。',
+      choices: ['春になると、花が咲きます', '春になったら、花が咲きます', '春になれば、花が咲きます'],
+      answer: '春になると、花が咲きます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "If it rains, I won\'t go" (rain = 雨, fall = 降る, go = 行きます):',
+      before: '', after: '。',
+      choices: ['雨が降ったら、行きません', '雨が降ると、行きません', '雨が降るなら、行きません'],
+      answer: '雨が降ったら、行きません',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Conditionals',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜と', romaji: '~to', meaning: 'automatic/natural result' },
+        { kana: '〜ば', romaji: '~ba', meaning: 'general "if...then" (formal)' },
+        { kana: '〜たら', romaji: '~tara', meaning: 'flexible one-time hypothetical' },
+        { kana: '〜なら', romaji: '~nara', meaning: '"given that / since you said so"' },
+        { kana: '春になると、花が咲きます', romaji: 'Haru ni naru to, hana ga sakimasu', meaning: 'When spring comes, flowers bloom' },
+        { kana: '雨が降ったら、行きません', romaji: 'Ame ga futtara, ikimasen', meaning: 'If it rains, I won\'t go' },
+        { kana: '行くなら、一緒に行きましょう', romaji: 'Iku nara, issho ni ikimashou', meaning: 'If you\'re going, let\'s go together' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '春に', after: '、花が咲きます。', answer: 'なると', hint: '"When spring comes, flowers bloom."' },
+        { before: '雨が', after: '、行きません。', answer: '降ったら', hint: '"If it rains, I won\'t go."' },
+      ],
+    },
+  ],
+  'n4-shelf-04': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Volitional & Intention',
+      bigIdea: 'The volitional form is the plain-speech "let\'s/I will"; stacking と思う on top turns a decision into a tentative intention — softer than つもりだ.',
+      explain: [
+        'Ichidan verbs swap る for よう; godan verbs shift their final u-sound to the matching o-row sound and add う; the irregulars する/来る become しよう/来よう. Add と思う afterward to soften a plan into "I\'m thinking of doing X."',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Forming the volitional',
+      pattern: [
+        { text: '[godan: u→o+う]', role: 'subject' }, { text: '[ichidan: 〜る→よう]', role: 'predicate' },
+      ],
+      explain: ['行く (godan) becomes 行こう (ikou); 食べる (ichidan) becomes 食べよう (tabeyou); する becomes しよう; 来る becomes 来よう.'],
+      samples: [
+        {
+          tag: '"Let\'s watch a movie together next time."',
+          tiles: [
+            { text: '今度、', role: 'subject', gloss: 'next time' },
+            { text: 'いっしょに', role: 'particle', gloss: 'together' },
+            { text: '映画を', role: 'particle', gloss: 'a movie' },
+            { text: '見よう', role: 'predicate', gloss: 'let\'s watch', isNew: true },
+          ],
+          translation: 'Kondo, issho ni eiga o miyou.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜（よ）うと思う: "I\'m thinking of doing..."',
+      pattern: [
+        { text: '[volitional]', role: 'subject' }, { text: 'と思います', role: 'predicate' },
+      ],
+      explain: ['Stacking と思う on the volitional form softens a bare "I will" into "I\'m thinking of..." — a tentative intention, not a firm commitment.'],
+      samples: [
+        {
+          tag: '"I\'m thinking of going to Japan next year."',
+          tiles: [
+            { text: '来年、', role: 'subject', gloss: 'next year' },
+            { text: '日本へ', role: 'particle', gloss: 'to Japan' },
+            { text: '行こうと', role: 'predicate', gloss: 'thinking of going', isNew: true, smallGloss: true },
+            { text: '思います', role: 'predicate', gloss: 'think' },
+          ],
+          translation: 'Rainen, nihon e ikou to omoimasu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Let\'s watch a movie together" (movie = 映画, watch = 見る):',
+      before: 'いっしょに映画を', after: '。',
+      choices: ['見よう', '見ます', '見たい'],
+      answer: '見よう',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I\'m thinking of going to Japan next year" (next year = 来年, Japan = 日本, go = 行く):',
+      before: '来年、日本へ', after: '。',
+      choices: ['行こうと思います', '行きます', '行こう'],
+      answer: '行こうと思います',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Volitional & Intention',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '行こう', romaji: 'ikou', meaning: 'let\'s go / I will go (godan)' },
+        { kana: '見よう', romaji: 'miyou', meaning: 'let\'s watch / I will watch (ichidan)' },
+        { kana: 'しよう / 来よう', romaji: 'shiyou / koyou', meaning: 'let\'s do / let\'s come (irregular)' },
+        { kana: '〜（よ）うと思います', romaji: '~(y)ou to omoimasu', meaning: 'I\'m thinking of doing...' },
+        { kana: '来年、日本へ行こうと思います', romaji: 'Rainen, nihon e ikou to omoimasu', meaning: 'I\'m thinking of going to Japan next year' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: 'いっしょに映画を', after: '。', answer: '見よう', hint: '"Let\'s watch a movie together."' },
+        { before: '来年、日本へ', after: '。', answer: '行こうと思います', hint: '"I\'m thinking of going to Japan next year."' },
+      ],
+    },
+  ],
+  'n4-shelf-06': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Comparisons',
+      bigIdea: 'To compare, you name the loser with より — the thing compared against, not the winner, takes the marker.',
+      explain: [
+        'Three shapes cover most comparisons: [A]は[B]より[adj] ("A is more ~ than B"), [A]は[B]ほど〜ない ("A isn\'t as ~ as B" — negative only), and AとBとどちらが〜 ("which of A and B is more...").',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜より: "more ~ than..."',
+      pattern: [
+        { text: '[A]は', role: 'subject' }, { text: '[B]より', role: 'particle' }, { text: '[adjective]です', role: 'predicate' },
+      ],
+      explain: ['より marks the thing A is being compared against — B is the "loser" of the comparison, not A.'],
+      samples: [
+        {
+          tag: '"The bullet train is faster than the bus."',
+          tiles: [
+            { text: '新幹線は', role: 'subject', gloss: 'the bullet train' },
+            { text: 'バスより', role: 'particle', gloss: 'than the bus', isNew: true },
+            { text: '速いです', role: 'predicate', gloss: 'is fast' },
+          ],
+          translation: 'Shinkansen wa basu yori hayai desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ほど〜ない: "not as ~ as..."',
+      pattern: [
+        { text: '[A]は', role: 'subject' }, { text: '[B]ほど', role: 'particle' }, { text: '[adjective]ないです', role: 'predicate' },
+      ],
+      explain: ['ほど always pairs with a negative predicate — there\'s no positive "as ~ as" version of this pattern.'],
+      samples: [
+        {
+          tag: '"Today isn\'t as cold as yesterday."',
+          tiles: [
+            { text: '今日は', role: 'subject', gloss: 'today' },
+            { text: '昨日ほど', role: 'particle', gloss: 'as much as yesterday', isNew: true, smallGloss: true },
+            { text: '寒くないです', role: 'predicate', gloss: 'isn\'t cold' },
+          ],
+          translation: 'Kyou wa kinou hodo samukunai desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "The bullet train is faster than the bus" (bullet train = 新幹線, bus = バス, fast = 速い):',
+      before: '新幹線は', after: '。',
+      choices: ['バスより速いです', 'バスほど速いです', 'バスが速いです'],
+      answer: 'バスより速いです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Today isn\'t as cold as yesterday" (today = 今日, yesterday = 昨日, cold = 寒い):',
+      before: '今日は', after: '。',
+      choices: ['昨日ほど寒くないです', '昨日より寒いです', '昨日ほど寒いです'],
+      answer: '昨日ほど寒くないです',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Comparisons',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜は〜より〜です', romaji: '~wa ~yori ~desu', meaning: 'A is more ~ than B' },
+        { kana: '〜は〜ほど〜ないです', romaji: '~wa ~hodo ~nai desu', meaning: 'A isn\'t as ~ as B' },
+        { kana: '〜と〜とどちらが〜', romaji: '~to ~to dochira ga ~', meaning: 'which of A and B is more...' },
+        { kana: '新幹線はバスより速いです', romaji: 'Shinkansen wa basu yori hayai desu', meaning: 'The bullet train is faster than the bus' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '新幹線は', after: '。', answer: 'バスより速いです', hint: '"The bullet train is faster than the bus."' },
+        { before: '今日は', after: '。', answer: '昨日ほど寒くないです', hint: '"Today isn\'t as cold as yesterday."' },
+      ],
+    },
+  ],
+  'n4-shelf-07': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Passive & Causative Verbs',
+      bigIdea: 'Passive puts the person something happened to in the subject slot; causative puts the person forcing/allowing the action there — same conjugation family, opposite direction of control.',
+      explain: [
+        'Passive: godan verbs add え-row + れる (話す→話される), ichidan verbs add られる (見る→見られる). Causative: godan verbs add あ-row + せる (話す→話させる), ichidan verbs add させる (見る→見させる).',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '受け身: the passive',
+      pattern: [
+        { text: '[agent]に', role: 'particle' }, { text: '[verb, e-row/られる]', role: 'predicate' },
+      ],
+      explain: ['The person something happened TO becomes the subject; the person who DID it is marked with に.'],
+      samples: [
+        {
+          tag: '"I was praised by the teacher."',
+          tiles: [
+            { text: '先生に', role: 'particle', gloss: 'by the teacher' },
+            { text: '褒められました', role: 'predicate', gloss: 'was praised', isNew: true, smallGloss: true },
+          ],
+          translation: 'Sensei ni homeraremashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '使役形: the causative',
+      pattern: [
+        { text: '[causer]は', role: 'subject' }, { text: '[target]に', role: 'particle' }, { text: '[verb, a-row/させる]', role: 'predicate' },
+      ],
+      explain: ['The person forcing or allowing the action becomes the subject; the person made to do it is marked with に.'],
+      samples: [
+        {
+          tag: '"My mother made me eat vegetables."',
+          tiles: [
+            { text: '母は', role: 'subject', gloss: 'my mother' },
+            { text: '私に', role: 'particle', gloss: 'me' },
+            { text: '野菜を', role: 'particle', gloss: 'vegetables' },
+            { text: '食べさせました', role: 'predicate', gloss: 'made [me] eat', isNew: true, smallGloss: true },
+          ],
+          translation: 'Haha wa watashi ni yasai o tabesasemashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I was praised by the teacher" (teacher = 先生, praise = 褒める):',
+      before: '', after: '。',
+      choices: ['先生に褒められました', '先生を褒めました', '先生に褒めさせました'],
+      answer: '先生に褒められました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "My mother made me eat vegetables" (mother = 母, vegetables = 野菜, eat = 食べる):',
+      before: '母は私に野菜を', after: '。',
+      choices: ['食べさせました', '食べられました', '食べました'],
+      answer: '食べさせました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Passive & Causative',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜（ら）れる', romaji: '~(ra)reru', meaning: 'passive: was done to' },
+        { kana: '〜（さ）せる', romaji: '~(sa)seru', meaning: 'causative: make/let someone do' },
+        { kana: '先生に褒められました', romaji: 'Sensei ni homeraremashita', meaning: 'I was praised by the teacher' },
+        { kana: '母は私に野菜を食べさせました', romaji: 'Haha wa watashi ni yasai o tabesasemashita', meaning: 'My mother made me eat vegetables' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '先生に', after: '。', answer: '褒められました', hint: '"I was praised by the teacher."' },
+        { before: '母は私に野菜を', after: '。', answer: '食べさせました', hint: '"My mother made me eat vegetables."' },
+      ],
+    },
+  ],
+  'n4-shelf-08': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Adjective + なる・する',
+      bigIdea: 'なる describes something changing on its own; する describes someone deliberately making it that way — same adjective, opposite direction of agency.',
+      explain: [
+        'い-adjectives drop い and add くなる/くする; な-adjectives and nouns add になる/にする. One irregular: いい ("good") becomes よくなる, not いくなる.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜くなる・〜になる: becoming',
+      pattern: [
+        { text: '[い-adj, drop い]+く', role: 'subject' }, { text: '[な-adj/noun]+に', role: 'subject' }, { text: 'なります', role: 'predicate' },
+      ],
+      explain: ['なる marks a spontaneous change — nobody deliberately did this, it just happened.'],
+      samples: [
+        {
+          tag: '"It became autumn, and it got cool."',
+          tiles: [
+            { text: '秋になって、', role: 'subject', gloss: 'it became autumn', isNew: true, smallGloss: true },
+            { text: '涼しく', role: 'predicate', gloss: 'cool', isNew: true },
+            { text: 'なりました', role: 'predicate', gloss: 'became' },
+          ],
+          translation: 'Aki ni natte, suzushiku narimashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜くする・〜にする: making',
+      pattern: [
+        { text: '[い-adj, drop い]+く', role: 'subject' }, { text: '[な-adj/noun]+に', role: 'subject' }, { text: 'します', role: 'predicate' },
+      ],
+      explain: ['する marks a deliberate change — someone made it that way on purpose.'],
+      samples: [
+        {
+          tag: '"I made the room clean."',
+          tiles: [
+            { text: '部屋を', role: 'particle', gloss: 'the room' },
+            { text: 'きれいに', role: 'predicate', gloss: 'clean' },
+            { text: 'しました', role: 'predicate', gloss: 'made [it]', isNew: true },
+          ],
+          translation: 'Heya o kirei ni shimashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It became autumn, and it got cool" (autumn = 秋, cool = 涼しい, become = なる):',
+      before: '', after: '。',
+      choices: ['秋になって、涼しくなりました', '秋になって、涼しくしました', '秋にして、涼しくなりました'],
+      answer: '秋になって、涼しくなりました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I made the room clean" (room = 部屋, clean = きれい, make = する):',
+      before: '部屋を', after: '。',
+      choices: ['きれいにしました', 'きれいになりました', 'きれくしました'],
+      answer: 'きれいにしました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Adjective + なる・する',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜くなる / 〜になる', romaji: '~ku naru / ~ni naru', meaning: 'to become (spontaneous)' },
+        { kana: '〜くする / 〜にする', romaji: '~ku suru / ~ni suru', meaning: 'to make (deliberate)' },
+        { kana: '涼しくなりました', romaji: 'suzushiku narimashita', meaning: 'it got cool' },
+        { kana: 'きれいにしました', romaji: 'kirei ni shimashita', meaning: 'I made it clean' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '秋になって、', after: '。', answer: '涼しくなりました', hint: '"It became autumn, and it got cool."' },
+        { before: '部屋を', after: '。', answer: 'きれいにしました', hint: '"I made the room clean."' },
+      ],
+    },
+  ],
+  'n4-shelf-09': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Obligation & Necessity',
+      bigIdea: 'なければなりません is a double negative — "if you don\'t do X, it won\'t do" — adding up to "must." Its mirror なくてもいいです marks the same action as optional.',
+      explain: [
+        'Both patterns build on the plain negative (nai-form): drop い and add ければなりません/いけません for "must," or くてもいいです for "don\'t have to."',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜なければなりません: "must"',
+      pattern: [
+        { text: '[nai-form, drop い]', role: 'subject' }, { text: 'ければなりません', role: 'predicate' },
+      ],
+      explain: ['Literally "if [I] don\'t do it, it won\'t do" — the double negative reads as an obligation.'],
+      samples: [
+        {
+          tag: '"I have to submit the report by tomorrow."',
+          tiles: [
+            { text: '明日までに', role: 'particle', gloss: 'by tomorrow' },
+            { text: 'レポートを', role: 'particle', gloss: 'the report' },
+            { text: '出さなければ', role: 'predicate', gloss: 'if [I] don\'t submit', isNew: true, smallGloss: true },
+            { text: 'なりません', role: 'predicate', gloss: 'won\'t do' },
+          ],
+          translation: 'Ashita made ni repooto o dasanakereba narimasen.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜なくてもいいです: "don\'t have to"',
+      pattern: [
+        { text: '[nai-form, drop い]', role: 'subject' }, { text: 'くてもいいです', role: 'predicate' },
+      ],
+      explain: ['Marks the same action as optional — "even if [I] don\'t do it, it\'s fine."'],
+      samples: [
+        {
+          tag: '"I don\'t have to go home early today."',
+          tiles: [
+            { text: '今日は', role: 'subject', gloss: 'today' },
+            { text: '早く', role: 'predicate', gloss: 'early' },
+            { text: '帰らなくても', role: 'predicate', gloss: 'even if [I] don\'t go home', isNew: true, smallGloss: true },
+            { text: 'いいです', role: 'predicate', gloss: 'it\'s fine' },
+          ],
+          translation: 'Kyou wa hayaku kaeranakutemo ii desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I have to submit the report by tomorrow" (tomorrow = 明日, report = レポート, submit = 出す):',
+      before: '明日までにレポートを', after: '。',
+      choices: ['出さなければなりません', '出してもいいです', '出さなくてもいいです'],
+      answer: '出さなければなりません',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I don\'t have to go home early today" (today = 今日, early = 早く, go home = 帰る):',
+      before: '今日は早く', after: '。',
+      choices: ['帰らなくてもいいです', '帰らなければなりません', '帰ってもいいです'],
+      answer: '帰らなくてもいいです',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Obligation & Necessity',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜なければなりません', romaji: '~nakereba narimasen', meaning: 'must do...' },
+        { kana: '〜なくてもいいです', romaji: '~nakutemo ii desu', meaning: 'don\'t have to do...' },
+        { kana: 'レポートを出さなければなりません', romaji: 'Repooto o dasanakereba narimasen', meaning: 'I have to submit the report' },
+        { kana: '早く帰らなくてもいいです', romaji: 'Hayaku kaeranakutemo ii desu', meaning: 'I don\'t have to go home early' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '明日までにレポートを', after: '。', answer: '出さなければなりません', hint: '"I have to submit the report by tomorrow."' },
+        { before: '今日は早く', after: '。', answer: '帰らなくてもいいです', hint: '"I don\'t have to go home early today."' },
+      ],
+    },
+  ],
+  'n4-shelf-10': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Experience & Continuation',
+      bigIdea: 'たことがある reports a life experience regardless of when; ている on a past-tense verb captures what was happening/already true at one specific moment.',
+      explain: [
+        'Two new patterns: [た-form]+ことがあります ("have done X before") and [て-form]+いました ("was doing / had done").',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜たことがあります: past experience',
+      pattern: [
+        { text: '[た-form]', role: 'subject' }, { text: 'ことがあります', role: 'predicate' },
+      ],
+      explain: ['Reports something you\'ve experienced at least once — the exact timing doesn\'t matter, only that it happened.'],
+      samples: [
+        {
+          tag: '"I have climbed Mt. Fuji once."',
+          tiles: [
+            { text: '一度、', role: 'predicate', gloss: 'once' },
+            { text: '富士山に', role: 'particle', gloss: 'Mt. Fuji' },
+            { text: '登った', role: 'predicate', gloss: 'climbed', isNew: true },
+            { text: 'ことがあります', role: 'predicate', gloss: 'have [done]', isNew: true, smallGloss: true },
+          ],
+          translation: 'Ichido, Fujisan ni nobotta koto ga arimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ていました: was doing / had done',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'いました', role: 'predicate' },
+      ],
+      explain: ['Past-tense ている captures what was already happening, or already true, at one specific moment in the past.'],
+      samples: [
+        {
+          tag: '"When I called, he was sleeping."',
+          tiles: [
+            { text: '電話をかけたとき、', role: 'subject', gloss: 'when [I] called', isNew: true, smallGloss: true },
+            { text: '彼は', role: 'subject', gloss: 'he' },
+            { text: '寝ていました', role: 'predicate', gloss: 'was sleeping', isNew: true },
+          ],
+          translation: 'Denwa o kaketa toki, kare wa nete imashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I have climbed Mt. Fuji once" (once = 一度, Mt. Fuji = 富士山, climb = 登る):',
+      before: '一度、富士山に', after: '。',
+      choices: ['登ったことがあります', '登っています', '登ります'],
+      answer: '登ったことがあります',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "When I called, he was sleeping" (call = 電話をかける, he = 彼, sleep = 寝る):',
+      before: '電話をかけたとき、彼は', after: '。',
+      choices: ['寝ていました', '寝たことがあります', '寝ます'],
+      answer: '寝ていました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Experience & Continuation',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜たことがあります', romaji: '~ta koto ga arimasu', meaning: 'have done X before' },
+        { kana: '〜ていました', romaji: '~te imashita', meaning: 'was doing / had done' },
+        { kana: '富士山に登ったことがあります', romaji: 'Fujisan ni nobotta koto ga arimasu', meaning: 'I have climbed Mt. Fuji' },
+        { kana: '彼は寝ていました', romaji: 'Kare wa nete imashita', meaning: 'He was sleeping' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '一度、富士山に', after: '。', answer: '登ったことがあります', hint: '"I have climbed Mt. Fuji once."' },
+        { before: '電話をかけたとき、彼は', after: '。', answer: '寝ていました', hint: '"When I called, he was sleeping."' },
+      ],
+    },
+  ],
+  'n4-shelf-11': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Purpose & Preparation',
+      bigIdea: 'ために is for goals you deliberately work toward; ように is for goals outside your direct control — improvement, avoidance, or someone else\'s outcome.',
+      explain: [
+        '[volitional/dictionary-form verb]+ために = "in order to" (same-subject, intentional goal). [potential/non-volitional verb]+ように = "so that" (a goal outside direct control, or achieved by a different subject).',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ために: "in order to" (deliberate)',
+      pattern: [
+        { text: '[dictionary-form verb]', role: 'subject' }, { text: 'ために、[action]', role: 'predicate' },
+      ],
+      explain: ['Use ために when the goal is something you deliberately, intentionally work toward.'],
+      samples: [
+        {
+          tag: '"In order to study Japanese, I\'m going to Japan."',
+          tiles: [
+            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
+            { text: '勉強するために、', role: 'predicate', gloss: 'in order to study', isNew: true, smallGloss: true },
+            { text: '日本へ', role: 'particle', gloss: 'to Japan' },
+            { text: '行きます', role: 'predicate', gloss: 'go' },
+          ],
+          translation: 'Nihongo o benkyou suru tame ni, nihon e ikimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ように: "so that" (outside direct control)',
+      pattern: [
+        { text: '[potential/non-volitional verb]', role: 'subject' }, { text: 'ように、[action]', role: 'predicate' },
+      ],
+      explain: ['Use ように when the goal isn\'t something you can just decide to do — spontaneous improvement, avoiding something, or a different subject achieving the outcome.'],
+      samples: [
+        {
+          tag: '"So that I get good at Japanese, I practice every day."',
+          tiles: [
+            { text: '日本語が', role: 'particle', gloss: 'Japanese' },
+            { text: '上手になるように、', role: 'predicate', gloss: 'so that [I] get good at', isNew: true, smallGloss: true },
+            { text: '毎日', role: 'predicate', gloss: 'every day' },
+            { text: '練習しています', role: 'predicate', gloss: 'practice' },
+          ],
+          translation: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu.',
+        },
+      ],
+      cultureNote: '上手になる ("to get good at") is a spontaneous change, not something you can will directly — that\'s why it takes ように, not ために.',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "In order to study Japanese, I\'m going to Japan" (Japanese = 日本語, study = 勉強する, Japan = 日本, go = 行く):',
+      before: '', after: '。',
+      choices: ['日本語を勉強するために、日本へ行きます', '日本語が上手になるように、日本へ行きます', '日本語を勉強しますが、日本へ行きます'],
+      answer: '日本語を勉強するために、日本へ行きます',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "So that I get good at Japanese, I practice every day" (Japanese = 日本語, get good at = 上手になる, practice = 練習する):',
+      before: '', after: '。',
+      choices: ['日本語が上手になるように、毎日練習しています', '日本語が上手になるために、毎日練習しています', '日本語を上手にするように、毎日練習しています'],
+      answer: '日本語が上手になるように、毎日練習しています',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Purpose & Preparation',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ために', romaji: '~tame ni', meaning: 'in order to (deliberate goal)' },
+        { kana: '〜ように', romaji: '~you ni', meaning: 'so that (goal outside direct control)' },
+        { kana: '日本語を勉強するために、日本へ行きます', romaji: 'Nihongo o benkyou suru tame ni, nihon e ikimasu', meaning: 'In order to study Japanese, I\'m going to Japan' },
+        { kana: '日本語が上手になるように、毎日練習しています', romaji: 'Nihongo ga jouzu ni naru you ni, mainichi renshuu shite imasu', meaning: 'So that I get good at Japanese, I practice every day' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '日本語を勉強するために、', after: '。', answer: '日本へ行きます', hint: '"In order to study Japanese, I\'m going to Japan."' },
+        { before: '日本語が上手になるように、', after: '。', answer: '毎日練習しています', hint: '"So that I get good at Japanese, I practice every day."' },
+      ],
+    },
+  ],
+  'n4-shelf-12': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Everyday Reading Practice',
+      bigIdea: 'A casual message from a friend, using grammar from this floor — conditionals, potential form, and て-form permission — all in one everyday context.',
+      explain: [
+        '今度の週末、映画を見に行こうと思います。もしよかったら、いっしょに行きませんか。土曜日なら、午後に行けます。日曜日は仕事があるので、行けません。もし雨が降ったら、うちで映画を見てもいいですよ。',
+        '<span class="dim">(Kondo no shuumatsu, eiga o mi ni ikou to omoimasu. Moshi yokattara, issho ni ikimasen ka. Doyoubi nara, gogo ni ikemasu. Nichiyoubi wa shigoto ga aru node, ikemasen. Moshi ame ga futtara, uchi de eiga o mitemo ii desu yo.)</span>',
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What is this message mainly about?',
+      before: '', after: '',
+      choices: ['Weekend movie plans', 'A shopping trip', 'A work meeting'],
+      answer: 'Weekend movie plans',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'On which day can the writer go in the afternoon?',
+      before: '', after: '',
+      choices: ['Saturday (土曜日)', 'Sunday (日曜日)', 'Friday (金曜日)'],
+      answer: 'Saturday (土曜日)',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'Why can\'t the writer go on Sunday?',
+      before: '', after: '',
+      choices: ['They have work', 'They are sick', 'They dislike movies'],
+      answer: 'They have work',
+    },
+    {
+      type: 'summary',
+      title: 'Summary: Everyday Reading Practice',
+      headers: ['Phrase', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '今度の週末', romaji: 'kondo no shuumatsu', meaning: 'this coming weekend' },
+        { kana: '見に行こうと思います', romaji: 'mi ni ikou to omoimasu', meaning: 'I\'m thinking of going to see' },
+        { kana: 'もしよかったら', romaji: 'moshi yokattara', meaning: 'if you\'d like (conditional)' },
+        { kana: '土曜日なら', romaji: 'doyoubi nara', meaning: 'if it\'s Saturday' },
+        { kana: '午後に行けます', romaji: 'gogo ni ikemasu', meaning: 'I can go in the afternoon (potential)' },
+        { kana: '仕事があるので', romaji: 'shigoto ga aru node', meaning: 'since I have work' },
+        { kana: '見てもいいですよ', romaji: 'mitemo ii desu yo', meaning: 'it\'s fine to watch (permission)' },
+      ],
+    },
+  ],
+  'n3-shelf-02': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Causative-Passive',
+      recapChips: ['Causative & passive verbs (N4, shelf 7)'],
+      bigIdea: 'Causative-passive layers "was made to" on top of causative — the unwilling receiver\'s-eye view of being forced into an action by someone else.',
+      explain: [
+        'Build it from the causative you already know: drop る and add られる (or the contracted される for godan verbs). たつ (godan) → 待たせる (causative) → 待たせられる/待たされる (causative-passive). 食べる (ichidan) → 食べさせる → 食べさせられる.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Forming the causative-passive',
+      pattern: [
+        { text: '[causative stem]', role: 'subject' }, { text: 'られる／される', role: 'predicate' },
+      ],
+      explain: ['Godan verbs often contract to される (待たせられる → 待たされる) in speech; ichidan verbs keep the full させられる with no contraction.'],
+      samples: [
+        {
+          tag: '"When I was a child, I was made to eat vegetables I disliked."',
+          tiles: [
+            { text: '子供のとき、', role: 'subject', gloss: 'when I was a child' },
+            { text: '嫌いな野菜を', role: 'particle', gloss: 'vegetables I disliked' },
+            { text: '食べさせられました', role: 'predicate', gloss: 'was made to eat', isNew: true, smallGloss: true },
+          ],
+          translation: 'Kodomo no toki, kiraina yasai o tabesaseraremashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'The unwilling receiver\'s-eye view',
+      explain: [
+        'Causative-passive almost always carries a nuance of reluctance — you didn\'t want to do this, but someone with authority over you made you anyway.',
+      ],
+      samples: [
+        {
+          tag: '"I was made to work overtime by my boss."',
+          tiles: [
+            { text: '上司に', role: 'particle', gloss: 'by my boss' },
+            { text: '残業させられました', role: 'predicate', gloss: 'was made to work overtime', isNew: true, smallGloss: true },
+          ],
+          translation: 'Joushi ni zangyou saseraremashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I was made to eat vegetables I disliked" (dislike = 嫌いな, vegetables = 野菜, eat = 食べる):',
+      before: '嫌いな野菜を', after: '。',
+      choices: ['食べさせられました', '食べさせました', '食べられました'],
+      answer: '食べさせられました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I was made to work overtime by my boss" (boss = 上司, overtime = 残業):',
+      before: '上司に', after: '。',
+      choices: ['残業させられました', '残業させました', '残業されました'],
+      answer: '残業させられました',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Causative-Passive',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜させられる／〜される', romaji: '~saserareru / ~sareru', meaning: 'was made to do (unwillingly)' },
+        { kana: '食べさせられました', romaji: 'tabesaseraremashita', meaning: 'was made to eat' },
+        { kana: '残業させられました', romaji: 'zangyou saseraremashita', meaning: 'was made to work overtime' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '子供のとき、嫌いな野菜を', after: '。', answer: '食べさせられました', hint: '"When I was a child, I was made to eat vegetables I disliked."' },
+        { before: '上司に', after: '。', answer: '残業させられました', hint: '"I was made to work overtime by my boss."' },
+      ],
+    },
+  ],
+  'n3-shelf-03': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Conjecture & Hearsay',
+      bigIdea: 'そうだ、ようだ、らしい all mean roughly "seems / apparently," but the source of the impression differs — a visual cue, secondhand info, your own reasoning, or a rumor you half-believe.',
+      explain: [
+        '[verb stem]+そうだ = a visual/sensory impression ("looks like"). [plain form]+そうだ = hearsay ("I heard that..."). [plain form]+ようだ = your own judgment from indirect evidence. [plain form, drop な on na-adj/noun]+らしい = hearsay/rumor stated with some confidence.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜そうだ: visual impression vs. hearsay',
+      pattern: [
+        { text: '[verb stem]', role: 'subject' }, { text: 'そうです', role: 'predicate' },
+      ],
+      explain: ['Two completely different そうだ patterns share the same word: attach it to a verb stem for a visual guess ("looks like it will..."), or to a full plain-form sentence for hearsay ("I heard that...").'],
+      samples: [
+        {
+          tag: '"The sky is dark. It looks like it\'s going to rain."',
+          tiles: [
+            { text: '空が', role: 'subject', gloss: 'the sky' },
+            { text: '暗いです。', role: 'predicate', gloss: 'is dark' },
+            { text: '雨が', role: 'subject', gloss: 'rain' },
+            { text: '降りそうです', role: 'predicate', gloss: 'looks like it will fall', isNew: true, smallGloss: true },
+          ],
+          translation: 'Sora ga kurai desu. Ame ga furisou desu.',
+        },
+        {
+          tag: '"According to the forecast, it will be sunny tomorrow."',
+          tiles: [
+            { text: '天気予報によると、', role: 'particle', gloss: 'according to the forecast' },
+            { text: '明日は', role: 'subject', gloss: 'tomorrow' },
+            { text: '晴れるそうです', role: 'predicate', gloss: 'I heard it will be sunny', isNew: true, smallGloss: true },
+          ],
+          translation: 'Tenki yohou ni yoru to, ashita wa hareru sou desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ようだ・〜らしい: judgment vs. rumor',
+      pattern: [
+        { text: '[plain form]', role: 'subject' }, { text: 'ようです／らしいです', role: 'predicate' },
+      ],
+      explain: ['ようだ is your own conclusion, reasoned from indirect evidence you\'ve seen or noticed. らしい leans more on what other people say — a rumor stated with some confidence, not your own firsthand judgment.'],
+      samples: [
+        {
+          tag: '"That shop\'s ramen is apparently delicious."',
+          tiles: [
+            { text: 'あの店の', role: 'subject', gloss: 'that shop\'s' },
+            { text: 'ラーメンは', role: 'subject', gloss: 'ramen' },
+            { text: 'おいしいらしいです', role: 'predicate', gloss: 'is apparently delicious', isNew: true, smallGloss: true },
+          ],
+          translation: 'Ano mise no raamen wa oishii rashii desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It looks like it\'s going to rain" (rain = 雨, fall = 降る):',
+      before: '雨が', after: '。',
+      choices: ['降りそうです', '降るそうです', '降るらしいです'],
+      answer: '降りそうです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "That shop\'s ramen is apparently delicious" (that shop = あの店, ramen = ラーメン, delicious = おいしい):',
+      before: 'あの店のラーメンは', after: '。',
+      choices: ['おいしいらしいです', 'おいしそうです', 'おいしいです'],
+      answer: 'おいしいらしいです',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Conjecture & Hearsay',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜そうだ (stem)', romaji: '~sou da', meaning: 'looks like (visual impression)' },
+        { kana: '〜そうだ (plain form)', romaji: '~sou da', meaning: 'I heard that... (hearsay)' },
+        { kana: '〜ようだ', romaji: '~you da', meaning: 'seems (own judgment)' },
+        { kana: '〜らしい', romaji: '~rashii', meaning: 'apparently (rumor)' },
+        { kana: '雨が降りそうです', romaji: 'Ame ga furisou desu', meaning: 'It looks like it\'s going to rain' },
+        { kana: 'あの店のラーメンはおいしいらしいです', romaji: 'Ano mise no raamen wa oishii rashii desu', meaning: 'That shop\'s ramen is apparently delicious' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '空が暗いです。雨が', after: '。', answer: '降りそうです', hint: '"The sky is dark. It looks like it\'s going to rain."' },
+        { before: 'あの店のラーメンは', after: '。', answer: 'おいしいらしいです', hint: '"That shop\'s ramen is apparently delicious."' },
+      ],
+    },
+  ],
+  'n3-shelf-04': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Relative Clauses & Complex Modification',
+      bigIdea: 'Japanese doesn\'t have a separate "who/that/which" — a full plain-form clause goes right in front of a noun, like a giant adjective.',
+      explain: [
+        '[clause, plain form] directly precedes the noun it modifies — no relative pronoun needed. Modifying clauses stay in plain form even inside an otherwise polite sentence, and は can\'t mark the subject inside the clause — が is used instead.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Clause + noun: no relative pronoun',
+      pattern: [
+        { text: '[clause, plain form]', role: 'subject' }, { text: '[noun]', role: 'predicate' },
+      ],
+      explain: ['The whole clause sits directly in front of the noun, just like a single adjective would — 昨日買った本 is literally "yesterday-bought book."'],
+      samples: [
+        {
+          tag: '"The book I bought yesterday is very interesting."',
+          tiles: [
+            { text: '昨日買った', role: 'subject', gloss: 'bought yesterday', isNew: true, smallGloss: true },
+            { text: '本は', role: 'subject', gloss: 'book' },
+            { text: 'とても', role: 'predicate', gloss: 'very' },
+            { text: '面白いです', role: 'predicate', gloss: 'is interesting' },
+          ],
+          translation: 'Kinou katta hon wa totemo omoshiroi desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'は→が inside the clause',
+      explain: ['Inside a modifying clause, the subject marker switches from は to が — the clause needs its own subject marker, and は is reserved for the sentence\'s outer topic.'],
+      samples: [
+        {
+          tag: '"The person who lives next door is a doctor."',
+          tiles: [
+            { text: '隣に', role: 'particle', gloss: 'next door' },
+            { text: '住んでいる', role: 'predicate', gloss: 'lives (plain form)', isNew: true },
+            { text: '人は', role: 'subject', gloss: 'person' },
+            { text: '医者です', role: 'predicate', gloss: 'is a doctor' },
+          ],
+          translation: 'Tonari ni sunde iru hito wa isha desu.',
+        },
+      ],
+      cultureNote: 'Inside the clause 隣に住んでいる, the person doing the living has no explicit が-marked subject here because it IS the noun 人 being modified — が would only appear if a different subject were introduced inside the clause.',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "The book I bought yesterday is very interesting" (yesterday = 昨日, buy = 買う, book = 本, interesting = 面白い):',
+      before: '', after: '。',
+      choices: ['昨日買った本はとても面白いです', '昨日買う本はとても面白いです', '本は昨日買って面白いです'],
+      answer: '昨日買った本はとても面白いです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "The person who lives next door is a doctor" (next door = 隣, live = 住む, person = 人, doctor = 医者):',
+      before: '', after: '。',
+      choices: ['隣に住んでいる人は医者です', '隣は住んでいる人が医者です', '隣に住む人は医者でした'],
+      answer: '隣に住んでいる人は医者です',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Relative Clauses',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '[clause, plain form]+[noun]', romaji: '(no separate word for "that/which")', meaning: 'a clause modifying a noun' },
+        { kana: '昨日買った本', romaji: 'kinou katta hon', meaning: 'the book [I] bought yesterday' },
+        { kana: '隣に住んでいる人', romaji: 'tonari ni sunde iru hito', meaning: 'the person who lives next door' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '', after: 'はとても面白いです。', answer: '昨日買った本', hint: '"The book I bought yesterday is very interesting."' },
+        { before: '', after: 'は医者です。', answer: '隣に住んでいる人', hint: '"The person who lives next door is a doctor."' },
+      ],
+    },
+  ],
+  'n3-shelf-05': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Formal Written Style (である体)',
+      bigIdea: 'である is だ\'s formal-writing cousin — used in essays, news, and reports where です／ます would sound out of place.',
+      explain: [
+        '[noun／な-adjective]+である can replace な or の when linking nouns, and reads as a blunt, written-register version of だ. Once a piece of writing commits to である style, it stays in plain form throughout — mixing in です／ます mid-document reads as a mistake.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜である: the written-register だ',
+      pattern: [
+        { text: '[noun／な-adjective]', role: 'subject' }, { text: 'である', role: 'predicate' },
+      ],
+      explain: ['である attaches to a noun or な-adjective the same place だ or です would — just in a more formal, written register.'],
+      samples: [
+        {
+          tag: '"This is a Japanese textbook."',
+          tiles: [
+            { text: 'これは', role: 'subject', gloss: 'this' },
+            { text: '日本語の', role: 'particle', gloss: 'Japanese' },
+            { text: '教科書である', role: 'predicate', gloss: 'is a textbook (formal)', isNew: true, smallGloss: true },
+          ],
+          translation: 'Kore wa nihongo no kyoukasho de aru.',
+        },
+        {
+          tag: '"He is a famous writer."',
+          tiles: [
+            { text: '彼は', role: 'subject', gloss: 'he' },
+            { text: '有名な', role: 'predicate', gloss: 'famous' },
+            { text: '作家である', role: 'predicate', gloss: 'is a writer (formal)', isNew: true, smallGloss: true },
+          ],
+          translation: 'Kare wa yuumeina sakka de aru.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Staying consistent',
+      explain: ['Once a document opens in である style, every sentence in it stays in plain form — です／ます never mixes back in, even in a polite-sounding aside. Consistency is the whole point: it signals "this is formal writing," not spoken register.'],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "This is a Japanese textbook" in である体 (this = これ, Japanese = 日本語, textbook = 教科書):',
+      before: 'これは日本語の', after: '。',
+      choices: ['教科書である', '教科書です', '教科書だった'],
+      answer: '教科書である',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "He is a famous writer" in である体 (he = 彼, famous = 有名な, writer = 作家):',
+      before: '彼は有名な', after: '。',
+      choices: ['作家である', '作家です', '作家でした'],
+      answer: '作家である',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: である体',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜である', romaji: '~de aru', meaning: 'formal written "to be" (essays, reports, news)' },
+        { kana: 'これは日本語の教科書である', romaji: 'Kore wa nihongo no kyoukasho de aru', meaning: 'This is a Japanese textbook' },
+        { kana: '彼は有名な作家である', romaji: 'Kare wa yuumeina sakka de aru', meaning: 'He is a famous writer' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: 'これは日本語の', after: '。', answer: '教科書である', hint: '"This is a Japanese textbook" (formal written style).' },
+        { before: '彼は有名な', after: '。', answer: '作家である', hint: '"He is a famous writer" (formal written style).' },
+      ],
+    },
+  ],
+  'n3-shelf-06': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Advanced Keigo',
+      bigIdea: 'Keigo runs two directions — sonkeigo lifts the other person\'s action up, kenjougo lowers your own action down.',
+      explain: [
+        'Sonkeigo (尊敬語, "respect language"): お+[verb stem]+になる — used for what someone ELSE does. Kenjougo (謙譲語, "humble language"): お+[verb stem]+する／いたす — used for what YOU do, humbling your own action relative to the listener.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '尊敬語: raising the other person',
+      pattern: [
+        { text: 'お', role: 'particle' }, { text: '[verb stem]', role: 'subject' }, { text: 'になる', role: 'predicate' },
+      ],
+      explain: ['Use sonkeigo for a customer, boss, teacher, or anyone you\'re showing respect to — never for your own actions.'],
+      samples: [
+        {
+          tag: '"The president has already gone home."',
+          tiles: [
+            { text: '社長は', role: 'subject', gloss: 'the president' },
+            { text: 'もう', role: 'predicate', gloss: 'already' },
+            { text: 'お帰りになりました', role: 'predicate', gloss: 'went home (respectful)', isNew: true, smallGloss: true },
+          ],
+          translation: 'Shachou wa mou okaeri ni narimashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '謙譲語: lowering yourself',
+      pattern: [
+        { text: 'お', role: 'particle' }, { text: '[verb stem]', role: 'subject' }, { text: 'する／いたす', role: 'predicate' },
+      ],
+      explain: ['Use kenjougo for your OWN actions when speaking to someone above you — humbling yourself is itself a form of respect. いたす is even more formal than する.'],
+      samples: [
+        {
+          tag: '"I will wait here."',
+          tiles: [
+            { text: 'こちらで', role: 'particle', gloss: 'here' },
+            { text: 'お待ちいたします', role: 'predicate', gloss: 'will wait (humble)', isNew: true, smallGloss: true },
+          ],
+          translation: 'Kochira de omachi itashimasu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Memorized irregular pairs',
+      dividedIntro: true,
+      explain: ['Some of the most common verbs skip the お〜になる／お〜する pattern entirely and use their own irregular sonkeigo/kenjougo words instead — these have to be memorized individually.'],
+      terms: [
+        { role: 'subject', name: '言う → おっしゃる (尊敬) / 申す (謙譲)', desc: 'to say' },
+        { role: 'predicate', name: '行く・来る → いらっしゃる (尊敬) / 参る (謙譲)', desc: 'to go / to come' },
+        { role: 'subject', name: '食べる → 召し上がる (尊敬) / いただく (謙譲)', desc: 'to eat' },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "The president has already gone home" using sonkeigo (president = 社長, already = もう, go home = 帰る):',
+      before: '社長はもう', after: '。',
+      choices: ['お帰りになりました', 'お帰りしました', '帰りました'],
+      answer: 'お帰りになりました',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I will wait here" using kenjougo (here = こちら, wait = 待つ):',
+      before: 'こちらで', after: '。',
+      choices: ['お待ちいたします', 'お待ちになります', '待ちます'],
+      answer: 'お待ちいたします',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Advanced Keigo',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: 'お〜になる', romaji: 'o~ni naru', meaning: 'sonkeigo: respectful, for someone else\'s action' },
+        { kana: 'お〜する／いたす', romaji: 'o~suru / itasu', meaning: 'kenjougo: humble, for your own action' },
+        { kana: '社長はお帰りになりました', romaji: 'Shachou wa okaeri ni narimashita', meaning: 'The president went home (respectful)' },
+        { kana: 'こちらでお待ちいたします', romaji: 'Kochira de omachi itashimasu', meaning: 'I will wait here (humble)' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '社長はもう', after: '。', answer: 'お帰りになりました', hint: '"The president has already gone home" (sonkeigo).' },
+        { before: 'こちらで', after: '。', answer: 'お待ちいたします', hint: '"I will wait here" (kenjougo).' },
+      ],
+    },
+  ],
+  'n3-shelf-07': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Conjunction Nuances',
+      bigIdea: 'ものの、くせに、というより all connect contrasting ideas, but the emotional temperature differs — ものの is neutral/formal, くせに is accusatory, and というより isn\'t really contrast at all, it\'s correcting your own word choice.',
+      explain: [
+        '[plain form]+ものの = neutral concession ("that said..."). [plain form／な-adj+な]+くせに = critical "even though" (implies annoyance). [phrase]+というより = "rather than saying A, actually B" (self-correction).',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜ものの: neutral concession',
+      pattern: [
+        { text: '[plain form]', role: 'subject' }, { text: 'ものの、[contrast]', role: 'predicate' },
+      ],
+      explain: ['ものの reads as calm and even slightly formal — "that said..." — with no judgment attached to either half.'],
+      samples: [
+        {
+          tag: '"Although the price is high, the quality is very good."',
+          tiles: [
+            { text: '値段は', role: 'subject', gloss: 'the price' },
+            { text: '高いものの、', role: 'predicate', gloss: 'is high, that said', isNew: true, smallGloss: true },
+            { text: '品質は', role: 'subject', gloss: 'the quality' },
+            { text: 'とてもいいです', role: 'predicate', gloss: 'is very good' },
+          ],
+          translation: 'Nedan wa takai monono, hinshitsu wa totemo ii desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜くせに: critical "even though"',
+      pattern: [
+        { text: '[plain form／な-adj+な]', role: 'subject' }, { text: 'くせに、[criticism]', role: 'predicate' },
+      ],
+      explain: ['くせに carries real annoyance — it points out a contradiction the speaker finds irritating, not just neutral fact.'],
+      samples: [
+        {
+          tag: '"Even though he was late, he doesn\'t even apologize."',
+          tiles: [
+            { text: '遅刻したくせに、', role: 'subject', gloss: 'even though [he] was late', isNew: true, smallGloss: true },
+            { text: '謝りもしない', role: 'predicate', gloss: 'doesn\'t even apologize', isNew: true },
+          ],
+          translation: 'Chikoku shita kuse ni, ayamari mo shinai.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜というより: self-correction, not contrast',
+      pattern: [
+        { text: '[A]というより、', role: 'subject' }, { text: '[B]', role: 'predicate' },
+      ],
+      explain: ['というより isn\'t contrasting two opposing facts — it\'s the speaker correcting their own word choice: "rather than saying A, it\'s more accurate to say B."'],
+      samples: [
+        {
+          tag: '"It\'s not so much that I like it — I need it."',
+          tiles: [
+            { text: '好きというより、', role: 'subject', gloss: 'rather than saying [I] like it', isNew: true, smallGloss: true },
+            { text: '必要なんです', role: 'predicate', gloss: 'it\'s [that I] need it' },
+          ],
+          translation: 'Suki to iu yori, hitsuyou nan desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Although the price is high, the quality is very good" (price = 値段, high = 高い, quality = 品質):',
+      before: '値段は', after: '。',
+      choices: ['高いものの、品質はとてもいいです', '高いくせに、品質はとてもいいです', '高いというより、品質はとてもいいです'],
+      answer: '高いものの、品質はとてもいいです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Even though he was late, he doesn\'t even apologize" (be late = 遅刻する, apologize = 謝る):',
+      before: '', after: '。',
+      choices: ['遅刻したくせに、謝りもしない', '遅刻したものの、謝りもしない', '遅刻したというより、謝りもしない'],
+      answer: '遅刻したくせに、謝りもしない',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Conjunction Nuances',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜ものの', romaji: '~monono', meaning: 'that said... (neutral concession)' },
+        { kana: '〜くせに', romaji: '~kuse ni', meaning: 'even though... (critical, annoyed)' },
+        { kana: '〜というより', romaji: '~to iu yori', meaning: 'rather than saying A, actually B' },
+        { kana: '値段は高いものの、品質はいいです', romaji: 'Nedan wa takai monono, hinshitsu wa ii desu', meaning: 'Although the price is high, the quality is good' },
+        { kana: '遅刻したくせに、謝りもしない', romaji: 'Chikoku shita kuse ni, ayamari mo shinai', meaning: 'Even though he was late, he doesn\'t even apologize' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '値段は', after: '。', answer: '高いものの、品質はとてもいいです', hint: '"Although the price is high, the quality is very good."' },
+        { before: '', after: '。', answer: '遅刻したくせに、謝りもしない', hint: '"Even though he was late, he doesn\'t even apologize."' },
+      ],
+    },
+  ],
+  'n3-shelf-08': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Extended Reading Practice',
+      bigIdea: 'A short blog-style post about convenience-store culture in Japan, using a relative clause and a conjecture form from this wing\'s earlier shelves.',
+      explain: [
+        '最近、近所にできたコンビニに毎日行っている。24時間開いている店は、夜遅くに帰るときも安心である。店員がいつも笑顔で挨拶してくれるので、疲れているときも少し元気になる。日本のコンビニは、ただ物を買うだけの場所ではなく、公共料金の支払いや荷物の受け取りもできるらしい。生活に欠かせない存在になっているようだ。',
+        '<span class="dim">(Saikin, kinjo ni dekita konbini ni mainichi itte iru. Nijuu-yo jikan aite iru mise wa, yoru osoku ni kaeru toki mo anshin de aru. Ten\'in ga itsumo egao de aisatsu shite kureru node, tsukarete iru toki mo sukoshi genki ni naru. Nihon no konbini wa, tada mono o kau dake no basho de wa naku, koukyou ryoukin no shiharai ya nimotsu no uketori mo dekiru rashii. Seikatsu ni kakasenai sonzai ni natte iru you da.)</span>',
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What does the writer say makes them feel a little better even when tired?',
+      before: '', after: '',
+      choices: ['The clerk\'s smiling greeting', 'The store\'s low prices', 'The store\'s music'],
+      answer: 'The clerk\'s smiling greeting',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'According to the passage, what else can you do at a convenience store besides buy things (referent: それ／この点)?',
+      before: '', after: '',
+      choices: ['Pay utility bills and receive packages', 'Get a haircut', 'Rent a car'],
+      answer: 'Pay utility bills and receive packages',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What is the writer\'s overall point about convenience stores?',
+      before: '', after: '',
+      choices: ['They\'ve become an indispensable part of daily life', 'They are too expensive', 'They should open even later'],
+      answer: 'They\'ve become an indispensable part of daily life',
+    },
+    {
+      type: 'summary',
+      title: 'Summary: Extended Reading Practice',
+      headers: ['Phrase', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '近所にできたコンビニ', romaji: 'kinjo ni dekita konbini', meaning: 'the convenience store that opened nearby (relative clause)' },
+        { kana: '24時間開いている店', romaji: 'nijuu-yo jikan aite iru mise', meaning: 'a store that\'s open 24 hours (relative clause)' },
+        { kana: '公共料金の支払い', romaji: 'koukyou ryoukin no shiharai', meaning: 'utility bill payment' },
+        { kana: '荷物の受け取り', romaji: 'nimotsu no uketori', meaning: 'package pickup' },
+        { kana: '〜できるらしい', romaji: '~dekiru rashii', meaning: 'apparently you can... (hearsay)' },
+        { kana: '〜になっているようだ', romaji: '~ni natte iru you da', meaning: 'it seems to have become... (own judgment)' },
+      ],
+    },
+  ],
+  'n3-shelf-09': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Tendency & Appearance',
+      bigIdea: 'がち、っぽい、気味 all mean "kind of / tends to," but they don\'t overlap — がち is a bad recurring habit, っぽい is a surface impression, 気味 is a slight symptom you\'re noticing.',
+      explain: [
+        '[verb stem]+がち = a recurring, often negative habit. [noun／adjective stem]+っぽい = a passing quality or "-ish" appearance. [noun／verb stem]+気味 = a slight symptom or leaning, often physical or mental.',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜がち: a bad recurring habit',
+      pattern: [
+        { text: '[verb stem]', role: 'subject' }, { text: 'がちです', role: 'predicate' },
+      ],
+      explain: ['がち marks something that happens more often than it should — usually framed as a shortcoming.'],
+      samples: [
+        {
+          tag: '"Lately I tend to skip breakfast."',
+          tiles: [
+            { text: '最近、', role: 'predicate', gloss: 'lately' },
+            { text: '朝ご飯を', role: 'particle', gloss: 'breakfast' },
+            { text: '抜きがちです', role: 'predicate', gloss: 'tend to skip', isNew: true, smallGloss: true },
+          ],
+          translation: 'Saikin, asagohan o nukigachi desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜っぽい・〜気味: surface impression vs. slight symptom',
+      pattern: [
+        { text: '[noun／adj-stem]', role: 'subject' }, { text: 'っぽい／気味', role: 'predicate' },
+      ],
+      explain: ['っぽい describes how something LOOKS or COMES ACROSS on the surface — an impression, not a deep truth. 気味 flags a slight, often physical or mental symptom you\'ve started to notice in yourself.'],
+      samples: [
+        {
+          tag: '"He has a childish personality."',
+          tiles: [
+            { text: '彼は', role: 'subject', gloss: 'he' },
+            { text: '子供っぽい', role: 'predicate', gloss: 'childish (-ish)', isNew: true, smallGloss: true },
+            { text: '性格です', role: 'predicate', gloss: 'personality' },
+          ],
+          translation: 'Kare wa kodomoppoi seikaku desu.',
+        },
+        {
+          tag: '"I\'ve been feeling a bit under the weather lately."',
+          tiles: [
+            { text: '最近、', role: 'predicate', gloss: 'lately' },
+            { text: '風邪気味です', role: 'predicate', gloss: 'a bit of a cold coming on', isNew: true, smallGloss: true },
+          ],
+          translation: 'Saikin, kazegimi desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "Lately I tend to skip breakfast" (lately = 最近, breakfast = 朝ご飯, skip = 抜く):',
+      before: '最近、朝ご飯を', after: '。',
+      choices: ['抜きがちです', '抜きっぽいです', '抜き気味です'],
+      answer: '抜きがちです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I\'ve been feeling a bit under the weather lately" (lately = 最近, cold = 風邪):',
+      before: '最近、', after: '。',
+      choices: ['風邪気味です', '風邪がちです', '風邪っぽいです'],
+      answer: '風邪気味です',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Tendency & Appearance',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜がち', romaji: '~gachi', meaning: 'tends to (bad recurring habit)' },
+        { kana: '〜っぽい', romaji: '~ppoi', meaning: '-ish (surface impression)' },
+        { kana: '〜気味', romaji: '~gimi', meaning: 'a slight symptom / leaning' },
+        { kana: '朝ご飯を抜きがちです', romaji: 'Asagohan o nukigachi desu', meaning: 'I tend to skip breakfast' },
+        { kana: '風邪気味です', romaji: 'Kazegimi desu', meaning: 'I\'m feeling a bit under the weather' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '最近、朝ご飯を', after: '。', answer: '抜きがちです', hint: '"Lately I tend to skip breakfast."' },
+        { before: '最近、', after: '。', answer: '風邪気味です', hint: '"I\'ve been feeling a bit under the weather lately."' },
+      ],
+    },
+  ],
+  'n3-shelf-10': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Restriction & Emphasis',
+      bigIdea: 'だけ／しか both mean "only," but だけ is neutral while しか forces a negative verb and reads more emphatically final; さえ pushes further into "even this minimal/surprising case."',
+      explain: [
+        '[noun]+だけ + affirmative = neutral "only." [noun]+しか + negative = stronger "nothing but." [noun]+さえ (usually with a negative or extreme case) = "even."',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜だけ vs. 〜しか〜ない',
+      pattern: [
+        { text: '[noun]', role: 'subject' }, { text: 'だけ／しか〜ない', role: 'predicate' },
+      ],
+      explain: ['だけ is neutral and pairs with an affirmative verb. しか MUST pair with a negative verb, and reads as more emphatic — almost complaining about how little there is.'],
+      samples: [
+        {
+          tag: '"I only have 1,000 yen [and that\'s enough]."',
+          tiles: [
+            { text: '千円だけ', role: 'particle', gloss: 'only 1,000 yen', isNew: true, smallGloss: true },
+            { text: '持っています', role: 'predicate', gloss: 'have' },
+          ],
+          translation: 'Sen\'en dake motte imasu.',
+        },
+        {
+          tag: '"I have nothing but 1,000 yen."',
+          tiles: [
+            { text: '千円しか', role: 'particle', gloss: 'nothing but 1,000 yen', isNew: true, smallGloss: true },
+            { text: '持っていません', role: 'predicate', gloss: 'don\'t have' },
+          ],
+          translation: 'Sen\'en shika motte imasen.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜さえ: "even"',
+      pattern: [
+        { text: '[noun]', role: 'subject' }, { text: 'さえ、[extreme case]', role: 'predicate' },
+      ],
+      explain: ['さえ picks a minimal or surprising example to make a point — "even this simplest case is true, so of course everything else is too."'],
+      samples: [
+        {
+          tag: '"It\'s a problem even a child can understand."',
+          tiles: [
+            { text: '子供でさえ', role: 'particle', gloss: 'even a child', isNew: true, smallGloss: true },
+            { text: '分かる', role: 'predicate', gloss: 'can understand' },
+            { text: '問題です', role: 'predicate', gloss: 'is a problem' },
+          ],
+          translation: 'Kodomo de sae wakaru mondai desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "I have nothing but 1,000 yen" (1,000 yen = 千円, have = 持つ):',
+      before: '', after: '。',
+      choices: ['千円しか持っていません', '千円だけ持っています', '千円さえ持っています'],
+      answer: '千円しか持っていません',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It\'s a problem even a child can understand" (child = 子供, understand = 分かる, problem = 問題):',
+      before: '', after: '。',
+      choices: ['子供でさえ分かる問題です', '子供だけ分かる問題です', '子供しか分かる問題です'],
+      answer: '子供でさえ分かる問題です',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Restriction & Emphasis',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜だけ', romaji: '~dake', meaning: 'only (neutral, affirmative)' },
+        { kana: '〜しか〜ない', romaji: '~shika ~nai', meaning: 'nothing but (emphatic, negative)' },
+        { kana: '〜さえ', romaji: '~sae', meaning: 'even (minimal/extreme case)' },
+        { kana: '千円しか持っていません', romaji: 'Sen\'en shika motte imasen', meaning: 'I have nothing but 1,000 yen' },
+        { kana: '子供でさえ分かる問題です', romaji: 'Kodomo de sae wakaru mondai desu', meaning: 'It\'s a problem even a child can understand' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '', after: '持っていません。', answer: '千円しか', hint: '"I have nothing but 1,000 yen."' },
+        { before: '', after: '分かる問題です。', answer: '子供でさえ', hint: '"It\'s a problem even a child can understand."' },
+      ],
+    },
+  ],
+  'n3-shelf-11': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Abstract Expressions',
+      bigIdea: 'はず、わけ、わけではない all turn a clause into an abstract judgment — はず is what should logically follow, わけ explains why something is the way it is, わけではない politely walks back a broad assumption without fully denying it.',
+      explain: [
+        '[plain form]+はずです = "should be the case" (expectation from known facts). [plain form]+わけです = "that\'s why / it means that" (logical conclusion). [plain form]+わけではない = "it\'s not that..." (partial denial, leaves room for nuance).',
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜はずです: logical expectation',
+      pattern: [
+        { text: '[plain form]', role: 'subject' }, { text: 'はずです', role: 'predicate' },
+      ],
+      explain: ['はず is a confident expectation based on facts you already know — not a guess, a conclusion.'],
+      samples: [
+        {
+          tag: '"He should have already left."',
+          tiles: [
+            { text: '彼は', role: 'subject', gloss: 'he' },
+            { text: 'もう', role: 'predicate', gloss: 'already' },
+            { text: '出発したはずです', role: 'predicate', gloss: 'should have left', isNew: true, smallGloss: true },
+          ],
+          translation: 'Kare wa mou shuppatsu shita hazu desu.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜わけです・〜わけではない: explaining and softening',
+      pattern: [
+        { text: '[plain form]', role: 'subject' }, { text: 'わけです／わけではない', role: 'predicate' },
+      ],
+      explain: ['わけです connects a reason to its natural conclusion — "given X, that\'s why Y." わけではない partially denies a broad statement someone might assume, without fully rejecting it.'],
+      samples: [
+        {
+          tag: '"He lived in Japan for a whole 3 years, so that\'s why his Japanese is good."',
+          tiles: [
+            { text: '3年も', role: 'particle', gloss: 'a whole 3 years' },
+            { text: '日本に住んでいたから、', role: 'predicate', gloss: 'since [he] lived in Japan' },
+            { text: '日本語が上手なわけです', role: 'predicate', gloss: 'that\'s why [his] Japanese is good', isNew: true, smallGloss: true },
+          ],
+          translation: 'San-nen mo nihon ni sunde ita kara, nihongo ga jouzuna wake desu.',
+        },
+        {
+          tag: '"It\'s not that I have no money, but I don\'t want to spend it right now."',
+          tiles: [
+            { text: 'お金が', role: 'subject', gloss: 'money' },
+            { text: 'ないわけではないですが、', role: 'predicate', gloss: 'it\'s not that [I] have none', isNew: true, smallGloss: true },
+            { text: '今は', role: 'subject', gloss: 'right now' },
+            { text: '使いたくないです', role: 'predicate', gloss: 'don\'t want to spend' },
+          ],
+          translation: 'Okane ga nai wake dewa nai desu ga, ima wa tsukaitakunai desu.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "He should have already left" (he = 彼, already = もう, leave = 出発する):',
+      before: '彼はもう', after: '。',
+      choices: ['出発したはずです', '出発したわけです', '出発したらしいです'],
+      answer: '出発したはずです',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "It\'s not that I have no money" (money = お金, have = ある):',
+      before: 'お金が', after: 'が、今は使いたくないです。',
+      choices: ['ないわけではないです', 'ないはずです', 'ないわけです'],
+      answer: 'ないわけではないです',
+    },
+    {
+      type: 'summary',
+      title: 'New Patterns: Abstract Expressions',
+      headers: ['Pattern', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '〜はずです', romaji: '~hazu desu', meaning: 'should be the case (expectation)' },
+        { kana: '〜わけです', romaji: '~wake desu', meaning: 'that\'s why / it means that (conclusion)' },
+        { kana: '〜わけではないです', romaji: '~wake dewa nai desu', meaning: 'it\'s not that... (partial denial)' },
+        { kana: '彼はもう出発したはずです', romaji: 'Kare wa mou shuppatsu shita hazu desu', meaning: 'He should have already left' },
+        { kana: 'お金がないわけではないです', romaji: 'Okane ga nai wake dewa nai desu', meaning: 'It\'s not that I have no money' },
+      ],
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Final check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '彼はもう', after: '。', answer: '出発したはずです', hint: '"He should have already left."' },
+        { before: 'お金が', after: 'が、今は使いたくないです。', answer: 'ないわけではないです', hint: '"It\'s not that I have no money, but I don\'t want to spend it right now."' },
+      ],
+    },
+  ],
+  'n3-shelf-12': [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Advanced Reading Practice',
+      bigIdea: 'An essay-style passage in である体 about Japan\'s shifting work culture, weaving in keigo, an advanced conjunction, and an abstract expression from this wing\'s earlier shelves.',
+      explain: [
+        '近年、日本企業においてもリモートワークを導入する動きが広がっている。通勤時間が短くなるものの、同僚と直接顔を合わせる機会は減っているようだ。ある上司は「無理に出社させる必要はない」とおっしゃっていたが、実際にはまだオフィスに来ることを求める会社も多いらしい。この変化は、単なる働き方の問題というより、日本社会全体の価値観の転換であるように思われる。もちろん、全ての仕事が在宅でできるわけではない。しかし、技術が発達した今、その可能性は着実に広がっているはずである。',
+        '<span class="dim">(Kinnen, nihon kigyou ni oite mo rimooto waaku o dounyuu suru ugoki ga hirogatte iru. Tsuukin jikan ga mijikaku naru monono, douryou to chokusetsu kao o awaseru kikai wa hette iru you da. Aru joushi wa "muri ni shussha saseru hitsuyou wa nai" to osshatte ita ga, jissai ni wa mada ofisu ni kuru koto o motomeru kaisha mo ooi rashii. Kono henka wa, tannaru hatarakikata no mondai to iu yori, nihon shakai zentai no kachikan no tenkan de aru you ni omowareru. Mochiron, subete no shigoto ga zaitaku de dekiru wake de wa nai. Shikashi, gijutsu ga hattatsu shita ima, sono kanousei wa chakujitsu ni hirogatte iru hazu de aru.)</span>',
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What claim does the writer make about the meaning of this shift toward remote work?',
+      before: '', after: '',
+      choices: ['It reflects a shift in Japanese society\'s values', 'It has no real significance', 'It will disappear soon'],
+      answer: 'It reflects a shift in Japanese society\'s values',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What does 「この変化」("this change") refer to?',
+      before: '', after: '',
+      choices: ['The spread of remote work', 'A rise in commute times', 'A change in company leadership'],
+      answer: 'The spread of remote work',
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Comprehension check',
+      prompt: 'What is the writer\'s overall stance on the future of remote work?',
+      before: '', after: '',
+      choices: ['Its possibilities will likely keep expanding', 'It should be banned entirely', 'It has already failed'],
+      answer: 'Its possibilities will likely keep expanding',
+    },
+    {
+      type: 'summary',
+      title: 'Summary: Advanced Reading Practice',
+      headers: ['Phrase', 'Romaji', 'Meaning'],
+      rows: [
+        { kana: '動きが広がっている', romaji: 'ugoki ga hirogatte iru', meaning: 'the movement is spreading' },
+        { kana: '短くなるものの', romaji: 'mijikaku naru monono', meaning: 'although it becomes shorter (concession)' },
+        { kana: 'とおっしゃっていた', romaji: 'to osshatte ita', meaning: 'said [quoting, sonkeigo]' },
+        { kana: '単なる問題というより', romaji: 'tannaru mondai to iu yori', meaning: 'rather than simply a matter of...' },
+        { kana: 'できるわけではない', romaji: 'dekiru wake de wa nai', meaning: 'it\'s not that [it] can be done (partial denial)' },
+        { kana: '広がっているはずである', romaji: 'hirogatte iru hazu de aru', meaning: 'should be expanding (である体 + expectation)' },
+      ],
+    },
+  ],
   'n4-review-1': buildPlaceholderLesson('N4 Grammar Foundations Review'),
   'n4-review-2': buildPlaceholderLesson('N4 Vocabulary & Usage Review'),
   'n3-review-1': buildPlaceholderLesson('N3 Grammar Expansion Review'),
@@ -477,6 +2240,67 @@ const LESSON_CONTENT = {
       answer: 'あげました',
     },
     {
+      type: 'grammar-intro',
+      sectionLabel: '〜てあげる・〜てくれる: doing someone a favor',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'あげる／くれる', role: 'predicate' },
+      ],
+      explain: [
+        'Attach あげる or くれる to a て-form instead of a noun, and the verb now describes a FAVOR — an action done for someone, not just a thing handed over. The same away-from-you (あげる) / toward-you (くれる) direction rules from the bare verbs still apply.',
+      ],
+      samples: [
+        {
+          tag: '"I taught my friend Japanese (as a favor)."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'to my friend' },
+            { text: '日本語を', role: 'particle', gloss: 'Japanese' },
+            { text: '教えてあげました', role: 'predicate', gloss: 'taught, as a favor', isNew: true, smallGloss: true },
+          ],
+          translation: 'Watashi wa tomodachi ni nihongo o oshiete agemashita.',
+        },
+        {
+          tag: '"My friend helped me with my homework."',
+          tiles: [
+            { text: '友達が', role: 'subject', gloss: 'my friend' },
+            { text: '宿題を', role: 'particle', gloss: 'homework' },
+            { text: '手伝ってくれました', role: 'predicate', gloss: 'helped [me], as a favor', isNew: true, smallGloss: true },
+          ],
+          translation: 'Tomodachi ga shukudai o tetsudatte kuremashita.',
+        },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '〜てもらう: having someone do you a favor',
+      pattern: [
+        { text: '[て-form]', role: 'subject' }, { text: 'もらう', role: 'predicate' },
+      ],
+      explain: [
+        'てもらう flips the perspective to the receiver\'s side, same as bare もらう — "I had [someone] do [X] for me," described from your own point of view.',
+      ],
+      samples: [
+        {
+          tag: '"I had my friend help me with my homework."',
+          tiles: [
+            { text: '私は', role: 'subject', gloss: 'I' },
+            { text: '友達に', role: 'particle', gloss: 'from my friend' },
+            { text: '宿題を', role: 'particle', gloss: 'homework' },
+            { text: '手伝ってもらいました', role: 'predicate', gloss: 'had [them] help, as a favor', isNew: true, smallGloss: true },
+          ],
+          translation: 'Watashi wa tomodachi ni shukudai o tetsudatte moraimashita.',
+        },
+      ],
+    },
+    {
+      type: 'try-it',
+      sectionLabel: 'Quick check',
+      prompt: 'Say "My friend helped me with my homework" (friend = 友達, homework = 宿題, help = 手伝う):',
+      before: '友達が', after: '。',
+      choices: ['宿題を手伝ってくれました', '宿題を手伝ってあげました', '宿題を手伝ってもらいました'],
+      answer: '宿題を手伝ってくれました',
+    },
+    {
       type: 'summary',
       title: 'New Patterns: Giving & Receiving',
       headers: ['Verb', 'Romaji', 'Meaning'],
@@ -484,6 +2308,10 @@ const LESSON_CONTENT = {
         { kana: 'あげる', romaji: 'ageru', meaning: 'give (away from speaker)' },
         { kana: 'もらう', romaji: 'morau', meaning: 'receive' },
         { kana: 'くれる', romaji: 'kureru', meaning: 'give (toward speaker)' },
+        { kana: '〜てあげる', romaji: '~te ageru', meaning: 'do a favor for someone (away from speaker)' },
+        { kana: '〜てもらう', romaji: '~te morau', meaning: 'have someone do a favor for you' },
+        { kana: '〜てくれる', romaji: '~te kureru', meaning: 'someone does you a favor (toward speaker)' },
+        { kana: '友達が宿題を手伝ってくれました', romaji: 'Tomodachi ga shukudai o tetsudatte kuremashita', meaning: 'My friend helped me with my homework' },
       ],
     },
     {
