@@ -256,16 +256,20 @@ function createBrickWallTexture(scene, key, config) {
 
 // Draws an illustrated "lower floor" void into a mezzanine's open
 // atrium rect, instead of a flat color fill — a darker/desaturated
-// floor-tile pattern, a few silhouette shelf blocks suggesting
-// receding first-floor furniture, and a soft vertical depth gradient,
-// all drawn on the caller's own Graphics object so it composites under
-// whatever rail/frame trim the caller draws next. Pure procedural
-// drawing (no new image assets) — reusable by any future floor with a
-// similar mezzanine-over-void layout.
-// config: { left, top, width, height, label } (label optional)
+// floor-tile pattern, rows of silhouette shelf blocks arranged in the
+// same two-column-per-side pattern the mezzanine's own shelf wings use
+// (so it reads as "the actual floor below", not generic clutter), a
+// dim corridor-color hint down the middle, and a soft vertical depth
+// gradient, all drawn on the caller's own Graphics object so it
+// composites under whatever rail/frame trim the caller draws next.
+// Pure procedural drawing (no new image assets) — reusable by any
+// future floor with a similar mezzanine-over-void layout.
+// config: { left, top, width, height, corridorColor } (corridorColor optional,
+// defaults to a neutral warm brown — pass the floor's own rug/accent color
+// so the hint reads as "the same corridor, one level down")
 function buildOpenAtriumVoid(scene, g, config) {
   const { left, top, width, height } = config;
-  const midY = top + height / 2;
+  const corridorColor = config.corridorColor !== undefined ? config.corridorColor : 0x5c1a2e;
 
   // Desaturated "first floor" tile pattern — small dark tiles, cooler
   // and flatter than the mezzanine's own warm wood tones, reading as
@@ -277,6 +281,32 @@ function buildOpenAtriumVoid(scene, g, config) {
       const shade = ((tx / tileW + ty / tileH) % 2) ? 0x1c1410 : 0x211714;
       g.fillStyle(shade, 1).fillRect(tx, ty, tileW - 1, tileH - 1);
     }
+  }
+
+  // Corridor hint — a dim vertical strip down the middle, the same
+  // color family as the floor's own rug, implying the same corridor
+  // continues straight down to the level below.
+  g.fillStyle(corridorColor, 0.22).fillRect(left + width / 2 - 10, top + 8, 20, height - 16);
+
+  // Rows of silhouette shelf blocks, two per side (mirroring the
+  // mezzanine's own 2-column shelf wings above), receding in shade
+  // toward the far end of the void so the row nearest each rail edge
+  // reads as "closer" — simple dark rectangles, not full sprites, so
+  // they don't compete with the mezzanine's own shelf sprites.
+  const rowCount = 6;
+  const rowGap = (height - 40) / (rowCount - 1);
+  for (let i = 0; i < rowCount; i++) {
+    const ry = top + 20 + rowGap * i;
+    const distFromMid = Math.abs(i / (rowCount - 1) - 0.5) * 2; // 0 at center, 1 at edges (closer to a rail)
+    const shadeAlpha = 0.55 + distFromMid * 0.3;
+    const colX = [
+      left + width * 0.14, left + width * 0.30,
+      left + width * 0.62, left + width * 0.78,
+    ];
+    colX.forEach((cx) => {
+      g.fillStyle(0x0e0906, shadeAlpha).fillRect(cx, ry, 28, 14);
+      g.fillStyle(0x3a2415, shadeAlpha * 0.5).fillRect(cx, ry, 28, 2);
+    });
   }
 
   // Depth gradient — brighter near the rail edges (top/bottom of the
@@ -291,22 +321,62 @@ function buildOpenAtriumVoid(scene, g, config) {
     const bandTop = top + (height / bands) * i;
     g.fillStyle(0x000000, alpha).fillRect(left, bandTop, width, height / bands + 1);
   }
+}
 
-  // Silhouette shelf blocks — simple dark rectangles (not full
-  // sprites) scattered across the void, reading as distant first-floor
-  // shelving seen from above without competing with the mezzanine's
-  // own shelf sprites.
-  const silhouettes = [
-    { x: left + width * 0.18, w: 30, h: 16 },
-    { x: left + width * 0.34, w: 22, h: 16 },
-    { x: left + width * 0.62, w: 26, h: 16 },
-    { x: left + width * 0.80, w: 30, h: 16 },
-  ];
-  silhouettes.forEach((s, i) => {
-    const sy = midY - 40 + (i % 2) * 26;
-    g.fillStyle(0x0e0906, 0.85).fillRect(s.x, sy, s.w, s.h);
-    g.fillStyle(0x3a2415, 0.4).fillRect(s.x, sy, s.w, 2);
-  });
+// Builds a full-perimeter guard rail around a mezzanine's open atrium —
+// heavy gold-capped wood posts + a double rail line, reusing the exact
+// wood/gold palette the atrium's own frame trim already uses — AND a
+// single invisible collision rectangle covering the whole atrium
+// footprint, added to the caller's wallGroup, so the player genuinely
+// cannot walk into the void (the previous version had no collision at
+// all here). Reusable by any future mezzanine floor with the same
+// layout — pass that floor's own wallGroup.
+// config: { left, top, width, height, wallGroup, postGap? }
+function buildAtriumFence(scene, config) {
+  const { left, top, width, height, wallGroup } = config;
+  const postGap = config.postGap || 84;
+  const g = scene.add.graphics().setDepth(3);
+  const wood = 0x4a2d1d;
+  const gold = 0xc9a66b;
+  const cap = 0xe8d4a8;
+  const postW = 7;
+
+  const drawPost = (cx, cy, horizontal) => {
+    const w = horizontal ? postW : 10;
+    const h = horizontal ? 10 : postW;
+    g.fillStyle(wood, 1).fillRect(cx - w / 2, cy - h / 2, w, h);
+    g.fillStyle(gold, 1);
+    if (horizontal) g.fillRect(cx - w / 2 - 1, cy - h / 2 - 2, w + 2, 3);
+    else g.fillRect(cx - w / 2 - 2, cy - h / 2 - 1, 3, h + 2);
+    g.fillStyle(cap, 1).fillRect(cx - 1, cy - h / 2 - (horizontal ? 3 : 0) - 1, 2, 2);
+  };
+
+  // Double rail line (gold core, dark wood outline) around the whole
+  // perimeter, matching the atrium's existing outer-frame gold trim.
+  g.lineStyle(5, wood, 1).strokeRect(left, top, width, height);
+  g.lineStyle(2, gold, 0.9).strokeRect(left, top, width, height);
+
+  // Posts along the top/bottom edges (horizontal runs)...
+  for (let x = left; x <= left + width; x += postGap) {
+    drawPost(x, top, true);
+    drawPost(x, top + height, true);
+  }
+  // ...and the left/right edges (vertical runs) — corners get a post
+  // from both loops, which is fine (a post at a corner reads correctly
+  // either way).
+  for (let y = top; y <= top + height; y += postGap) {
+    drawPost(left, y, false);
+    drawPost(left + width, y, false);
+  }
+
+  // One solid rectangle covering the whole atrium footprint — simpler
+  // and more robust than trying to collide against the visual rail
+  // exactly, and guarantees no gap the player could slip through.
+  const block = scene.add.rectangle(left + width / 2, top + height / 2, width, height, 0x000000, 0);
+  scene.physics.add.existing(block, true);
+  wallGroup.add(block);
+
+  return g;
 }
 
 // Pure DOM helpers (no scene/floor state, no Phaser dependency) — were
@@ -686,6 +756,8 @@ window.LibrarySceneEngine = LibrarySceneEngine;
 window.cropToTexture = cropToTexture;
 window.drawWovenRug = drawWovenRug;
 window.drawWallHeaderTexture = drawWallHeaderTexture;
+window.buildOpenAtriumVoid = buildOpenAtriumVoid;
+window.buildAtriumFence = buildAtriumFence;
 window.getState = getState;
 window.createDecorativeProp = createDecorativeProp;
 window.getQuizGateStatus = getQuizGateStatus;

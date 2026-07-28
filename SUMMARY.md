@@ -7,8 +7,9 @@
     16 lesson shelves + 4 review piles + a printer station + 2 interactive TVs + a reception
     sensei + the staircase, all with full lesson content, all reachable, progression-gated,
     localStorage-persisted (`nekoBunko.n5.*`).
-  - **N4/N3** (`assets/js/n4-phaser-game.js`, loaded from `pages/N4/n4-dashboard.html`) — just
-    merged (commit `40a5166`). Reached by completing N5's final quiz and clicking "Proceed to N4"
+  - **N4/N3** (`assets/js/n4-phaser-game.js`, loaded from `pages/N4/n4-dashboard.html`) — merged
+    to `main` and pushed to `origin/main` (commit `5116409`, includes the mezzanine polish pass
+    below). Reached by completing N5's final quiz and clicking "Proceed to N4"
     on the staircase (real navigation, not a stub). The floor is split down the middle: left
     mezzanine wings = 12 N4 shelves on the left and 12 N3 shelves on the right, arranged as
     mirrored C-shaped balconies around an open central atrium. A rear walkway connects the wings;
@@ -27,7 +28,8 @@
     directly once both N4 reviews are done, without needing to walk there — same interaction path
     as walking up to the gate, not a separate mechanism.
 - **Mezzanine polish pass** (`docs/superpowers/specs/2026-07-28-n4-atrium-walls-jukebox-gates-design.md`,
-  `docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md`, all 6 tasks complete):
+  `docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md`, all 6 tasks complete,
+  merged to `main` via commit `5116409` and pushed to `origin/main`):
   the open atrium now draws an illustrated "lower floor" void (tiled floor pattern, depth
   gradient, silhouette shelf blocks) instead of a flat color fill (`buildOpenAtriumVoid()` in
   `library-scene-shared.js`); the wall brick texture is a larger procedural pattern (32px blocks,
@@ -39,6 +41,45 @@
   gates) — not wired into `SHELF_PREREQ` since no N2/N1 shelf content exists yet.
   `buildExamGate()` was also refactored into a reusable `createExamGateEntry()` factory shared by
   all four gates.
+- **Mezzanine revision pass (uncommitted, in the working tree right now — not yet merged):**
+  triggered by a user bug report that the atrium/walls/shelf positions still looked wrong live;
+  investigation (systematic-debugging pass, no screenshot needed — confirmed via live DOM/physics
+  inspection instead) found `createMezzanineShelfPositions()`'s shelf coordinates had drifted
+  completely independent of `LAYOUT.row1Y`/`row2Y` when the wing grew from 8→12 shelves, so the 6
+  wall-header/footer segments (built from `LAYOUT`) floated over empty floor while shelves
+  clustered unevenly elsewhere — root-caused, fixed (shelf grid now generated FROM `LAYOUT`), and
+  the header/footer walls removed per explicit request (no longer needed). On top of that fix, a
+  full mezzanine redesign modeled directly on `n5-phaser-game.js`'s own patterns:
+  - Review-pile cadence changed from 4-then-8 to 4-4-4 per side (`n4-review-1/2/3`,
+    `n3-review-1/2/3`, 6 piles total, was 4), matching N5's own "1 pile per 4 shelves" rule exactly
+    — `n4-shelf-09`'s prereq changed from a linear `n4-shelf-08` to `n4-review-2`; `n3-exam-gate`
+    now requires all 3 N4 piles (was 2). `LAYOUT` restructured to `wing1RowY`/`wing2RowY`/
+    `wing3RowY` + `review1Y`/`review2Y`/`review3Y` instead of the old 2-wing `row1Y`/`row2Y`.
+  - The atrium's open void previously had **no collision at all** — the player could walk straight
+    into it. `buildOpenAtriumVoid()` (`library-scene-shared.js`) was enriched (denser rows of
+    shelf silhouettes in the mezzanine's own 2-column pattern, a corridor-color hint down the
+    middle) and a new `buildAtriumFence()` (same file, reusable by any future mezzanine floor)
+    draws a full-perimeter heavy-rail guard fence AND adds one invisible collision rectangle
+    covering the whole void footprint to `wallGroup` — verified live: `wallGroup` bounds now
+    exactly match the atrium's `left:392,top:510,width:368,height:910` rect.
+  - A "top of the stairs" landmark (`buildStairsLandmark()`) was added at the west wall, reusing
+    N5's own real staircase art crop (`ASSET_RECTS.staircase`, same `libassetpack-tiled.png` sheet
+    — not new pixel art) with its own solid collision block. Player spawn (`buildPlayer()`) and the
+    arrival rug (`buildFurniture()`) both moved from dead-center (`WORLD_W/2`) to a new
+    `LAYOUT.entryX = 160`, beside the landmark, so arrival visibly ties to "the top of the stairs"
+    instead of a bare center rug.
+  - A visual mockup (HTML/canvas, matching the game's own procedural-drawing style + the real
+    cropped staircase art) was built and approved before any of this was implemented — heavy-rail
+    fence style (Option B) was the user's explicit pick.
+  - Not yet done: mirroring this same fence/atrium visual work onto the N3 (right) side was
+    implied by symmetry (the atrium/fence code is floor-wide, not per-wing, so it already applies
+    to both sides) but hasn't been separately screenshotted/confirmed for N3.
+  - **A lesson-content research/proofread pass is running in the background** (a spawned agent,
+    not yet returned as of this update): proofreading the 3 written flagship lessons
+    (`n4-shelf-01`, `n4-shelf-05`, `n3-shelf-01`) against reliable JLPT sources, plus researching
+    real grammar-point content proposals for all 21 placeholder shelves. Nothing from this pass has
+    been wired into `LESSON_CONTENT` yet — it's a research/proposal report only, to be posted for
+    user review first.
 - **Shared engine:** `assets/js/library-scene-shared.js` — movement/camera/collision/retro-menu/
   LessonBox glue extracted from N5, consumed by both floors via
   `Object.assign(SceneClass.prototype, LibrarySceneEngine)`. Any engine-level bug fix belongs
@@ -51,11 +92,20 @@
 
 ## 2. What's next (not started)
 
+- **Immediate:** the shelf-position/wall-removal fix and the atrium/fence/staircase/review-pile
+  redesign above are uncommitted in the working tree — review live, then commit (user commits
+  their own work, per standing preference — don't auto-commit this).
+- The lesson-content research/proofread agent (see above) hasn't returned yet — once it does, its
+  report needs to be posted for user review, then (only after approval) wired into
+  `LESSON_CONTENT` for the shelves it covers.
+- N3-side visual confirmation of the atrium/fence redesign (the code is floor-wide so it should
+  already apply symmetrically, but hasn't been separately screenshotted).
+
 Per the design spec's explicit "Out of Scope" section for this pass:
 
 - Full curated lesson content for the 21 placeholder N4/N3 shelves (only 3 flagships written so
-  far), plus real "recap + quiz" content for all 4 N4/N3 review piles (currently placeholder,
-  same as the shelves).
+  far), plus real "recap + quiz" content for all 6 N4/N3 review piles (was 4 piles/placeholder
+  content — pile count changed this session, content itself is still placeholder for all 6).
 - A return staircase from the N4/N3 floor back down to N5 (not built — one-way trip only).
 - Real N2/N1 shelf content and floor layout — the N2/N1 entrance-exam gates now exist as
   standalone landmarks in the left wing (see "Mezzanine polish pass" above) but aren't wired
@@ -84,6 +134,10 @@ Flagged during the final whole-branch review as real, non-urgent maintenance deb
 
 Name a specific item from section 2 above, or say "write the next N4/N3 lesson" and name which
 shelf. Full task-by-task build history, including every per-task independent review's findings,
-is in `docs/superpowers/plans/2026-07-27-n4-second-floor.md`; if the worktree at
-`.claude/worktrees/n4-second-floor` still exists, `.superpowers/sdd/progress.md` there has the
-complete review ledger. No re-deriving context needed.
+is in `docs/superpowers/plans/2026-07-27-n4-second-floor.md` (original floor build) and
+`docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md` (mezzanine polish pass). If
+the worktrees at `.claude/worktrees/n4-second-floor` and `.claude/worktrees/n4-mezzanine-polish`
+still exist, each has its own `.superpowers/sdd/**/progress.md` with the complete review ledger
+for that pass — both branches are already fully merged into `main`, so the worktrees themselves
+are just historical review records at this point, safe to remove whenever they're in the way. No
+re-deriving context needed.

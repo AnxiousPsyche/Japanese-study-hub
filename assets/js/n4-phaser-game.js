@@ -59,6 +59,15 @@ const ASSET_RECTS = {
   // transparent for rows 20-146; rows 144-149 fully transparent for
   // cols 75-140) — a clean, unmerged isolation.
   grandfatherClock: { x: 79, y: 24, w: 58, h: 120 },
+  // Same staircase crop N5's own buildTopBand() uses (n5-phaser-game.js's
+  // ASSET_RECTS.staircase, verbatim rect) — this floor's spawn landmark
+  // reuses that real art rather than inventing new pixel art, so it
+  // genuinely reads as "the top of the same stairs N5's player just
+  // climbed." Only the top ~53% of this 300px-tall crop is opaque
+  // content (see N5's own stairContentBottom comment) — the rest is
+  // transparent padding, same source image N4 already loads as
+  // 'libAssetPack'.
+  staircase: { x: 935, y: 0, w: 100, h: 300 },
 };
 
 // Distinct accent palette for this floor (deeper wine/green/wood instead
@@ -703,25 +712,39 @@ const shelfW = 87; // same "big furniture" reference size N5 uses
 const shelfH = 64;
 const leftColX = [70, 178]; // N4's outer/rear side of the atrium
 const rightColX = [WORLD_W - 265, WORLD_W - 157]; // N3, mirrored
+const rowStep = shelfH + 12; // vertical gap between two shelf rows in the same 2x2 group
 
 // Smaller Y = further north (deeper in). N3's shelves sit in the SAME
-// 2 rows as N4's (just the right column) — visible-but-locked the
-// whole time, same as seeing a locked door before you have the key.
-// The exam gate itself is the northmost interactive, the last
-// checkpoint before the plain north wall, reached only after both N4
-// reviews (which are further south/closer to entry) are done.
-const examGateY = 420; // center corridor, north-most interactive
-const review2Y = 600; // N4 review-2 (left) / N3 review-2 (right)
-const row2Y = 780; // N4 Vocabulary & Usage (left) / N3 Nuance & Conversation (right)
-const review1Y = 960; // N4 review-1 (left) / N3 review-1 (right)
-const row1Y = 1140; // N4 Grammar Foundations (left) / N3 Grammar Expansion (right) — nearest entry
+// rows as N4's (just the right column) — visible-but-locked the whole
+// time, same as seeing a locked door before you have the key.
+//
+// Three 4-shelf groups per side now (was 4-then-8), each its own 2x2
+// grid with its own review pile — matches N5's own "1 review pile per
+// 4 shelves" cadence exactly (see n5-phaser-game.js's BOOK_PILE_DATA/
+// SHELF_PREREQ). North-to-south (deepest group first): wing3 (shelves
+// 09-12, nearest the N2/N1 gates) -> review-3 -> wing2 (05-08) ->
+// review-2 -> wing1 (01-04, nearest entry) -> review-1... walking order
+// from spawn is the reverse: review-1 gates wing2, review-2 gates
+// wing3, review-3 just gates n3-exam-gate (no further shelf group).
+const wing3RowY = [660, 660 + rowStep]; // shelves 09-12
+const review3Y = 610; // gates nothing further (last N4/N3 group) — required by n3-exam-gate
+const wing2RowY = [860, 860 + rowStep]; // shelves 05-08
+const review2Y = 820; // N4 review-2 (left) / N3 review-2 (right) — gates shelf-09
+const wing1RowY = [1060, 1060 + rowStep]; // shelves 01-04, nearest entry
+const review1Y = 1020; // N4 review-1 (left) / N3 review-1 (right) — gates shelf-05
 const centerpieceY = 1360; // N4/N3's globe-equivalent decorative landmark
 const entryY = 1560; // player spawn / arrival from N5, south-most
+// Spawn/arrival rug/stairs-landmark X — was WORLD_W/2 (dead center). Moved
+// to the west side, near the left wall, so the player visibly arrives
+// beside the "top of the stairs" landmark (buildStairsLandmark()) instead
+// of on a bare center rug with no visual tie to how they got here.
+const entryX = 160;
 
 const LAYOUT = {
-  shelfW, shelfH, leftColX, rightColX,
-  row1Y, review1Y, examGateY, row2Y, review2Y,
-  centerpieceY, entryY,
+  shelfW, shelfH, leftColX, rightColX, rowStep,
+  wing1RowY, wing2RowY, wing3RowY,
+  review1Y, review2Y, review3Y,
+  centerpieceY, entryY, entryX,
 };
 
 // -- Progression data: lessons, prereqs, review piles, exam gate (Tasks 5-7) --
@@ -769,28 +792,40 @@ const LESSON_DATA = [
 // is the exam gate itself (not null), so the ENTIRE right column stays
 // locked until it's passed; the rest of the N3 chain then works exactly
 // like N4's own internal chaining.
+// Review-pile cadence matches N5's exactly (see n5-phaser-game.js's own
+// SHELF_PREREQ, shelf-05/09/13 each gated by the previous group's review
+// pile): a pile after every 4 shelves, not after 4 then 8. n4-shelf-09's
+// prereq used to be a plain linear 'n4-shelf-08' (no pile in between) —
+// changed to 'n4-review-2' so the 8-shelf Vocabulary & Usage wing splits
+// into two real 4-shelf review checkpoints, same as N3's mirror.
 const SHELF_PREREQ = {
   'n4-shelf-01': 'n4-exam-gate',
   'n4-shelf-02': 'n4-shelf-01', 'n4-shelf-03': 'n4-shelf-02', 'n4-shelf-04': 'n4-shelf-03',
   'n4-shelf-05': 'n4-review-1',
   'n4-shelf-06': 'n4-shelf-05', 'n4-shelf-07': 'n4-shelf-06', 'n4-shelf-08': 'n4-shelf-07',
-  'n4-shelf-09': 'n4-shelf-08', 'n4-shelf-10': 'n4-shelf-09', 'n4-shelf-11': 'n4-shelf-10', 'n4-shelf-12': 'n4-shelf-11',
+  'n4-shelf-09': 'n4-review-2',
+  'n4-shelf-10': 'n4-shelf-09', 'n4-shelf-11': 'n4-shelf-10', 'n4-shelf-12': 'n4-shelf-11',
   'n3-shelf-01': 'n3-exam-gate',
   'n3-shelf-02': 'n3-shelf-01', 'n3-shelf-03': 'n3-shelf-02', 'n3-shelf-04': 'n3-shelf-03',
   'n3-shelf-05': 'n3-review-1',
   'n3-shelf-06': 'n3-shelf-05', 'n3-shelf-07': 'n3-shelf-06', 'n3-shelf-08': 'n3-shelf-07',
-  'n3-shelf-09': 'n3-shelf-08', 'n3-shelf-10': 'n3-shelf-09', 'n3-shelf-11': 'n3-shelf-10', 'n3-shelf-12': 'n3-shelf-11',
+  'n3-shelf-09': 'n3-review-2',
+  'n3-shelf-10': 'n3-shelf-09', 'n3-shelf-11': 'n3-shelf-10', 'n3-shelf-12': 'n3-shelf-11',
 };
 
-// Four review piles: 2 for N4 progression, 2 for N3 progression.
-// Each review pile's requires array lists all shelves that must be completed
+// Six review piles now: 3 for N4 progression, 3 for N3 progression — one
+// per 4-shelf group, matching N5's own cadence (BOOK_PILE_DATA there is
+// 4 piles for 16 shelves, i.e. exactly this same "1 per 4" rule). Each
+// review pile's requires array lists all shelves that must be completed
 // before this pile becomes available (same pattern as SHELF_PREREQ, but
 // review piles are accessed via BOOK_PILE_DATA in buildBookPiles()).
 const BOOK_PILE_DATA = [
   { id: 'n4-review-1', title: 'N4 Grammar Foundations Review', requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04'] },
-  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08', 'n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12'] },
+  { id: 'n4-review-2', title: 'N4 Vocabulary & Usage Review', requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08'] },
+  { id: 'n4-review-3', title: 'N4 Advanced Usage Review', requires: ['n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12'] },
   { id: 'n3-review-1', title: 'N3 Grammar Expansion Review', requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04'] },
-  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08', 'n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12'] },
+  { id: 'n3-review-2', title: 'N3 Nuance & Conversation Review', requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08'] },
+  { id: 'n3-review-3', title: 'N3 Advanced Expression Review', requires: ['n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12'] },
 ];
 
 // The N4→N3 gate: reuses the same quiz-gate mechanic N5's staircase has
@@ -798,10 +833,11 @@ const BOOK_PILE_DATA = [
 // (kind: 'pile'-shaped for interaction model consistency), but the content
 // and scoring differ: it's a standalone exam, not a recap+quiz review pile.
 // Every N3 shelf's prereq chain roots on it — the entire right column stays
-// locked until this exam is passed.
+// locked until this exam is passed. Requires all 3 N4 review piles now
+// (was 2, back when N4 only had 2 piles total).
 const EXAM_GATE_DATA = {
   n4: { id: 'n4-exam-gate', title: 'N4 Entrance Exam', requires: [] },
-  n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] },
+  n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2', 'n4-review-3'] },
   n2: { id: 'n2-exam-gate', title: 'N2 Entrance Exam', requires: [] },
   n1: { id: 'n1-exam-gate', title: 'N1 Entrance Exam', requires: [] },
 };
@@ -1056,6 +1092,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildTopBand();
     this.buildFurniture();
     this.buildJukebox();
+    this.buildStairsLandmark();
     this.buildAtrium();
     this.buildShelves();
     this.buildBookPiles();
@@ -1210,10 +1247,10 @@ class N4LibraryScene extends Phaser.Scene {
     // ASSET_RECTS.grandfatherClock for the isolation method). Centered in
     // the corridor at LAYOUT.centerpieceY, scaled just enough to read as
     // a landmark without reaching into the shelf rows immediately above
-    // (wing1's south sub-row bottom edge sits at row1Y + shelfH*2 + 12 =
-    // 1280; at this scale the clock's top edge lands at ~1291, an 11px
-    // clearance) or the arrival rug below. Non-solid, like every other
-    // decor piece — centering it doesn't block auto-walk.
+    // (wing1's south sub-row bottom edge sits at wing1RowY[1] + shelfH =
+    // 1200, well clear of centerpieceY = 1360) or the arrival rug below.
+    // Non-solid, like every other decor piece — centering it doesn't
+    // block auto-walk.
     const clockKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.grandfatherClock, 'n4CenterpieceClockTex');
     const clockScale = 1.15;
     const clockW = ASSET_RECTS.grandfatherClock.w * clockScale;
@@ -1226,11 +1263,42 @@ class N4LibraryScene extends Phaser.Scene {
     // this pass (out of scope, matches the design spec's placeholder-
     // first approach), just a small accent rug (same woven technique,
     // fixed-size like N5's globeRug accents, no tiling needed) so the
-    // spawn point doesn't read as bare floor.
+    // spawn point doesn't read as bare floor. Positioned under the new
+    // west-side spawn point (LAYOUT.entryX), beside the stairs landmark,
+    // not center — was WORLD_W/2.
     const arrivalW = 90;
     const arrivalH = 50;
     drawWovenRug(this, 'n4ArrivalRugTex', arrivalW, arrivalH, n4RugPalette);
-    this.add.image(WORLD_W / 2, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
+    this.add.image(LAYOUT.entryX, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
+  }
+
+  // "Top of the stairs" landmark at the west-side spawn point — reuses
+  // N5's own real staircase art crop (ASSET_RECTS.staircase, same source
+  // sheet) rather than inventing new pixel art, so arriving here reads as
+  // "the top of the same stairs the player just climbed in N5," not an
+  // unrelated new piece of furniture. Solid (the player can't walk into
+  // the painted stair art), like N5's own staircase collision block, but
+  // purely decorative here — no interaction, no return trip (out of
+  // scope; see SUMMARY.md's "no return staircase" note).
+  buildStairsLandmark() {
+    const rect = ASSET_RECTS.staircase;
+    const scale = 0.55;
+    const w = rect.w * scale;
+    const h = rect.h * scale;
+    const x = 66; // flush against the west wall's inner edge (wall strip ends at x=64)
+    const y = LAYOUT.entryY - 160;
+    const key = cropToTexture(this, 'libAssetPack', rect, 'n4StaircaseTex');
+    this.add.image(x, y, key).setOrigin(0, 0).setDepth(1).setDisplaySize(w, h);
+
+    // Only the top ~53% of the crop is opaque content (same ratio N5's own
+    // stairContentBottom uses) — block just that region, not the full
+    // transparent-padded bounding box, so the player can walk right up to
+    // the visible base of the stairs instead of stopping short of it.
+    const contentBottom = h * (160 / 300);
+    const block = this.add.rectangle(x + w / 2, y + contentBottom / 2, w, contentBottom, 0x000000, 0)
+      .setOrigin(0.5, 0.5);
+    this.physics.add.existing(block, true);
+    this.wallGroup.add(block);
   }
 
   // The mezzanine's floor is drawn in layers rather than borrowed from a
@@ -1273,26 +1341,10 @@ class N4LibraryScene extends Phaser.Scene {
     const height = 910;
     const g = this.add.graphics().setDepth(0);
     g.fillStyle(0x160f0c, 1).fillRect(left, top, width, height);
-    buildOpenAtriumVoid(this, g, { left: left + 14, top: top + 16, width: width - 28, height: height - 32 });
-    for (let y = top + 48; y < top + height - 28; y += 42) {
-      g.lineStyle(2, 0x4a2d1d, 0.9).lineBetween(left + 22, y, left + width - 22, y);
-    }
-    // Outer frame lines (1px, dark border box around the whole rect)
-    g.lineStyle(1, 0x1a0f0a, 0.95).lineBetween(left, top, left + width, top)
-      .lineBetween(left + width, top, left + width, top + height)
-      .lineBetween(left + width, top + height, left, top + height)
-      .lineBetween(left, top + height, left, top);
-    // Side rail posts (tall, thin vertical dividers on the left+right edges
-    // of the atrium, reading as the visual anchors holding the two balcony
-    // rails apart)
-    g.lineStyle(3, 0x4a2d1d, 0.9).lineBetween(left + 22, top, left + 22, top + height)
-      .lineBetween(left + width - 22, top, left + width - 22, top + height);
-    // Gold trim lines (highlight accent on top edge of the outer frame, top
-    // edge of the plank seams, and top edge of the side rail posts, evoking
-    // polished gold leaf or a precious metal cap)
-    g.lineStyle(1, 0xc9a66b, 0.65).lineBetween(left, top, left + width, top)
-      .lineBetween(left + 22, top, left + 22, top + height)
-      .lineBetween(left + width - 22, top, left + width - 22, top + height);
+    buildOpenAtriumVoid(this, g, {
+      left: left + 14, top: top + 16, width: width - 28, height: height - 32,
+      corridorColor: N4_PALETTE.carpet,
+    });
     // Rear walkway strip — a horizontal band above the top of the atrium
     // void (at the scene's very back / topmost), just visual space, not
     // an interactive or path (the player can't walk behind the atrium
@@ -1303,16 +1355,23 @@ class N4LibraryScene extends Phaser.Scene {
     // Rear walkway trim (a double line giving it depth)
     g.lineStyle(1, 0x1a0f0a, 0.85).lineBetween(left, walkwayTop + 1, left + width, walkwayTop + 1)
       .lineBetween(left, walkwayTop + walkwayH - 1, left + width, walkwayTop + walkwayH - 1);
+    // Full-perimeter guard rail (heavy, gold-capped posts — mockup Option
+    // B) doubles as the actual collision boundary: the void previously had
+    // NO physics body at all, so the player could walk straight into it.
+    // Drawn AFTER the void/walkway (so it sits visually on top, at the
+    // atrium's outer edge) and BEFORE the label (so the label still floats
+    // above everything).
+    buildAtriumFence(this, { left, top, width, height, wallGroup: this.wallGroup, postGap: 92 });
     // "OPEN ATRIUM / FIRST-FLOOR LIBRARY" label, centered inside the
     // atrium void, floating over the illustrated content.
     const labelX = left + width / 2;
     const labelY = top + height / 2 - 20;
     this.add.text(labelX, labelY, 'OPEN ATRIUM', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8d4a8', align: 'center',
-    }).setOrigin(0.5).setDepth(2);
+    }).setOrigin(0.5).setDepth(4);
     this.add.text(labelX, labelY + 28, 'FIRST-FLOOR LIBRARY', {
       fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#a89068', align: 'center',
-    }).setOrigin(0.5).setDepth(2);
+    }).setOrigin(0.5).setDepth(4);
   }
 
   // Decorative jukebox prop — visual-only this pass (no real audio;
@@ -1350,12 +1409,19 @@ class N4LibraryScene extends Phaser.Scene {
     }
   }
 
+  // Generates the 12 left-column (N4) + 12 mirrored right-column (N3)
+  // shelf positions FROM LAYOUT's own Y bands. Three grid-aligned 2x2
+  // groups of 4 shelves each (was a 4-then-8 split, and before that a
+  // hand-scattered coordinate list with no relationship to LAYOUT at
+  // all — see this file's git history) — one review pile per group now,
+  // matching N5's own "1 pile per 4 shelves" cadence exactly.
   createMezzanineShelfPositions() {
-    const left = [
-      [70, 630], [178, 630], [286, 630], [70, 790],
-      [70, 940], [70, 1090], [178, 1240], [286, 1240],
-      [70, 1400], [178, 1400], [286, 1400], [70, 1545],
-    ];
+    const group = (rowY) => LAYOUT.leftColX
+      .flatMap((x) => [0, 1].map((r) => [x, rowY[0] + r * LAYOUT.rowStep]))
+      .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+    // South-to-north order (wing1 nearest entry, wing3 deepest) matches
+    // LESSON_DATA's declared order (shelf-01..04, 05..08, 09..12).
+    const left = [...group(LAYOUT.wing1RowY), ...group(LAYOUT.wing2RowY), ...group(LAYOUT.wing3RowY)];
     const right = left.map(([x, y]) => [WORLD_W - x - shelfW, y]);
     return [...left, ...right];
   }
@@ -1366,54 +1432,6 @@ class N4LibraryScene extends Phaser.Scene {
   buildShelves() {
     const shelfW = LAYOUT.shelfW;
     const shelfH = LAYOUT.shelfH;
-    const leftColX = LAYOUT.leftColX;
-    const rightColX = LAYOUT.rightColX;
-
-    // Each of LAYOUT's 2 rows is actually a "wing" of 4 shelves split
-    // into 2 sub-rows: [0] = north sub-row (further from entry), [1] =
-    // south sub-row (closer to entry) — matches LESSON_DATA's grouping
-    // into Grammar Foundations/Vocabulary & Usage (N4) and Grammar
-    // Expansion/Nuance & Conversation (N3).
-    const wing1RowY = [LAYOUT.row1Y, LAYOUT.row1Y + shelfH + 12];
-    const wing2RowY = [LAYOUT.row2Y, LAYOUT.row2Y + shelfH + 12];
-
-    // Wall header above each column's topmost (north) sub-row per wing,
-    // same hand-drawn "real wall" mural + invisible-rectangle/wallGroup
-    // collision pattern as N5's buildShelves() (n5-phaser-game.js:8216-
-    // 8275) — copied verbatim, this reads as shelves built into a wall
-    // rather than floating in open floor.
-    const colWidth = shelfW * 2 + 20;
-    const headerH = 110;
-    const headerKey = drawWallHeaderTexture(this, colWidth, headerH);
-    const buildWallHeader = (x, topY, h = headerH) => {
-      const key = h === headerH ? headerKey : drawWallHeaderTexture(this, colWidth, h);
-      const cx = x + colWidth / 2;
-      const cy = topY - h / 2 - 4;
-      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
-      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
-      this.physics.add.existing(block, true);
-      this.wallGroup.add(block);
-    };
-    buildWallHeader(leftColX[0], wing1RowY[0]);
-    buildWallHeader(rightColX[0], wing1RowY[0]);
-    buildWallHeader(leftColX[0], wing2RowY[0]);
-    buildWallHeader(rightColX[0], wing2RowY[0]);
-
-    // Wall footer below the southmost sub-row overall (wing1's south
-    // sub-row, nearest the entry point) — same "the walls need to be on
-    // where the arrow lands" reasoning as N5's own footer-only-nearest-
-    // spawn treatment (n5-phaser-game.js:8256-8275).
-    const buildWallFooter = (x, bottomY, h) => {
-      const key = drawWallHeaderTexture(this, colWidth, h);
-      const cx = x + colWidth / 2;
-      const cy = bottomY + h / 2 + 4;
-      this.add.image(cx, cy, key).setOrigin(0.5, 0.5).setDepth(0);
-      const block = this.add.rectangle(cx, cy, colWidth, h, 0x000000, 0).setOrigin(0.5, 0.5);
-      this.physics.add.existing(block, true);
-      this.wallGroup.add(block);
-    };
-    buildWallFooter(leftColX[0], wing1RowY[1] + shelfH, headerH);
-    buildWallFooter(rightColX[0], wing1RowY[1] + shelfH, headerH);
 
     // Matches LESSON_DATA's order (n4-shelf-01..08, n3-shelf-01..08)
     // exactly — buildShelves() zips LESSON_DATA[i] with positions[i] by
@@ -1488,7 +1506,7 @@ class N4LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- 4 review book piles (2 for N4 progression, 2 for N3) ---------------
+  // -- 6 review book piles (3 for N4 progression, 3 for N3) ---------------
 
   buildBookPiles() {
     const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'n4BookPileTex');
@@ -1508,8 +1526,10 @@ class N4LibraryScene extends Phaser.Scene {
     const positions = {
       'n4-review-1': { x: gapLeft + 16, y: LAYOUT.review1Y },
       'n4-review-2': { x: gapLeft + 16, y: LAYOUT.review2Y },
+      'n4-review-3': { x: gapLeft + 16, y: LAYOUT.review3Y },
       'n3-review-1': { x: gapRight - 16 - w, y: LAYOUT.review1Y },
       'n3-review-2': { x: gapRight - 16 - w, y: LAYOUT.review2Y },
+      'n3-review-3': { x: gapRight - 16 - w, y: LAYOUT.review3Y },
     };
 
     BOOK_PILE_DATA.forEach((pile) => {
@@ -1598,7 +1618,8 @@ class N4LibraryScene extends Phaser.Scene {
     // N2/N1 — left wing, per explicit instruction (breaks the natural
     // N4->N3->N2->N1 left/right progression on purpose; see design spec
     // Item 4). Placed in the open band between the rear walkway and the
-    // first shelf row (y 630), clear of every left-wing shelf position.
+    // northmost shelf row (wing3, LAYOUT.wing3RowY[0] = 660), clear of
+    // every left-wing shelf position.
     const gateScale = 1.0; // smaller than the 1.3 entry gates — these read as "future" landmarks, not the floor's primary gate
     this.createExamGateEntry({
       id: EXAM_GATE_DATA.n2.id, title: EXAM_GATE_DATA.n2.title,
@@ -1615,9 +1636,12 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   buildPlayer() {
-    // Spawns near the south end of the world — this floor's real entry
-    // point from N5's staircase.
-    const spawnX = WORLD_W / 2;
+    // Spawns near the south end of the world, on the west side beside the
+    // stairs landmark (buildStairsLandmark()) — this floor's real entry
+    // point from N5's staircase. Was WORLD_W/2 (dead center, no visual
+    // tie to how the player arrived); LAYOUT.entryX moves it beside the
+    // reused staircase art instead.
+    const spawnX = LAYOUT.entryX;
     const spawnY = LAYOUT.entryY;
     // N4LibraryScene is only ever reached after N5's CatSelectScene has
     // run (the cat color is a player-level preference, not per-floor —

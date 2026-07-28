@@ -1920,6 +1920,36 @@
         "27224"
       ],
       "port": 27224
+    },
+    {
+      "name": "jp-library-static-mezzanine-recheck",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27531"
+      ],
+      "port": 27531
+    },
+    {
+      "name": "jp-library-static-shelf-fix-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27642"
+      ],
+      "port": 27642
+    },
+    {
+      "name": "jp-library-static-mezzanine-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "27753"
+      ],
+      "port": 27753
     }
   ],
   "autoVerify": true
