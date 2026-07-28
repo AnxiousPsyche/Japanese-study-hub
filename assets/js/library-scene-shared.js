@@ -216,6 +216,99 @@ function drawWovenRug(scene, key, w, h, palette) {
   return key;
 }
 
+// Procedural brick-wall texture, replacing a small tiled image crop.
+// Bigger, hand-drawn blocks with mortar lines and per-brick shading
+// read as "real brickwork" instead of a tight repeating pattern.
+// config: { blockW, blockH, mortarColor, brickColors } — blockW/blockH
+// default to 32x32 (2x the previous 16x16 crop); brickColors is an
+// array cycled per-brick for subtle variation.
+function createBrickWallTexture(scene, key, config) {
+  const cfg = config || {};
+  const blockW = cfg.blockW || 32;
+  const blockH = cfg.blockH || 32;
+  const mortar = cfg.mortarColor || '#1c120b';
+  const brickColors = cfg.brickColors || ['#4c2b1b', '#442619', '#3e2216'];
+  const rowH = blockH / 2; // two brick courses per texture tile, offset like real brickwork
+  const tex = scene.textures.createCanvas(key, blockW, blockH);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = mortar;
+  ctx.fillRect(0, 0, blockW, blockH);
+  let brickIndex = 0;
+  for (let row = 0; row < 2; row++) {
+    const y = row * rowH;
+    const offset = row % 2 ? -blockW / 4 : 0;
+    for (let x = offset; x < blockW; x += blockW / 2) {
+      ctx.fillStyle = brickColors[brickIndex % brickColors.length];
+      brickIndex += 1;
+      ctx.fillRect(x + 1, y + 1, blockW / 2 - 2, rowH - 2);
+      // Top highlight + bottom shadow per brick, same technique as
+      // drawHardwoodFloorTexture's plank shading.
+      ctx.fillStyle = 'rgba(235, 178, 98, .08)';
+      ctx.fillRect(x + 2, y + 1, blockW / 2 - 4, 1);
+      ctx.fillStyle = 'rgba(10, 5, 2, .45)';
+      ctx.fillRect(x + 1, y + rowH - 2, blockW / 2 - 2, 1);
+    }
+  }
+  tex.refresh();
+  return key;
+}
+
+// Draws an illustrated "lower floor" void into a mezzanine's open
+// atrium rect, instead of a flat color fill — a darker/desaturated
+// floor-tile pattern, a few silhouette shelf blocks suggesting
+// receding first-floor furniture, and a soft vertical depth gradient,
+// all drawn on the caller's own Graphics object so it composites under
+// whatever rail/frame trim the caller draws next. Pure procedural
+// drawing (no new image assets) — reusable by any future floor with a
+// similar mezzanine-over-void layout.
+// config: { left, top, width, height, label } (label optional)
+function buildOpenAtriumVoid(scene, g, config) {
+  const { left, top, width, height } = config;
+  const midY = top + height / 2;
+
+  // Desaturated "first floor" tile pattern — small dark tiles, cooler
+  // and flatter than the mezzanine's own warm wood tones, reading as
+  // a different, more distant surface.
+  const tileW = 34;
+  const tileH = 22;
+  for (let ty = top + 20; ty < top + height - 20; ty += tileH) {
+    for (let tx = left + 20; tx < left + width - 20; tx += tileW) {
+      const shade = ((tx / tileW + ty / tileH) % 2) ? 0x1c1410 : 0x211714;
+      g.fillStyle(shade, 1).fillRect(tx, ty, tileW - 1, tileH - 1);
+    }
+  }
+
+  // Depth gradient — brighter near the rail edges (top/bottom of the
+  // void, closest to the viewer on each balcony), darker toward the
+  // center, implying the floor recedes downward/away.
+  const bands = 10;
+  for (let i = 0; i < bands; i++) {
+    const t = i / (bands - 1);
+    const distFromMid = Math.abs(t - 0.5) * 2; // 1 at edges, 0 at center
+    const alpha = 0.16 * (1 - distFromMid);
+    if (alpha <= 0.01) continue;
+    const bandTop = top + (height / bands) * i;
+    g.fillStyle(0x000000, alpha).fillRect(left, bandTop, width, height / bands + 1);
+  }
+
+  // Silhouette shelf blocks — simple dark rectangles (not full
+  // sprites) scattered across the void, reading as distant first-floor
+  // shelving seen from above without competing with the mezzanine's
+  // own shelf sprites.
+  const silhouettes = [
+    { x: left + width * 0.18, w: 30, h: 16 },
+    { x: left + width * 0.34, w: 22, h: 16 },
+    { x: left + width * 0.62, w: 26, h: 16 },
+    { x: left + width * 0.80, w: 30, h: 16 },
+  ];
+  silhouettes.forEach((s, i) => {
+    const sy = midY - 40 + (i % 2) * 26;
+    g.fillStyle(0x0e0906, 0.85).fillRect(s.x, sy, s.w, s.h);
+    g.fillStyle(0x3a2415, 0.4).fillRect(s.x, sy, s.w, 2);
+  });
+}
+
 // Pure DOM helpers (no scene/floor state, no Phaser dependency) — were
 // module-level functions in n5-phaser-game.js, move unchanged. Safe as
 // a page-wide singleton toast element since N5 and N4 are separate
@@ -246,6 +339,23 @@ function getState(id, prereq, progress) {
   if (progress[id]) return 'completed';
   if (prereq === null || prereq === undefined || progress[prereq]) return 'available';
   return 'locked';
+}
+
+// Renders a decorative prop (non-interactive by default, optionally clickable).
+// config: { x, y, textureKey, scale?, onClick?, depth? }
+// Returns the created Phaser.GameObjects.Image. Deliberately NOT pushed into
+// scene.interactives — decor props don't participate in the progress/lock system,
+// so they need no requires/glow/stamp fields. Scale/onClick/depth are optional.
+function createDecorativeProp(scene, config) {
+  const { x, y, textureKey } = config;
+  const scale = config.scale !== undefined ? config.scale : 1;
+  const depth = config.depth !== undefined ? config.depth : 1;
+  const sprite = scene.add.image(x, y, textureKey).setOrigin(0.5).setScale(scale).setDepth(depth);
+  if (config.onClick) {
+    sprite.setInteractive({ useHandCursor: true });
+    sprite.on('pointerdown', config.onClick);
+  }
+  return sprite;
 }
 
 // Quiz-gate (staircase/exam-gate attempt/cooldown) persistence —
@@ -577,6 +687,7 @@ window.cropToTexture = cropToTexture;
 window.drawWovenRug = drawWovenRug;
 window.drawWallHeaderTexture = drawWallHeaderTexture;
 window.getState = getState;
+window.createDecorativeProp = createDecorativeProp;
 window.getQuizGateStatus = getQuizGateStatus;
 window.ensureToast = ensureToast;
 window.showToast = showToast;

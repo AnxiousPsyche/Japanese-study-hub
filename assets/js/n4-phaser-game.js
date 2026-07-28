@@ -86,6 +86,8 @@ const FAVORITES_KEY = 'nekoBunko.n4.favorites';
 const LESSON_PAGE_KEY = 'nekoBunko.n4.lessonPage';
 const QUIZ_GATE_KEY = 'nekoBunko.n4.quizGate'; // N3 wing entrance exam
 const N4_ENTRANCE_GATE_KEY = 'nekoBunko.n4.entranceGate';
+const N2_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n2Gate';
+const N1_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n1Gate';
 
 function loadProgress() {
   try {
@@ -662,6 +664,29 @@ function furigana(word, reading) {
   return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
 }
 
+// Crops a padded window around the jukebox artwork's opaque content
+// and zeroes any residual low-alpha pixels (<20/255) left over from
+// the source file's soft vignette background, so the destination
+// texture reads as a clean cutout against the mezzanine floor instead
+// of a faint translucent square.
+function cropJukeboxTexture(scene) {
+  const destKey = 'n4JukeboxTex';
+  const srcImage = scene.textures.get('jukebox').getSourceImage();
+  const rect = { x: 202, y: 82, w: 620, h: 870 }; // padded around the measured x:242-782, y:122-912 opaque bbox
+  const tex = scene.textures.createCanvas(destKey, rect.w, rect.h);
+  const ctx = tex.getContext();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(srcImage, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+  const imageData = ctx.getImageData(0, 0, rect.w, rect.h);
+  const data = imageData.data;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] < 20) data[i] = 0;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  tex.refresh();
+  return destKey;
+}
+
 // -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
 // North (top) = deeper into the building, toward a future N2 stub (not
 // built this pass). South (bottom) = arrival point from N5's
@@ -777,6 +802,8 @@ const BOOK_PILE_DATA = [
 const EXAM_GATE_DATA = {
   n4: { id: 'n4-exam-gate', title: 'N4 Entrance Exam', requires: [] },
   n3: { id: 'n3-exam-gate', title: 'N3 Entrance Exam', requires: ['n4-review-1', 'n4-review-2'] },
+  n2: { id: 'n2-exam-gate', title: 'N2 Entrance Exam', requires: [] },
+  n1: { id: 'n1-exam-gate', title: 'N1 Entrance Exam', requires: [] },
 };
 
 // -- Shelf-decoration helpers (Task 6) -----------------------------------
@@ -984,6 +1011,8 @@ class N4LibraryScene extends Phaser.Scene {
     // badge, both copied verbatim from that file).
     this.load.image('checkmarkIcon', '../../assets/images/ui/checkmark-1-Original.png');
     this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
+    // Jukebox decorative prop (Task 3) — loaded here for texture cleanup in buildJukebox()
+    this.load.image('jukebox', '../../assets/images/ui/jukebox-Original.png');
     loadCatSpritesheets(this);
   }
 
@@ -1026,6 +1055,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildWalls();
     this.buildTopBand();
     this.buildFurniture();
+    this.buildJukebox();
     this.buildAtrium();
     this.buildShelves();
     this.buildBookPiles();
@@ -1082,24 +1112,38 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   buildWalls() {
-    // Visually thicker wall strip just inside the tilemap's border tile,
-    // using the same brick tile crop, same pattern as N5's buildWalls()
-    // (n5-phaser-game.js:7735).
-    const brickKey = cropToTexture(this, 'floorsWalls', ASSET_RECTS.brickTile, 'n4BrickWallTex');
+    const blockSize = 32; // was TILE_SIZE (16) via image crop — see Task 2
+    const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', { blockW: blockSize, blockH: blockSize });
     const wallGroup = this.physics.add.staticGroup();
-    for (let x = 0; x < GRID_COLS; x++) {
-      this.add.image(x * TILE_SIZE, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      this.add.image(x * TILE_SIZE, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
+
+    // Top/bottom strips — WORLD_W (1152) divides evenly by 32 (36 tiles),
+    // so no remainder handling needed on this axis. Constrain height to
+    // TILE_SIZE (16px) instead of full blockSize (32px) to avoid overwriting
+    // buildFloor()'s border-row tiles at the top/bottom edges.
+    for (let x = 0; x < WORLD_W; x += blockSize) {
+      this.add.image(x, TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, blockSize, TILE_SIZE).setDisplaySize(blockSize, TILE_SIZE);
+      this.add.image(x, (GRID_ROWS - 2) * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, blockSize, TILE_SIZE).setDisplaySize(blockSize, TILE_SIZE);
     }
-    // Left/right walls, 3 tiles deep, starting below the top wall band
-    // (buildTopBand()'s solid header) so the brick strip doesn't visually
-    // collide with it — same reasoning as N5's sideWallStartRow.
-    const sideWallStartRow = Math.ceil(TOP_BAND_HEIGHT / TILE_SIZE);
-    for (let y = sideWallStartRow; y < GRID_ROWS; y++) {
-      for (let col = 1; col <= 3; col++) {
-        this.add.image(col * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-        this.add.image((GRID_COLS - 1 - col) * TILE_SIZE, y * TILE_SIZE, brickKey).setOrigin(0, 0).setDepth(0);
-      }
+
+    // Left/right strips — 3 * TILE_SIZE (48px) deep, starting below the
+    // top wall band. Positioned at original x-offsets (columns 1-3 left,
+    // columns 68-70 right) to avoid overlapping buildFloor()'s perimeter
+    // border tiles. The vertical run length (GRID_ROWS * TILE_SIZE minus
+    // the header) is not guaranteed to be a multiple of blockSize, so the
+    // final tile in each column gets clipped to the remaining pixel
+    // height instead of overshooting past the strip's bottom edge.
+    const sideWallStartY = Math.ceil(TOP_BAND_HEIGHT / TILE_SIZE) * TILE_SIZE;
+    const sideWallEndY = GRID_ROWS * TILE_SIZE;
+    const colWidth = 3 * TILE_SIZE; // 48px, same total strip width as before
+    for (let y = sideWallStartY; y < sideWallEndY; y += blockSize) {
+      const remaining = sideWallEndY - y;
+      const h = Math.min(blockSize, remaining);
+      this.add.image(TILE_SIZE, y, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
+      this.add.image(WORLD_W - TILE_SIZE - colWidth, y, brickKey).setOrigin(0, 0).setDepth(0)
+        .setCrop(0, 0, colWidth, h).setDisplaySize(colWidth, h);
     }
     this.wallGroup = wallGroup;
   }
@@ -1229,27 +1273,81 @@ class N4LibraryScene extends Phaser.Scene {
     const height = 910;
     const g = this.add.graphics().setDepth(0);
     g.fillStyle(0x160f0c, 1).fillRect(left, top, width, height);
-    g.fillStyle(0x27170f, 1).fillRect(left + 14, top + 16, width - 28, height - 32);
+    buildOpenAtriumVoid(this, g, { left: left + 14, top: top + 16, width: width - 28, height: height - 32 });
     for (let y = top + 48; y < top + height - 28; y += 42) {
       g.lineStyle(2, 0x4a2d1d, 0.9).lineBetween(left + 22, y, left + width - 22, y);
     }
-    g.lineStyle(6, 0x5a321d, 1);
-    g.lineBetween(left, top, left + width, top);
-    g.lineBetween(left, top + height, left + width, top + height);
-    [left, left + width].forEach((x) => {
-      g.lineStyle(6, 0x5a321d, 1).lineBetween(x, top, x, top + height);
-      for (let y = top + 18; y < top + height; y += 42) {
-        g.lineStyle(3, 0x9c6434, 1).lineBetween(x, y, x, Math.min(y + 25, top + height));
-      }
+    // Outer frame lines (1px, dark border box around the whole rect)
+    g.lineStyle(1, 0x1a0f0a, 0.95).lineBetween(left, top, left + width, top)
+      .lineBetween(left + width, top, left + width, top + height)
+      .lineBetween(left + width, top + height, left, top + height)
+      .lineBetween(left, top + height, left, top);
+    // Side rail posts (tall, thin vertical dividers on the left+right edges
+    // of the atrium, reading as the visual anchors holding the two balcony
+    // rails apart)
+    g.lineStyle(3, 0x4a2d1d, 0.9).lineBetween(left + 22, top, left + 22, top + height)
+      .lineBetween(left + width - 22, top, left + width - 22, top + height);
+    // Gold trim lines (highlight accent on top edge of the outer frame, top
+    // edge of the plank seams, and top edge of the side rail posts, evoking
+    // polished gold leaf or a precious metal cap)
+    g.lineStyle(1, 0xc9a66b, 0.65).lineBetween(left, top, left + width, top)
+      .lineBetween(left + 22, top, left + 22, top + height)
+      .lineBetween(left + width - 22, top, left + width - 22, top + height);
+    // Rear walkway strip — a horizontal band above the top of the atrium
+    // void (at the scene's very back / topmost), just visual space, not
+    // an interactive or path (the player can't walk behind the atrium
+    // because the bounds are set up to lock off the north corridor access).
+    const walkwayTop = top - 42;
+    const walkwayH = 42;
+    g.fillStyle(0x2a2118, 1).fillRect(left, walkwayTop, width, walkwayH);
+    // Rear walkway trim (a double line giving it depth)
+    g.lineStyle(1, 0x1a0f0a, 0.85).lineBetween(left, walkwayTop + 1, left + width, walkwayTop + 1)
+      .lineBetween(left, walkwayTop + walkwayH - 1, left + width, walkwayTop + walkwayH - 1);
+    // "OPEN ATRIUM / FIRST-FLOOR LIBRARY" label, centered inside the
+    // atrium void, floating over the illustrated content.
+    const labelX = left + width / 2;
+    const labelY = top + height / 2 - 20;
+    this.add.text(labelX, labelY, 'OPEN ATRIUM', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '12px', color: '#e8d4a8', align: 'center',
+    }).setOrigin(0.5).setDepth(2);
+    this.add.text(labelX, labelY + 28, 'FIRST-FLOOR LIBRARY', {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '8px', color: '#a89068', align: 'center',
+    }).setOrigin(0.5).setDepth(2);
+  }
+
+  // Decorative jukebox prop — visual-only this pass (no real audio;
+  // n4-dashboard.html doesn't load music-player.js and no audio asset
+  // was supplied). Placed along the rear walkway, non-solid like every
+  // other decor piece on this floor.
+  buildJukebox() {
+    const texKey = cropJukeboxTexture(this);
+    const x = 470;
+    const y = 480; // on the rear walkway strip (buildAtrium()'s walkway spans roughly y 452-494)
+    const scale = 0.16; // source crop is 620x870 — scales down to a footprint similar to the centerpiece clock
+    createDecorativeProp(this, {
+      x, y, textureKey: texKey, scale, depth: 2,
+      onClick: () => {
+        showToast('The jukebox hums an old N4 tune...');
+        this.spawnNoteFlourish(x, y);
+      },
     });
-    g.lineStyle(2, 0xd4a24c, .7).lineBetween(left, top + 3, left + width, top + 3);
-    g.lineStyle(2, 0xd4a24c, .7).lineBetween(left, top + height - 3, left + width, top + height - 3);
-    this.add.text(WORLD_W / 2, top + height / 2, 'OPEN ATRIUM\nFIRST-FLOOR LIBRARY', {
-      fontFamily: '"Press Start 2P", monospace', fontSize: '10px', color: '#ba8b57', align: 'center', lineSpacing: 8,
-    }).setOrigin(.5).setAlpha(.55).setDepth(1);
-    // Rear walkway bridges the two opposed C-wings at the north edge.
-    g.fillStyle(0x4a2a18, 1).fillRect(left - 90, top - 58, width + 180, 42);
-    g.lineStyle(3, 0x9c6434, 1).lineBetween(left - 90, top - 18, left + width + 90, top - 18);
+  }
+
+  // Same particle technique as spawnPassSparkle (library-scene-shared.js)
+  // but with a musical-note glyph and no dependency on quiz-pass state —
+  // kept local since it's cosmetic flavor for one prop, not shared engine.
+  spawnNoteFlourish(x, y) {
+    const count = 4;
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+      const note = this.add.text(x, y, '♪', { fontSize: '16px', color: '#e8d4a8' })
+        .setOrigin(0.5).setDepth(10);
+      this.tweens.add({
+        targets: note, x: x + Math.cos(angle) * 30, y: y + Math.sin(angle) * 30 - 20,
+        alpha: { from: 1, to: 0 }, duration: 800, ease: 'Cubic.Out',
+        onComplete: () => note.destroy(),
+      });
+    }
   }
 
   createMezzanineShelfPositions() {
@@ -1439,16 +1537,41 @@ class N4LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- N4->N3 exam gate: the one interactive N5 has no equivalent of ------
-  // Built like a BOOK_PILE_DATA-shaped interactive (kind: 'pile', same
+  // -- N4/N3 entrance exam gates: interactives N5 has no equivalent of ----
+  // Built like BOOK_PILE_DATA-shaped interactives (kind: 'pile', same
   // shape openInteraction()/refreshAllStates() already expect from any
-  // pile), but its id equals this.finalGateId ('n3-exam-gate', set in
-  // create()) — that single equality is what routes it through
-  // openQuizGateMenu()'s 3-attempt/24h-cooldown flow (library-scene-
-  // shared.js:340-356) instead of a plain review-pile menu, and exempts
-  // it from refreshAllStates()' lock-dimming (library-scene-shared.js:
-  // 442-444, "entry.id !== this.finalGateId") the same way N5's own
-  // staircase gate is exempt. No new interaction-dispatch logic needed.
+  // pile), but each has entry.isExamGate: true and its own entry.quizGateKey
+  // — that's what routes each one through openQuizGateMenu()'s 3-attempt/
+  // 24h-cooldown flow (library-scene-shared.js, openInteraction()) instead
+  // of a plain review-pile menu, and exempts it from refreshAllStates()'
+  // lock-dimming, per-entry rather than via a single scene-level
+  // this.finalGateId as N5's own staircase gate still uses.
+
+  // Builds one exam-gate interactive: sprite (reused book-pile texture,
+  // scaled), glow (available-state pulse) / stamp (completed) icons, a
+  // floating title label, and the this.interactives entry. Replaces the
+  // hand-duplicated N4/N3 block buildExamGate() used to write out twice.
+  // config: { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale }
+  createExamGateEntry(config) {
+    const { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale } = config;
+    const w = ASSET_RECTS.bookPileTall.w * scale;
+    const h = ASSET_RECTS.bookPileTall.h * scale;
+    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
+    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
+    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
+    const entry = {
+      id, kind: 'pile', title, sprite, glow, stamp, requires,
+      x: x + w / 2, y: y + h / 2, baseScale: scale, isExamGate: true, quizGateKey, onPass,
+    };
+    sprite.setInteractive({ useHandCursor: true });
+    sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+    this.add.text(x + w / 2, y - 18, title.toUpperCase(), {
+      fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8',
+    }).setOrigin(.5).setDepth(4);
+    this.interactives.push(entry);
+    return entry;
+  }
 
   buildExamGate() {
     // Reuses the exact same book-pile crop buildBookPiles() already
@@ -1458,43 +1581,37 @@ class N4LibraryScene extends Phaser.Scene {
     // buildExamGate(), so this.bookPileTexKey is guaranteed to exist.
     const bookKey = this.bookPileTexKey;
     const scale = 1.3; // larger than the 0.7 review piles — reads as the floor's one landmark gate, not just another pile
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n4.id, title: EXAM_GATE_DATA.n4.title,
+      x: 322, y: 1515, requires: EXAM_GATE_DATA.n4.requires,
+      quizGateKey: N4_ENTRANCE_GATE_KEY, bookKey, scale,
+      onPass: () => showToast('The N4 balcony is permanently open.'),
+    });
     const w = ASSET_RECTS.bookPileTall.w * scale;
-    const h = ASSET_RECTS.bookPileTall.h * scale;
-    const n4X = 322;
-    const n4Y = 1515;
-    const n4Sprite = this.add.image(n4X, n4Y, bookKey).setOrigin(0, 0).setDisplaySize(w, h).setDepth(2);
-    const n4Glow = this.add.text(n4X + w - 8, n4Y - 6, '*', { fontSize: '18px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const n4Stamp = this.add.text(n4X + w - 8, n4Y - 6, 'OK', { fontSize: '11px' }).setOrigin(.5).setDepth(4).setVisible(false);
-    const n4Entry = { id: EXAM_GATE_DATA.n4.id, kind: 'pile', title: EXAM_GATE_DATA.n4.title,
-      sprite: n4Sprite, glow: n4Glow, stamp: n4Stamp, requires: EXAM_GATE_DATA.n4.requires,
-      x: n4X + w / 2, y: n4Y + h / 2, baseScale: scale, isExamGate: true, quizGateKey: N4_ENTRANCE_GATE_KEY,
-      onPass: () => showToast('The N4 balcony is permanently open.') };
-    n4Sprite.setInteractive({ useHandCursor: true });
-    n4Sprite.on('pointerdown', () => this.handleInteractiveClick(n4Entry));
-    this.interactives.push(n4Entry);
-    this.add.text(n4X + w / 2, n4Y - 18, 'N4 EXAM GATE', { fontFamily: '"Press Start 2P", monospace', fontSize: '7px', color: '#e8d4a8' }).setOrigin(.5).setDepth(4);
-    const x = WORLD_W - 322 - w; // mirrored right-wing entrance
-    const y = 1515;
-
-    const sprite = this.add.image(x, y, bookKey).setOrigin(0, 0)
-      .setDisplaySize(w, h).setDepth(1);
-    const glow = this.add.text(x + w - 8, y - 6, '⭐', { fontSize: '18px' })
-      .setOrigin(0.5).setDepth(4).setVisible(false);
-    const stamp = this.add.text(x + w - 8, y - 6, '✅', { fontSize: '18px' })
-      .setOrigin(0.5).setDepth(4).setVisible(false);
-    this.tweens.add({ targets: glow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
-
-    sprite.setInteractive({ useHandCursor: true });
-    sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
-
-    const entry = {
-      id: EXAM_GATE_DATA.n3.id, kind: 'pile', title: EXAM_GATE_DATA.n3.title,
-      sprite, glow, stamp, requires: EXAM_GATE_DATA.n3.requires,
-      x: x + w / 2, y: y + h / 2,
-      baseScale: scale, isExamGate: true, quizGateKey: QUIZ_GATE_KEY,
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n3.id, title: EXAM_GATE_DATA.n3.title,
+      x: WORLD_W - 322 - w, y: 1515, requires: EXAM_GATE_DATA.n3.requires,
+      quizGateKey: QUIZ_GATE_KEY, bookKey, scale,
       onPass: () => showToast('The N3 balcony is permanently open.'),
-    };
-    this.interactives.push(entry);
+    });
+
+    // N2/N1 — left wing, per explicit instruction (breaks the natural
+    // N4->N3->N2->N1 left/right progression on purpose; see design spec
+    // Item 4). Placed in the open band between the rear walkway and the
+    // first shelf row (y 630), clear of every left-wing shelf position.
+    const gateScale = 1.0; // smaller than the 1.3 entry gates — these read as "future" landmarks, not the floor's primary gate
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n2.id, title: EXAM_GATE_DATA.n2.title,
+      x: 100, y: 520, requires: EXAM_GATE_DATA.n2.requires,
+      quizGateKey: N2_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
+      onPass: () => showToast('The N2 gate creaks open... nothing beyond it yet.'),
+    });
+    this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n1.id, title: EXAM_GATE_DATA.n1.title,
+      x: 220, y: 520, requires: EXAM_GATE_DATA.n1.requires,
+      quizGateKey: N1_ENTRANCE_GATE_KEY, bookKey, scale: gateScale,
+      onPass: () => showToast('The N1 gate creaks open... nothing beyond it yet.'),
+    });
   }
 
   buildPlayer() {
