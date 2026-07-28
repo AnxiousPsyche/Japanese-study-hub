@@ -26,6 +26,19 @@
   - A HUD shortcut button ("N3 gate exam," top nav bar on the N4 dashboard) opens the exam gate
     directly once both N4 reviews are done, without needing to walk there — same interaction path
     as walking up to the gate, not a separate mechanism.
+- **Mezzanine polish pass** (`docs/superpowers/specs/2026-07-28-n4-atrium-walls-jukebox-gates-design.md`,
+  `docs/superpowers/plans/2026-07-28-n4-atrium-walls-jukebox-gates.md`, all 6 tasks complete):
+  the open atrium now draws an illustrated "lower floor" void (tiled floor pattern, depth
+  gradient, silhouette shelf blocks) instead of a flat color fill (`buildOpenAtriumVoid()` in
+  `library-scene-shared.js`); the wall brick texture is a larger procedural pattern (32px blocks,
+  mortar lines, per-brick shading) instead of a tight 16px image-crop tile (`createBrickWallTexture()`);
+  a clickable decorative jukebox prop sits on the rear walkway (visual-only — no audio asset,
+  `n4-dashboard.html` doesn't load `music-player.js`); and the left wing now has standalone N2/N1
+  entrance-exam gate landmarks (`n2-exam-gate`/`n1-exam-gate`, `requires: []`, own persistence keys
+  `nekoBunko.n4.n2Gate`/`nekoBunko.n4.n1Gate`, same 3-attempt/24h-cooldown mechanic as N4/N3's
+  gates) — not wired into `SHELF_PREREQ` since no N2/N1 shelf content exists yet.
+  `buildExamGate()` was also refactored into a reusable `createExamGateEntry()` factory shared by
+  all four gates.
 - **Shared engine:** `assets/js/library-scene-shared.js` — movement/camera/collision/retro-menu/
   LessonBox glue extracted from N5, consumed by both floors via
   `Object.assign(SceneClass.prototype, LibrarySceneEngine)`. Any engine-level bug fix belongs
@@ -44,8 +57,10 @@ Per the design spec's explicit "Out of Scope" section for this pass:
   far), plus real "recap + quiz" content for all 4 N4/N3 review piles (currently placeholder,
   same as the shelves).
 - A return staircase from the N4/N3 floor back down to N5 (not built — one-way trip only).
-- A further "N2 is coming soon" stub gate past the N3 side's completion (mirrors how N5 itself
-  was stubbed before this floor existed — not built this pass).
+- Real N2/N1 shelf content and floor layout — the N2/N1 entrance-exam gates now exist as
+  standalone landmarks in the left wing (see "Mezzanine polish pass" above) but aren't wired
+  into any lesson/shelf structure yet, same relationship N5's old staircase had to N4/N3 before
+  this floor existed.
 - Any shared save-slot/cross-floor progress dashboard beyond the current per-floor localStorage
   keys.
 
