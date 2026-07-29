@@ -114,24 +114,20 @@ const ASSET_RECTS = {
     h: 120
   },
   // Same staircase crop N5's own buildTopBand() uses (n5-phaser-game.js's
-  // ASSET_RECTS.staircase, verbatim rect) — kept for reference; only
-  // lastStairStep below is actually used by buildStairsLandmark() now
-  // (see that function's comment for why). Only the top ~53% of this
-  // 300px-tall crop is opaque content — the rest is transparent padding.
+  // ASSET_RECTS.staircase, verbatim rect) — kept for reference only, not
+  // consumed anywhere in this file. Only the top ~53% of this 300px-tall
+  // crop is opaque content — the rest is transparent padding.
   staircase: {
     x: 935,
     y: 0,
     w: 100,
     h: 300
   },
-  // The bottom-most tread of the same staircase asset — its rounded
-  // drop-shadow terminus is the actual real end of the opaque content
-  // (confirmed by alpha-scanning zoomed crops of the source sheet: the
-  // staircase's visible steps end around source row 165, this rect
-  // captures just the last one plus its shadow). Used as a small "one
-  // step visible, the rest continues off-world toward N5" landmark at
-  // the spawn corner, per explicit request to crop this real asset
-  // rather than hand-draw new stair art.
+  // The bottom-most tread of the same staircase asset — used to be
+  // cropped for a small "one step visible" landmark at the spawn corner
+  // (buildStairsLandmark()), removed per explicit follow-up feedback
+  // ("just remove the stairs"). Kept here for reference only, not
+  // consumed anywhere in this file.
   lastStairStep: {
     x: 935,
     y: 140,
@@ -4230,8 +4226,8 @@ const centerpieceY = 1062; // N4/N3's globe-equivalent decorative landmark
 // (it's now ~330px/~20.6 tiles). Flagged, not silently dropped — see
 // this session's report for the tradeoff; ask if wing1 should move
 // closer to restore the exact 12-tile distance from this new spawn.
-const entryY = 1313; // a few px north of the last-stair-step landmark's own top edge (see buildStairsLandmark)
-const entryX = 94; // centered on the last-stair-step landmark's own footprint
+const entryY = 1313; // a few px north of the south wall, standing on the arrival rug
+const entryX = 61; // centered on the arrival rug's own footprint (x:16-106, see buildFurniture)
 
 // Atrium bounding rect — was local to buildAtrium(); promoted to LAYOUT
 // since the C-shape wing walls (buildWingWalls()) and the rope-and-brass
@@ -4834,7 +4830,6 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildTopBand();
     this.buildFurniture();
     this.buildJukebox();
-    this.buildStairsLandmark();
     this.buildAtrium();
     this.buildShelves();
     this.buildBookPiles();
@@ -4990,10 +4985,16 @@ class N4LibraryScene extends Phaser.Scene {
     this.wallGroup.add(block);
   }
 
-  // -- Central decor (Task 6): corridor rug, centerpiece landmark, arrival
-  // marker. A first pass only — denser than N5's per the design spec, but
-  // that density (reading tables/sofas/TVs/reception desk) is explicitly
-  // out of scope for this pass; only 3 pieces are built here.
+  // -- Central decor (Task 6): arrival marker. A first pass only — denser
+  // than N5's per the design spec, but that density (reading tables/
+  // sofas/TVs/reception desk) is explicitly out of scope for this pass.
+  // The old center-corridor rug and grandfather-clock centerpiece landmark
+  // both used to live here too — removed per explicit follow-up feedback
+  // ("remove the pendulum clock, no use"): the corridor rug was replaced
+  // by the frosted N3 threshold wall (buildN3Mist()), and the clock had
+  // no functional purpose and was leaving an un-frosted gap a player
+  // could walk into in the south hall segment (see buildN3Mist()'s own
+  // comment for the two-segment geometry that fills that space now).
 
   buildFurniture() {
     // Recolors drawWovenRug's default brick-red/tan palette to this
@@ -5002,6 +5003,7 @@ class N4LibraryScene extends Phaser.Scene {
     // rugDark/rugFringeLight/rugWeave/rugMotifShade have no N4_PALETTE
     // equivalent yet, so those 4 stay literal; rugBase/rugMotif reuse
     // N4_PALETTE.carpet/gold directly rather than duplicating the hex.
+    // Only the small arrival rug (below) still uses this.
     const n4RugPalette = {
       rugDark: 0x2a0d1a,
       rugFringeLight: 0x3a1526,
@@ -5011,78 +5013,27 @@ class N4LibraryScene extends Phaser.Scene {
       rugMotifShade: 0xa87f3a,
     };
 
-    // Center-corridor rug — same hand-drawn woven-runner technique as
-    // N5's corridorRugTex (drawWovenRug + tileSprite for a seamless
-    // vertical repeat), recolored via the palette above. Runs from just
-    // below the top wall band down to just above the centerpiece
-    // landmark; the arrival point near entryY gets its own separate
-    // small rug below instead of one strip spanning the whole room.
-    // Non-solid, like every decor piece in this file — no collider.
-    const corridorX = WORLD_W / 2;
-    const corridorTop = TOP_BAND_HEIGHT + 20;
-    const corridorBottom = LAYOUT.entryY - 80;
-    const corridorHeight = corridorBottom - corridorTop;
-    const corridorMidY = (corridorTop + corridorBottom) / 2;
-    const corridorWidth = 100; // wider than N5's 80 — this floor's shelf columns sit further apart
-    const corridorRugRepeatH = 32;
-    drawWovenRug(this, 'n4CorridorRugTex', corridorWidth, corridorRugRepeatH, n4RugPalette);
-    this.add.tileSprite(corridorX, corridorMidY, corridorWidth, corridorHeight, 'n4CorridorRugTex')
-      .setDepth(0);
-
-    // Centerpiece landmark — this floor's globe-equivalent decorative
-    // prop: a large freestanding grandfather clock, cropped from the same
-    // libassetpack-tiled.png sheet N5's own globe/shelves come from (see
-    // ASSET_RECTS.grandfatherClock for the isolation method). Centered in
-    // the corridor at LAYOUT.centerpieceY, scaled just enough to read as
-    // a landmark without reaching into the shelf rows immediately above
-    // (wing1's south sub-row bottom edge sits at wing1RowY[1] + shelfH =
-    // 1200, well clear of centerpieceY = 1360) or the arrival rug below.
-    // Non-solid, like every other decor piece — centering it doesn't
-    // block auto-walk.
-    const clockKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.grandfatherClock, 'n4CenterpieceClockTex');
-    const clockScale = 1.15;
-    const clockW = ASSET_RECTS.grandfatherClock.w * clockScale;
-    const clockH = ASSET_RECTS.grandfatherClock.h * clockScale;
-    this.furnitureSprites.centerpiece = this.add
-      .image(WORLD_W / 2, LAYOUT.centerpieceY, clockKey)
-      .setOrigin(0.5, 0.5).setDepth(1).setDisplaySize(clockW, clockH);
-
     // Plain arrival rug at the entry point — N4 has no "Neko-sensei" desk
     // this pass (out of scope, matches the design spec's placeholder-
     // first approach), just a small accent rug (same woven technique,
     // fixed-size like N5's globeRug accents, no tiling needed) so the
-    // spawn point doesn't read as bare floor. Positioned under the new
-    // west-side spawn point (LAYOUT.entryX), beside the stairs landmark,
-    // not center — was WORLD_W/2.
+    // spawn point doesn't read as bare floor. The stair-tread landmark
+    // that used to sit below it (buildStairsLandmark()) was dropped
+    // entirely per explicit follow-up feedback ("just remove the
+    // stairs") — this rug is now the only decor at the spawn corner.
+    // Anchored with origin (0,0) at CORNER_X=16 (just past the single
+    // true outer border tile, not buildWalls()'s far wider inner brick
+    // strip — see this session's corner-flush fix) so it draws on top of
+    // that inner strip and sits genuinely flush in the corner, and its
+    // bottom edge is pinned directly to the south wall's own top edge
+    // (no longer tied to the removed tread's position).
     const arrivalW = 90;
     const arrivalH = 50;
+    const cornerX = 16; // just past the single true outer border tile
+    const southWallTopY = (GRID_ROWS - 2) * TILE_SIZE;
     drawWovenRug(this, 'n4ArrivalRugTex', arrivalW, arrivalH, n4RugPalette);
-    this.add.image(LAYOUT.entryX, LAYOUT.entryY, 'n4ArrivalRugTex').setDepth(0);
-  }
-
-  // "Top of the stairs" landing at the west-side spawn point — a small,
-  // purpose-built top-down composition (brick wall columns flanking a
-  // dark floor corridor, a few visible stair treads) — REPLACED per
-  // explicit follow-up feedback ("that's the last step in the
-  // libassetpack-tiled.png stairs, just crop it") with a direct crop of
-  // the real asset's bottom-most tread (ASSET_RECTS.lastStairStep,
-  // captured at its rounded drop-shadow terminus — the genuine end of
-  // the staircase's opaque content). "I don't care if the 1 step is
-  // only seen" — this is deliberately a single small tread, not a full
-  // staircase composition; the rest is implied to continue south,
-  // off-world, toward N5. Flush against the literal southwest corner
-  // (both the west wall's inner edge and the south wall). Purely
-  // decorative (non-solid) — it's a single tread graphic, not a
-  // structure the player could plausibly collide with.
-  buildStairsLandmark() {
-    const rect = ASSET_RECTS.lastStairStep;
-    const scale = 0.6;
-    const w = rect.w * scale;
-    const h = rect.h * scale;
-    const x = 64; // flush against the west wall's inner edge
-    const y = (GRID_ROWS - 2) * TILE_SIZE - h; // flush against the south wall strip
-    const key = cropToTexture(this, 'libAssetPack', rect, 'n4LastStairStepTex');
-    this.add.image(x, y, key).setOrigin(0, 0).setDepth(1).setDisplaySize(w, h);
+    this.add.image(cornerX, southWallTopY - arrivalH, 'n4ArrivalRugTex')
+      .setOrigin(0, 0).setDepth(0);
   }
 
   // The mezzanine's floor is drawn in layers rather than borrowed from a
@@ -5171,21 +5122,22 @@ class N4LibraryScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(4);
   }
 
-  // Decorative jukebox props — one per wing, each flush against that
-  // wing's own spine wall ("in front of the wall," per explicit
-  // feedback — the previous single copy floated on the open rear
-  // walkway with no wall behind it). Visual-only this pass (no real
-  // audio; n4-dashboard.html doesn't load music-player.js and no audio
-  // asset was supplied) — "the listening machine" is the intent for a
-  // future pass, not this one. Non-solid, like every other decor piece.
-  // Crops the shared texture ONCE (cropJukeboxTexture, now in
-  // library-scene-shared.js) and reuses that one key for both wing
-  // instances — re-cropping with the same destKey would throw.
+  // Decorative jukebox props — one per wing, each in front of the NORTH
+  // wall header (moved up here from deep in the south half of the map,
+  // and scaled down a notch, both per explicit follow-up feedback).
+  // Visual-only this pass (no real audio; n4-dashboard.html doesn't load
+  // music-player.js and no audio asset was supplied) — "the listening
+  // machine" is the intent for a future pass, not this one. Non-solid,
+  // like every other decor piece. Crops the shared texture ONCE
+  // (cropJukeboxTexture, now in library-scene-shared.js) and reuses that
+  // one key for both wing instances — re-cropping with the same destKey
+  // would throw.
   buildJukebox() {
     const texKey = cropJukeboxTexture(this, 'n4JukeboxTex');
-    const scale = 0.16; // source crop is 620x870 — scales down to a footprint similar to the centerpiece clock
+    const scale = 0.12; // was 0.16 — "a little more smaller" per explicit follow-up feedback
     const w = 620 * scale;
-    const y = 1080; // clear of wing1's south row (ends y=1020) and the exam-gate row (896-1132 doesn't overlap this x)
+    const h = 870 * scale;
+    const y = TOP_BAND_HEIGHT + h / 2 + 20; // in front of the north wall header, clear of review-3's row (385) below it
 
     const placeJukebox = (x, tuneLabel) => createDecorativeProp(this, {
       x,
@@ -5198,8 +5150,8 @@ class N4LibraryScene extends Phaser.Scene {
         this.spawnNoteFlourish(x, y);
       },
     });
-    placeJukebox(64 + w / 2, 'N4'); // flush against the N4 (west) spine wall
-    placeJukebox(WORLD_W - 64 - w / 2, 'N3'); // flush against the N3 (east) spine wall, mirrored
+    placeJukebox(64 + w / 2, 'N4'); // N4 (west) side, under the north wall
+    placeJukebox(WORLD_W - 64 - w / 2, 'N3'); // N3 (east) side, mirrored
   }
 
   // Same particle technique as spawnPassSparkle (library-scene-shared.js)
@@ -5277,26 +5229,26 @@ class N4LibraryScene extends Phaser.Scene {
 
     LESSON_DATA.forEach((lesson, i) => {
       const [x, y] = positions[i];
-      // setDisplaySize below is overwritten every frame: update()'s
-      // proximity-pulse loop calls entry.sprite.setScale(entry.baseScale *
-      // ...) unconditionally on every interactive (baseScale: 1 here), which
-      // resets the sprite back to its texture's native crop size (88x120
-      // locked, up to 88x139 filled) rather than the shelfW/shelfH (87x64)
-      // requested here. LAYOUT's sub-row gap (shelfH + 12) is computed
-      // against the nominal 64px, not the ~120-139px shelves actually
-      // render at — confirmed live (scaleY reads 1, not ~0.53) and verified
-      // visually to have no rendering defect (crops carry transparent
-      // padding beyond the opaque artwork), but the layout math technically
-      // "works by accident." This exact setDisplaySize+per-frame-setScale
-      // conflict is called out explicitly for N5's NPC props (see
-      // n5-phaser-game.js's buildFurniture(), "setScale (not
-      // setDisplaySize)..." comment) which deliberately use setScale
-      // instead for this reason — N5's own shelves have the identical
-      // conflict, unflagged, shipped without issue; this comment documents
-      // it for N4 rather than silently reproducing the ambiguity.
+      // Uniform setScale, NOT setDisplaySize(shelfW, shelfH) — verified
+      // live (Phaser scene introspection against the actual running game)
+      // that setDisplaySize WAS in effect and not being overridden by
+      // anything, but stretching the art's real 88x120+ portrait crop
+      // into a landscape 87x64 box squashed it to about half its natural
+      // height while keeping nearly full width — flattening the locked
+      // shelf's (already sparse, empty-cabinet) art into a nearly
+      // featureless strip, which is what was reading as "the shelves have
+      // shrunk." A uniform scale keyed off the locked crop's real height
+      // preserves the art's true proportions — narrower than the old
+      // 87px width, but recognizable as an actual bookshelf instead of a
+      // flattened smear. Filled variants are natively a little taller
+      // (down to 88x131-139 vs locked's 88x120), so at this same fixed
+      // scale they render a few px taller than shelfH once unlocked — an
+      // intentional, uniform-safe tradeoff instead of re-introducing a
+      // per-texture non-uniform squish.
+      const shelfScale = shelfH / ASSET_RECTS.shelfLocked.h;
       const sprite = this.add.image(x + shelfW / 2, y + shelfH / 2, lockedKey)
         .setOrigin(0.5, 0.5).setDepth(1)
-        .setDisplaySize(shelfW, shelfH);
+        .setScale(shelfScale);
       const glow = this.add.sprite(x + shelfW / 2, y + shelfH / 2, 'n4ShelfTrinketFrame0')
         .setOrigin(0.5).setDepth(4).setVisible(false)
         .play(trinketAnimKey);
@@ -5625,42 +5577,94 @@ class N4LibraryScene extends Phaser.Scene {
     doorLabel.label.setDepth(4);
   }
 
-  // Frosted threshold veil across the CENTER hall — literally where the
-  // corridor rug lies (corridorX = WORLD_W/2), not tucked into the N3-
-  // side gap — while n3-exam-gate is locked, per explicit follow-up
-  // feedback. This is the one spot every click-to-walk route in the
-  // scene passes through (see handleInteractiveClick's shared 3-
-  // waypoint route, always via x = worldW/2), so putting real collision
-  // here needed a matching fix: the N4LibraryScene.prototype patch below
-  // this class detours the route around the wall's east edge whenever a
-  // path would cross it, instead of leaving the player stuck against
-  // solid collision mid-route. Position/size are a fixed, compact band
-  // (not tied to LAYOUT.entryY, which grew a lot once spawn moved into
-  // the SW corner) sitting in open floor between N2's door (ends y=216)
-  // and wing3 (starts y=442) — clear of every current interactive on
-  // both sides, though the detour patch is what actually guarantees
-  // reachability, not this placement choice.
+  // Frosted threshold WALL across the CENTER hall — literally where the
+  // corridor rug used to lie (x = WORLD_W/2) — while n3-exam-gate is
+  // locked, per explicit follow-up feedback. Built as TWO segments, not
+  // one continuous band: the open atrium void (LAYOUT.atriumTop to
+  // atriumTop+atriumHeight) already has its own perimeter rope-and-brass
+  // fence/collision (buildAtriumFence()) and reads as a real two-story
+  // opening, so a frosted panel floating across it looked wrong (and
+  // let the player wander into the gap where a decorative centerpiece
+  // used to sit — see buildFurniture()'s comment on why that centerpiece
+  // was removed). Instead: a north segment flush against the underside
+  // of the top wall header (top = TOP_BAND_HEIGHT exactly, no gap of
+  // bare brick above it) down to the atrium's top edge, and a south
+  // segment from the atrium's bottom edge all the way down to the south
+  // wall's own top edge (per explicit follow-up feedback — it used to
+  // stop short at the old corridor rug's bottom bound, leaving a stretch
+  // of unfrosted floor between there and the south wall) — sealing both
+  // hall pinch-points the atrium's own fence doesn't cover, with the
+  // void itself left open in between.
+  //
+  // This is the one spot every click-to-walk route in the scene passes
+  // through (see handleInteractiveClick's shared 3-waypoint route,
+  // always via x = worldW/2), so putting real collision here needed a
+  // matching fix: the N4LibraryScene.prototype patch below this class
+  // detours the route around whichever of this.n3MistBlocks a path would
+  // cross, instead of leaving the player stuck against solid collision
+  // mid-route.
   buildN3Mist() {
-    const top = 280;
-    const height = 140;
-    const veilWidth = 80;
+    const veilWidth = 100; // same width as the old corridor rug (was 80)
     const veilLeft = WORLD_W / 2 - veilWidth / 2;
+    const segments = [{
+      top: TOP_BAND_HEIGHT, // flush against the wall header's bottom edge — no gap
+      bottom: LAYOUT.atriumTop,
+    }, {
+      top: LAYOUT.atriumTop + LAYOUT.atriumHeight,
+      bottom: (GRID_ROWS - 2) * TILE_SIZE, // the south wall's own top edge — same anchor buildWalls() uses
+    }];
 
-    this.n3MistShapes = buildThresholdVeil(this, {
-      x: veilLeft,
+    this.n3MistShapes = [];
+    this.n3MistBlocks = [];
+    segments.forEach(({
       top,
-      height,
-      width: veilWidth
+      bottom
+    }) => {
+      const height = bottom - top;
+      const shapes = buildThresholdVeil(this, {
+        x: veilLeft,
+        top,
+        height,
+        width: veilWidth
+      });
+      this.n3MistShapes.push(...shapes);
+      const block = this.add.rectangle(veilLeft + veilWidth / 2, top + height / 2, veilWidth, height, 0x000000, 0);
+      this.physics.add.existing(block, true);
+      this.wallGroup.add(block);
+      this.n3MistBlocks.push(block);
     });
-    const block = this.add.rectangle(veilLeft + veilWidth / 2, top + height / 2, veilWidth, height, 0x000000, 0);
-    this.physics.add.existing(block, true);
-    this.wallGroup.add(block);
-    this.n3MistBlock = block;
+
+    // "N3 is locked until N4 is finished" signage, floating over the
+    // dither near the top of the north segment — the first thing a
+    // player sees walking up from the top-band header.
+    const labelX = WORLD_W / 2;
+    const labelTop = TOP_BAND_HEIGHT + 60;
+    this.n3MistLabel = [
+      this.add.text(labelX, labelTop, 'N3 SEALED', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '10px',
+        color: '#e8d4a8',
+        align: 'center',
+      }).setOrigin(0.5, 0).setDepth(5),
+      this.add.text(labelX, labelTop + 18, 'COMPLETE N4 TO ENTER', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '6px',
+        color: '#c8bee0',
+        align: 'center',
+        lineSpacing: 3,
+        wordWrap: {
+          width: veilWidth - 6,
+          useAdvancedWrap: true
+        },
+      }).setOrigin(0.5, 0).setDepth(5),
+    ];
 
     this.n3MistLifted = !!this.progress['n3-exam-gate'];
     if (this.n3MistLifted) {
       this.n3MistShapes.forEach((s) => s.setVisible(false));
-      this.wallGroup.remove(block, true, true); // already unlocked on load — no barrier, no leftover collider
+      this.n3MistLabel.forEach((s) => s.setVisible(false));
+      this.n3MistBlocks.forEach((block) => this.wallGroup.remove(block, true, true)); // already unlocked on load — no barrier, no leftover collider
+      this.n3MistBlocks = [];
     }
   }
 
@@ -5668,33 +5672,32 @@ class N4LibraryScene extends Phaser.Scene {
   // just below this class, after Object.assign) — fades the veil out
   // exactly once, the first time n3-exam-gate's progress flips to
   // passed, and never re-shows it (a permanent lift, per the design's
-  // explicit "lifts permanently" requirement). Also removes the solid
-  // collision block immediately (not tied to the fade animation's
+  // explicit "lifts permanently" requirement). Also removes both solid
+  // collision blocks immediately (not tied to the fade animation's
   // duration) — the barrier lifting is a state change, not something
   // that needs to visually "solidify away."
   updateN3MistState() {
     if (this.n3MistLifted || !this.n3MistShapes) return;
     if (!this.progress['n3-exam-gate']) return;
     this.n3MistLifted = true;
-    if (this.n3MistBlock) {
-      this.wallGroup.remove(this.n3MistBlock, true, true);
-      this.n3MistBlock = null;
-    }
+    (this.n3MistBlocks || []).forEach((block) => this.wallGroup.remove(block, true, true));
+    this.n3MistBlocks = [];
+    const fadeTargets = [...this.n3MistShapes, ...(this.n3MistLabel || [])];
     this.tweens.add({
-      targets: this.n3MistShapes,
+      targets: fadeTargets,
       alpha: 0,
       duration: 900,
       ease: 'Sine.In',
-      onComplete: () => this.n3MistShapes.forEach((s) => s.setVisible(false)),
+      onComplete: () => fadeTargets.forEach((s) => s.setVisible(false)),
     });
   }
 
   buildPlayer() {
-    // Spawns near the south end of the world, on the west side beside the
-    // stairs landmark (buildStairsLandmark()) — this floor's real entry
-    // point from N5's staircase. Was WORLD_W/2 (dead center, no visual
-    // tie to how the player arrived); LAYOUT.entryX moves it beside the
-    // reused staircase art instead.
+    // Spawns near the south end of the world, on the west side on top of
+    // the arrival rug (buildFurniture()) — this floor's real entry point
+    // from N5's staircase. Was WORLD_W/2 (dead center, no visual tie to
+    // how the player arrived); LAYOUT.entryX moves it into the corner
+    // instead.
     const spawnX = LAYOUT.entryX;
     const spawnY = LAYOUT.entryY;
     // N4LibraryScene is only ever reached after N5's CatSelectScene has
@@ -5865,54 +5868,62 @@ N4LibraryScene.prototype.updateDoorGateTextures = function () {
 };
 
 // Wraps the shared engine's handleInteractiveClick() so click-to-walk
-// routing can detour around this.n3MistBlock when it exists.
+// routing can detour around whichever of this.n3MistBlocks exist.
 //
 // Why this exists: the shared routing (library-scene-shared.js) always
 // sends the player through ONE fixed vertical line (x = worldW/2) on the
 // way to ANY interactive, regardless of which side of the map it's on.
 // Putting the N3 threshold wall's solid collision on that exact line —
-// which is what "in the center hall, where the carpet lies" requires —
-// would silently strand click-to-walk for EVERY interactive whose route
-// crosses the wall's Y-band, on BOTH sides (N4 and N3 share the same
-// Y-levels, mirrored), not just N3's. Confirmed by tracing the geometry
-// before writing any of this: with the wall placed anywhere between the
-// entry point and the shelves, nearly every shelf/pile in the floor
-// becomes unreachable by click — worth fixing properly rather than
-// picking "a Y-band nothing currently uses" and hoping a future
+// which is what "in the center hall, where the frosted wall now stands"
+// requires — would silently strand click-to-walk for EVERY interactive whose route
+// crosses either wall segment's Y-band, on BOTH sides (N4 and N3 share
+// the same Y-levels, mirrored), not just N3's. Confirmed by tracing the
+// geometry before writing any of this: with a wall placed anywhere
+// between the entry point and the shelves, nearly every shelf/pile in
+// the floor becomes unreachable by click — worth fixing properly rather
+// than picking "a Y-band nothing currently uses" and hoping a future
 // shelf/pile never lands on it.
 //
 // The fix: after the shared method builds its normal 3-waypoint route,
-// check whether the route's vertical segment would cross the wall's
-// body bounds; if so, splice in a short detour around the wall's east
-// edge instead of letting the player walk into (and get stuck on) solid
-// collision. Once n3-exam-gate is passed, this.n3MistBlock is null
-// (removed in updateN3MistState()) and every route goes back to the
-// plain 3-waypoint path with zero overhead.
+// check which (if any) of this.n3MistBlocks' body bounds the route's
+// vertical segment would cross; for each one crossed (buildN3Mist()'s
+// two segments sit far enough apart, north and south of the atrium,
+// that a single route could in principle cross both), splice in a short
+// detour around that block's east edge instead of letting the player
+// walk into (and get stuck on) solid collision. Once n3-exam-gate is
+// passed, this.n3MistBlocks is emptied (in updateN3MistState()) and
+// every route goes back to the plain 3-waypoint path with zero overhead.
 const sharedHandleInteractiveClick = N4LibraryScene.prototype.handleInteractiveClick;
 N4LibraryScene.prototype.handleInteractiveClick = function (entry) {
   sharedHandleInteractiveClick.call(this, entry);
-  if (!this.moveQueue || !this.n3MistBlock) return;
-  const b = this.n3MistBlock.body;
+  if (!this.moveQueue || !this.n3MistBlocks || !this.n3MistBlocks.length) return;
   const [wp0, wp1, wp2] = this.moveQueue;
   if (!wp1) return; // already close enough to interact directly — no route to patch
   const segX = wp0.x; // the shared route's fixed vertical line
-  if (segX < b.left - 24 || segX > b.right + 24) return; // route doesn't run through the wall's x at all
   const segYMin = Math.min(wp0.y, wp1.y);
   const segYMax = Math.max(wp0.y, wp1.y);
-  if (segYMax < b.top - 10 || segYMin > b.bottom + 10) return; // no vertical overlap with the wall
-  const detourX = b.right + 24;
+  const crossed = this.n3MistBlocks
+    .map((block) => block.body)
+    .filter((b) => segX >= b.left - 24 && segX <= b.right + 24 && segYMax >= b.top - 10 && segYMin <= b.bottom + 10)
+    .sort((a, b) => a.top - b.top); // north-to-south, so the spliced waypoints stay in walking order
+  if (!crossed.length) return; // route doesn't run through either wall segment at all
+  const detourX = Math.max(...crossed.map((b) => b.right)) + 24;
+  const detourWaypoints = [];
+  crossed.forEach((b) => {
+    detourWaypoints.push({
+      x: detourX,
+      y: b.top - 12
+    });
+    detourWaypoints.push({
+      x: detourX,
+      y: b.bottom + 12
+    });
+  });
   this.moveQueue = [{
       x: segX,
       y: wp0.y
     },
-    {
-      x: detourX,
-      y: b.top - 12
-    },
-    {
-      x: detourX,
-      y: b.bottom + 12
-    },
+    ...detourWaypoints,
     {
       x: segX,
       y: wp1.y
@@ -5953,7 +5964,7 @@ window.__n4Game = n4PhaserGame;
 // (found in this.interactives, not a newly-constructed object) so
 // openInteraction() routes through the exact same openQuizGateMenu/
 // openQuizAttemptMenu path a walk-up interaction uses.
-document.getElementById('n3GateExamBtn') ? .addEventListener('click', () => {
+document.getElementById('n3GateExamBtn')?.addEventListener('click', () => {
   if (!n4PhaserGame.scene.isActive('N4LibraryScene')) return;
   const libraryScene = n4PhaserGame.scene.getScene('N4LibraryScene');
   if (libraryScene.panelOpen) return; // don't stack over an open lesson/review/gate panel

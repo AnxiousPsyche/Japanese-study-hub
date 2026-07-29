@@ -2000,6 +2000,26 @@
         "28308"
       ],
       "port": 28308
+    },
+    {
+      "name": "jp-library-static-mezzanine-v8",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28419"
+      ],
+      "port": 28419
+    },
+    {
+      "name": "jp-library-static-mezzanine-v9",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28530"
+      ],
+      "port": 28530
     }
   ],
   "autoVerify": true
