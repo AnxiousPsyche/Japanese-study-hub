@@ -255,71 +255,174 @@ function createBrickWallTexture(scene, key, config) {
 }
 
 // Draws an illustrated "lower floor" void into a mezzanine's open
-// atrium rect, instead of a flat color fill — a darker/desaturated
-// floor-tile pattern, rows of silhouette shelf blocks arranged in the
-// same two-column-per-side pattern the mezzanine's own shelf wings use
-// (so it reads as "the actual floor below", not generic clutter), a
-// dim corridor-color hint down the middle, and a soft vertical depth
-// gradient, all drawn on the caller's own Graphics object so it
+// atrium rect, instead of a flat color fill — a lit floor-tile pattern
+// in that lower floor's own palette, rows of silhouette shelf blocks
+// arranged in the same two-column-per-side pattern the mezzanine's own
+// shelf wings use (so it reads as "the actual floor below", not generic
+// clutter), a corridor-color hint down the middle, and a soft vertical
+// depth gradient, all drawn on the caller's own Graphics object so it
 // composites under whatever rail/frame trim the caller draws next.
 // Pure procedural drawing (no new image assets) — reusable by any
 // future floor with a similar mezzanine-over-void layout.
-// config: { left, top, width, height, corridorColor } (corridorColor optional,
-// defaults to a neutral warm brown — pass the floor's own rug/accent color
-// so the hint reads as "the same corridor, one level down")
+//
+// Originally a near-black desaturated silhouette (deliberately dim, "a
+// shadowy floor far below") — per explicit follow-up feedback ("I
+// should be seeing the N5 floor... don't stop until you and I can see
+// [it]"), that read as an empty black hole instead of an actual floor,
+// so this is now lit brightly enough to genuinely read as a real room
+// down there, tinted in the lower floor's own colors via floorBase/
+// floorTileA/floorTileB/shelfColor (all optional — default to N5's own
+// warm reception-red palette, this function's only caller today).
+//
+// config: { left, top, width, height, corridorColor, floorBase?,
+// floorTileA?, floorTileB?, shelfColor?, floorTexKey?, rugPalette?,
+// rugWidth?, shelfTexKeys?, shelfPreviewScale? } — corridorColor is
+// required (pass the CALLING floor's own rug/accent color, not the
+// lower floor's, so the hint reads as "the same corridor, one level
+// down"); the floor*/shelfColor knobs describe the LOWER floor being
+// looked down into and default to N5's palette since N4 is this
+// function's only caller so far.
+//
+// floorTexKey/rugPalette/shelfTexKeys are the "actually show real N5
+// furniture" upgrade, per explicit follow-up feedback that the abstract
+// color-block version below (still drawn as the base layer, kept as a
+// tinted backdrop so there's no gap if any of these are omitted) didn't
+// read as an actual room: floorTexKey draws the SAME hardwood floor
+// tileSprite the calling floor uses (dimmed a shade), rugPalette draws a
+// real drawWovenRug() strip down the middle (same generator every other
+// rug in the game uses, not a flat color hint), and shelfTexKeys scatters
+// real, tiny scaled-down shelf sprites (the same art used upstairs) in
+// the same 6-row-by-4-column arrangement the old silhouette blocks used.
+// All three are optional and independently gated — passing none of them
+// reproduces the old purely-procedural look exactly.
 function buildOpenAtriumVoid(scene, g, config) {
   const { left, top, width, height } = config;
   const corridorColor = config.corridorColor !== undefined ? config.corridorColor : 0x5c1a2e;
+  const floorBase = config.floorBase !== undefined ? config.floorBase : 0x5a2a1c; // N5's warm reception-red, dimmed a shade for "one floor down"
+  const floorTileA = config.floorTileA !== undefined ? config.floorTileA : 0x6e3624;
+  const floorTileB = config.floorTileB !== undefined ? config.floorTileB : 0x64301f;
+  const shelfColor = config.shelfColor !== undefined ? config.shelfColor : 0x3a1a10;
 
-  // Desaturated "first floor" tile pattern — small dark tiles, cooler
-  // and flatter than the mezzanine's own warm wood tones, reading as
-  // a different, more distant surface.
+  // Base fill — a genuinely lit warm floor color, not near-black, so
+  // every layer drawn on top of it (tiles, shelves, gradient) reads as
+  // "a real room" rather than "a shadow over black." Kept even when the
+  // real floorTexKey sprite is also drawn, as a same-palette backdrop
+  // behind the tileSprite's own edges/rounding.
+  g.fillStyle(floorBase, 1).fillRect(left, top, width, height);
+
+  // Warm plank/tile pattern in the lower floor's own two-tone palette —
+  // brighter and more saturated than the old near-black version, but
+  // still visibly a shade dimmer/cooler than the mezzanine's own wood
+  // tones above (this is "the floor below", not the same room).
   const tileW = 34;
   const tileH = 22;
   for (let ty = top + 20; ty < top + height - 20; ty += tileH) {
     for (let tx = left + 20; tx < left + width - 20; tx += tileW) {
-      const shade = ((tx / tileW + ty / tileH) % 2) ? 0x1c1410 : 0x211714;
+      const shade = ((tx / tileW + ty / tileH) % 2) ? floorTileA : floorTileB;
       g.fillStyle(shade, 1).fillRect(tx, ty, tileW - 1, tileH - 1);
+      // Thin top-edge highlight per tile — reads as light actually
+      // hitting the floor, reinforcing "lit room" over "flat silhouette."
+      g.fillStyle(0xd8a878, 0.10).fillRect(tx, ty, tileW - 1, 2);
     }
   }
 
-  // Corridor hint — a dim vertical strip down the middle, the same
-  // color family as the floor's own rug, implying the same corridor
+  // Real floor sprite — the SAME hardwood tileSprite texture the calling
+  // floor draws for its own ground, layered on top of the abstract tile
+  // pattern above (dimmed via alpha so it still reads as "one floor
+  // down", not identically lit). Skipped if the caller has no floor
+  // texture key handy yet.
+  if (config.floorTexKey) {
+    scene.add.tileSprite(left, top, width, height, config.floorTexKey)
+      .setOrigin(0, 0).setAlpha(0.55).setDepth(g.depth);
+  }
+
+  // Corridor hint — a vertical strip down the middle, the same color
+  // family as the CALLING floor's own rug, implying the same corridor
   // continues straight down to the level below.
-  g.fillStyle(corridorColor, 0.22).fillRect(left + width / 2 - 10, top + 8, 20, height - 16);
+  g.fillStyle(corridorColor, 0.3).fillRect(left + width / 2 - 10, top + 8, 20, height - 16);
+
+  // Real carpet — an actual drawWovenRug() strip laid down the same
+  // center corridor line, in the calling floor's own rug palette, per
+  // "same... carpet." Drawn as a real Image on a cached canvas texture
+  // (keyed so repeat scene rebuilds don't throw on re-registration),
+  // stacked as several short tiles down the strip's length rather than
+  // one giant stretched image (drawWovenRug's border/diamond motif was
+  // designed at a fixed small size, not built to stretch).
+  if (config.rugPalette) {
+    const rugW = config.rugWidth || 26;
+    const tileH2 = 44;
+    const rugKey = 'atriumRugPreviewTex_' + rugW + 'x' + tileH2;
+    if (!scene.textures.exists(rugKey)) {
+      drawWovenRug(scene, rugKey, rugW, tileH2, config.rugPalette);
+    }
+    const stripTop = top + 10;
+    const stripBottom = top + height - 10;
+    for (let ry = stripTop; ry < stripBottom; ry += tileH2) {
+      scene.add.image(left + width / 2, ry, rugKey).setOrigin(0.5, 0).setDepth(g.depth);
+    }
+  }
 
   // Rows of silhouette shelf blocks, two per side (mirroring the
-  // mezzanine's own 2-column shelf wings above), receding in shade
-  // toward the far end of the void so the row nearest each rail edge
-  // reads as "closer" — simple dark rectangles, not full sprites, so
-  // they don't compete with the mezzanine's own shelf sprites.
+  // mezzanine's own 2-column shelf wings above), bright enough now to
+  // actually read as furniture rather than near-invisible smudges —
+  // simple rectangles with a lit top edge and a visible base shadow,
+  // not full sprites, so they don't compete with the mezzanine's own
+  // shelf sprites for detail. Kept as a base layer even when real
+  // shelfTexKeys sprites are also drawn (below), as silhouette filler
+  // for any row where the real sprite doesn't fully cover the block.
   const rowCount = 6;
   const rowGap = (height - 40) / (rowCount - 1);
+  const colX = [
+    left + width * 0.14, left + width * 0.30,
+    left + width * 0.62, left + width * 0.78,
+  ];
   for (let i = 0; i < rowCount; i++) {
     const ry = top + 20 + rowGap * i;
     const distFromMid = Math.abs(i / (rowCount - 1) - 0.5) * 2; // 0 at center, 1 at edges (closer to a rail)
-    const shadeAlpha = 0.55 + distFromMid * 0.3;
-    const colX = [
-      left + width * 0.14, left + width * 0.30,
-      left + width * 0.62, left + width * 0.78,
-    ];
+    const shadeAlpha = 0.85 + distFromMid * 0.15;
     colX.forEach((cx) => {
-      g.fillStyle(0x0e0906, shadeAlpha).fillRect(cx, ry, 28, 14);
-      g.fillStyle(0x3a2415, shadeAlpha * 0.5).fillRect(cx, ry, 28, 2);
+      g.fillStyle(shelfColor, shadeAlpha).fillRect(cx, ry, 28, 14);
+      g.fillStyle(0xc98a5c, shadeAlpha * 0.55).fillRect(cx, ry, 28, 2);
+      g.fillStyle(0x000000, 0.35).fillRect(cx, ry + 12, 28, 2);
     });
   }
 
-  // Depth gradient — brighter near the rail edges (top/bottom of the
-  // void, closest to the viewer on each balcony), darker toward the
-  // center, implying the floor recedes downward/away.
+  // Real shelves — tiny scaled-down instances of the SAME shelf art used
+  // upstairs, laid directly over the silhouette blocks above (same rows/
+  // columns), per "same... shelves." shelfPreviewScale defaults small
+  // enough that a full-size shelf crop reads as "a shelf, far below",
+  // not a full-size prop poking up into the atrium.
+  if (config.shelfTexKeys && config.shelfTexKeys.length) {
+    const keys = config.shelfTexKeys;
+    const previewScale = config.shelfPreviewScale || 0.16;
+    let ki = 0;
+    for (let i = 0; i < rowCount; i++) {
+      const ry = top + 20 + rowGap * i;
+      colX.forEach((cx) => {
+        scene.add.image(cx + 14, ry + 7, keys[ki % keys.length])
+          .setOrigin(0.5, 0.5).setScale(previewScale).setDepth(g.depth);
+        ki += 1;
+      });
+    }
+  }
+
+  // Depth gradient — a much lighter touch than before (was crushing
+  // most of the void to near-black); still gives a soft sense of the
+  // floor receding away from the rail edges, without hiding it. Drawn
+  // on a separate graphics object created AFTER the real floor/rug/
+  // shelf sprites above so it still dims them (a same-object `g` layer
+  // can't paint over sprites added later as separate game objects,
+  // since draw order between different game objects follows the scene's
+  // display-list order, not JS statement order).
+  const overlay = scene.add.graphics().setDepth(g.depth);
   const bands = 10;
   for (let i = 0; i < bands; i++) {
     const t = i / (bands - 1);
     const distFromMid = Math.abs(t - 0.5) * 2; // 1 at edges, 0 at center
-    const alpha = 0.16 * (1 - distFromMid);
+    const alpha = 0.07 * (1 - distFromMid);
     if (alpha <= 0.01) continue;
     const bandTop = top + (height / bands) * i;
-    g.fillStyle(0x000000, alpha).fillRect(left, bandTop, width, height / bands + 1);
+    overlay.fillStyle(0x000000, alpha).fillRect(left, bandTop, width, height / bands + 1);
   }
 }
 
@@ -654,6 +757,14 @@ const LibrarySceneEngine = {
       speaker: 'Neko-sensei',
       catImagePath,
       talkImagePath,
+      // Per-scene instance property (set in N4LibraryScene.create(), left
+      // unset on N5's LibraryScene) so LessonBox can recolor its chrome to
+      // match N4_PALETTE (n4-phaser-game.js) without N5's navy/indigo
+      // theme ever changing — same "instance property read generically by
+      // shared code" pattern as catColors/senseiPortraitPaths above, not a
+      // prototype patch, since LessonBox.open() just no-ops on an
+      // undefined theme.
+      theme: this.lessonBoxTheme,
       startIndex: resumeIndex,
       printLinks: entry.id === this.printerStationId ? this.allPrintLinks : this.printLinksByShelf[entry.id], // was 'printer-station' / PRINT_LINKS_BY_SHELF / ALL_PRINT_LINKS
       printIconPath: '../../assets/images/lesson/printer-image-Original.png',

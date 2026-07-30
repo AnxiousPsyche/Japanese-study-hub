@@ -7372,7 +7372,7 @@ function saveCatColor(id) {
 // lesson titles) fall through to DotGothic16 — no separate text pipeline.
 let bookshelfLabelSeq = 0;
 function createBookshelfLabel(scene, x, y, text, options = {}) {
-  const fontSize = options.fontSize || 6;
+  const fontSize = options.fontSize || 10; // was 6 -- bumped up + font family changed to match N4's own copy of this function (both floors' plaques should read the same, per explicit feedback)
   const paddingX = options.paddingX || 6;
   const paddingY = options.paddingY || 5;
   const maxWidth = options.maxWidth || 78;
@@ -7382,7 +7382,12 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
   const rivet = '#c9a66b';
   const ink = '#e8d4a8';
   const textStyle = {
-    fontFamily: '"Press Start 2P", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
+    // Was '"Press Start 2P", "DotGothic16", monospace' -- too blocky/blurry
+    // at plaque sizes. VT323 (self-hosted, already loaded via
+    // lesson-box.css's @font-face) is this game's own established
+    // "readable at header-or-bigger sizes" retro face; DotGothic16 stays
+    // as the fallback for Japanese-character coverage VT323 lacks.
+    fontFamily: '"VT323", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
     align: 'center', wordWrap: { width: maxWidth - paddingX * 2, useAdvancedWrap: true },
   };
 

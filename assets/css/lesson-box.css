@@ -105,6 +105,28 @@
   --lb-role-copula-fg: #201d54;
 }
 
+/* N4 theme — recolors the JRPG box chrome to N4_PALETTE's wine/forest-
+   green/dark-wood/gold (n4-phaser-game.js: carpet #5c1a2e, accentGreen
+   #1f3d2b, darkWood #3a2415, gold #d4a24c) instead of N5's default navy/
+   indigo/lavender above. Applied as a modifier class on .lesson-box
+   itself (toggled in lesson-box.js's open() from options.theme, driven by
+   N4LibraryScene's this.lessonBoxTheme in n4-phaser-game.js — see
+   library-scene-shared.js's startLesson()) so it cascades to every
+   var(--jr-*) consumer in this file with zero other changes: same
+   stepped-pixel border, same portrait inset, same word-tile role colors
+   (--lb-role-*, left untouched — they encode grammar meaning, not floor
+   identity). N5 pages never carry this class and keep the :root defaults
+   above exactly as they were. */
+.lesson-box.lesson-box--theme-n4 {
+  --jr-border-outer: #d4a24c;
+  --jr-border-inner: #f4e6c9;
+  --jr-bg-top: #7a2b46;
+  --jr-bg-bottom: #2f1b12;
+  --jr-portrait-bg: #3a2415;
+  --jr-text: #f6ead2;
+  --jr-text-dim: #cba86a;
+}
+
 /* Shared stepped-pixel-corner clip path, parameterized by --jr-step-a/b
    (or the -sm variants for the smaller portrait boxes) so every layer —
    outer border, inner border, content bg — cuts an identical corner
@@ -336,28 +358,48 @@
    shows this on page 1 (never overlaps per-page content anymore, so
    there's no ceiling on how prominent it can be). Still the readable
    default font (not VT323) since it's still functionally a caption. */
+/* Redone this pass -- was a single left-aligned inline-text row ("Print
+   full list: A · B · C...") that visually collided head-on with
+   .lesson-box__sources-footer on any single-page lesson (both used to
+   anchor to a bottom corner, and a 1-page lesson shows both on the same
+   page). Centered now, and each link is its own small clickable "card"
+   (icon + label) in a wrapping row, instead of a plain underlined-text
+   list -- reads as an actual interactive picker rather than a caption. */
 .lesson-box__print-link {
   position: absolute;
-  left: 20px;
+  left: 50%;
   bottom: 14px;
+  transform: translateX(-50%);
+  width: min(90%, 640px);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  color: var(--jr-text);
+  gap: 8px;
   background: rgba(0, 0, 0, 0.32);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  padding: 10px 16px;
-  letter-spacing: 0.01em;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.lesson-box__print-link-title {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: var(--jr-text-dim);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 /* img (the real printer sprite, see options.printIconPath) or the
    fallback emoji span both land here — sized/aligned the same either
    way so the caller doesn't need to know which one rendered. */
 .lesson-box__print-icon {
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   image-rendering: pixelated;
   flex-shrink: 0;
@@ -366,16 +408,60 @@
 span.lesson-box__print-icon {
   width: auto;
   height: auto;
-  font-size: 26px;
-  margin-right: 2px;
+  font-size: 16px;
 }
 
-.lesson-box__print-link a {
+/* Each reference sheet as its own small button-card, not a bare link --
+   the "interactive design" requested for this list. */
+.lesson-box__print-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--jr-text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--lb-role-particle-bg);
+  border-radius: 999px;
+  padding: 6px 14px;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.lesson-box__print-chip::before {
+  content: '📄';
+  font-size: 13px;
+}
+
+.lesson-box__print-chip:hover {
+  background: var(--lb-role-particle-bg);
+  color: var(--jr-bg-bottom);
+  transform: translateY(-2px);
+}
+
+/* Small-print source citation, N4-only, shown on a lesson's last page only
+   (see lesson-box.js's render()) -- readable default font, not VT323 (per
+   this file's own "captions stay small/readable" rule), muted so it reads
+   as a footnote rather than competing with the actual lesson content.
+   Moved to top-right (under the page indicator) this pass so it can never
+   collide with .lesson-box__print-link again, regardless of page count. */
+.lesson-box__sources-footer {
+  position: absolute;
+  top: 32px;
+  right: 20px;
+  max-width: 42%;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--jr-text-dim);
+  opacity: 0.75;
+  text-align: right;
+}
+
+.lesson-box__sources-footer a {
   color: var(--lb-role-particle-bg);
   text-decoration: underline;
 }
 
-.lesson-box__print-link a:hover {
+.lesson-box__sources-footer a:hover {
   color: var(--jr-text);
 }
 

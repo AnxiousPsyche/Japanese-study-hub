@@ -114,6 +114,7 @@
             <div class="lesson-box__content"></div>
             <div class="lesson-box__continue">&#9660;</div>
             <div class="lesson-box__print-link" hidden></div>
+            <div class="lesson-box__sources-footer" hidden></div>
           </div>
         </div>
       </div>
@@ -121,6 +122,7 @@
     els = {
       box: root.querySelector('.lesson-box'),
       portrait: root.querySelector('.lesson-box__portrait'),
+      sourcesFooter: root.querySelector('.lesson-box__sources-footer'),
       portraitSprite: root.querySelector('.lesson-box__portrait-sprite'),
       ambientCat: root.querySelector('.lesson-box__ambient-cat'),
       pageIndicator: root.querySelector('.lesson-box__page-indicator'),
@@ -784,6 +786,21 @@
     if (els.printLink) {
       els.printLink.hidden = !(state.printLinks.length && state.index === 0);
     }
+    // Sources footer -- small print citing where the grammar/vocab content
+    // was cross-checked against, shown only on the LAST page of an N4
+    // lesson (the conclusion, not every page) so it doesn't compete with
+    // in-progress content. N4-only for now (state.theme is only ever set
+    // by N4's startLesson() -- see the theme comment above).
+    if (els.sourcesFooter) {
+      const isLastPage = state.index === state.pages.length - 1;
+      els.sourcesFooter.hidden = !(state.theme === 'n4' && isLastPage);
+      if (state.theme === 'n4' && isLastPage) {
+        els.sourcesFooter.innerHTML = 'Grammar cross-checked against '
+          + '<a href="https://bunpro.jp/grammar_points" target="_blank" rel="noopener">Bunpro</a>, '
+          + '<a href="https://guidetojapanese.org/learn/" target="_blank" rel="noopener">Tae Kim\'s Guide</a>, '
+          + 'and the Genki/TRY! textbook series.';
+      }
+    }
     // Reset per-page gate state before rendering — 'try-it' always starts
     // locked on a fresh view of that page (re-visiting doesn't keep a
     // stale "already typed" pass from a previous open()).
@@ -955,6 +972,18 @@
       // last selected, not the first attempt).
       quizReviewAnswers: {},
     };
+    // Optional floor-specific chrome recolor (currently only 'n4', from
+    // N4's `this.lessonBoxTheme` in library-scene-shared.js's
+    // startLesson()) — swaps the --jr-* custom properties defined in
+    // lesson-box.css's `.lesson-box--theme-n4` rule, same
+    // stepped-border/portrait/word-tile layout as the N5 default.
+    // Callers that never pass options.theme (N5, and every other current
+    // caller) leave the class off entirely, so nothing changes for them.
+    els.box.classList.toggle('lesson-box--theme-n4', (options && options.theme) === 'n4');
+    // Stashed on state so render() (which re-decides per-page visibility,
+    // same reasoning as printLinks below) knows whether this lesson should
+    // show the sources footer at all, without re-reading options.
+    state.theme = (options && options.theme) || null;
     // Optional "print the full list" links (e.g. shelf-09's Nouns &
     // Pronouns PDFs, curated in-game to a digestible subset but with
     // the complete reference vocab list available on request).
@@ -973,9 +1002,17 @@
       const iconHtml = options.printIconPath
         ? `<img class="lesson-box__print-icon" src="${options.printIconPath}" alt="">`
         : `<span class="lesson-box__print-icon">&#128424;</span>`;
-      els.printLink.innerHTML = `${iconHtml} Print full list: ${
-        state.printLinks.map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join(' &middot; ')
-      }`;
+      // Chip row instead of one long inline-text line -- centered, each
+      // link its own clickable card (see .lesson-box__print-chip). Was a
+      // single-line "Print full list: A · B · C..." string that ran wide
+      // enough to visually collide with the sources footer on any
+      // single-page lesson; that footer moved to the top-right corner
+      // this pass too (see the theme/sourcesFooter code above), so the
+      // two can no longer overlap either way.
+      const chipsHtml = state.printLinks
+        .map((l) => `<a class="lesson-box__print-chip" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
+        .join('');
+      els.printLink.innerHTML = `<div class="lesson-box__print-link-title">${iconHtml} Reference sheets</div>${chipsHtml}`;
     } else {
       els.printLink.innerHTML = '';
     }
