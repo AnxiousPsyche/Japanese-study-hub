@@ -2769,3 +2769,55 @@ span.lesson-box__print-icon {
   image-rendering: pixelated;
   pointer-events: none;
 }
+
+/* -- tv-hiragana / tv-katakana stroke-count viewer cards --------------------
+   Replaces the old plain kana/romaji/label 'conjugation' text table with a
+   per-character card: the kana rendered large, its romaji, and a "N
+   strokes" caption. Static markup, authored directly in n5-phaser-game.js's
+   LESSON_CONTENT (diagramSvg string) via buildKanaStrokeRow() there, same
+   "no build/wire function pair needed" pattern as the ikunai-diagram/
+   formula-block/nacompare diagrams above — this illustrates reference
+   data, not an interactive scene. One row PER PAGE (a-row alone, ka-row
+   alone, etc. — an earlier version combined 2 rows per page, reverted per
+   explicit "don't combine 2 character sets in one page" feedback). An
+   earlier version of this card also overlaid small numbered ①②③ dots per
+   character to suggest stroke order — dropped per explicit feedback (see
+   buildKanaStrokeRow's own comment for why), so only .lesson-box__strokecard-
+   count remains for stroke info now. */
+.lesson-box__strokegrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  padding: 6px 0;
+}
+
+.lesson-box__strokecard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 84px;
+  padding: 10px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.lesson-box__strokecard-glyph {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 42px;
+  line-height: 1;
+  color: var(--jr-text);
+}
+
+.lesson-box__strokecard-romaji {
+  font-size: 12px;
+  color: var(--jr-text-dim);
+}
+
+.lesson-box__strokecard-count {
+  font-size: 10px;
+  color: var(--jr-text-dim);
+  opacity: 0.75;
+}

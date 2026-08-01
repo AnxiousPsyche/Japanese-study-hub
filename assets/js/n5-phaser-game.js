@@ -125,30 +125,37 @@ const ASSET_RECTS = {
   // just below the couch in the sheet — showing as a stray dark line
   // under the couch once rendered in-game.
   sofaCouch2: { x: 24, y: 167, w: 56, h: 25 },
+  // TopDownHouse_FurnitureState1.png — a single loveseat/chair drawn in a
+  // rotated side-angle pose (backrest along its left edge, seat cushion
+  // and a round pillow facing right), per the user's own cropped-and-
+  // circled reference screenshot. Isolated via per-column alpha-run
+  // scanning (rows 197-251 fully opaque at cols 0-21, a clean gap
+  // follows at cols 22-34 before the next sprite) — genuinely flush
+  // against the sheet's own left edge, not clipped. This is the "right
+  // facing" 3rd-sofa piece; the "left facing" mirror is the same crop
+  // rendered with setFlipX(true), not a second crop.
+  loveseatRightFacing: { x: 0, y: 196, w: 23, h: 56 },
   // furniture03.png — TV cabinet (antenna knob, purple screen, 3-slot
-  // drawer below), per the user's reference screenshot. Re-cropped a 2nd
-  // time (was {195,43,28,40}) after a "meticulously crop the joined
-  // items out" bug report — the old rect bled in ~4px of the wardrobe
-  // piece sitting directly above (its bottom edge dips as low as y=50 in
-  // this sprite sheet's x=208-218 range specifically, closer than a
-  // glance at its LEFT portion suggested) and the connector nub touching
-  // the item below at y=81+. Isolated via max-zoom (24-28x) per-pixel
-  // grid inspection rather than alpha-flood/bounding-box scans — both of
-  // those merge with the plant shelf touching its left edge with zero
-  // gap, and a plain windowed bounding-box scan still "touches" any
-  // window edge that happens to overlap ANY unrelated sprite's pixels in
-  // this densely-packed sheet, independent of real transparent gaps.
-  // Trade-off: the antenna's thin wire prongs above the gold knob got
-  // trimmed (their exact boundary against the wardrobe piece above was
-  // genuinely ambiguous at 1px resolution) — the knob itself, screen,
-  // and drawer are all fully intact.
-  tvCabinet: { x: 193, y: 50, w: 31, h: 30 },
-  // furniture03.png — small drawer-front side table, per the user's
-  // reference screenshot (the printer prop sits on top of it, see
-  // buildPrinterStation). Isolated via connected-component flood fill
-  // seeded inside the solid tabletop (190,26) — a pure bounding-box scan
-  // touched neighboring sprites' edges even in a hand-picked window, so
-  // the flood-fill result (rendered as a red mask overlay and visually
+  // drawer below). Re-cropped a 3rd time (was {193,50,31,30}) per
+  // explicit "not cropped meticulously, cut in the left" feedback — the
+  // 2nd-pass rect clipped both the antenna's top prongs (y=50 cut into
+  // the knob, confirmed by rendering the crop directly and comparing
+  // against y=48) and a couple px of the cabinet's own left frame (x=193
+  // cut into it; x=191 is where the frame's real left edge sits, and
+  // x=189 or earlier starts pulling in the neighboring plant-shelf
+  // item's edge — checked by rendering several candidate crops side by
+  // side, not guessed). Bottom/right edges were already clean at h=30/
+  // w=31 from that box's own top-left, so only x/y/w/h needed adjusting
+  // to grow the box up-and-left, not its other two edges.
+  tvCabinet: { x: 191, y: 48, w: 33, h: 32 },
+  // furniture03.png — small drawer-front side table. No longer consumed
+  // anywhere (buildVocabPressStation, formerly buildPrinterStation,
+  // replaced the printer-on-a-side-table prop with a standalone
+  // Gutenberg-press image per explicit feedback) — kept for reference
+  // only. Isolated via connected-component flood fill seeded inside the
+  // solid tabletop (190,26) — a pure bounding-box scan touched
+  // neighboring sprites' edges even in a hand-picked window, so the
+  // flood-fill result (rendered as a red mask overlay and visually
   // confirmed clean, no bleed) is the authoritative crop here.
   printerTable: { x: 177, y: 21, w: 14, h: 23 },
 };
@@ -590,24 +597,28 @@ const LESSON_CONTENT = {
       imageSrc: '../../assets/images/lesson/sunset-pixel-Original.png', visualAlt: 'Pixel-art sunset over water',
     },
     {
-      // No matching photo supplied for this one — falls back to a
-      // hand-drawn SVG icon in the same framed slot so the page still
-      // reads consistently with its neighbors (see visual-aid mockup).
+      // Was a hand-drawn SVG icon fallback (no matching photo at the
+      // time) — swapped to a real waving-hand pixel-art asset the user
+      // added to assets/images/ui/, per explicit request.
       type: 'greeting', kana: 'さようなら', romaji: 'Sayounara', pronunciation: '(sah-yoh-nah-rah)', meaning: 'Goodbye',
       usage: 'A fairly formal goodbye that can imply you won’t see the person again for a while. Not typically used daily with close friends or family — they usually use a casual alternative instead.',
-      iconSvg: '<svg viewBox="0 0 56 56"><path d="M20 48 C20 30, 20 18, 28 12 C32 9, 38 12, 36 18 C34 23, 28 24, 28 24" fill="none" stroke="#e8c99b" stroke-width="7" stroke-linecap="round"></path><circle cx="28" cy="12" r="6" fill="#e8c99b"></circle></svg>',
+      imageSrc: '../../assets/images/ui/waving-hand-Original.png', visualAlt: 'Pixel-art waving hand',
     },
     {
+      // Was a generic stock photo (563640 (1).jpg) — swapped to the
+      // project's own bowing-person pixel/illustration asset per explicit
+      // request.
       type: 'greeting', kana: 'ありがとうございます', romaji: 'Arigatou gozaimasu', pronunciation: '(ah-ree-gah-toh goh-zah-ee-mahs)', meaning: 'Thank you (polite)',
       usage: 'The polite form of "thank you" — used with strangers, shop staff, and at work. Drop "gozaimasu" for casual thanks among friends.',
-      imageSrc: '../../assets/images/lesson/563640%20(1).jpg', visualAlt: 'A person bowing politely',
+      imageSrc: '../../assets/images/lesson/bowing-person-Original.png', visualAlt: 'A person bowing politely',
     },
     {
-      // Also no matching photo — same SVG-icon fallback pattern as
-      // さようなら above.
+      // Had an SVG exclamation-point icon fallback — removed entirely per
+      // explicit "remove the picture exclamation point" request; this
+      // page now renders with no visual aid, same as any other greeting
+      // page that supplies neither imageSrc nor iconSvg.
       type: 'greeting', kana: 'すみません', romaji: 'Sumimasen', pronunciation: '(soo-mee-mah-sen)', meaning: 'Excuse me / Sorry',
       usage: 'Very versatile: use it to apologize, to get someone’s attention (like a waiter), or even to say thanks when someone went out of their way for you.',
-      iconSvg: '<svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="20" fill="none" stroke="#f0c674" stroke-width="2.5"></circle><text x="28" y="36" text-anchor="middle" font-size="24" fill="#f0c674" font-family="VT323, DotGothic16, monospace">!</text></svg>',
     },
     {
       // Two NPC cats using a few of the phrases above in a natural
@@ -5876,9 +5887,9 @@ const LESSON_CONTENT = {
       ],
     },
   ],
-  // The printer prop by reception (see buildPrinterStation) — always-
-  // available content (kind: 'npc', not gated), same reasoning as the two
-  // TVs below. A single page whose printLinks (attached in startLesson
+  // The Vocabulary Press prop by reception (see buildVocabPressStation)
+  // — always-available content (kind: 'npc', not gated), same reasoning
+  // as the two TVs below. A single page whose printLinks (attached in startLesson
   // via ALL_PRINT_LINKS, since entry.id === 'printer-station' there)
   // covers every lesson's PDF in one place, for words/patterns that
   // didn't fit in the curated in-game lessons.
@@ -5895,13 +5906,12 @@ const LESSON_CONTENT = {
   // The two reference-kiosk TVs (see buildFurniture's buildTV) — always-
   // available content (kind: 'npc', not gated behind SHELF_PREREQ), out
   // of shelf-numeric order deliberately, same reasoning as shelf-17 used
-  // to be. Both split their 46-character gojuon chart into 5 same-shaped
-  // 'conjugation' table pages (row-pairs of 10, except the last which is
-  // ra-row + ん alone) so no single table gets too tall to read
-  // comfortably — 'conjugation' has no title field of its own (see the
-  // renderDataTable comment above), so one grammar-intro page up front
-  // carries the section title for the whole run of tables instead of
-  // repeating a header on every page.
+  // to be. Both split their 46-character gojuon chart into 11 stroke-card
+  // pages, ONE gojuon row per page (a-row alone, ka-row alone, etc. — an
+  // earlier version combined 2 rows per page, reverted per explicit "don't
+  // combine 2 character sets in one page" feedback) via buildKanaStrokeRow()
+  // — one grammar-intro page up front carries the section title for the
+  // whole run of cards instead of repeating a header on every page.
   'tv-hiragana': [
     {
       type: 'grammar-intro',
@@ -5911,60 +5921,112 @@ const LESSON_CONTENT = {
         { text: 'あ', role: 'subject' }, { text: 'い', role: 'subject' }, { text: 'う', role: 'subject' },
         { text: 'え', role: 'subject' }, { text: 'お', role: 'subject' },
       ],
-      explain: ['Read top to bottom, left to right — each table below is two rows of the chart.'],
+      explain: ['Read top to bottom, left to right — each card below shows the character, its romaji, and its stroke count.'],
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'あ', romaji: 'a', label: 'a-row' }, { kana: 'い', romaji: 'i', label: 'a-row' },
-        { kana: 'う', romaji: 'u', label: 'a-row' }, { kana: 'え', romaji: 'e', label: 'a-row' },
-        { kana: 'お', romaji: 'o', label: 'a-row' },
-        { kana: 'か', romaji: 'ka', label: 'ka-row' }, { kana: 'き', romaji: 'ki', label: 'ka-row' },
-        { kana: 'く', romaji: 'ku', label: 'ka-row' }, { kana: 'け', romaji: 'ke', label: 'ka-row' },
-        { kana: 'こ', romaji: 'ko', label: 'ka-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'a-row',
+      explain: ['The 5 base vowel sounds.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'あ', romaji: 'a', strokes: 3 }, { kana: 'い', romaji: 'i', strokes: 2 },
+        { kana: 'う', romaji: 'u', strokes: 2 }, { kana: 'え', romaji: 'e', strokes: 2 },
+        { kana: 'お', romaji: 'o', strokes: 3 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'さ', romaji: 'sa', label: 'sa-row' }, { kana: 'し', romaji: 'shi', label: 'sa-row' },
-        { kana: 'す', romaji: 'su', label: 'sa-row' }, { kana: 'せ', romaji: 'se', label: 'sa-row' },
-        { kana: 'そ', romaji: 'so', label: 'sa-row' },
-        { kana: 'た', romaji: 'ta', label: 'ta-row' }, { kana: 'ち', romaji: 'chi', label: 'ta-row' },
-        { kana: 'つ', romaji: 'tsu', label: 'ta-row' }, { kana: 'て', romaji: 'te', label: 'ta-row' },
-        { kana: 'と', romaji: 'to', label: 'ta-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'ka-row',
+      explain: ['k + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'か', romaji: 'ka', strokes: 3 }, { kana: 'き', romaji: 'ki', strokes: 4 },
+        { kana: 'く', romaji: 'ku', strokes: 1 }, { kana: 'け', romaji: 'ke', strokes: 3 },
+        { kana: 'こ', romaji: 'ko', strokes: 2 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'な', romaji: 'na', label: 'na-row' }, { kana: 'に', romaji: 'ni', label: 'na-row' },
-        { kana: 'ぬ', romaji: 'nu', label: 'na-row' }, { kana: 'ね', romaji: 'ne', label: 'na-row' },
-        { kana: 'の', romaji: 'no', label: 'na-row' },
-        { kana: 'は', romaji: 'ha', label: 'ha-row' }, { kana: 'ひ', romaji: 'hi', label: 'ha-row' },
-        { kana: 'ふ', romaji: 'fu', label: 'ha-row' }, { kana: 'へ', romaji: 'he', label: 'ha-row' },
-        { kana: 'ほ', romaji: 'ho', label: 'ha-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'sa-row',
+      explain: ['s + each vowel sound (し is shi, not si).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'さ', romaji: 'sa', strokes: 3 }, { kana: 'し', romaji: 'shi', strokes: 1 },
+        { kana: 'す', romaji: 'su', strokes: 2 }, { kana: 'せ', romaji: 'se', strokes: 3 },
+        { kana: 'そ', romaji: 'so', strokes: 1 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'ま', romaji: 'ma', label: 'ma-row' }, { kana: 'み', romaji: 'mi', label: 'ma-row' },
-        { kana: 'む', romaji: 'mu', label: 'ma-row' }, { kana: 'め', romaji: 'me', label: 'ma-row' },
-        { kana: 'も', romaji: 'mo', label: 'ma-row' },
-        { kana: 'や', romaji: 'ya', label: 'ya-row' }, { kana: 'ゆ', romaji: 'yu', label: 'ya-row' },
-        { kana: 'よ', romaji: 'yo', label: 'ya-row' },
-        { kana: 'わ', romaji: 'wa', label: 'wa-row' }, { kana: 'を', romaji: 'wo', label: 'wa-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'ta-row',
+      explain: ['t + each vowel sound (ち is chi, つ is tsu — not ti/tu).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'た', romaji: 'ta', strokes: 4 }, { kana: 'ち', romaji: 'chi', strokes: 2 },
+        { kana: 'つ', romaji: 'tsu', strokes: 1 }, { kana: 'て', romaji: 'te', strokes: 1 },
+        { kana: 'と', romaji: 'to', strokes: 2 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'ら', romaji: 'ra', label: 'ra-row' }, { kana: 'り', romaji: 'ri', label: 'ra-row' },
-        { kana: 'る', romaji: 'ru', label: 'ra-row' }, { kana: 'れ', romaji: 're', label: 'ra-row' },
-        { kana: 'ろ', romaji: 'ro', label: 'ra-row' },
-        { kana: 'ん', romaji: 'n', label: 'n' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'na-row',
+      explain: ['n + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'な', romaji: 'na', strokes: 4 }, { kana: 'に', romaji: 'ni', strokes: 3 },
+        { kana: 'ぬ', romaji: 'nu', strokes: 2 }, { kana: 'ね', romaji: 'ne', strokes: 2 },
+        { kana: 'の', romaji: 'no', strokes: 1 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ha-row',
+      explain: ['h + each vowel sound (ふ is fu, not hu).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'は', romaji: 'ha', strokes: 3 }, { kana: 'ひ', romaji: 'hi', strokes: 1 },
+        { kana: 'ふ', romaji: 'fu', strokes: 4 }, { kana: 'へ', romaji: 'he', strokes: 1 },
+        { kana: 'ほ', romaji: 'ho', strokes: 4 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ma-row',
+      explain: ['m + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ま', romaji: 'ma', strokes: 3 }, { kana: 'み', romaji: 'mi', strokes: 2 },
+        { kana: 'む', romaji: 'mu', strokes: 3 }, { kana: 'め', romaji: 'me', strokes: 2 },
+        { kana: 'も', romaji: 'mo', strokes: 2 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ya-row',
+      explain: ['Only 3 — ya/yu/yo, no yi or ye.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'や', romaji: 'ya', strokes: 3 }, { kana: 'ゆ', romaji: 'yu', strokes: 2 },
+        { kana: 'よ', romaji: 'yo', strokes: 2 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'wa-row',
+      explain: ['わ is wa; を is o (only used as the object-marker particle).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'わ', romaji: 'wa', strokes: 2 }, { kana: 'を', romaji: 'wo', strokes: 3 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ra-row',
+      explain: ['r + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ら', romaji: 'ra', strokes: 2 }, { kana: 'り', romaji: 'ri', strokes: 2 },
+        { kana: 'る', romaji: 'ru', strokes: 1 }, { kana: 'れ', romaji: 're', strokes: 2 },
+        { kana: 'ろ', romaji: 'ro', strokes: 1 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ん',
+      explain: ['The one singular consonant — its own syllable, never paired with a vowel.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ん', romaji: 'n', strokes: 1 },
+      ]),
     },
     {
       type: 'quiz-fill',
@@ -5990,60 +6052,112 @@ const LESSON_CONTENT = {
         { text: 'ア', role: 'subject' }, { text: 'イ', role: 'subject' }, { text: 'ウ', role: 'subject' },
         { text: 'エ', role: 'subject' }, { text: 'オ', role: 'subject' },
       ],
-      explain: ['Read top to bottom, left to right — each table below is two rows of the chart.'],
+      explain: ['Read top to bottom, left to right — each card below shows the character, its romaji, and its stroke count.'],
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'ア', romaji: 'a', label: 'a-row' }, { kana: 'イ', romaji: 'i', label: 'a-row' },
-        { kana: 'ウ', romaji: 'u', label: 'a-row' }, { kana: 'エ', romaji: 'e', label: 'a-row' },
-        { kana: 'オ', romaji: 'o', label: 'a-row' },
-        { kana: 'カ', romaji: 'ka', label: 'ka-row' }, { kana: 'キ', romaji: 'ki', label: 'ka-row' },
-        { kana: 'ク', romaji: 'ku', label: 'ka-row' }, { kana: 'ケ', romaji: 'ke', label: 'ka-row' },
-        { kana: 'コ', romaji: 'ko', label: 'ka-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'a-row',
+      explain: ['The 5 base vowel sounds.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ア', romaji: 'a', strokes: 2 }, { kana: 'イ', romaji: 'i', strokes: 2 },
+        { kana: 'ウ', romaji: 'u', strokes: 3 }, { kana: 'エ', romaji: 'e', strokes: 3 },
+        { kana: 'オ', romaji: 'o', strokes: 3 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'サ', romaji: 'sa', label: 'sa-row' }, { kana: 'シ', romaji: 'shi', label: 'sa-row' },
-        { kana: 'ス', romaji: 'su', label: 'sa-row' }, { kana: 'セ', romaji: 'se', label: 'sa-row' },
-        { kana: 'ソ', romaji: 'so', label: 'sa-row' },
-        { kana: 'タ', romaji: 'ta', label: 'ta-row' }, { kana: 'チ', romaji: 'chi', label: 'ta-row' },
-        { kana: 'ツ', romaji: 'tsu', label: 'ta-row' }, { kana: 'テ', romaji: 'te', label: 'ta-row' },
-        { kana: 'ト', romaji: 'to', label: 'ta-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'ka-row',
+      explain: ['k + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'カ', romaji: 'ka', strokes: 2 }, { kana: 'キ', romaji: 'ki', strokes: 3 },
+        { kana: 'ク', romaji: 'ku', strokes: 2 }, { kana: 'ケ', romaji: 'ke', strokes: 3 },
+        { kana: 'コ', romaji: 'ko', strokes: 2 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'ナ', romaji: 'na', label: 'na-row' }, { kana: 'ニ', romaji: 'ni', label: 'na-row' },
-        { kana: 'ヌ', romaji: 'nu', label: 'na-row' }, { kana: 'ネ', romaji: 'ne', label: 'na-row' },
-        { kana: 'ノ', romaji: 'no', label: 'na-row' },
-        { kana: 'ハ', romaji: 'ha', label: 'ha-row' }, { kana: 'ヒ', romaji: 'hi', label: 'ha-row' },
-        { kana: 'フ', romaji: 'fu', label: 'ha-row' }, { kana: 'ヘ', romaji: 'he', label: 'ha-row' },
-        { kana: 'ホ', romaji: 'ho', label: 'ha-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'sa-row',
+      explain: ['s + each vowel sound (シ is shi, not si).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'サ', romaji: 'sa', strokes: 3 }, { kana: 'シ', romaji: 'shi', strokes: 3 },
+        { kana: 'ス', romaji: 'su', strokes: 2 }, { kana: 'セ', romaji: 'se', strokes: 2 },
+        { kana: 'ソ', romaji: 'so', strokes: 2 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'マ', romaji: 'ma', label: 'ma-row' }, { kana: 'ミ', romaji: 'mi', label: 'ma-row' },
-        { kana: 'ム', romaji: 'mu', label: 'ma-row' }, { kana: 'メ', romaji: 'me', label: 'ma-row' },
-        { kana: 'モ', romaji: 'mo', label: 'ma-row' },
-        { kana: 'ヤ', romaji: 'ya', label: 'ya-row' }, { kana: 'ユ', romaji: 'yu', label: 'ya-row' },
-        { kana: 'ヨ', romaji: 'yo', label: 'ya-row' },
-        { kana: 'ワ', romaji: 'wa', label: 'wa-row' }, { kana: 'ヲ', romaji: 'wo', label: 'wa-row' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'ta-row',
+      explain: ['t + each vowel sound (チ is chi, ツ is tsu — not ti/tu).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'タ', romaji: 'ta', strokes: 3 }, { kana: 'チ', romaji: 'chi', strokes: 2 },
+        { kana: 'ツ', romaji: 'tsu', strokes: 3 }, { kana: 'テ', romaji: 'te', strokes: 3 },
+        { kana: 'ト', romaji: 'to', strokes: 2 },
+      ]),
     },
     {
-      type: 'conjugation',
-      rows: [
-        { kana: 'ラ', romaji: 'ra', label: 'ra-row' }, { kana: 'リ', romaji: 'ri', label: 'ra-row' },
-        { kana: 'ル', romaji: 'ru', label: 'ra-row' }, { kana: 'レ', romaji: 're', label: 'ra-row' },
-        { kana: 'ロ', romaji: 'ro', label: 'ra-row' },
-        { kana: 'ン', romaji: 'n', label: 'n' },
-      ],
+      type: 'grammar-intro',
+      sectionLabel: 'na-row',
+      explain: ['n + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ナ', romaji: 'na', strokes: 2 }, { kana: 'ニ', romaji: 'ni', strokes: 2 },
+        { kana: 'ヌ', romaji: 'nu', strokes: 2 }, { kana: 'ネ', romaji: 'ne', strokes: 4 },
+        { kana: 'ノ', romaji: 'no', strokes: 1 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ha-row',
+      explain: ['h + each vowel sound (フ is fu, not hu).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ハ', romaji: 'ha', strokes: 2 }, { kana: 'ヒ', romaji: 'hi', strokes: 2 },
+        { kana: 'フ', romaji: 'fu', strokes: 1 }, { kana: 'ヘ', romaji: 'he', strokes: 1 },
+        { kana: 'ホ', romaji: 'ho', strokes: 4 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ma-row',
+      explain: ['m + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'マ', romaji: 'ma', strokes: 2 }, { kana: 'ミ', romaji: 'mi', strokes: 3 },
+        { kana: 'ム', romaji: 'mu', strokes: 2 }, { kana: 'メ', romaji: 'me', strokes: 2 },
+        { kana: 'モ', romaji: 'mo', strokes: 3 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ya-row',
+      explain: ['Only 3 — ya/yu/yo, no yi or ye.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ヤ', romaji: 'ya', strokes: 2 }, { kana: 'ユ', romaji: 'yu', strokes: 2 },
+        { kana: 'ヨ', romaji: 'yo', strokes: 3 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'wa-row',
+      explain: ['ワ is wa; ヲ is o (rarely used outside representing the particle を in katakana).'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ワ', romaji: 'wa', strokes: 2 }, { kana: 'ヲ', romaji: 'wo', strokes: 3 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ra-row',
+      explain: ['r + each vowel sound.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ラ', romaji: 'ra', strokes: 2 }, { kana: 'リ', romaji: 'ri', strokes: 2 },
+        { kana: 'ル', romaji: 'ru', strokes: 2 }, { kana: 'レ', romaji: 're', strokes: 1 },
+        { kana: 'ロ', romaji: 'ro', strokes: 3 },
+      ]),
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'ン',
+      explain: ['The one singular consonant — its own syllable, never paired with a vowel.'],
+      diagramSvg: buildKanaStrokeRow([
+        { kana: 'ン', romaji: 'n', strokes: 2 },
+      ]),
     },
     {
       type: 'quiz-fill',
@@ -6633,6 +6747,32 @@ function buildCompassDiagram() {
   `;
 }
 
+// -- tv-hiragana / tv-katakana stroke-count card row --------------------------
+// Renders a single gojuon row (a-row, ka-row, etc. — one row per page, per
+// explicit request not to combine 2 rows on one page) as a grid of per-
+// character cards: the kana large, its romaji, and a "N strokes" caption.
+// This replaces the old plain kana/romaji/label 'conjugation' text table.
+//
+// An earlier version of this card also overlaid small numbered ①②③ dots
+// per character to suggest stroke order — dropped per explicit feedback
+// ("just likes numbers pasted on the lesson characters, just remove them
+// and just retain the characters and number of strokes"). Stroke COUNT is
+// still shown (sourced from standard Japanese stroke-order references);
+// this project has no real stroke-PATH data source to draw an actual
+// traced order from (no browser available this session to fetch/verify a
+// licensed stroke-order chart — multiple fetch attempts against
+// Wikimedia/GitHub all came back empty).
+function buildKanaStrokeRow(chars) {
+  const cards = chars.map((c) => `
+    <div class="lesson-box__strokecard">
+      <div class="lesson-box__strokecard-glyph">${c.kana}</div>
+      <div class="lesson-box__strokecard-romaji">${c.romaji}</div>
+      <div class="lesson-box__strokecard-count">${c.strokes} stroke${c.strokes === 1 ? '' : 's'}</div>
+    </div>
+  `).join('');
+  return `<div class="lesson-box__strokegrid">${cards}</div>`;
+}
+
 // -- shelf-09 interactive pronoun-notepad diagram -----------------------------
 // Click a pronoun jotted on the notebook page (real asset:
 // assets/images/lesson/drawing-pad-2-Original.png) — the entry highlights
@@ -7167,8 +7307,9 @@ const PRINT_LINKS_BY_SHELF = {
     { label: 'Particles', href: encodeURI('../../assets/lesson pdf/N5 particles - Particles.pdf') },
   ],
 };
-// Every PDF from PRINT_LINKS_BY_SHELF in one flat list, for the printer
-// prop near reception (see buildPrinterStation) — unlike the per-lesson
+// Every PDF from PRINT_LINKS_BY_SHELF in one flat list, for the
+// Vocabulary Press prop near reception (see buildVocabPressStation) —
+// unlike the per-lesson
 // popup links, this is reachable any time, not just while a specific
 // lesson is open, so it needs every reference sheet in one place.
 const ALL_PRINT_LINKS = Object.values(PRINT_LINKS_BY_SHELF).flat();
@@ -7585,13 +7726,13 @@ class LibraryScene extends Phaser.Scene {
     // to strip this source file's ~40% transparent padding.
     this.load.image('savePointRaw', '../../assets/images/ui/save-point-Original.png');
     this.load.image('finishFlagIcon', '../../assets/images/ui/finish-line-Original.png');
-    // Printer prop — sits on top of the small drawer-front table (see
-    // ASSET_RECTS.printerTable) beside reception; clicking it opens every
-    // lesson's "print the full list" PDF in one place (see
-    // buildPrinterStation). Full 1024x1024 source, scaled way down at
-    // display time — no crop needed, the source has no surrounding
-    // padding to trim (confirmed by eye against a transparent background).
-    this.load.image('printerRaw', '../../assets/images/lesson/printer-image-Original.png');
+    // Vocabulary Press prop beside reception — was a small modern printer
+    // on its own side table, replaced per explicit feedback ("change it
+    // to gutenburg press like in n4 floor") with the SAME Gutenberg-press
+    // image N4's own Vocabulary Press station uses. Clicking it still
+    // opens every lesson's "print the full list" PDF in one place (see
+    // buildVocabPressStation). Square 1024x1024 source, no crop needed.
+    this.load.image('gutenbergPress', '../../assets/images/lesson/gutenberg-press-Original.png');
     // Calico sensei — a stationary NPC sitting at the reception desk.
     // Loaded as a plain image, not a spritesheet: the source PNG (decoded
     // from the .aseprite file, no exported PNG existed yet) holds 3
@@ -7821,16 +7962,32 @@ class LibraryScene extends Phaser.Scene {
     // bounding box, and uses the finish-line flag image instead of a
     // checkmark emoji per the explicit reference image.
     const stairContentBottom = staircaseDisplayHeight * (160 / 300);
-    // Spans the staircase's own width (with a small margin on each side)
-    // instead of a small fixed-size icon — "spans between the end of
-    // each stairs right and left" per feedback. Height keeps the
-    // checkered pattern reasonably readable rather than matching the
-    // source image's native (near-square) aspect ratio, which at this
-    // width would make it far taller than a finish-line banner should be.
-    const stairStampWidth = staircaseDisplayWidth - 16;
+    // Was stretched to a (staircaseDisplayWidth-16) x 50 banner — but
+    // finish-line-Original.png is a square 1024x1024 source image, so
+    // that non-uniform size squashed it into a thin, distorted strip
+    // ("the finish flag is not appropriated and match the size of the
+    // stairs" per explicit feedback). A follow-up matched it to the full
+    // staircaseDisplayWidth (kept 1:1, no distortion) — but per a second
+    // follow-up ("still the same width of the stairs, resize it more to
+    // fit the stairs and move it center of the stairs"), that still
+    // wasn't right: the staircase crop's real (opaque) content narrows
+    // sharply near its own bottom edge, where the flag actually sits.
+    // Alpha-scanned directly against libassetpack-tiled.png (rows
+    // 100-155 of the staircase's own 300px-tall crop, i.e. near where
+    // stairContentBottom lands): the crop is 100px wide natively, but
+    // real opaque content there only spans local x 18-99 (not 0-99) —
+    // the left ~18px is already transparent by that height — so the
+    // true visible staircase is ~81px wide there, not the full 100, and
+    // its own center sits well right of the full crop's center.
+    const stairContentLeftLocal = 18; // native (unscaled) staircase-crop-local x
+    const stairContentRightLocal = 99;
+    const stairContentCenterXLocal = (stairContentLeftLocal + stairContentRightLocal) / 2;
+    const stairContentWidthLocal = stairContentRightLocal - stairContentLeftLocal;
+    const stairStampSize = stairContentWidthLocal * stairScale; // ~1:1 aspect kept, sized to the REAL content width
+    const stairStampCenterX = stairX + stairContentCenterXLocal * stairScale;
     const stairStamp = this.add
-      .image(stairX + staircaseDisplayWidth / 2, stairContentBottom, 'finishFlagIcon')
-      .setOrigin(0.5).setDepth(4).setDisplaySize(stairStampWidth, 50).setVisible(false);
+      .image(stairStampCenterX, stairContentBottom - 8, 'finishFlagIcon')
+      .setOrigin(0.5).setDepth(4).setDisplaySize(stairStampSize, stairStampSize).setVisible(false);
     this.tweens.add({ targets: stairGlow, alpha: { from: 1, to: 0.35 }, duration: 650, yoyo: true, repeat: -1 });
 
     const wallRect = ASSET_RECTS.wallBalcony;
@@ -7875,20 +8032,35 @@ class LibraryScene extends Phaser.Scene {
       .setOrigin(0, 0);
     this.physics.add.existing(wallBlock, true);
     this.wallGroup.add(wallBlock);
+    // Stashed for buildFurniture()'s jukebox, which runs after this
+    // method and needs to sit just below this same solid wall block.
+    this.wallBlockHeight = wallBlockHeight;
 
-    // Trigger point deliberately sits near the BASE of the staircase
-    // (not its vertical center), below wallBlockHeight, so the routed
-    // corridor approach can actually reach it (see Round 2's original
-    // note on this — the staircase's own center falls inside the solid
-    // zone otherwise).
+    // Trigger point sits just outside (below) the solid stairBlock, right
+    // at the foot of the visible steps — was staircaseDisplayHeight-30
+    // (=390), deep in the open floor well below stairContentBottom
+    // (=224) and the solid block's own bottom edge (stairBlockHeight,
+    // =239), reading as "the trigger is nowhere near the actual stairs"
+    // per explicit feedback ("it needs to be too ON THE STEPS"). Can't
+    // sit ON the steps literally (that's inside the solid collision
+    // zone, unreachable by the player), so this is the closest reachable
+    // point to them: just past the block's edge, not deep in open floor.
     const stairEntry = {
       id: 'final-quiz', kind: 'pile', title: 'Final Quiz',
       sprite: staircaseSprite, glow: stairGlow, stamp: stairStamp,
       // shelf-17 removed — review-4 (13-16) is now the direct gate
       // instead, same role every other review pile plays for its block.
       requires: ['shelf-15', 'shelf-16', 'review-4'],
-      x: stairX + staircaseDisplayWidth / 2, y: staircaseDisplayHeight - 30,
+      x: stairX + staircaseDisplayWidth / 2, y: stairBlockHeight + 8,
       baseScale: stairScale,
+      // Per explicit feedback ("the stairs grows bigger [on the proximity
+      // pulse]... so is the flag should be") — update()'s pulse only ever
+      // scaled entry.sprite, leaving entry.stamp (this flag) fixed-size
+      // while the staircase itself grew 1.08x when the player got close.
+      // stampBaseSize is this stamp's own "1x" display size (opted into
+      // per-entry, not forced on every stamp/checkmark in the game — see
+      // update()'s pulse loop) so it can be scaled by the same factor.
+      stampBaseSize: { w: stairStampSize, h: stairStampSize },
       // Smaller than the default TRIGGER_RANGE (80): the staircase is a
       // much bigger sprite than a shelf, so the same 80px radius from its
       // base point read as "still visibly far from the stairs" — the
@@ -7987,15 +8159,28 @@ class LibraryScene extends Phaser.Scene {
     this.add.tileSprite(corridorX, corridorMidY, corridorWidth, corridorHeight, 'corridorRugTex')
       .setDepth(0);
 
-    // Decorative jukebox, flush against the west wall in the gap between
-    // the top wall band and the first shelf zone — same asset/crop N4/N3
-    // use (cropJukeboxTexture, library-scene-shared.js), so every floor's
-    // hall has one. Visual-only (no audio asset supplied), non-solid.
+    // Decorative jukebox — same asset/crop N4/N3 use (cropJukeboxTexture,
+    // library-scene-shared.js), so every floor's hall has one. Visual-
+    // only (no audio asset supplied), non-solid. Two follow-up feedback
+    // rounds both said "still away from the floor... plastered in the
+    // wall" even after flushing it against wallBlockHeight (the
+    // INVISIBLE collision line, not the wall art's own visual edge) —
+    // alpha-scanning libassetpack-tiled.png's wallBalcony crop at this
+    // jukebox's own x column found the wall's real opaque content
+    // actually dips lower there (the "veranda" pillar feature the
+    // windows code already documents) than a quick glance suggests, and
+    // depth-2 vs the wall's own depth-0 means the jukebox already draws
+    // OVER any wall pixels it overlaps — so the fix is simply to push it
+    // up further (well past wallBlockHeight, deliberately overlapping
+    // into the wall's own footprint) rather than chase an exact pixel
+    // edge. Nudged another ~10px left too, per explicit "move it left
+    // again the same pixel".
     const jukeboxTexKey = cropJukeboxTexture(this, 'n5JukeboxTex');
     const jukeboxScale = 0.16;
     const jukeboxW = 620 * jukeboxScale;
-    const jukeboxX = LAYOUT.leftColX[0] + jukeboxW / 2;
-    const jukeboxY = (460 + zone1Row0) / 2;
+    const jukeboxH = 870 * jukeboxScale;
+    const jukeboxX = WORLD_W / 2 - 20;
+    const jukeboxY = this.wallBlockHeight + jukeboxH / 2 - 40;
     createDecorativeProp(this, {
       x: jukeboxX, y: jukeboxY, textureKey: jukeboxTexKey, scale: jukeboxScale, depth: 2,
       onClick: () => {
@@ -8117,14 +8302,16 @@ class LibraryScene extends Phaser.Scene {
     // Restored the P/T&C/P plant flanking (originally removed as
     // "redundant with every table row" — per explicit "the table here
     // doesn't have the plant that other tables have" follow-up feedback,
-    // this row gets them back too) plus one extra side chair on the left
-    // table's outer (west) edge, facing right into the table, per
-    // explicit request.
+    // this row gets them back too). The extra side chair this row's left
+    // table used to get (its outer/west edge) is removed per explicit
+    // follow-up feedback ("remove the extra piece of chair in left side
+    // of the table, it is not needed") — both tables now just get their
+    // normal 2 front chairs, same as every other table+chair placement.
     const tableY3 = LAYOUT.decorRow3Y - tableH / 2;
     const chairY3 = LAYOUT.decorRow3Y + tableH / 2 - 6;
     const plantY3 = LAYOUT.decorRow3Y - ASSET_RECTS.plant.h / 2;
     this.add.image(gapLeft, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
-    addTableWithChairs(gapCenter - 40 - tableW, tableY3, chairY3, 'left');
+    addTableWithChairs(gapCenter - 40 - tableW, tableY3, chairY3);
     addTableWithChairs(gapCenter + 40, tableY3, chairY3);
     this.add.image(gapRight - ASSET_RECTS.plant.w, plantY3, plantKey).setOrigin(0, 0).setDepth(1);
 
@@ -8152,14 +8339,15 @@ class LibraryScene extends Phaser.Scene {
     this.add.image(rightShelfColCenterX, LAYOUT.carpetGlobeY, 'globeRugRightTex').setDepth(0);
 
     // 4 sofas, 2 per side, stacked vertically directly in front of (below)
-    // each accent rug — was hugging the outer wall further down near
-    // reception, with 4 distinct variants (2-seat couch, 3-seat, 2
-    // armchairs). Per explicit feedback, both slots on each side are now
-    // the same "upward facing" 2-seat couch (sofaCouch2Tex), centered on
-    // the same x as that side's rug, moved up so the sofas sit just below
-    // the rug instead of far down the aisle — and placed side by side
-    // (was stacked vertically) since there's enough width in the shelf
-    // column's own footprint for 2 sofas at this scale.
+    // each accent rug. Both slots on each side are the same "upward
+    // facing" 2-seat couch (sofaCouch2Tex), centered on the same x as
+    // that side's rug, sitting just below the rug — placed side by side
+    // since there's enough width in the shelf column's own footprint for
+    // 2 sofas at this scale. Back to the original unrotated (0,0)-origin
+    // placement — an earlier attempt to rotate these to "face left" via
+    // setAngle(90) was explicitly reverted ("NO NO NO, bring this back
+    // to its original position"); the "facing" request instead applies
+    // to the 2 new 3rd-sofa loveseats added below, a different asset.
     const sofaRect = ASSET_RECTS.sofaCouch2;
     const sofaDisplayW = sofaRect.w * FURNITURE_SCALE;
     const sofaDisplayH = sofaRect.h * FURNITURE_SCALE;
@@ -8177,20 +8365,41 @@ class LibraryScene extends Phaser.Scene {
       });
     });
 
-    // One extra couch on the right side only, per explicit request —
-    // sits just outside (east of) the existing right-side pair, with a
-    // libChair reused (same rotate-to-face trick as the reading-table
-    // side chairs) placed beyond it and facing left/west, back toward
-    // the couch and the library's center.
-    const extraSofaX = rightShelfColCenterX + sofaPairWidth / 2 + sofaGap;
-    this.furnitureSprites.sofa5 = this.add
-      .image(extraSofaX, sofaTopY, sofaKeys[0]).setOrigin(0, 0).setDepth(1)
-      .setDisplaySize(sofaDisplayW, sofaDisplayH);
-    const extraChairGap = 6;
-    const extraChairX = extraSofaX + sofaDisplayW + extraChairGap + chairDW / 2;
-    const extraChairY = sofaTopY + sofaDisplayH / 2;
-    this.add.image(extraChairX, extraChairY, libChairKey).setOrigin(0.5, 0.5).setDepth(2)
-      .setDisplaySize(chairDW, chairDH).setAngle(90);
+    // 3rd sofa per side — a loveseat/chair cropped from
+    // TopDownHouse_FurnitureState1.png per the user's own circled
+    // reference screenshot (ASSET_RECTS.loveseatRightFacing), native
+    // orientation "facing right" (backrest on its left edge, seat/pillow
+    // facing right). Left side gets it as-is, sitting just outside
+    // (west of) the existing pair, facing right — INTO the pair, per
+    // explicit "on the LEFT SIDE... put a RIGHT FACING SOFA" request.
+    // Right side gets the identical crop mirrored (setFlipX(true), not a
+    // second crop) so it faces left — INTO its own pair, per "on RIGHT
+    // SIDE... add a LEFT FACING SOFA".
+    //
+    // Vertical anchor went through several rounds: bottom-aligned first
+    // (read as floating too high, center noticeably above the sofa row),
+    // then center-aligned (still read as hanging too low per a further
+    // annotated screenshot — center-to-center still visually offsets a
+    // MUCH taller sprite from a much shorter one more than it looks on
+    // paper), then top-aligned (same top edge as the sofas, sofaTopY
+    // exactly) — still read as sitting too far south/away from the rug,
+    // then nudged 20px further north, then another 50px — still not far
+    // enough per subsequent screenshots, so the total north nudge off the
+    // top-aligned baseline is now 90px.
+    const loveseatRect = ASSET_RECTS.loveseatRightFacing;
+    const loveseatW = loveseatRect.w * FURNITURE_SCALE;
+    const loveseatH = loveseatRect.h * FURNITURE_SCALE;
+    const loveseatKey = cropToTexture(this, 'topDownFurniture1', loveseatRect, 'loveseatRightFacingTex');
+    const loveseatGap = 10;
+    const loveseatY = sofaTopY + loveseatH / 2 - 90;
+    const leftPairLeftEdge = leftShelfColCenterX - sofaPairWidth / 2;
+    this.furnitureSprites.loveseatLeft = this.add
+      .image(leftPairLeftEdge - loveseatGap - loveseatW / 2, loveseatY, loveseatKey)
+      .setOrigin(0.5, 0.5).setDepth(1).setDisplaySize(loveseatW, loveseatH);
+    const rightPairRightEdge = rightShelfColCenterX + sofaPairWidth / 2;
+    this.furnitureSprites.loveseatRight = this.add
+      .image(rightPairRightEdge + loveseatGap + loveseatW / 2, loveseatY, loveseatKey)
+      .setOrigin(0.5, 0.5).setDepth(1).setDisplaySize(loveseatW, loveseatH).setFlipX(true);
 
     // 2 interactive TVs — hiragana (left) / katakana (right) reference
     // kiosks, per explicit request: "above the carpet in front of the
@@ -8586,75 +8795,39 @@ class LibraryScene extends Phaser.Scene {
     this.buildDeskItems(originX, originY + 10, deskW / ASSET_RECTS.receptionDesk.w);
 
     this.buildReceptionSensei(chairX + chairW / 2, chairY, chairH);
-    this.buildPrinterStation(originX, originY + 10, deskH);
+    this.buildVocabPressStation(originX, originY + 10, deskH);
   }
 
-  // Printer prop on its own small side table, on the left of the
-  // reception desk (per explicit request) — an always-available
-  // interactive (kind: 'npc', same pattern as Neko-sensei/the TVs) that
-  // opens every lesson's "print the full list" PDF in one place, instead
-  // of only being reachable from inside each individual lesson's popup.
+  // Vocabulary Press prop, side-by-side with the reception desk (west of
+  // it). Was a small modern printer on its own side table — replaced per
+  // explicit feedback ("remove this print, change it to gutenburg press
+  // like in n4 floor") with the SAME Gutenberg-press image N4's own
+  // Vocabulary Press station uses (a single square prop, no separate
+  // side table needed, matching how N4 places it). Still an always-
+  // available interactive (kind: 'npc', same pattern as Neko-sensei/the
+  // TVs) that opens every lesson's "print the full list" PDF in one
+  // place — same 'printer-station' id and LESSON_CONTENT entry as
+  // before, only the visual prop and its display title changed, so nothing
+  // that reads `this.printerStationId` needed to change.
   // deskOriginX/deskOriginY/deskH are the desk's own placed position/size
-  // (from buildReception, not re-derived) so the table lines up with it
+  // (from buildReception, not re-derived) so this lines up with it
   // regardless of future desk resizes.
-  buildPrinterStation(deskOriginX, deskOriginY, deskH) {
-    const tableKey = cropToTexture(this, 'furniture03', ASSET_RECTS.printerTable, 'printerTableTex');
-    // Table nudged smaller (3.2->2.8->2.7) and the printer nudged bigger
-    // (34->44) per explicit feedback across two rounds — was reading as
-    // a small printer lost on an oversized table.
-    const tableScale = 2.7;
-    const tableDisplayW = ASSET_RECTS.printerTable.w * tableScale;
-    const tableDisplayH = ASSET_RECTS.printerTable.h * tableScale;
-    const tableGap = 30; // clearance west of the desk's left edge
-    const tableX = deskOriginX - tableGap - tableDisplayW;
-    const tableY = deskOriginY + deskH - tableDisplayH; // bottoms align with the desk's own base line
-    this.add.image(tableX, tableY, tableKey).setOrigin(0, 0).setDepth(1)
-      .setDisplaySize(tableDisplayW, tableDisplayH);
-
-    // setScale (not setDisplaySize) — same reason as every other clickable
-    // prop in this file: update()'s proximity pulse calls entry.sprite.
-    // setScale(entry.baseScale * ...) every frame while nearest, which
-    // would silently fight a setDisplaySize-derived size.
-    //
-    // printerRaw's source PNG is 1024x1024 but the actual printer glyph
-    // only occupies a {130,152,766,769} sub-region (confirmed by alpha
-    // scan) — asymmetric padding (152px on top, only 103px on bottom)
-    // around it. Anchoring origin(0.5,1) against the FULL untrimmed
-    // texture put the sprite's "bottom" ~100 native px below where the
-    // printer actually visually ends, reading as floating above the
-    // table with a gap instead of sitting on it — found live per this
-    // project's "measure, don't guess" pattern, same class of bug
-    // savePointRaw already needed cropToTexture for. Cropped here the
-    // same way, so the bottom anchor lines up with the real glyph edge.
-    const printerRect = { x: 130, y: 152, w: 766, h: 769 };
-    const printerKey = cropToTexture(this, 'printerRaw', printerRect, 'printerCroppedTex');
-    // Narrowed (44->30) to fit inside the tabletop's own display width
-    // (37.8 at tableScale 2.7) instead of overhanging both edges, per
-    // "make it feel like it's on top of it".
-    const printerDisplayW = 30;
-    const printerScale = printerDisplayW / printerRect.w;
-    // Centered on the table's own width so it reads as aligned with it,
-    // not offset to one side.
-    const printerX = tableX + tableDisplayW / 2;
-    // Was tableY+4, then tableY+5*tableScale (targeting the flat tabletop
-    // band before the table's rim) — still read as floating above the
-    // table per explicit "still not in the middle of the desk, it looks
-    // like it's floating above it" feedback. Anchored to the literal
-    // vertical middle of the whole table sprite instead, removing any
-    // guesswork about which band is the "surface" — this puts a solid
-    // ~31px of overlap between the printer's bottom and the table's top
-    // edge (half of tableDisplayH), unambiguously grounded on the table.
-    const printerY = tableY + tableDisplayH / 2;
-    const printer = this.add.image(printerX, printerY, printerKey)
-      .setOrigin(0.5, 1).setScale(printerScale).setDepth(2);
+  buildVocabPressStation(deskOriginX, deskOriginY, deskH) {
+    const pressDisplay = 90; // was 80, bumped +10px per explicit request — now matches N4's own press size
+    const pressScale = pressDisplay / 1024;
+    const pressGap = 24; // clearance west of the desk's left edge
+    const pressX = deskOriginX - pressGap - pressDisplay / 2;
+    const pressY = deskOriginY + deskH / 2; // vertically centered on the desk's own height
+    const press = this.add.image(pressX, pressY, 'gutenbergPress')
+      .setOrigin(0.5, 0.5).setDepth(1).setScale(pressScale);
 
     const printerEntry = {
-      id: 'printer-station', kind: 'npc', title: 'Printer',
-      sprite: printer, x: printerX, y: printerY,
-      baseScale: printerScale,
+      id: 'printer-station', kind: 'npc', title: 'Vocabulary Press',
+      sprite: press, x: pressX, y: pressY,
+      baseScale: pressScale,
     };
-    printer.setInteractive({ useHandCursor: true });
-    printer.on('pointerdown', () => this.handleInteractiveClick(printerEntry));
+    press.setInteractive({ useHandCursor: true });
+    press.on('pointerdown', () => this.handleInteractiveClick(printerEntry));
     this.interactives.push(printerEntry);
   }
 
@@ -8876,7 +9049,19 @@ class LibraryScene extends Phaser.Scene {
     // and in range (visual "you can interact here" cue), reset others.
     const near = this.nearestInRange();
     this.interactives.forEach((entry) => {
-      entry.sprite.setScale(entry.baseScale * (entry === near ? 1.08 : 1));
+      const pulseFactor = entry === near ? 1.08 : 1;
+      entry.sprite.setScale(entry.baseScale * pulseFactor);
+      // Opt-in only (stampBaseSize) — most stamps/checkmarks (shelf
+      // "completed" badges etc.) are meant to read as a static, settled
+      // indicator, not pulse every frame; the staircase's finish flag is
+      // the one case so far that's explicitly meant to grow WITH its
+      // sprite (see stairEntry's own comment).
+      if (entry.stampBaseSize && entry.stamp) {
+        entry.stamp.setDisplaySize(
+          entry.stampBaseSize.w * pulseFactor,
+          entry.stampBaseSize.h * pulseFactor
+        );
+      }
     });
   }
 }

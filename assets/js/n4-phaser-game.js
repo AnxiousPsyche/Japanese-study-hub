@@ -166,6 +166,14 @@ const ASSET_RECTS = {
   libTable: { x: 0, y: 32, w: 48, h: 32 },
   libChair: { x: 161, y: 9, w: 14, h: 22 },
   sofaCouch2: { x: 24, y: 167, w: 56, h: 25 },
+  // furniture03.png ('furniture03', already preloaded above) — the same
+  // reference-kiosk TV cabinet crop N5's own buildFurniture() uses,
+  // reused verbatim (already alpha-scan-verified there) for the Rest
+  // Area's decorative TV, per explicit "2 loveseats pointed to the tv
+  // again" request — this TV is decorative only here, not a 3rd
+  // interactive lesson kiosk (N4 already has its own 2 standalone
+  // stations, the Vocabulary Press and the Jukebox).
+  tvCabinet: { x: 191, y: 48, w: 33, h: 32 },
 };
 
 // Distinct accent palette for this floor (deeper wine/green/wood instead
@@ -3182,21 +3190,38 @@ class N4LibraryScene extends Phaser.Scene {
     const tableKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libTable, 'n4LibTableTex');
     const chairKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libChair, 'n4LibChairTex');
     const couchKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch2, 'n4SofaCouch2Tex');
+    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'n4TvCabinetTex');
     const furnitureScale = 1.3; // a bit bigger than native crop size, closer to shelfScale's visual weight
     const tableW = ASSET_RECTS.libTable.w * furnitureScale;
     const tableH = ASSET_RECTS.libTable.h * furnitureScale;
     const chairW = ASSET_RECTS.libChair.w * furnitureScale;
+    const chairH = ASSET_RECTS.libChair.h * furnitureScale;
     const couchW = ASSET_RECTS.sofaCouch2.w * furnitureScale;
     const couchH = ASSET_RECTS.sofaCouch2.h * furnitureScale;
+    const tvW = ASSET_RECTS.tvCabinet.w * furnitureScale;
+    const tvH = ASSET_RECTS.tvCabinet.h * furnitureScale;
 
-    // A reading table with one chair flanking each side, centered at (cx,cy).
-    const addTableCluster = (cx, cy) => {
+    // A reading table, centered at (cx,cy). Default: one chair flanking
+    // each side (Reading Nook / Rest Area). chairsBelow: true instead
+    // seats both chairs south of the table, side by side facing north
+    // toward it (Study Corner only, per explicit "the chair needs to be
+    // south of table in study corner" feedback — Reading Nook/Rest Area
+    // weren't called out, so they keep the flanking arrangement).
+    const addTableCluster = (cx, cy, { chairsBelow = false } = {}) => {
       this.add.image(cx, cy, tableKey).setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
       const chairGap = 6;
-      this.add.image(cx - tableW / 2 - chairW / 2 - chairGap, cy, chairKey)
-        .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
-      this.add.image(cx + tableW / 2 + chairW / 2 + chairGap, cy, chairKey)
-        .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+      if (chairsBelow) {
+        const chairY = cy + tableH / 2 + chairGap + chairH / 2;
+        this.add.image(cx - chairW / 2 - chairGap / 2, chairY, chairKey)
+          .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+        this.add.image(cx + chairW / 2 + chairGap / 2, chairY, chairKey)
+          .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+      } else {
+        this.add.image(cx - tableW / 2 - chairW / 2 - chairGap, cy, chairKey)
+          .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+        this.add.image(cx + tableW / 2 + chairW / 2 + chairGap, cy, chairKey)
+          .setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+      }
     };
     const addCouch = (cx, cy) => {
       this.add.image(cx, cy, couchKey).setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
@@ -3215,6 +3240,42 @@ class N4LibraryScene extends Phaser.Scene {
       layout();
     };
 
+    // A small "TV nook": a decorative TV (reusing N5's own tvCabinet crop
+    // — not a 3rd interactive lesson kiosk, N4 already has the
+    // Vocabulary Press + Jukebox as its 2 standalone stations), a woven
+    // accent rug directly below it, then 2 couches ("loveseats" per
+    // explicit request) sitting below the rug facing UP toward the TV —
+    // reuses sofaCouch2's own native "upward facing" pose as-is, same as
+    // every other sofaCouch2 placement in this project, rather than
+    // rotating a different asset (an earlier attempt to rotate this
+    // exact couch sprite via setAngle was explicitly rejected in N5's
+    // own polish pass, so this reuses the proven-safe unrotated pose
+    // instead of repeating that mistake here).
+    // topY: where the TV's own TOP EDGE starts (same "content starts here"
+    // reference the flanking single-row furniture uses, i.e. rowY + 10) —
+    // NOT a center point, since this group stacks 3 pieces tall (TV, rug,
+    // couches) and centering it on the same y flanking single-height
+    // furniture uses would push the TV up into the plaque label above.
+    // Returns the rug's own center Y so the caller can vertically align
+    // flanking furniture with this group's visual midpoint instead of
+    // guessing.
+    const addTvLoveseatGroup = (cx, topY) => {
+      const rugW = 70 * furnitureScale;
+      const rugH = 40 * furnitureScale;
+      const rugKey = `n4TvRugTex_${Math.round(cx)}_${Math.round(topY)}`;
+      drawWovenRug(this, rugKey, rugW, rugH, N4_RUG_PALETTE);
+      const rugGap = 10;
+      const tvY = topY + tvH / 2;
+      const rugY = tvY + tvH / 2 + rugGap + rugH / 2;
+      const couchGap = 6;
+      const couchY = rugY + rugH / 2 + couchGap + couchH / 2;
+      this.add.image(cx, tvY, tvKey).setOrigin(0.5, 0.5).setDepth(1).setScale(furnitureScale);
+      this.add.image(cx, rugY, rugKey).setOrigin(0.5, 0.5).setDepth(0);
+      addCouch(cx - couchW / 2 - couchGap / 2, couchY);
+      addCouch(cx + couchW / 2 + couchGap / 2, couchY);
+      return rugY;
+    };
+
     // 1. wing2RowY's right column — a table cluster and a couch, single
     // row only (was 2x2) so the nook reads as spacious, not re-cramming
     // the gap that was just opened up.
@@ -3225,24 +3286,35 @@ class N4LibraryScene extends Phaser.Scene {
       addCouch(rightMidX + 70, nookY - tableH / 2 + couchH / 2);
     });
 
-    // 2. Header-to-wing3 gap — couches on the outside, table clusters
-    // inside, one symmetric row spanning both columns.
+    // 2. Header-to-wing3 gap — ALL 4 slots are now table+2-chair clusters
+    // (was 2 couches on the outside + 2 table clusters inside) per
+    // explicit "table and 2 chairs facing the table... put 4 tables, 8
+    // chairs in there" request. chairsBelow: true seats both chairs south
+    // of each table (facing north toward it) instead of flanking left/
+    // right, per explicit "the chair needs to be south of table in study
+    // corner" follow-up — this nook only, Reading Nook/Rest Area still
+    // use the default flanking arrangement.
     addNookRow('Study Corner', 285, () => {
-      const y = 285 + Math.max(tableH, couchH) / 2 + 10;
-      addCouch(LAYOUT.leftColX[0] + LAYOUT.shelfW / 2, y);
-      addTableCluster(LAYOUT.leftColX[1] + LAYOUT.shelfW / 2 + 20, y);
-      addTableCluster(LAYOUT.rightColX[0] + LAYOUT.shelfW / 2 - 20, y);
-      addCouch(LAYOUT.rightColX[1] + LAYOUT.shelfW / 2, y);
+      const y = 285 + tableH / 2 + 10;
+      addTableCluster(LAYOUT.leftColX[0] + LAYOUT.shelfW / 2, y, { chairsBelow: true });
+      addTableCluster(LAYOUT.leftColX[1] + LAYOUT.shelfW / 2 + 20, y, { chairsBelow: true });
+      addTableCluster(LAYOUT.rightColX[0] + LAYOUT.shelfW / 2 - 20, y, { chairsBelow: true });
+      addTableCluster(LAYOUT.rightColX[1] + LAYOUT.shelfW / 2, y, { chairsBelow: true });
     });
 
-    // 3. wing4-to-entry (south) gap — table clusters on the outside,
-    // couches inside (mirrored variety from #2's arrangement).
+    // 3. wing4-to-entry (south) gap — table clusters kept on the
+    // outside; the 2 inner couches replaced with a TV+rug+2-loveseats
+    // group per explicit "2nd picture... change the chair and table
+    // positioning... i need 2 loveseats pointed to the tv again" request.
     addNookRow('Rest Area', 1560, () => {
-      const y = 1560 + Math.max(tableH, couchH) / 2 + 10;
-      addTableCluster(LAYOUT.leftColX[0] + LAYOUT.shelfW / 2, y);
-      addCouch(LAYOUT.leftColX[1] + LAYOUT.shelfW / 2 + 20, y);
-      addCouch(LAYOUT.rightColX[0] + LAYOUT.shelfW / 2 - 20, y);
-      addTableCluster(LAYOUT.rightColX[1] + LAYOUT.shelfW / 2, y);
+      const contentTopY = 1560 + 10; // same "content starts here" margin every other nook row uses
+      const rugCenterY = addTvLoveseatGroup(WORLD_W / 2, contentTopY);
+      // Flank at the TV group's own visual midpoint (its rug) rather than
+      // a flat single-row y — this group stacks 3 pieces tall, so
+      // matching the flanking tables to the OLD single-row y would put
+      // them noticeably higher than the group's actual center.
+      addTableCluster(LAYOUT.leftColX[0] + LAYOUT.shelfW / 2, rugCenterY);
+      addTableCluster(LAYOUT.rightColX[1] + LAYOUT.shelfW / 2, rugCenterY);
     });
   }
 
@@ -3306,35 +3378,40 @@ class N4LibraryScene extends Phaser.Scene {
     const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'n4BookPileTex');
     this.bookPileTexKey = bookKey; // reused by buildExamGate() (same crop, must not re-cropToTexture with a duplicate destKey)
 
-    // Each pile sits in the center aisle, on whichever side matches the
-    // shelf group it gates: review-1/review-3 gate the RIGHT-side start
-    // of their own wing band (shelf05, shelf13), so they sit left-center
-    // of the right shelves (gapRight); review-2/review-4 gate a LEFT-side
-    // start (shelf09, reading-01), so they sit center-right of the left
-    // shelves (gapLeft) -- matching the same left/right convention every
-    // shelf label already reads by. Positions follow this pass's reorder
-    // (shelf01-08 now lives at wing4RowY, shelf09-16 at wing1RowY,
-    // Reading Room at wing2RowY -- see createMezzanineShelfPositions()).
-    const gapLeft = LAYOUT.leftColX[1] + LAYOUT.shelfW;
-    const gapRight = LAYOUT.rightColX[0];
+    // Each pile is centered on the MIDPOINT between the 2 shelf columns
+    // of the 4-shelf group it actually reviews (BOOK_PILE_DATA's own
+    // `requires` list — Foundations/Nuance&Manners live in the left
+    // columns, Everyday Grammar/Refinement in the right), same centerX
+    // formula sectionSigns above already uses for its "Foundations"/
+    // "Everyday Grammar" text plaques. This replaces an earlier version
+    // that instead picked its side based on which shelf the pile UNLOCKS
+    // next (e.g. review-1 unlocks shelf05, on the right) rather than
+    // which shelves it reviews (shelf01-04, on the left) — that's why
+    // the pile used to sit off to one side instead of centered over its
+    // own group, per explicit "center it... not aligned to either shelf"
+    // feedback. Y positions are unchanged (already read as "above the
+    // top shelf row" per the reference screenshot; only the horizontal
+    // centering was wrong).
+    const leftMidX = (LAYOUT.leftColX[0] + LAYOUT.leftColX[1] + LAYOUT.shelfW) / 2;
+    const rightMidX = (LAYOUT.rightColX[0] + LAYOUT.rightColX[1] + LAYOUT.shelfW) / 2;
     const scale = 0.78; // was 0.7 -- "a pixel bigger" per explicit feedback
     const w = ASSET_RECTS.bookPileTall.w * scale;
     const h = ASSET_RECTS.bookPileTall.h * scale;
     const positions = {
-      'n4-review-1': { // gates n4-shelf-05 (right-side start) -- left-center of the right wing
-        x: gapRight - 16 - w,
+      'n4-review-1': { // reviews n4-shelf-01..04 ("Foundations", left columns)
+        x: leftMidX - w / 2,
         y: LAYOUT.wing4RowY[0]
       },
-      'n4-review-2': { // gates n4-shelf-09 (left-side start) -- center-right of the left wing
-        x: gapLeft + 16,
+      'n4-review-2': { // reviews n4-shelf-05..08 ("Everyday Grammar", right columns)
+        x: rightMidX - w / 2,
         y: LAYOUT.reviewGateSouthY
       },
-      'n4-review-3': { // gates n4-shelf-13 (right-side start) -- left-center of the right wing
-        x: gapRight - 16 - w,
+      'n4-review-3': { // reviews n4-shelf-09..12 ("Nuance & Manners", left columns)
+        x: leftMidX - w / 2,
         y: LAYOUT.wing1RowY[0]
       },
-      'n4-review-4': { // gates n4-reading-01 (left-side start) -- center-right of the left wing
-        x: gapLeft + 16,
+      'n4-review-4': { // reviews n4-shelf-13..16 ("Refinement", right columns)
+        x: rightMidX - w / 2,
         y: LAYOUT.review1Y
       },
     };
@@ -3343,11 +3420,14 @@ class N4LibraryScene extends Phaser.Scene {
       const pos = positions[pile.id];
       const sprite = this.add.image(pos.x, pos.y, bookKey).setOrigin(0, 0)
         .setDisplaySize(w, h).setDepth(1);
-      const glow = this.add.text(pos.x + w - 8, pos.y - 6, '⭐', {
+      // Centered horizontally on the pile (was offset toward the right
+      // edge) so the badge sits directly on top of the stack, per
+      // explicit "checkmark badge on top of the stack" feedback.
+      const glow = this.add.text(pos.x + w / 2, pos.y - 6, '⭐', {
           fontSize: '18px'
         })
         .setOrigin(0.5).setDepth(4).setVisible(false);
-      const stamp = this.add.text(pos.x + w - 8, pos.y - 6, '✅', {
+      const stamp = this.add.text(pos.x + w / 2, pos.y - 6, '✅', {
           fontSize: '18px'
         })
         .setOrigin(0.5).setDepth(4).setVisible(false);

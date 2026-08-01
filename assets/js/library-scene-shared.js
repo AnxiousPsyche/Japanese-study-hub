@@ -747,6 +747,20 @@ const LibrarySceneEngine = {
   startLesson(entry, resumeIndex) {
     this.closeRetroMenu();
     this.panelOpen = true;
+    // Phaser's keyboard plugin captures WASD/arrow keys (this.wasd/
+    // this.cursors above) by calling preventDefault() on their keydown
+    // events globally, regardless of DOM focus — panelOpen alone only
+    // stops update() from reading those keys for player movement, it
+    // doesn't stop Phaser from swallowing the keystroke before it ever
+    // reaches a focused DOM <input> inside the LessonBox overlay (e.g.
+    // quiz-fill's romaji blanks). That silently broke typing any of
+    // w/a/s/d — which meant almost every romaji answer, since nearly all
+    // of them contain an "a". Disabling the whole keyboard manager while
+    // a lesson is open (re-enabled in onComplete/onClose below) lets
+    // normal typing through; LessonBox's own Enter/Escape/arrow-key page
+    // navigation is wired via a separate plain document keydown listener
+    // in lesson-box.js, not Phaser's input system, so it's unaffected.
+    this.input.keyboard.enabled = false;
     let pages = appendGreetingSummary(this.lessonContent[entry.id], entry.title); // was module-level LESSON_CONTENT
     pages = resolveConversationTurns(pages, this.catColorId);
     pages = resolveDynamicDiagrams(pages, this.catColorId);
@@ -773,9 +787,11 @@ const LibrarySceneEngine = {
         saveProgress(this.progress);
         this.refreshAllStates();
         this.panelOpen = false;
+        this.input.keyboard.enabled = true;
       },
       onClose: (closedIndex, totalPages) => {
         this.panelOpen = false;
+        this.input.keyboard.enabled = true;
         if (typeof closedIndex === 'number' && totalPages && closedIndex < totalPages - 1) {
           this.lessonPage[entry.id] = closedIndex;
         } else {

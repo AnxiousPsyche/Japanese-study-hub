@@ -787,14 +787,18 @@
       els.printLink.hidden = !(state.printLinks.length && state.index === 0);
     }
     // Sources footer -- small print citing where the grammar/vocab content
-    // was cross-checked against, shown only on the LAST page of an N4
-    // lesson (the conclusion, not every page) so it doesn't compete with
-    // in-progress content. N4-only for now (state.theme is only ever set
-    // by N4's startLesson() -- see the theme comment above).
+    // was cross-checked against, shown only on the LAST page of a lesson
+    // (the conclusion, not every page) so it doesn't compete with
+    // in-progress content. Was N4-only ("state.theme is only ever set by
+    // N4's startLesson()") -- now shown for every floor per explicit
+    // request ("same with N4, put your references in the bottom of the
+    // lessons in N5 as well"). The citation list itself (Bunpro/Tae Kim's/
+    // Genki-TRY!) is generic across JLPT levels, not N4-specific content,
+    // so the same text is accurate for N5's own (more basic) grammar too.
     if (els.sourcesFooter) {
       const isLastPage = state.index === state.pages.length - 1;
-      els.sourcesFooter.hidden = !(state.theme === 'n4' && isLastPage);
-      if (state.theme === 'n4' && isLastPage) {
+      els.sourcesFooter.hidden = !isLastPage;
+      if (isLastPage) {
         els.sourcesFooter.innerHTML = 'Grammar cross-checked against '
           + '<a href="https://bunpro.jp/grammar_points" target="_blank" rel="noopener">Bunpro</a>, '
           + '<a href="https://guidetojapanese.org/learn/" target="_blank" rel="noopener">Tae Kim\'s Guide</a>, '
