@@ -24,6 +24,17 @@
 //                           undefined
 //   this.finalGateProceedLabel, this.onFinalGatePass - button label +
 //                           callback for the completed end-of-floor gate
+//   this.examContent      - optional: { [entryId]: pages[] } map of REAL
+//                           graded exams (LessonBox 'exam-question'/
+//                           'exam-score' pages — see startExamAttempt()
+//                           below), keyed by exam-gate entry id. An entry
+//                           id with no key here (or no this.examContent at
+//                           all) falls back to openQuizAttemptMenu()'s old
+//                           Pass(test)/Fail(test) stub buttons — added so
+//                           N5's 'final-quiz' staircase gate can get a
+//                           real 20-question exam without forcing N4's
+//                           'n2-exam-gate' (which has no exam content yet)
+//                           to suddenly need one too.
 
 const TRIGGER_RANGE = 80; // px — click-in-range / E-to-interact radius, copied verbatim from n5-phaser-game.js:7245
 const QUIZ_MAX_ATTEMPTS = 3;
@@ -663,6 +674,11 @@ const LibrarySceneEngine = {
     this.interactKey = this.input.keyboard.addKey('E');
     this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    // Hold to run — see each floor's own update()/updatePlayerAnimation()
+    // for the speed boost + run-cycle animation swap this drives. Added
+    // per explicit "speed up the time to view the library... if the cat
+    // can run as well as walk" request.
+    this.runKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     const tryInteract = () => {
       if (this.retroMenu) { this.selectRetroMenuOption(); return; }
       if (this.panelOpen) return;
@@ -700,7 +716,24 @@ const LibrarySceneEngine = {
     return closest;
   },
   openInteraction(entry) {
-    if (entry.kind === 'npc') { this.startLesson(entry); return; }
+    if (entry.kind === 'map') {
+      this.openLibraryMap();
+      return;
+    }
+    if (entry.kind === 'npc') {
+      // Every current 'npc' entry (sensei-guide, printer-station, the two
+      // kana TVs, n4-jukebox, n4-vocab-press) has a matching LESSON_CONTENT
+      // entry, but nothing enforced that here — unlike shelves/piles, which
+      // go through openRetroMenu()'s hasContent-gated fallback, this branch
+      // called startLesson() unconditionally. A future npc entry added
+      // without content would reach startLesson(), which would fail (now
+      // caught by its own try/catch, but silently — console-only, nothing
+      // visible to the player). Guard the same way shelves/piles are
+      // guarded instead of assuming content always exists.
+      if (!this.lessonContent[entry.id]) { showToast('Nothing here yet…'); return; }
+      this.startLesson(entry);
+      return;
+    }
     const state = entry.kind === 'shelf'
       ? getState(entry.id, entry.prereq, this.progress)
       : (this.progress[entry.id] ? 'completed'
@@ -761,45 +794,58 @@ const LibrarySceneEngine = {
     // navigation is wired via a separate plain document keydown listener
     // in lesson-box.js, not Phaser's input system, so it's unaffected.
     this.input.keyboard.enabled = false;
-    let pages = appendGreetingSummary(this.lessonContent[entry.id], entry.title); // was module-level LESSON_CONTENT
-    pages = resolveConversationTurns(pages, this.catColorId);
-    pages = resolveDynamicDiagrams(pages, this.catColorId);
-    const isSenseiGuide = entry.kind === 'npc';
-    const catImagePath = isSenseiGuide ? this.senseiPortraitPaths.idle : this.catColors[this.catColorId].path;
-    const talkImagePath = isSenseiGuide ? this.senseiPortraitPaths.talk : this.talkColorPaths[this.catColorId];
-    window.LessonBox.open(pages, {
-      speaker: 'Neko-sensei',
-      catImagePath,
-      talkImagePath,
-      // Per-scene instance property (set in N4LibraryScene.create(), left
-      // unset on N5's LibraryScene) so LessonBox can recolor its chrome to
-      // match N4_PALETTE (n4-phaser-game.js) without N5's navy/indigo
-      // theme ever changing — same "instance property read generically by
-      // shared code" pattern as catColors/senseiPortraitPaths above, not a
-      // prototype patch, since LessonBox.open() just no-ops on an
-      // undefined theme.
-      theme: this.lessonBoxTheme,
-      startIndex: resumeIndex,
-      printLinks: entry.id === this.printerStationId ? this.allPrintLinks : this.printLinksByShelf[entry.id], // was 'printer-station' / PRINT_LINKS_BY_SHELF / ALL_PRINT_LINKS
-      printIconPath: '../../assets/images/lesson/printer-image-Original.png',
-      onComplete: () => {
-        this.progress[entry.id] = true;
-        saveProgress(this.progress);
-        this.refreshAllStates();
-        this.panelOpen = false;
-        this.input.keyboard.enabled = true;
-      },
-      onClose: (closedIndex, totalPages) => {
-        this.panelOpen = false;
-        this.input.keyboard.enabled = true;
-        if (typeof closedIndex === 'number' && totalPages && closedIndex < totalPages - 1) {
-          this.lessonPage[entry.id] = closedIndex;
-        } else {
-          delete this.lessonPage[entry.id];
-        }
-        saveLessonPage(this.lessonPage);
-      },
-    });
+    // Everything below (page preprocessing + LessonBox.open()) is wrapped
+    // because any throw in here — malformed LESSON_CONTENT, a resolver bug,
+    // LessonBox itself erroring on a bad page shape — would otherwise leave
+    // panelOpen stuck true and the keyboard permanently disabled with no
+    // dialogue box open to recover from: the player couldn't move OR type.
+    // Restore both on failure so a content bug degrades to "lesson didn't
+    // open, logged to console" instead of a soft-locked game.
+    try {
+      let pages = appendGreetingSummary(this.lessonContent[entry.id], entry.title); // was module-level LESSON_CONTENT
+      pages = resolveConversationTurns(pages, this.catColorId);
+      pages = resolveDynamicDiagrams(pages, this.catColorId);
+      const isSenseiGuide = entry.kind === 'npc';
+      const catImagePath = isSenseiGuide ? this.senseiPortraitPaths.idle : this.catColors[this.catColorId].path;
+      const talkImagePath = isSenseiGuide ? this.senseiPortraitPaths.talk : this.talkColorPaths[this.catColorId];
+      window.LessonBox.open(pages, {
+        speaker: 'Neko-sensei',
+        catImagePath,
+        talkImagePath,
+        // Per-scene instance property (set in N4LibraryScene.create(), left
+        // unset on N5's LibraryScene) so LessonBox can recolor its chrome to
+        // match N4_PALETTE (n4-phaser-game.js) without N5's navy/indigo
+        // theme ever changing — same "instance property read generically by
+        // shared code" pattern as catColors/senseiPortraitPaths above, not a
+        // prototype patch, since LessonBox.open() just no-ops on an
+        // undefined theme.
+        theme: this.lessonBoxTheme,
+        startIndex: resumeIndex,
+        printLinks: entry.id === this.printerStationId ? this.allPrintLinks : this.printLinksByShelf[entry.id], // was 'printer-station' / PRINT_LINKS_BY_SHELF / ALL_PRINT_LINKS
+        printIconPath: '../../assets/images/lesson/printer-image-Original.png',
+        onComplete: () => {
+          this.progress[entry.id] = true;
+          saveProgress(this.progress);
+          this.refreshAllStates();
+          this.panelOpen = false;
+          this.input.keyboard.enabled = true;
+        },
+        onClose: (closedIndex, totalPages) => {
+          this.panelOpen = false;
+          this.input.keyboard.enabled = true;
+          if (typeof closedIndex === 'number' && totalPages && closedIndex < totalPages - 1) {
+            this.lessonPage[entry.id] = closedIndex;
+          } else {
+            delete this.lessonPage[entry.id];
+          }
+          saveLessonPage(this.lessonPage);
+        },
+      });
+    } catch (err) {
+      this.panelOpen = false;
+      this.input.keyboard.enabled = true;
+      console.error(`startLesson failed for entry "${entry && entry.id}":`, err);
+    }
   },
   completeInteraction(entry) {
     this.progress[entry.id] = true;
@@ -815,7 +861,7 @@ const LibrarySceneEngine = {
   },
   refreshAllStates() {
     this.interactives.forEach((entry) => {
-      if (entry.kind === 'npc') return;
+      if (entry.kind === 'npc' || entry.kind === 'map') return;
       const state = entry.kind === 'shelf'
         ? getState(entry.id, entry.prereq, this.progress)
         : (this.progress[entry.id] ? 'completed'
@@ -930,12 +976,64 @@ const LibrarySceneEngine = {
   },
   openQuizAttemptMenu(entry) {
     const { attemptsLeft } = getQuizGateStatus(entry.quizGateKey || this.quizGateKey);
-    const options = [
-      { label: 'Pass (test)', onSelect: () => this.resolveQuizAttempt(entry, true) },
-      { label: 'Fail (test)', onSelect: () => this.resolveQuizAttempt(entry, false) },
-      { label: 'Back', onSelect: () => this.openQuizGateMenu(entry, 'available') },
-    ];
+    // Real exam if this floor defined one for this entry (this.examContent
+    // — see the doc comment at the top of this file), otherwise fall back
+    // to the old manual test-button stub. Keeps N4's n2-exam-gate (no
+    // exam content yet) working exactly as before while N5's 'final-quiz'
+    // staircase gate gets the real 20-question exam.
+    const hasRealExam = !!(this.examContent && this.examContent[entry.id]);
+    const options = hasRealExam
+      ? [
+        { label: 'Take the exam', onSelect: () => this.startExamAttempt(entry) },
+        { label: 'Back', onSelect: () => this.openQuizGateMenu(entry, 'available') },
+      ]
+      : [
+        { label: 'Pass (test)', onSelect: () => this.resolveQuizAttempt(entry, true) },
+        { label: 'Fail (test)', onSelect: () => this.resolveQuizAttempt(entry, false) },
+        { label: 'Back', onSelect: () => this.openQuizGateMenu(entry, 'available') },
+      ];
     this.buildRetroMenu(`${entry.title} (${attemptsLeft} left)`, options);
+  },
+  // Launches a real, graded exam (LessonBox 'exam-question'/'exam-score'
+  // pages — see lesson-box.js) for entries that have one registered in
+  // this.examContent, instead of the manual Pass/Fail test buttons.
+  // Mirrors startLesson()'s own try/catch reasoning exactly (a throw here
+  // would otherwise leave panelOpen/keyboard.enabled stuck): restore both
+  // on failure and log instead of soft-locking the game.
+  startExamAttempt(entry) {
+    const pages = this.examContent[entry.id];
+    this.closeRetroMenu();
+    this.panelOpen = true;
+    this.input.keyboard.enabled = false;
+    try {
+      window.LessonBox.open(pages, {
+        speaker: 'Neko-sensei',
+        catImagePath: this.catColors[this.catColorId].path,
+        talkImagePath: this.talkColorPaths[this.catColorId],
+        theme: this.lessonBoxTheme,
+        onComplete: (examResult) => {
+          this.panelOpen = false;
+          this.input.keyboard.enabled = true;
+          const total = (examResult && examResult.total) || 0;
+          const correct = (examResult && examResult.correct) || 0;
+          const pct = total > 0 ? correct / total : 0;
+          const passed = pct >= (entry.examPassThreshold != null ? entry.examPassThreshold : 0.7);
+          this.resolveQuizAttempt(entry, passed);
+        },
+        onClose: () => {
+          // Closed mid-exam (Escape) — no attempt consumed, no progress
+          // change, same "just re-open later from the attempt menu"
+          // behavior the old Pass/Fail test-button menu had when backed
+          // out of via Exit.
+          this.panelOpen = false;
+          this.input.keyboard.enabled = true;
+        },
+      });
+    } catch (err) {
+      this.panelOpen = false;
+      this.input.keyboard.enabled = true;
+      console.error(`startExamAttempt failed for entry "${entry && entry.id}":`, err);
+    }
   },
   resolveQuizAttempt(entry, passed) {
     if (passed) {
@@ -1036,6 +1134,46 @@ function buildThresholdVeil(scene, config) {
   return shapes;
 }
 
+// Builds the paginated LessonBox page array for a floor's "Kanji Easel"
+// interactive (see buildKanjiEasel() in each floor's own phaser-game.js,
+// and the ASSET_RECTS.kanjiEasel* wiring near each file's preload()) —
+// an always-available (kind: 'npc') reference station, not a gated
+// lesson, that shows every kanji-bearing vocabulary word taught on that
+// floor as a lookup table. Reused unchanged across N5/N4/N3 so all three
+// floors' easels behave identically; only the word list + floorLabel +
+// optional caveat note differ per floor.
+// config: { floorLabel: 'N5', words: [{kana, reading, romaji, meaning}],
+//   note?: string — an extra caveat sentence for the intro page (used by
+//   N3 to flag its word list is still a placeholder copy of N4's until
+//   N3 gets real grammar content), chunkSize?: number (default 14) }
+function buildKanjiEaselPages(config) {
+  const { floorLabel, words } = config;
+  const chunkSize = config.chunkSize || 14;
+  const totalPages = Math.ceil(words.length / chunkSize);
+  const pages = [
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Kanji Easel',
+      bigIdea: `Every kanji word taught on the ${floorLabel} floor, collected in one place.`,
+      explain: [
+        'Flip through the pages below any time you want to double-check a reading or meaning — this board is just a lookup, not a lesson, so there\'s nothing to complete here.',
+        ...(config.note ? [config.note] : []),
+      ],
+    },
+  ];
+  for (let i = 0; i < words.length; i += chunkSize) {
+    const pageNum = Math.floor(i / chunkSize) + 1;
+    pages.push({
+      type: 'summary',
+      title: `Kanji Reference (${pageNum}/${totalPages})`,
+      headers: ['Word', 'Romaji', 'Meaning'],
+      rows: words.slice(i, i + chunkSize),
+    });
+  }
+  return pages;
+}
+
+window.buildKanjiEaselPages = buildKanjiEaselPages;
 window.buildThresholdVeil = buildThresholdVeil;
 window.cropJukeboxTexture = cropJukeboxTexture;
 window.LibrarySceneEngine = LibrarySceneEngine;

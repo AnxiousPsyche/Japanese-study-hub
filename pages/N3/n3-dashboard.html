@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- =========================================
+         META
+    ========================================== -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="JP Library OS - JLPT N3 Journey">
+
+    <title>JLPT N3 Journey</title>
+
+    <!-- =========================================
+         GOOGLE FONTS
+    ========================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&display=block"
+          rel="stylesheet">
+
+    <!-- DotGothic16: a Japanese pixel/dot-matrix font, used as a fallback
+         in the game's "Press Start 2P" text stacks so Japanese characters
+         in lesson titles (e.g. "か", "ましょう") render in a matching
+         retro-pixel style instead of the browser's default font. -->
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block"
+          rel="stylesheet">
+
+    <!-- M PLUS 1 Code: Japanese text font for the DirectionMapScene road
+         map (Phaser Canvas text). Requested at a single fixed weight
+         (wght@400, not a range) so Google serves a STATIC instance, not
+         the variable font — Canvas 2D's ctx.fillText() does not apply
+         font-variation-settings the way DOM layout does, so a variable
+         font's un-varied default instance can render individual glyphs
+         wrong in canvas even though the exact same font renders correctly
+         in normal DOM text (confirmed live: this is what broke Datatype
+         for this scene's buttons — 'm' rendered as a different glyph in
+         canvas only, never in DOM, at any size). -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400&display=block"
+          rel="stylesheet">
+
+    <!-- VT323 (LessonBox running text) is no longer loaded from Google
+         Fonts here — it's self-hosted instead (assets/fonts/VT323-
+         Regular.woff2, @font-face declared in lesson-box.css). Depending
+         on the Google Fonts request succeeding meant lesson body text
+         sometimes silently fell back to a completely different, plainer
+         font when that request was slow/blocked — self-hosting removes
+         the dependency instead of just tuning the loading timing. -->
+
+    <!-- =========================================
+         BOOTSTRAP
+    ========================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- =========================================
+         BOOTSTRAP ICONS
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- =========================================
+         CSS
+    ========================================== -->
+
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/components.css">
+    <link rel="stylesheet" href="../../assets/css/animations.css">
+    <link rel="stylesheet" href="../../assets/css/responsive.css">
+
+    <!-- Dashboard CSS (shared with N5/N4 — purely structural/HUD styling,
+         nothing floor-specific in it; see n5-dashboard.css) -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/n5-dashboard.css">
+
+    <!-- Archive Vault mezzanine shell (deep teal + brass) — N3's own
+         copy of n4-mezzanine.css's #mapFrame styling, recolored to match
+         this floor's palette instead of N4's walnut/gold. -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/n3-mezzanine.css">
+
+    <!-- Lesson dialogue box (RPG-style, DOM overlay on the Phaser canvas) -->
+
+    <link rel="stylesheet"
+          href="../../assets/css/lesson-box.css">
+
+</head>
+
+<body>
+
+<!-- =========================================
+     RPG HUD
+========================================== -->
+
+<header id="gameHUD">
+
+    <!-- Left -->
+
+    <div class="hud-left">
+
+        <button
+            class="hud-btn"
+            id="backDesktop">
+
+            <i class="bi bi-house-door-fill"></i>
+
+            Desktop
+
+        </button>
+
+        <button class="hud-btn">
+
+            🏠 Home
+
+        </button>
+
+        <button class="hud-btn">
+
+            🗺 Journey
+
+        </button>
+
+        <button class="hud-btn">
+
+            📚 Lessons
+
+        </button>
+
+    </div>
+
+    <!-- Center -->
+
+    <div class="hud-center">
+
+        <img
+            src="../../assets/images/logo/JPLnewlogo.png"
+            alt="JP Library"
+            class="hud-logo">
+
+        <div class="hud-player">
+
+            <img
+                src="../../assets/images/avatars/smeagol.png"
+                id="playerAvatar"
+                alt="Player">
+
+            <div>
+
+                <h3 id="playerDisplayName">
+
+                    Explorer
+
+                </h3>
+
+                <span id="playerRank">
+
+                    Grammar Adventurer
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Right -->
+
+    <div class="hud-right">
+
+        <div class="hud-item">
+
+            ⭐
+
+            <span id="playerXP">
+
+                0 XP
+
+            </span>
+
+        </div>
+
+        <div class="hud-item">
+
+            ❤️
+
+            <span id="playerLives">
+
+                5
+
+            </span>
+
+        </div>
+
+        <div class="hud-item">
+
+            💰
+
+            <span id="playerCoins">
+
+                0
+
+            </span>
+
+        </div>
+
+        <button
+            id="changeCharBtn"
+            class="hud-btn">
+
+            🐱 Change
+
+        </button>
+
+        <button
+            id="musicButton"
+            class="hud-btn">
+
+            <i class="bi bi-volume-up-fill"></i>
+
+        </button>
+
+    </div>
+
+</header>
+
+<!-- =========================================
+     JOURNEY MAP
+========================================== -->
+
+<main id="journeyMap">
+
+    <div id="mapFrame">
+
+        <div id="phaserGame"></div>
+
+        <div id="lessonBoxOverlay" class="lesson-box-overlay" hidden></div>
+
+    </div>
+
+</main>
+
+<!-- =========================================
+     FOOTER
+========================================== -->
+
+<footer id="dashboardFooter">
+
+    <div class="footer-left">
+
+        🌸 JP Library OS • JLPT N3 Journey
+
+    </div>
+
+    <div class="footer-center">
+
+        Continue your adventure one lesson at a time.
+
+    </div>
+
+    <div class="footer-right">
+
+        Version 1.0
+
+    </div>
+
+</footer>
+
+<!-- =========================================
+     TELEPORT EFFECT
+========================================== -->
+
+<div id="teleport-overlay">
+
+    <div class="teleport-beam"></div>
+
+    <div class="teleport-flash"></div>
+
+</div>
+
+<!-- =========================================
+     ACHIEVEMENT NOTIFICATIONS
+========================================== -->
+
+<div id="achievement-container"></div>
+
+<!-- =========================================
+     SAKURA PARTICLES
+========================================== -->
+
+<div id="sakura-container"></div>
+
+<!-- =========================================
+     BACKGROUND MUSIC
+========================================== -->
+
+<audio
+    id="bgMusic"
+    loop>
+
+    <source
+        src="../../assets/sounds/Nebulite - Kyoto (freetouse.com).mp3"
+        type="audio/mpeg">
+
+</audio>
+
+<!-- =========================================
+     TELEPORT SOUND
+========================================== -->
+
+<audio
+    id="teleportSound">
+
+    <source
+        src="../../assets/sounds/teleportSound.mp3"
+        type="audio/mpeg">
+
+</audio>
+
+<!-- =========================================
+     JAVASCRIPT
+========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core -->
+
+<script src="../../assets/js/player.js"></script>
+
+<script src="../../assets/js/sakura.js"></script>
+
+<script src="../../assets/js/teleport.js"></script>
+
+<script src="../../assets/js/music-player.js"></script>
+
+<!-- Dashboard -->
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+
+<script src="../../assets/js/lesson-box.js"></script>
+
+<script src="../../assets/js/library-scene-shared.js"></script>
+<script src="../../assets/js/n3-phaser-game.js"></script>
+
+</body>
+
+</html>

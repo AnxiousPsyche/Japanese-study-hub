@@ -50,6 +50,43 @@
   src: url("../fonts/Datatype-Regular.woff2") format("woff2");
 }
 
+/* Self-hosted Space Mono (latin subset, same self-hosting rationale as
+   VT323/Space Grotesk/Datatype above) — used ONLY for shelf plaque titles
+   (createBookshelfLabel in n4-phaser-game.js/n5-phaser-game.js), not
+   anywhere else in LessonBox. Two static weights + their italics (Google
+   Fonts ships Space Mono as static files, not a variable font, so each
+   weight/style needs its own @font-face + file, unlike Space Grotesk's
+   single variable file). No Japanese glyphs — DotGothic16 stays the
+   fallback for any plaque title mixing Japanese characters into the text. */
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/SpaceMono-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Mono";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/SpaceMono-Italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Mono";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/SpaceMono-BoldItalic.woff2") format("woff2");
+}
+
 /* Reusable retro RPG-style lesson dialogue box — styled after classic
    16-bit JRPG textboxes (SNES-era): a stepped-pixel double border
    (lavender outer line, white inner line) wrapping a navy/indigo
@@ -70,13 +107,21 @@
   --jr-step-a-sm: 6px;
   --jr-step-b-sm: 3px;
 
-  --jr-border-outer: #a89cd8;
-  --jr-border-inner: #f4f2ff;
-  --jr-bg-top: #4b4aa0;
-  --jr-bg-bottom: #201d54;
-  --jr-portrait-bg: #2b2864;
-  --jr-text: #f5f4ff;
-  --jr-text-dim: #b9b3e6;
+  /* N5's own box chrome — was navy/indigo/lavender (a leftover generic
+     JRPG palette that never actually matched this floor), per explicit
+     "the blue doesn't match the N5 floor palette" feedback. Now reuses
+     N5's real in-world colors verbatim: #8a6a3a/#F0C674/#B08D57 are the
+     exact border/gold-text/tan-text hexes CatSelectScene already paints
+     onto its retro panel (n5-phaser-game.js), and #2A2320/#1a1410 are the
+     library's own world/panel background browns — so the lesson dialogue
+     now reads as the same room, not a different app pasted on top. */
+  --jr-border-outer: #8a6a3a;
+  --jr-border-inner: #e8d4a8;
+  --jr-bg-top: #3a2418;
+  --jr-bg-bottom: #1a1410;
+  --jr-portrait-bg: #2a1f14;
+  --jr-text: #f5e9d0;
+  --jr-text-dim: #c9a66b;
 
   --lb-role-noun-bg: #6fb3e6;
   --lb-role-noun-fg: #0b2438;
@@ -125,6 +170,26 @@
   --jr-portrait-bg: #3a2415;
   --jr-text: #f6ead2;
   --jr-text-dim: #cba86a;
+}
+
+/* N3 theme — "Archive Vault": deep teal + brass, recoloring the box
+   chrome to match this floor's sage-wall/herringbone-floor/teal-shelf
+   palette (see n3-phaser-game.js's ASSET_RECTS.archiveVaultWall/Floor
+   and the recolored shelf sprites) instead of N4's wine/gold above.
+   Same mechanism as .lesson-box--theme-n4: toggled via
+   this.lessonBoxTheme = 'n3' in n3-phaser-game.js, read by
+   library-scene-shared.js's startLesson()/startExamAttempt(). --lb-role-*
+   word-tile colors are deliberately left untouched here too — they
+   encode grammar meaning, not floor identity, same reasoning as N4's own
+   theme block. */
+.lesson-box.lesson-box--theme-n3 {
+  --jr-border-outer: #c9a24b;
+  --jr-border-inner: #eadfc0;
+  --jr-bg-top: #1d4a43;
+  --jr-bg-bottom: #0d2b28;
+  --jr-portrait-bg: #12332f;
+  --jr-text: #e8dcc8;
+  --jr-text-dim: #7fae9e;
 }
 
 /* Shared stepped-pixel-corner clip path, parameterized by --jr-step-a/b
@@ -183,10 +248,10 @@
    to be roomy. */
 .lesson-box {
   pointer-events: auto;
-  width: 92%;
-  height: 88%;
-  max-width: 900px;
-  max-height: 620px;
+  width: 97%;
+  height: 94%;
+  max-width: 1220px;
+  max-height: 840px;
   display: flex;
   cursor: pointer;
   user-select: none;
@@ -308,7 +373,7 @@
 
 .lesson-box__speaker {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--lb-role-particle-bg);
   margin: 0 0 14px;
   letter-spacing: 0.02em;
@@ -317,8 +382,17 @@
 .lesson-box__content {
   overflow: hidden; /* new block-formatting context so text wraps around the float cleanly */
   color: var(--jr-text);
-  line-height: 1.8;
-  font-size: 19px;
+  /* Was centered vertically via .lesson-box__panel's flex+margin:auto
+     trick to "use the empty space" on short pages — reverted per explicit
+     "bring back the position of the neko sensei, north left" feedback:
+     the portrait floats inside THIS element, so centering the whole block
+     dragged the portrait down off its fixed top-left spot along with it.
+     Portrait now stays pinned at the panel's top edge (natural block
+     flow) on every page; the "use the empty space" ask is handled here
+     instead by giving the text itself more size/breathing room. */
+  line-height: 2;
+  font-size: 29px;
+  width: 100%;
 }
 
 .lesson-box__continue {
@@ -326,7 +400,7 @@
   right: 20px;
   bottom: 16px;
   color: var(--jr-text);
-  font-size: 20px;
+  font-size: 26px;
   animation: lesson-box-blink 900ms steps(1) infinite;
 }
 
@@ -337,7 +411,7 @@
   position: absolute;
   top: 10px;
   right: 20px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text);
   opacity: 0.55;
   letter-spacing: 0.02em;
@@ -385,7 +459,7 @@
 .lesson-box__print-link-title {
   width: 100%;
   text-align: center;
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   margin-bottom: 2px;
   display: flex;
@@ -408,7 +482,7 @@
 span.lesson-box__print-icon {
   width: auto;
   height: auto;
-  font-size: 16px;
+  font-size: 21px;
 }
 
 /* Each reference sheet as its own small button-card, not a bare link --
@@ -417,7 +491,7 @@ span.lesson-box__print-icon {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text);
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--lb-role-particle-bg);
@@ -429,7 +503,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__print-chip::before {
   content: '📄';
-  font-size: 13px;
+  font-size: 17px;
 }
 
 .lesson-box__print-chip:hover {
@@ -449,7 +523,7 @@ span.lesson-box__print-icon {
   top: 32px;
   right: 20px;
   max-width: 42%;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.4;
   color: var(--jr-text-dim);
   opacity: 0.75;
@@ -475,14 +549,14 @@ span.lesson-box__print-icon {
 
 .lesson-box__greeting-kana {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 38px;
+  font-size: 58px;
   color: var(--jr-text);
   line-height: 1.4;
   margin-bottom: 14px;
 }
 
 .lesson-box__greeting-romaji {
-  font-size: 16px;
+  font-size: 21px;
   color: var(--jr-text-dim);
   margin-bottom: 4px;
 }
@@ -493,7 +567,7 @@ span.lesson-box__print-icon {
    data itself mark the naturally-emphasized beat, since Japanese pitch
    accent doesn't map cleanly onto a single CSS treatment. */
 .lesson-box__greeting-pronunciation {
-  font-size: 13px;
+  font-size: 17px;
   font-style: italic;
   color: var(--jr-text-dim);
   opacity: 0.8;
@@ -501,19 +575,19 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__greeting-meaning {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--jr-text-dim);
   margin-bottom: 18px;
 }
 
 .lesson-box__greeting-usage-label {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 6px;
 }
 
 .lesson-box__greeting-usage {
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--jr-text);
   background: rgba(0, 0, 0, 0.18);
@@ -591,7 +665,7 @@ span.lesson-box__print-icon {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
 }
 
@@ -602,6 +676,27 @@ span.lesson-box__print-icon {
   flex-shrink: 0;
 }
 
+/* Grammar-abbreviation legend (N/V/Adj) — auto-shown under any
+   page.pattern line that uses one of these placeholder letters (see
+   patternUsesAbbr() in lesson-box.js). Small and understated on
+   purpose — it's a footnote clarifying notation, not new lesson
+   content, so it shouldn't compete visually with the pattern chips
+   directly above it. */
+.lesson-box__abbr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--jr-text-dim);
+  margin-top: 4px;
+  margin-bottom: 10px;
+  clear: both;
+}
+
+.lesson-box__abbr-legend-item b {
+  color: var(--jr-text);
+}
+
 /* -- type: sentence --------------------------------------------------------- */
 /* Inline/underlined word treatment (not filled tiles) — explicit
    preference after comparing both against a filled-chip alternative:
@@ -610,7 +705,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__sentence-label {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 13px;
+  font-size: 17px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 14px;
   letter-spacing: 0.02em;
@@ -620,7 +715,7 @@ span.lesson-box__print-icon {
 .lesson-box__new-word-flag {
   display: inline-block;
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
   padding: 3px 8px;
@@ -651,7 +746,7 @@ span.lesson-box__print-icon {
    .lesson-box__word-tile-gloss below. */
 .lesson-box__word-tile-text {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 21px;
+  font-size: 32px;
   padding-bottom: 3px;
   border-bottom: 3px solid;
   letter-spacing: 0.02em;
@@ -685,7 +780,7 @@ span.lesson-box__print-icon {
   left: 50%;
   transform: translateX(-50%);
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 8px;
+  font-size: 10px;
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
   padding: 1px 4px;
@@ -693,7 +788,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__word-tile-gloss {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   text-align: center;
   max-width: 130px;
@@ -712,14 +807,14 @@ span.lesson-box__print-icon {
    misaligned. Pinning the height keeps every tile the same overall size
    regardless of its own gloss font-size. */
 .lesson-box__word-tile-gloss.is-small {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 27px;
   max-width: none;
   white-space: nowrap;
 }
 
 .lesson-box__sentence-translation {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   border-top: 2px dashed rgba(255, 255, 255, 0.25);
   padding-top: 10px;
@@ -727,7 +822,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__sentence-note {
-  font-size: 15px;
+  font-size: 20px;
   line-height: 1.55;
   color: var(--jr-text);
   margin-top: 14px;
@@ -737,7 +832,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__section-label {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 15px;
+  font-size: 20px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 10px;
   letter-spacing: 0.06em;
@@ -750,7 +845,7 @@ span.lesson-box__print-icon {
    explanation-tier prose, not a display element, so it inherits the
    overlay's Space Grotesk default rather than opting into VT323. */
 .lesson-box__big-idea {
-  font-size: 19px;
+  font-size: 25px;
   color: var(--jr-text);
   line-height: 1.5;
   margin-bottom: 10px;
@@ -761,7 +856,7 @@ span.lesson-box__print-icon {
    quote-like treatment (left rule + italic) to read as "an aside that
    makes the idea click," distinct from the plainer explain-text. */
 .lesson-box__analogy {
-  font-size: 16px;
+  font-size: 21px;
   font-style: italic;
   line-height: 1.55;
   color: var(--jr-text-dim);
@@ -776,7 +871,7 @@ span.lesson-box__print-icon {
    since it's meant to be memorized/reused verbatim. */
 .lesson-box__pattern-line {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 24px;
+  font-size: 31px;
   color: var(--jr-text);
   text-align: center;
   background: rgba(0, 0, 0, 0.25);
@@ -787,11 +882,262 @@ span.lesson-box__print-icon {
   letter-spacing: 0.02em;
 }
 
+/* Animated ending-swap diagram for single-verb-ending conjugation points
+   (potential/volitional/passive/causative/ba-form/imperative/etc. — see
+   buildEndingSwapDiagram()/wireEndingSwapDiagram() in n4-phaser-game.js).
+   Reuses .lesson-box__pattern-line's own dashed "code box" styling for
+   the outer wrapper (added alongside it in the diagramSvg markup) so this
+   still reads as the same "fixed pattern, memorize this" convention as
+   every plain pattern-line elsewhere — only the ending-swap portion
+   itself gets the claw animation instead of a static two-chip display. */
+.lesson-box__clawform-stem {
+  color: var(--jr-text);
+}
+
+.lesson-box__clawform-old {
+  position: relative;
+  display: inline-block;
+  color: var(--lb-role-predicate-bg);
+}
+
+.lesson-box__clawform-old.is-slashed {
+  opacity: 0;
+  transform: translateY(8px) rotate(-4deg);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.lesson-box__clawform-slash {
+  position: absolute;
+  left: -3px;
+  top: -8px;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lesson-box__clawform-slash line {
+  stroke: #e2413a;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 46;
+  stroke-dashoffset: 46;
+}
+
+.lesson-box__clawform-slash.is-drawn line {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.16s ease;
+}
+
+.lesson-box__clawform-arrow {
+  color: var(--jr-text-dim);
+  font-size: 26px;
+  margin: 0 4px;
+}
+
+.lesson-box__clawform-new {
+  display: inline-block;
+  color: var(--lb-role-verb-bg);
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.lesson-box__clawform-new.is-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lesson-box__clawform-replay {
+  display: block;
+  margin: 0 auto 12px;
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--jr-text-dim);
+  color: var(--jr-text-dim);
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lesson-box__clawform-replay:hover {
+  color: var(--jr-text);
+  border-color: var(--jr-text);
+}
+
+/* Two-portal particle-comparison diagram — for grammar points that
+   contrast TWO particles/patterns sharing the same surface word but
+   different meaning (で vs に location, は vs が, に vs へ, etc. — see
+   buildParticlePortalDiagram()/wireParticlePortalDiagram() in
+   n4-phaser-game.js). A demo word flies into whichever portal its verb
+   belongs to, auto-played once per side on open, replayable via the two
+   buttons below. Left/right portal colors are a fixed generic two-color
+   contrast (gold/blue) reused for every particle pair this diagram is
+   used for, not tied to any one particle's "meaning" — keeps every
+   portal diagram visually consistent regardless of which two particles
+   it's comparing. */
+.lesson-box__portaldiagram {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  clear: both;
+}
+
+.lesson-box__portaldiagram-portal {
+  border: 2px dashed var(--lb-role-particle-bg);
+  border-radius: 8px;
+  padding: 8px 14px;
+  text-align: center;
+  min-width: 70px;
+}
+
+.lesson-box__portaldiagram-portal--right {
+  border-color: var(--lb-role-subject-bg);
+}
+
+.lesson-box__portaldiagram-particle {
+  display: block;
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 18px;
+  color: var(--lb-role-particle-bg);
+}
+
+.lesson-box__portaldiagram-portal--right .lesson-box__portaldiagram-particle {
+  color: var(--lb-role-subject-bg);
+}
+
+.lesson-box__portaldiagram-tag {
+  display: block;
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 16px;
+  color: var(--jr-text-dim);
+  margin-top: 2px;
+}
+
+.lesson-box__portaldiagram-word {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 36px;
+  color: var(--jr-text);
+  position: relative;
+  transition: transform 0.6s ease;
+}
+
+.lesson-box__portaldiagram-word.is-flying-left {
+  transform: translateX(-64px) scale(0.8);
+}
+
+.lesson-box__portaldiagram-word.is-flying-right {
+  transform: translateX(64px) scale(0.8);
+}
+
+.lesson-box__portaldiagram-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.lesson-box__portaldiagram-btn {
+  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--jr-text-dim);
+  color: var(--jr-text-dim);
+  padding: 5px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lesson-box__portaldiagram-btn:hover {
+  color: var(--jr-text);
+  border-color: var(--jr-text);
+}
+
+/* Branching-path comparison diagram — for grammar points that contrast
+   THREE (or more) casual-register options where the right one depends
+   on what KIND of thing is being listed (とか vs たり〜たり vs し is the
+   first use — see buildBranchingPathDiagram()/wireBranchingPathDiagram()
+   in n4-phaser-game.js). Player-driven, no auto-play: each branch button
+   reuses the same role colors as word-tile-text (green=verb/action,
+   gold=particle/thing, coral=predicate/reason) so the diagram reads
+   consistently with every other colored element in the game. */
+.lesson-box__branchdiagram {
+  margin-top: 14px;
+  clear: both;
+}
+
+.lesson-box__branchdiagram-question {
+  text-align: center;
+  border: 1px dashed var(--jr-text-dim);
+  border-radius: 4px;
+  padding: 6px;
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 20px;
+  color: var(--jr-text);
+  margin-bottom: 10px;
+}
+
+.lesson-box__branchdiagram-branches {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.lesson-box__branchdiagram-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 8px 6px;
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 18px;
+  cursor: pointer;
+  filter: brightness(0.75);
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+
+.lesson-box__branchdiagram-btn:hover {
+  filter: brightness(1);
+}
+
+.lesson-box__branchdiagram-btn.is-active {
+  filter: brightness(1.15);
+  box-shadow: 0 0 6px currentColor;
+}
+
+.lesson-box__branchdiagram-btn.role-verb { color: var(--lb-role-verb-bg); border-color: var(--lb-role-verb-bg); }
+.lesson-box__branchdiagram-btn.role-particle { color: var(--lb-role-particle-bg); border-color: var(--lb-role-particle-bg); }
+.lesson-box__branchdiagram-btn.role-predicate { color: var(--lb-role-predicate-bg); border-color: var(--lb-role-predicate-bg); }
+
+.lesson-box__branchdiagram-reveal {
+  min-height: 40px;
+  text-align: center;
+}
+
+.lesson-box__branchdiagram-pattern {
+  display: block;
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 20px;
+  color: var(--jr-text);
+  margin-bottom: 4px;
+}
+
+.lesson-box__branchdiagram-example {
+  display: block;
+  font-size: 16px;
+  color: var(--jr-text-dim);
+}
+
 /* "The one thing that actually matters right now" — a single bolded
    takeaway, always last in the intro block, in its own high-contrast
    callout so it doesn't blend into the rest of the explanation. */
 .lesson-box__takeaway {
-  font-size: 17px;
+  font-size: 22px;
   line-height: 1.5;
   color: var(--jr-bg-bottom);
   background: var(--lb-role-particle-bg);
@@ -816,7 +1162,7 @@ span.lesson-box__print-icon {
 .lesson-box__content .role-copula { color: var(--lb-role-copula-bg); }
 
 .lesson-box__explain-text {
-  font-size: 19px;
+  font-size: 25px;
   line-height: 1.55;
   color: var(--jr-text);
 }
@@ -841,25 +1187,33 @@ span.lesson-box__print-icon {
   background: rgba(127, 214, 146, 0.16);
   border: 1px solid var(--lb-role-verb-bg);
   color: var(--lb-role-verb-bg);
-  font-size: 14px;
-  padding: 4px 12px;
+  /* Bumped 18px->24px — these chips carry a kanji word (e.g. "私"), same
+     readability pass as .lesson-box__term-name below. */
+  font-size: 24px;
+  padding: 6px 14px;
   border-radius: 14px;
 }
 
 .lesson-box__term-grid {
   display: grid;
   grid-template-columns: max-content 1fr;
-  column-gap: 14px;
-  row-gap: 6px;
-  font-size: 17px;
-  margin-top: 12px;
+  column-gap: 20px;
+  row-gap: 12px;
+  font-size: 22px;
+  margin-top: 14px;
 }
 
 /* Kana+romaji vocab name stays VT323 (a display element, like a compact
    word tile); the English description beside it (.lesson-box__term-desc
-   below) inherits the overlay's Space Grotesk default instead. */
+   below) inherits the overlay's Space Grotesk default instead. Explicit
+   font-size (not just inherited from .lesson-box__term-grid) per
+   explicit "increase the font when there's kanji and furigana" feedback
+   — this is the one column that actually carries kanji, so it gets its
+   own larger size instead of sharing the grid's base size with the
+   plain-English description column. */
 .lesson-box__term-name {
   font-family: "VT323", "DotGothic16", monospace;
+  font-size: 32px;
   white-space: nowrap;
   letter-spacing: 0.02em;
 }
@@ -877,7 +1231,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__culture-note {
-  font-size: 18px;
+  font-size: 23px;
   line-height: 1.55;
   color: var(--jr-text);
   background: rgba(0, 0, 0, 0.22);
@@ -920,7 +1274,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__tense-card-label {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -929,7 +1283,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__tense-card-kana {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 19px;
+  font-size: 29px;
   color: var(--jr-text);
   margin-bottom: 4px;
 }
@@ -943,7 +1297,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__tense-card-en {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--jr-text-dim);
 }
 
@@ -958,7 +1312,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__diagram-caption {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
   text-align: center;
   margin-top: 4px;
@@ -977,7 +1331,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__demo-head {
-  font-size: 10px;
+  font-size: 13px;
   text-align: center;
   color: var(--jr-text-dim);
   letter-spacing: 0.04em;
@@ -992,7 +1346,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__demo-row-word {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 22px;
+  font-size: 34px;
   text-align: center;
 }
 
@@ -1044,7 +1398,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__demo-row-note {
   grid-column: 1 / -1;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
   padding: 2px 0 6px 64px;
 }
@@ -1054,7 +1408,7 @@ span.lesson-box__print-icon {
    a subordinate heading, not a new top-level section. */
 .lesson-box__mini-label {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   margin-bottom: 10px;
   letter-spacing: 0.06em;
@@ -1071,13 +1425,13 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__sample-tag {
-  font-size: 16px;
+  font-size: 21px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 8px;
 }
 
 .lesson-box__sample-translation {
-  font-size: 16px;
+  font-size: 21px;
   color: var(--jr-text-dim);
   margin-top: 6px;
 }
@@ -1095,7 +1449,7 @@ span.lesson-box__print-icon {
 .lesson-box__data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 16px;
+  font-size: 21px;
   clear: both;
   background: transparent;
 }
@@ -1112,13 +1466,22 @@ span.lesson-box__print-icon {
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
   font-weight: normal;
-  font-size: 13px;
+  font-size: 17px;
 }
 
 .lesson-box__data-table td:first-child {
   font-family: "VT323", "DotGothic16", monospace;
   color: var(--jr-text);
-  font-size: 18px;
+  /* Bumped 18px->32px, then 32px->48px per explicit "make the kanji font
+     bigger... like 32px" then "even bigger, readers need to properly
+     read" feedback rounds. This column is shared by every 'summary'/
+     'conjugation' table in the game (shelf "New Words" recaps, review-
+     pile recaps, the Kanji Easel, etc.), not just the easel, so they all
+     get the same readability bump. rt (the furigana reading, see the
+     ruby/rt rule above) is sized in em relative to this cell, so it
+     scales up proportionally (0.5em of 48px = 24px) instead of needing a
+     separate override. */
+  font-size: 48px;
 }
 
 .lesson-box__data-table td:nth-child(2) {
@@ -1132,7 +1495,7 @@ span.lesson-box__print-icon {
 /* -- type: summary ---------------------------------------------------------- */
 
 .lesson-box__summary-title {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 8px;
   clear: both;
@@ -1186,12 +1549,12 @@ span.lesson-box__print-icon {
 
 .lesson-box__conv-name {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
 }
 
 .lesson-box__conv-action-tag {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--lb-role-particle-bg);
   font-style: italic;
 }
@@ -1209,7 +1572,7 @@ span.lesson-box__print-icon {
   border: 3px solid var(--jr-bg-bottom);
   border-radius: 14px 14px 14px 3px;
   padding: 12px 16px;
-  font-size: 23px;
+  font-size: 30px;
 }
 
 .lesson-box__conv-turn.is-player .lesson-box__conv-bubble {
@@ -1218,7 +1581,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__conv-meta {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   margin-top: 5px;
 }
@@ -1244,7 +1607,7 @@ span.lesson-box__print-icon {
 .lesson-box__qdiagram-label {
   width: 100px;
   flex-shrink: 0;
-  font-size: 14px;
+  font-size: 18px;
   font-family: monospace;
   color: var(--jr-text-dim);
   letter-spacing: 0.04em;
@@ -1273,7 +1636,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__qdiagram-tile {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 28px;
+  font-size: 42px;
   padding-bottom: 3px;
   border-bottom: 3px solid;
 }
@@ -1295,7 +1658,7 @@ span.lesson-box__print-icon {
   top: -30px;
   left: 10px;
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 22px;
+  font-size: 29px;
   color: var(--lb-role-particle-bg);
   transform: rotate(-8deg);
 }
@@ -1326,7 +1689,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__dirdiagram-stage-label {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
   text-align: center;
   letter-spacing: 0.04em;
@@ -1451,7 +1814,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__dirdiagram-btn {
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   padding: 4px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1474,7 +1837,7 @@ span.lesson-box__print-icon {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 20px;
+  font-size: 26px;
   transform: translate(-50%, -50%);
   transition: top 0.25s ease, left 0.25s ease;
   pointer-events: none;
@@ -1513,12 +1876,12 @@ span.lesson-box__print-icon {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 22px;
   transition: border-color 0.2s, background 0.2s;
 }
 
 .lesson-box__mapdiagram-building-label {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--jr-text-dim);
   margin-top: 2px;
 }
@@ -1542,7 +1905,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__mapdiagram-btn {
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1595,7 +1958,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__notepaddiagram-entry {
-  font-size: 19px;
+  font-size: 25px;
   color: #3a3320;
   cursor: pointer;
   padding: 2px 4px;
@@ -1605,7 +1968,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__notepaddiagram-romaji {
-  font-size: 11px;
+  font-size: 14px;
   color: #8a7f5c;
   margin-left: 8px;
 }
@@ -1712,7 +2075,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__ikunai-word {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 34px;
+  font-size: 44px;
   line-height: 1;
 }
 
@@ -1735,13 +2098,13 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__ikunai-arrow {
-  font-size: 24px;
+  font-size: 31px;
   color: var(--jr-text-dim);
 }
 
 .lesson-box__ikunai-caption {
   text-align: center;
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   margin-top: 4px;
 }
@@ -1776,7 +2139,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__voldiagram-add-alt {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 34px;
+  font-size: 44px;
   color: #201d54;
   background: var(--lb-role-subject-bg);
   border-radius: 4px;
@@ -1784,7 +2147,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__voldiagram-gloss {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
 }
 
@@ -1809,7 +2172,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__nacompare-label {
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--jr-text-dim);
@@ -1818,7 +2181,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__nacompare-phrase {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 28px;
+  font-size: 36px;
   line-height: 1.2;
   margin-bottom: 6px;
 }
@@ -1829,14 +2192,14 @@ span.lesson-box__print-icon {
 .lesson-box__nacompare-phrase .role-copula { color: var(--lb-role-copula-bg); }
 
 .lesson-box__nacompare-romaji {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   letter-spacing: 0.02em;
   margin-bottom: 8px;
 }
 
 .lesson-box__nacompare-note {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--jr-text);
   line-height: 1.5;
   max-width: 60ch;
@@ -1868,7 +2231,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__skeleton-chip {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 22px;
+  font-size: 29px;
   padding: 6px 10px;
   border-radius: 6px;
   text-align: center;
@@ -1897,7 +2260,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__skeleton-caption {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
   text-align: center;
 }
@@ -1930,7 +2293,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__spotlight-badge {
   font-family: "Press Start 2P", monospace;
-  font-size: 10px;
+  font-size: 13px;
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-block;
@@ -1949,7 +2312,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__spotlight-sentence {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 26px;
+  font-size: 34px;
   margin-bottom: 8px;
   line-height: 1.2;
 }
@@ -1970,7 +2333,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__spotlight-use {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   line-height: 1.55;
 }
@@ -1982,12 +2345,12 @@ span.lesson-box__print-icon {
 .lesson-box__particletable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .lesson-box__particletable th {
   font-family: "Press Start 2P", monospace;
-  font-size: 9px;
+  font-size: 12px;
   text-align: left;
   padding: 8px 10px;
   background: rgba(255, 255, 255, 0.08);
@@ -2009,7 +2372,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__particletable-particle {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 28px;
+  font-size: 36px;
   text-align: center;
 }
 
@@ -2018,7 +2381,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__particletable-jp {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 19px;
+  font-size: 25px;
 }
 
 /* -- shelf-02 "filler word" mini-card list — several (kana / romaji /
@@ -2050,7 +2413,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__fillercard-kana {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 26px;
+  font-size: 34px;
   color: var(--jr-text);
   line-height: 1.1;
   /* Actual size set inline per-word by fillerFontSize() (n5-phaser-
@@ -2060,7 +2423,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__fillercard-romaji {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text);
   line-height: 1.35;
   white-space: nowrap;
@@ -2069,11 +2432,11 @@ span.lesson-box__print-icon {
 .lesson-box__fillercard-romaji span {
   display: block;
   color: var(--jr-text-dim);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .lesson-box__fillercard-meaning {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--jr-text);
   line-height: 1.35;
 }
@@ -2086,7 +2449,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__fillercard-note {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
   line-height: 1.4;
 }
@@ -2108,7 +2471,7 @@ span.lesson-box__print-icon {
   flex-wrap: wrap;
   gap: 8px;
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 30px;
+  font-size: 39px;
   line-height: 1;
 }
 
@@ -2124,7 +2487,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__formula-op {
-  font-size: 20px;
+  font-size: 26px;
   color: var(--jr-text-dim);
 }
 
@@ -2140,13 +2503,13 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__formula-romaji {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--jr-text-dim);
   margin-top: 6px;
 }
 
 .lesson-box__formula-note {
-  font-size: 14px;
+  font-size: 18px;
   color: var(--jr-text);
   line-height: 1.5;
   max-width: 60ch;
@@ -2162,7 +2525,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__adjdiagram-btn {
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2201,7 +2564,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__movediagram-arrow {
-  font-size: 40px;
+  font-size: 52px;
   color: var(--lb-role-particle-bg);
   transition: transform 0.3s ease;
 }
@@ -2227,7 +2590,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__movediagram-btn {
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   padding: 4px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2275,7 +2638,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__routediagram-eki {
   position: absolute;
-  font-size: 22px;
+  font-size: 29px;
   text-align: center;
   opacity: 0.4;
   transition: opacity 0.25s;
@@ -2283,7 +2646,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__routediagram-eki span {
   display: block;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
 }
 
@@ -2300,7 +2663,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__routediagram-btn {
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 14px;
+  font-size: 18px;
   padding: 5px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2371,7 +2734,7 @@ span.lesson-box__print-icon {
 .lesson-box__compass-label {
   position: absolute;
   font-family: "Datatype", "DotGothic16", monospace;
-  font-size: 19px;
+  font-size: 25px;
   color: var(--jr-text);
   text-align: center;
   line-height: 1.1;
@@ -2380,7 +2743,7 @@ span.lesson-box__print-icon {
 .lesson-box__compass-label span {
   display: block;
   font-family: monospace;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--jr-text-dim);
 }
 
@@ -2401,7 +2764,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__try-it-input {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 20px;
+  font-size: 26px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--lb-role-particle-bg);
   color: var(--jr-text);
@@ -2417,7 +2780,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__try-it-hint {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   text-align: center;
   margin-top: 10px;
@@ -2491,7 +2854,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__tryit-options-label {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--jr-text-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2508,8 +2871,12 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__tryit-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 20px;
+  font-size: 26px;
   color: var(--lb-role-noun-fg);
   background: var(--lb-role-noun-bg);
   border: 2px solid rgba(255, 255, 255, 0.4);
@@ -2520,6 +2887,22 @@ span.lesson-box__print-icon {
   touch-action: none;
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
   transition: opacity 0.15s;
+}
+
+/* Optional reading caption under a drag-choice tile (page.choices as
+   { text, reading } instead of a plain string) — small and unobtrusive
+   on purpose, a supporting hint rather than the main label, same
+   "caption inherits the readable default font" rule every other small
+   caption in this file follows (see CLAUDE.md's font-splitting note). */
+.lesson-box__tryit-option-text {
+  line-height: 1;
+}
+
+.lesson-box__tryit-option-reading {
+  font-family: ui-monospace, Consolas, Menlo, monospace;
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1;
 }
 
 .lesson-box__tryit-option:active {
@@ -2559,7 +2942,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__quiz-sentence {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 18px;
+  font-size: 23px;
   color: var(--jr-text);
   display: flex;
   align-items: center;
@@ -2569,7 +2952,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__quiz-blank {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 18px;
+  font-size: 23px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--jr-text-dim);
   color: var(--jr-text);
@@ -2585,7 +2968,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quiz-result {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: bold;
   min-width: 1em;
 }
@@ -2599,14 +2982,14 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quiz-hint {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
   margin-top: 2px;
 }
 
 .lesson-box__quiz-check {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 12px;
+  font-size: 16px;
   background: var(--lb-role-verb-bg);
   color: var(--lb-role-verb-fg);
   border: none;
@@ -2628,7 +3011,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizreview-prompt {
-  font-size: 17px;
+  font-size: 22px;
   color: var(--jr-text);
   margin-bottom: 8px;
 }
@@ -2640,7 +3023,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizreview-choice {
-  font-size: 16px;
+  font-size: 21px;
   color: var(--jr-text);
   background: rgba(0, 0, 0, 0.22);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -2665,7 +3048,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__quizreview-fill {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 18px;
+  font-size: 23px;
   color: var(--jr-text);
   display: flex;
   align-items: center;
@@ -2675,7 +3058,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__quizreview-input {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 18px;
+  font-size: 23px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--jr-text-dim);
   color: var(--jr-text);
@@ -2703,7 +3086,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizanswer-mark {
-  font-size: 18px;
+  font-size: 23px;
   font-weight: bold;
   width: 20px;
   flex-shrink: 0;
@@ -2718,7 +3101,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizanswer-correct {
-  font-size: 17px;
+  font-size: 22px;
   color: var(--jr-text);
 }
 
@@ -2726,8 +3109,42 @@ span.lesson-box__print-icon {
   color: var(--lb-role-verb-bg);
 }
 
+/* -- type: exam-question / exam-score (N4 Entrance Exam) ------------------ */
+/* Reuses .lesson-box__quizreview-choice/.lesson-box__quiz-row markup from
+   above (one question's worth at a time instead of a batch) — these rules
+   only add the immediate-reveal state that a batched quiz-review page
+   never needs (it defers all reveal to the following quiz-answers page).
+   Same green/red tokens as .lesson-box__quiz-result.is-correct/is-wrong
+   and .lesson-box__quizanswer-mark.is-correct/is-wrong above, for visual
+   consistency with every other graded page type in this file. */
+
+.lesson-box__quizreview-choice.is-correct {
+  border-color: var(--lb-role-verb-bg);
+  background: rgba(122, 200, 120, 0.16);
+}
+
+.lesson-box__quizreview-choice.is-wrong {
+  border-color: #ff9a8a;
+  background: rgba(255, 154, 138, 0.16);
+}
+
+.lesson-box__exam-feedback {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+  min-height: 1.2em;
+}
+
+.lesson-box__exam-feedback.is-correct {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__exam-feedback.is-wrong {
+  color: #ff9a8a;
+}
+
 .lesson-box__quizanswer-yours {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   margin-top: 2px;
 }
@@ -2739,18 +3156,18 @@ span.lesson-box__print-icon {
 
 .lesson-box__quizscore-num {
   font-family: "Press Start 2P", "DotGothic16", monospace;
-  font-size: 40px;
+  font-size: 52px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 10px;
 }
 
 .lesson-box__quizscore-label {
-  font-size: 17px;
+  font-size: 22px;
   color: var(--jr-text-dim);
 }
 
 .lesson-box__quizscore-note {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--jr-text-dim);
   margin-top: 14px;
   max-width: 420px;
@@ -2806,18 +3223,18 @@ span.lesson-box__print-icon {
 
 .lesson-box__strokecard-glyph {
   font-family: "VT323", "DotGothic16", monospace;
-  font-size: 42px;
+  font-size: 55px;
   line-height: 1;
   color: var(--jr-text);
 }
 
 .lesson-box__strokecard-romaji {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--jr-text-dim);
 }
 
 .lesson-box__strokecard-count {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--jr-text-dim);
   opacity: 0.75;
 }

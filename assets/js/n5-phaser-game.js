@@ -569,6 +569,107 @@ function buildFillerCardTable(entries) {
   `;
 }
 
+// AUTO-STRUCTURED reference data for the Kanji Easel interactive (see
+// buildKanjiEasel() / LESSON_CONTENT['kanji-easel'] below) — every kanji-
+// bearing vocabulary word from this floor's own shelf 'New Words' summary
+// tables, deduplicated (first occurrence wins) and compiled in shelf order,
+// pure-kana words (は/です/これ/...) excluded since they carry no kanji to
+// look up. Split across pages of 14 rows so no single LessonBox page needs
+// to scroll.
+const N5_KANJI_EASEL_WORDS = [
+  { kana: 'お名前', reading: 'おなまえ', romaji: 'o-namae', meaning: 'name (polite)' },
+  { kana: '何', reading: 'なに', romaji: 'nan', meaning: 'what' },
+  { kana: '学校', reading: 'がっこう', romaji: 'gakkou', meaning: 'school' },
+  { kana: '駅', reading: 'えき', romaji: 'eki', meaning: 'station' },
+  { kana: '図書館', reading: 'としょかん', romaji: 'toshokan', meaning: 'library' },
+  { kana: '病院', reading: 'びょういん', romaji: 'byouin', meaning: 'hospital' },
+  { kana: '前', reading: 'まえ', romaji: 'mae', meaning: 'in front of' },
+  { kana: '後ろ', reading: 'うしろ', romaji: 'ushiro', meaning: 'behind' },
+  { kana: '右', reading: 'みぎ', romaji: 'migi', meaning: 'right of' },
+  { kana: '左', reading: 'ひだり', romaji: 'hidari', meaning: 'left of' },
+  { kana: '隣', reading: 'となり', romaji: 'tonari', meaning: 'next to' },
+  { kana: '近く', reading: 'ちかく', romaji: 'chikaku', meaning: 'near' },
+  { kana: '上', reading: 'うえ', romaji: 'ue', meaning: 'above' },
+  { kana: '下', reading: 'した', romaji: 'shita', meaning: 'below' },
+  { kana: '中', reading: 'なか', romaji: 'naka', meaning: 'inside' },
+  { kana: '外', reading: 'そと', romaji: 'soto', meaning: 'outside' },
+  { kana: '曲がります', reading: 'まがります', romaji: 'magarimasu', meaning: 'to turn' },
+  { kana: '行きます', reading: 'いきます', romaji: 'ikimasu', meaning: 'to go' },
+  { kana: '北', reading: 'きた', romaji: 'kita', meaning: 'north' },
+  { kana: '南', reading: 'みなみ', romaji: 'minami', meaning: 'south' },
+  { kana: '東', reading: 'ひがし', romaji: 'higashi', meaning: 'east' },
+  { kana: '西', reading: 'にし', romaji: 'nishi', meaning: 'west' },
+  { kana: '木', reading: 'き', romaji: 'ki', meaning: 'tree' },
+  { kana: 'お元気ですか', reading: 'おげんきですか', romaji: 'Ogenki desu ka', meaning: 'How are you?' },
+  { kana: '元気です', reading: 'げんきです', romaji: 'Genki desu', meaning: 'I’m doing well' },
+  { kana: 'お願いします', reading: 'おねがいします', romaji: 'Onegaishimasu', meaning: 'Please (making a request)' },
+  { kana: 'お邪魔します', reading: 'おじゃまします', romaji: 'Ojama shimasu', meaning: 'Excuse me for intruding' },
+  { kana: 'よろしくお願いします', reading: 'よろしくおねがいします', romaji: 'Yoroshiku onegaishimasu', meaning: 'Please treat me kindly' },
+  { kana: '多分', reading: 'たぶん', romaji: 'Tabun', meaning: 'Probably / perhaps' },
+  { kana: '全然', reading: 'ぜんぜん', romaji: 'Zenzen', meaning: 'Not at all' },
+  { kana: '君', reading: 'きみ', romaji: 'Kun', meaning: 'Familiar name suffix (for boys)' },
+  { kana: '用', reading: 'よう', romaji: 'You', meaning: 'Business / errand / use' },
+  { kana: '彼', reading: 'かれ', romaji: 'kare', meaning: 'he / him' },
+  { kana: '彼女', reading: 'かのじょ', romaji: 'kanojo', meaning: 'she / her' },
+  { kana: '私たち', reading: 'わたしたち', romaji: 'watashi-tachi', meaning: 'we / us' },
+  { kana: '人', reading: 'ひと', romaji: 'hito', meaning: 'person' },
+  { kana: '子供', reading: 'こども', romaji: 'kodomo', meaning: 'child' },
+  { kana: '友達', reading: 'ともだち', romaji: 'tomodachi', meaning: 'friend' },
+  { kana: '家族', reading: 'かぞく', romaji: 'kazoku', meaning: 'family' },
+  { kana: '本', reading: 'ほん', romaji: 'hon', meaning: 'book' },
+  { kana: '時計', reading: 'とけい', romaji: 'tokei', meaning: 'clock / watch' },
+  { kana: '僕', reading: 'ぼく', romaji: 'boku', meaning: 'I / me (casual, male)' },
+  { kana: '彼ら', reading: 'かれら', romaji: 'karera', meaning: 'they / them' },
+  { kana: '色んな', reading: 'いろんな', romaji: 'ironna', meaning: 'various' },
+  { kana: '誰か', reading: 'だれか', romaji: 'dareka', meaning: 'someone / somebody' },
+  { kana: '自分', reading: 'じぶん', romaji: 'jibun', meaning: 'myself / yourself / oneself' },
+  { kana: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
+  { kana: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'small' },
+  { kana: '赤い', reading: 'あかい', romaji: 'akai', meaning: 'red' },
+  { kana: '青い', reading: 'あおい', romaji: 'aoi', meaning: 'blue' },
+  { kana: '新しい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'new' },
+  { kana: '古い', reading: 'ふるい', romaji: 'furui', meaning: 'old' },
+  { kana: '高い', reading: 'たかい', romaji: 'takai', meaning: 'expensive / tall' },
+  { kana: '安い', reading: 'やすい', romaji: 'yasui', meaning: 'cheap' },
+  { kana: '楽しい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'fun / enjoyable' },
+  { kana: '良い', reading: 'いい', romaji: 'ii', meaning: 'good' },
+  { kana: '静か', reading: 'しずか', romaji: 'shizuka', meaning: 'quiet' },
+  { kana: '好き', reading: 'すき', romaji: 'suki', meaning: 'like' },
+  { kana: '元気', reading: 'げんき', romaji: 'genki', meaning: 'energetic' },
+  { kana: '便利', reading: 'べんり', romaji: 'benri', meaning: 'convenient' },
+  { kana: '有名', reading: 'ゆうめい', romaji: 'yuumei', meaning: 'famous' },
+  { kana: '大切', reading: 'たいせつ', romaji: 'taisetsu', meaning: 'important' },
+  { kana: '大変', reading: 'たいへん', romaji: 'taihen', meaning: 'tough / serious' },
+  { kana: '起きる', reading: 'おきる', romaji: 'okiru', meaning: 'to wake up' },
+  { kana: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat' },
+  { kana: '行く', reading: 'いく', romaji: 'iku', meaning: 'to go' },
+  { kana: '話す', reading: 'はなす', romaji: 'hanasu', meaning: 'to speak' },
+  { kana: '帰る', reading: 'かえる', romaji: 'kaeru', meaning: 'to go home' },
+  { kana: '勉強する', reading: 'べんきょうする', romaji: 'benkyousuru', meaning: 'to study' },
+  { kana: '読む', reading: 'よむ', romaji: 'yomu', meaning: 'to read' },
+  { kana: '買う', reading: 'かう', romaji: 'kau', meaning: 'to buy' },
+  { kana: '書く', reading: 'かく', romaji: 'kaku', meaning: 'to write' },
+  { kana: '聞く', reading: 'きく', romaji: 'kiku', meaning: 'to listen / to ask' },
+  { kana: '会う', reading: 'あう', romaji: 'au', meaning: 'to meet' },
+  { kana: '立つ', reading: 'たつ', romaji: 'tatsu', meaning: 'to stand' },
+  { kana: '座る', reading: 'すわる', romaji: 'suwaru', meaning: 'to sit' },
+  { kana: '働く', reading: 'はたらく', romaji: 'hataraku', meaning: 'to work' },
+  { kana: '休む', reading: 'やすむ', romaji: 'yasumu', meaning: 'to rest' },
+  { kana: '遊ぶ', reading: 'あそぶ', romaji: 'asobu', meaning: 'to play' },
+  { kana: '分かる', reading: 'わかる', romaji: 'wakaru', meaning: 'to understand' },
+  { kana: '歌う', reading: 'うたう', romaji: 'utau', meaning: 'to sing' },
+  { kana: '行きましょう', reading: 'いきましょう', romaji: 'ikimashou', meaning: 'Let\'s go' },
+  { kana: '食べませんか', reading: 'たべませんか', romaji: 'tabemasenka', meaning: 'Won\'t you eat?' },
+  { kana: '休みましょう', reading: 'やすみましょう', romaji: 'yasumimashou', meaning: 'Let\'s rest' },
+  { kana: '遊びませんか', reading: 'あそびませんか', romaji: 'asobimasenka', meaning: 'Won\'t you play?' },
+  { kana: '歌いましょう', reading: 'うたいましょう', romaji: 'utaimashou', meaning: 'Let\'s sing' },
+  { kana: '少し', reading: 'すこし', romaji: 'sukoshi', meaning: 'a little' },
+  { kana: '公園', reading: 'こうえん', romaji: 'kouen', meaning: 'park' },
+  { kana: '静かだから', reading: 'しずかだから', romaji: 'shizuka dakara', meaning: 'because it\'s quiet' },
+  { kana: '古いけど', reading: 'ふるいけど', romaji: 'furui kedo', meaning: 'it\'s old, but' },
+  { kana: '本とかばん', reading: 'ほんとかばん', romaji: 'hon to kaban', meaning: 'a book and a bag' },
+];
+
 // Real lesson content, keyed by LESSON_DATA id, rendered through
 // LessonBox (assets/js/lesson-box.js) when a shelf's "Start/Continue?"
 // option is selected. Each entry is an array of "pages" the player clicks/
@@ -669,6 +770,11 @@ const LESSON_CONTENT = {
       before: '', after: '',
       choices: ['ありがとうございます', 'こんにちは', 'すみません'],
       answer: 'すみません',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — "Japanese Greetings" guide', 'Tae Kim\'s Guide to Japanese Grammar — Basic Grammar chapter', 'Jisho.org (dictionary lookups for each phrase)'],
     },
   ],
   'shelf-02': [
@@ -873,6 +979,11 @@ const LESSON_CONTENT = {
       choices: ['もし', 'たぶん', 'それで'],
       answer: 'もし',
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — "Japanese Greetings" and everyday-phrase guides', 'Tae Kim\'s Guide to Japanese Grammar', 'Jisho.org (dictionary lookups for each phrase)'],
+    },
   ],
   // shelf-03 and shelf-04 were swapped (A は B です moved from shelf-04 to
   // shelf-03, Self Introduction moved from shelf-03 to shelf-04) per
@@ -1010,8 +1121,8 @@ const LESSON_CONTENT = {
       tiles: [
         { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)' },
-        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
+        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)', smallGloss: true },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)', smallGloss: true },
       ],
       translation: 'Watashi wa gakusei desu. — "I am a student."',
     },
@@ -1020,10 +1131,10 @@ const LESSON_CONTENT = {
       label: 'Example 2',
       newWordFlag: 'New word: これ (kore)',
       tiles: [
-        { text: 'これ', role: 'subject', gloss: 'this (thing near me)', isNew: true },
+        { text: 'これ', role: 'subject', gloss: 'this (thing near me)', smallGloss: true, isNew: true },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
         { text: 'ほん', role: 'predicate', gloss: 'book (predicate)' },
-        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)', smallGloss: true },
       ],
       translation: 'Kore wa hon desu. — "This is a book."',
     },
@@ -1032,10 +1143,10 @@ const LESSON_CONTENT = {
       label: 'Example 3',
       newWordFlag: 'New word: ペン (pen)',
       tiles: [
-        { text: 'これ', role: 'subject', gloss: 'this (thing near me)' },
+        { text: 'これ', role: 'subject', gloss: 'this (thing near me)', smallGloss: true },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
         { text: 'ペン', role: 'predicate', gloss: 'pen (predicate)', isNew: true },
-        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)', smallGloss: true },
       ],
       translation: 'Kore wa pen desu. — "This is a pen."',
       note: 'Same これ from before, just a different B. Swap in any noun you know and the pattern still works.',
@@ -1047,8 +1158,8 @@ const LESSON_CONTENT = {
       tiles: [
         { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)' },
-        { text: 'でした', role: 'copula', gloss: 'was (copula, polite past)', isNew: true },
+        { text: 'がくせい', role: 'predicate', gloss: 'student (predicate)', smallGloss: true },
+        { text: 'でした', role: 'copula', gloss: 'was (copula, polite past)', smallGloss: true, isNew: true },
       ],
       translation: 'Watashi wa gakusei deshita. — "I was a student."',
       note: 'でした is just です pushed into the past — same politeness, same job, only the tense changes. Nothing else about the sentence pattern moves.',
@@ -1060,8 +1171,8 @@ const LESSON_CONTENT = {
       tiles: [
         { text: 'わたし', role: 'subject', gloss: 'I / me (subject)' },
         { text: 'は', role: 'particle', gloss: 'topic marker (wa)' },
-        { text: 'せんせい', role: 'predicate', gloss: 'teacher (predicate)', isNew: true },
-        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)' },
+        { text: 'せんせい', role: 'predicate', gloss: 'teacher (predicate)', smallGloss: true, isNew: true },
+        { text: 'です', role: 'copula', gloss: 'am / is / are (copula, polite)', smallGloss: true },
       ],
       translation: 'Watashi wa sensei desu. — "I am a teacher."',
       note: 'Filipino lines up word-for-word almost perfectly: <b>Ako</b> (watashi) <b>ay</b> (wa) <b>guro/Teacher</b> (sensei) <b>po</b> (desu). ay plays は\'s role, po plays です\'s role.',
@@ -1114,6 +1225,11 @@ const LESSON_CONTENT = {
       before: 'わたしはがくせい', after: '。',
       choices: ['です', 'でした', 'せんせい'],
       answer: 'でした',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — the です/だ copula chapter', 'Genki I (An Integrated Course in Elementary Japanese) — Lesson 1'],
     },
   ],
   'shelf-04': [
@@ -1233,6 +1349,11 @@ const LESSON_CONTENT = {
         { before: 'わたしはタロウ', after: '。', answer: 'です', altAnswers: ['desu'], hint: '(the polite copula)' },
         { before: '', after: 'お願いします。', answer: 'よろしく', altAnswers: ['yoroshiku'], hint: '(closing politely)' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — jikoshoukai (self-introduction) etiquette guide', 'Tae Kim\'s Guide to Japanese Grammar'],
     },
   ],
   'shelf-05': [
@@ -1485,7 +1606,7 @@ const LESSON_CONTENT = {
           tiles: [
             { text: 'でぐち', role: 'subject', gloss: 'exit' },
             { text: 'は', role: 'particle', gloss: 'topic marker' },
-            { text: 'あちら', role: 'predicate', gloss: 'over there (polite)', isNew: true },
+            { text: 'あちら', role: 'predicate', gloss: 'over there (polite)', smallGloss: true, isNew: true },
             { text: 'です', role: 'copula', gloss: 'am / is / are' },
           ],
           translation: 'Deguchi wa achira desu.',
@@ -1602,6 +1723,11 @@ const LESSON_CONTENT = {
         { before: 'ねこは', after: 'ですか。 (asking "where is the cat?")', answer: 'どこ', altAnswers: ['doko'], hint: '(place question word)' },
         { before: 'えきは', after: 'です。 (far away, polite)', answer: 'あちら', altAnswers: ['achira'], hint: '(polite "over there")' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — the こそあど (demonstratives) chapter', 'Wasabi — Japanese demonstrative pronouns guide'],
     },
   ],
   // shelf-06's "Questions (か)" — builds on shelf-05's どこ/どの/どちら and
@@ -1891,6 +2017,11 @@ const LESSON_CONTENT = {
         { before: 'りんごは', after: 'ですか。 (asking "how many?")', answer: 'いくつ', altAnswers: ['ikutsu'], hint: '(small countable things)' },
         { before: 'これは', after: 'ですか。 (asking "how much?")', answer: 'いくら', altAnswers: ['ikura'], hint: '(asking about price)' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — questions and the か particle', 'Bunpro — か (question marker) grammar entry'],
     },
   ],
   'shelf-07': [
@@ -2338,6 +2469,11 @@ const LESSON_CONTENT = {
         { before: 'いまは', after: 'です。 (say "9 o\'clock")', answer: 'くじ', altAnswers: ['kuji'], hint: '(irregular — not きゅうじ)' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — Japanese numbers and counters guide', 'Jisho.org (counter/reading lookups)'],
+    },
   ],
   'shelf-08': [
     {
@@ -2428,7 +2564,7 @@ const LESSON_CONTENT = {
             { text: 'の', role: 'particle', gloss: "'s / of" },
             { text: 'ちかく', role: 'predicate', gloss: 'near' },
             { text: 'に', role: 'particle', gloss: 'location marker' },
-            { text: 'います', role: 'copula', gloss: 'there is (living things)', isNew: true },
+            { text: 'います', role: 'copula', gloss: 'there is (living things)', smallGloss: true, isNew: true },
           ],
           translation: 'Neko wa eki no chikaku ni imasu.',
         },
@@ -2664,7 +2800,7 @@ const LESSON_CONTENT = {
             { text: 'の', role: 'particle', gloss: "'s / of" },
             { text: '下', role: 'predicate', gloss: 'below' },
             { text: 'に', role: 'particle', gloss: 'location marker' },
-            { text: 'います', role: 'copula', gloss: 'there is (living things)' },
+            { text: 'います', role: 'copula', gloss: 'there is (living things)', smallGloss: true },
           ],
           translation: 'Neko wa ki no shita ni imasu.',
         },
@@ -2780,6 +2916,11 @@ const LESSON_CONTENT = {
         { before: '', after: 'に曲がります。 (turn right)', answer: '右', altAnswers: ['migi'], hint: '(right)' },
         { before: 'ねこは木の', after: 'にいます。 (under the tree)', answer: '下', altAnswers: ['shita'], hint: '(below)' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — あります／います and location particles', 'Genki I — Lesson 5 (existence, position words)'],
     },
   ],
   // "Foundations Review" — review-1, gates shelf-05. First review pile to
@@ -2953,6 +3094,11 @@ const LESSON_CONTENT = {
       // auto-picks a retro-cat reaction line from the score percentage.
       type: 'quiz-score',
       title: 'Foundations Review — Score',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Same sources as shelf-01 through shelf-04 above (Tofugu, Tae Kim\'s Guide, Genki I, Jisho.org) — this pile just recaps their content verbatim.'],
     },
   ],
   // Everyday Vocabulary Review — same shape as review-1: intro, one
@@ -3183,6 +3329,11 @@ const LESSON_CONTENT = {
       type: 'quiz-score',
       title: 'Everyday Vocabulary Review — Score',
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Same sources as shelf-05 through shelf-08 above (Tae Kim\'s Guide, Wasabi, Bunpro, Tofugu, Genki I) — this pile just recaps their content verbatim.'],
+    },
   ],
   // Core Grammar Review — same shape as review-1/review-2: intro, one
   // 'summary' recap per shelf reusing that shelf's own vocab tables
@@ -3356,6 +3507,11 @@ const LESSON_CONTENT = {
       // auto-picks a retro-cat reaction line from the score percentage.
       type: 'quiz-score',
       title: 'Core Grammar Review — Score',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Same sources as shelf-09 through shelf-12 above (Tae Kim\'s Guide, Wasabi, Genki I, Bunpro) — this pile just recaps their content verbatim.'],
     },
   ],
   'shelf-09': [
@@ -3634,12 +3790,20 @@ const LESSON_CONTENT = {
       ],
     },
     {
-      // Page 10/14: drag-and-drop mini-check — pronoun recall.
+      // Page 10/14: drag-and-drop mini-check — pronoun recall. Choices
+      // show a reading caption (see lesson-box.js's try-it choice
+      // object support) so this tests "which pronoun fits the sentence"
+      // rather than doubling as a blind kanji-reading check — that's
+      // what the kanji easel is for, not an incidental vocab shelf quiz.
       type: 'try-it',
       sectionLabel: 'Quick check',
       prompt: 'Say "she is a student":',
       before: '', after: 'は がくせいです。',
-      choices: ['彼女', '彼', 'あなた'],
+      choices: [
+        { text: '彼女', reading: 'かのじょ' },
+        { text: '彼', reading: 'かれ' },
+        { text: 'あなた', reading: 'anata' },
+      ],
       answer: '彼女',
     },
     {
@@ -3648,7 +3812,11 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       prompt: 'Say "this is my family":',
       before: 'これは私の', after: 'です。',
-      choices: ['家族', '友達', '子供'],
+      choices: [
+        { text: '家族', reading: 'かぞく' },
+        { text: '友達', reading: 'ともだち' },
+        { text: '子供', reading: 'こども' },
+      ],
       answer: '家族',
     },
     {
@@ -3657,7 +3825,11 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       prompt: 'Say "I am a teacher" (casual, male speaker):',
       before: '', after: 'は せんせいです。',
-      choices: ['僕', '君', '彼ら'],
+      choices: [
+        { text: '僕', reading: 'ぼく' },
+        { text: '君', reading: 'きみ' },
+        { text: '彼ら', reading: 'かれら' },
+      ],
       answer: '僕',
     },
     {
@@ -3712,6 +3884,11 @@ const LESSON_CONTENT = {
         { before: '', after: '人ですか。', answer: 'どんな', hint: '"What kind of person is it?"' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — pronouns and demonstrative-adjacent words', 'Wasabi — Japanese pronouns guide'],
+    },
   ],
   // Neko-sensei's reception-desk guide — an always-available, ungated
   // conversation (kind: 'npc' in buildReceptionSensei/openInteraction),
@@ -3732,6 +3909,23 @@ const LESSON_CONTENT = {
       sectionLabel: 'Talking to things',
       explain: [
         'Click directly on a shelf, a pile, or me — or walk up close and press E (or Enter/Space) — to open it. Click somewhere far away instead and you\'ll walk over first, then it\'ll open on its own.',
+      ],
+    },
+    {
+      // Kept right after "Talking to things", before any shelf content —
+      // the shoe cabinets are the very first interactives a player
+      // reaches after spawning, before they've even walked as far as this
+      // reception desk. Text updated (was "the two TVs") per explicit
+      // follow-up: the hiragana/katakana trigger moved from the TVs onto
+      // the shoe cabinets themselves — the TVs are back at their original
+      // spot above the rest-area rug, decorative only now (see
+      // buildFurniture()'s shoe-cabinet/TV comments).
+      type: 'grammar-intro',
+      sectionLabel: 'The shoe cabinets by the door',
+      recapChips: ['Hiragana Viewer', 'Katakana Viewer'],
+      bigIdea: 'Notice the two shoe cabinets flanking the entrance? Start there.',
+      explain: [
+        'The left one plays through all 46 base hiragana, the right one all 46 katakana — both with stroke order and romaji. Nothing else in the library assumes you\'ve memorized them, but everything reads faster once you have.',
       ],
     },
     {
@@ -3757,6 +3951,18 @@ const LESSON_CONTENT = {
       bigIdea: 'See the printer next to my desk? Click it any time.',
       explain: [
         'Every lesson only teaches a curated, digestible slice of its topic — plenty of nouns, adjectives, verbs, conjugation patterns, and particles didn\'t make the cut. The printer has the FULL reference list for each of those, ready to print, all in one place.',
+      ],
+    },
+    {
+      // New — the Kanji Easel, added on the opposite (east) side of the
+      // desk from the printer. Mentioned right after the printer since
+      // the two now form a matched pair flanking the desk.
+      type: 'grammar-intro',
+      sectionLabel: 'The Kanji Easel',
+      recapChips: ['easel, on the other side of my desk'],
+      bigIdea: 'The easel on the other side of my desk — marked 漢字 — is your kanji lookup.',
+      explain: [
+        'Every kanji word taught on this floor is collected there, with its reading, romaji, and meaning. It\'s not a lesson, so there\'s nothing to complete — just flip through it whenever you want to double-check a word.',
       ],
     },
     {
@@ -4307,6 +4513,11 @@ const LESSON_CONTENT = {
         { before: '図書館は', after: '。', answer: '静かでした', hint: '"The library was quiet." (past)' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — い-adjectives and な-adjectives chapters', 'Wasabi — Japanese adjectives guide'],
+    },
   ],
   'shelf-11': [
     {
@@ -4566,6 +4777,11 @@ const LESSON_CONTENT = {
         { before: '友達に', after: '。', answer: '会います', hint: '"I meet a friend."' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — verb groups and the ます-form', 'Genki I — Lesson 3 (verb conjugation basics)'],
+    },
   ],
   'shelf-12': [
     {
@@ -4732,6 +4948,11 @@ const LESSON_CONTENT = {
         { before: '手伝い', after: '。', answer: 'ましょうか', hint: '"Shall I help?"' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Bunpro — ましょう／ませんか grammar entries', 'Tae Kim\'s Guide to Japanese Grammar — invitations and suggestions'],
+    },
   ],
   // Grammar Mastery Review — same shape as review-1/review-2/review-3:
   // intro, one recap per shelf (13-16) reusing that shelf's own
@@ -4869,6 +5090,11 @@ const LESSON_CONTENT = {
       // auto-picks a retro-cat reaction line from the score percentage.
       type: 'quiz-score',
       title: 'Grammar Mastery Review — Score',
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Same sources as shelf-13 through shelf-16 above (Tae Kim\'s Guide, Bunpro, Genki I, imabi) — this pile just recaps their content verbatim.'],
     },
   ],
   'shelf-13': [
@@ -5114,6 +5340,11 @@ const LESSON_CONTENT = {
         { before: '起きて', after: '。', answer: '食べます', hint: '"I wake up and eat."' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — the て-form chapter', 'Bunpro — て-form conjugation reference'],
+    },
   ],
   'shelf-14': [
     {
@@ -5298,6 +5529,11 @@ const LESSON_CONTENT = {
         { before: '', after: 'ました。', answer: '休み', hint: '"I rested."' },
         { before: '', after: 'でした。', answer: '勉強しません', hint: '"I didn\'t study."' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tae Kim\'s Guide to Japanese Grammar — past and negative verb forms', 'Genki I — Lesson 3 (past/negative conjugation)'],
     },
   ],
   'shelf-15': [
@@ -5497,6 +5733,11 @@ const LESSON_CONTENT = {
         { before: '静か', after: '、好きです。', answer: 'だから', hint: '"It\'s quiet, so I like it."' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Bunpro — から／けど／と grammar entries', 'Tae Kim\'s Guide to Japanese Grammar — connecting clauses'],
+    },
   ],
   'shelf-16': [
     {
@@ -5651,7 +5892,7 @@ const LESSON_CONTENT = {
           tag: '"I study at the library."',
           tiles: [
             { text: '図書館', role: 'subject', gloss: 'library' },
-            { text: 'で', role: 'particle', gloss: 'location of an action' },
+            { text: 'で', role: 'particle', gloss: 'location of an action', smallGloss: true },
             { text: '勉強します', role: 'predicate', gloss: 'study' },
           ],
           translation: 'Toshokan de benkyoushimasu.',
@@ -5660,7 +5901,7 @@ const LESSON_CONTENT = {
           tag: '"I play at the park."',
           tiles: [
             { text: '公園', role: 'subject', gloss: 'park' },
-            { text: 'で', role: 'particle', gloss: 'location of an action' },
+            { text: 'で', role: 'particle', gloss: 'location of an action', smallGloss: true },
             { text: '遊びます', role: 'predicate', gloss: 'play' },
           ],
           translation: 'Kouen de asobimasu.',
@@ -5669,8 +5910,8 @@ const LESSON_CONTENT = {
           tag: '"I speak with the teacher at school."',
           tiles: [
             { text: '学校', role: 'subject', gloss: 'school' },
-            { text: 'で', role: 'particle', gloss: 'location of an action' },
-            { text: '先生と話します', role: 'predicate', gloss: 'speak with the teacher' },
+            { text: 'で', role: 'particle', gloss: 'location of an action', smallGloss: true },
+            { text: '先生と話します', role: 'predicate', gloss: 'speak with the teacher', smallGloss: true },
           ],
           translation: 'Gakkou de sensei to hanashimasu.',
         },
@@ -5886,6 +6127,11 @@ const LESSON_CONTENT = {
         { before: '本は机', after: 'あります。', answer: 'の上に', hint: '"The book is on top of the desk." (recap: 上, shelf 8)' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['imabi — Japanese particles reference', 'Tae Kim\'s Guide to Japanese Grammar — は vs が chapter'],
+    },
   ],
   // The Vocabulary Press prop by reception (see buildVocabPressStation)
   // — always-available content (kind: 'npc', not gated), same reasoning
@@ -5903,6 +6149,13 @@ const LESSON_CONTENT = {
       ],
     },
   ],
+  // The Kanji Easel prop, east of the reception desk (see
+  // buildKanjiEasel) — always-available content (kind: 'npc', not gated),
+  // same reasoning as the printer-station above. Built via the shared
+  // buildKanjiEaselPages() helper (library-scene-shared.js) from
+  // N5_KANJI_EASEL_WORDS so every floor's easel uses the exact same page
+  // shape/pagination logic.
+  'kanji-easel': buildKanjiEaselPages({ floorLabel: 'N5', words: N5_KANJI_EASEL_WORDS }),
   // The two reference-kiosk TVs (see buildFurniture's buildTV) — always-
   // available content (kind: 'npc', not gated behind SHELF_PREREQ), out
   // of shelf-numeric order deliberately, same reasoning as shelf-17 used
@@ -6007,7 +6260,7 @@ const LESSON_CONTENT = {
       sectionLabel: 'wa-row',
       explain: ['わ is wa; を is o (only used as the object-marker particle).'],
       diagramSvg: buildKanaStrokeRow([
-        { kana: 'わ', romaji: 'wa', strokes: 2 }, { kana: 'を', romaji: 'wo', strokes: 3 },
+        { kana: 'わ', romaji: 'wa', strokes: 2 }, { kana: 'を', romaji: 'o', strokes: 3 },
       ]),
     },
     {
@@ -6041,6 +6294,11 @@ const LESSON_CONTENT = {
         { before: 'ゆ = ', after: '', answer: 'yu' },
         { before: 'ん = ', after: '', answer: 'n' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — hiragana stroke-order and mnemonic guide', 'Wikipedia — Hiragana (stroke counts cross-checked against its stroke-order chart)'],
     },
   ],
   'tv-katakana': [
@@ -6138,7 +6396,7 @@ const LESSON_CONTENT = {
       sectionLabel: 'wa-row',
       explain: ['ワ is wa; ヲ is o (rarely used outside representing the particle を in katakana).'],
       diagramSvg: buildKanaStrokeRow([
-        { kana: 'ワ', romaji: 'wa', strokes: 2 }, { kana: 'ヲ', romaji: 'wo', strokes: 3 },
+        { kana: 'ワ', romaji: 'wa', strokes: 2 }, { kana: 'ヲ', romaji: 'o', strokes: 3 },
       ]),
     },
     {
@@ -6173,8 +6431,175 @@ const LESSON_CONTENT = {
         { before: 'ン = ', after: '', answer: 'n' },
       ],
     },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Sources',
+      explain: ['Tofugu — katakana stroke-order and mnemonic guide', 'Wikipedia — Katakana (stroke counts cross-checked against its stroke-order chart)'],
+    },
   ],
 };
+
+// -- N4 Entrance Exam (the staircase gate) -------------------------------
+// Real, graded content for the 'final-quiz' exam gate — previously just a
+// "Pass (test)/Fail (test)" placeholder menu (see library-scene-shared.js's
+// openQuizAttemptMenu/resolveQuizAttempt) with no actual questions. Wired
+// in via this.examContent in buildScene() below, consumed by the shared
+// engine's startExamAttempt(). 20 questions total — 10 multiple-choice,
+// 10 fill-in-the-blank, one per LessonBox page (type: 'exam-question',
+// graded + locked in immediately, no retry) — deliberately spread across
+// all 16 N5 shelves (not just the last few) so passing this actually
+// certifies the whole floor, not just whatever was taught right before
+// the stairs. Every grammar point tested here already went through
+// Task 3's proofreading pass against the shelves' own source set
+// (Tofugu/Wasabi/Bunpro/Tae Kim's Guide/imabi/Jisho.org/JLPT official
+// lists); the trickier particle/conjugation points below were additionally
+// re-verified live against Bunpro/Tae Kim's Guide/Tofugu this session
+// (search results, not authored from memory) — see each question's own
+// comment. altAnswers include a plain-romaji option on every fill blank
+// so a player without an IME isn't penalized for typing romaji instead of
+// kana. Default pass threshold is 70% (14/20 — see the exam-score page's
+// passThreshold field, and startExamAttempt()'s own matching 0.7 default).
+const N4_ENTRANCE_EXAM_PAGES = [
+  {
+    type: 'grammar-intro',
+    sectionLabel: 'N4 Entrance Exam',
+    bigIdea: 'Before climbing to the N4 floor, prove your N5 foundations are solid.',
+    explain: [
+      '20 questions total: 10 multiple-choice, 10 fill-in-the-blank, pulled from every shelf on this floor.',
+      'Answer each one, then click to continue — once you submit an answer, it\'s locked in (no changing your mind, same as a real exam). Score 70% (14/20) or higher to pass.',
+    ],
+  },
+  // --- Multiple choice (10) ---
+  {
+    type: 'exam-question', kind: 'mc', qNum: 1, qTotal: 20,
+    // は = topic marker (distinct from が = subject marker) — confirmed via
+    // Bunpro "が (JLPT N5)" and Tae Kim's Guide topic/subject framing.
+    prompt: 'Which particle marks the topic of a sentence, as in わたし___がくせいです (I am a student)?',
+    choices: ['を', 'は', 'に', 'と'], correctIndex: 1,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 2, qTotal: 20,
+    prompt: 'You\'re holding something and describing it to a friend. Which word means "this (near me)"?',
+    choices: ['それ', 'あれ', 'これ', 'どれ'], correctIndex: 2,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 3, qTotal: 20,
+    prompt: 'Which particle turns a plain statement into a yes/no question, as in がくせいです___?',
+    choices: ['ね', 'か', 'の', 'よ'], correctIndex: 1,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 4, qTotal: 20,
+    prompt: 'How do you read 三人 (three people)?',
+    choices: ['さんじん', 'みっつ', 'さんにん', 'みつり'], correctIndex: 2,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 5, qTotal: 20,
+    prompt: '静か (quiet) is a な-adjective. Which correctly describes "a quiet room"?',
+    choices: ['静かい部屋', '静か部屋', '静かの部屋', '静かな部屋'], correctIndex: 3,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 6, qTotal: 20,
+    prompt: 'Which is the correct polite non-past form of 食べる (to eat)?',
+    choices: ['食べる', '食べた', '食べます', '食べて'], correctIndex: 2,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 7, qTotal: 20,
+    // ましょう = polite volitional "let's" — confirmed via Bunpro
+    // "ましょう (JLPT N5)".
+    prompt: '何をしましょうか means...?',
+    choices: ['What did you do?', 'What shall we do?', 'What do you want?', 'What is this?'], correctIndex: 1,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 8, qTotal: 20,
+    prompt: 'Which sentence means "I did not watch a movie" (polite past-negative)?',
+    choices: ['映画を見ました', '映画を見ないでした', '映画を見ませんでした', '映画を見ません'], correctIndex: 2,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 9, qTotal: 20,
+    prompt: 'Which verb is used for the existence of a person, as in がくせいが___ (there is a student)?',
+    choices: ['します', 'あります', 'できます', 'います'], correctIndex: 3,
+  },
+  {
+    type: 'exam-question', kind: 'mc', qNum: 10, qTotal: 20,
+    prompt: 'What does おやすみなさい mean?',
+    choices: ['Goodbye', 'Good morning', 'Good night', 'Excuse me'], correctIndex: 2,
+  },
+  // --- Fill in the blank (10) ---
+  {
+    type: 'exam-question', kind: 'fill', qNum: 11, qTotal: 20,
+    prompt: 'Fill in the blank: を marks the direct object of a verb.',
+    before: 'わたしはパン', after: 'たべます。', answer: 'を', altAnswers: ['o', 'wo'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 12, qTotal: 20,
+    // なに contracts to なん before です/だ (euphonic change) — a standard
+    // N5 point, re-confirmed this session (JLPT-focused grammar sources).
+    prompt: 'Fill in the blank ("What is your name?") — なに contracts to a shorter reading right before です.',
+    before: 'おなまえは', after: 'ですか。', answer: 'なん', altAnswers: ['何', 'nan'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 13, qTotal: 20,
+    prompt: 'Fill in the blank: what do you say right before eating a meal?',
+    before: 'ごはんをたべるまえに「', after: '」といいます。', answer: 'いただきます', altAnswers: ['itadakimasu'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 14, qTotal: 20,
+    prompt: 'Fill in the blank ("This is my pen") — の marks possession.',
+    before: 'これはわたし', after: 'ペンです。', answer: 'の', altAnswers: ['no'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 15, qTotal: 20,
+    prompt: 'Fill in the blank ("Please wait a moment") — て-form + ください makes a polite request.',
+    before: 'ちょっとまって', after: '。', answer: 'ください', altAnswers: ['kudasai'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 16, qTotal: 20,
+    // で marks WHERE an action happens (studying/eating/working) — distinct
+    // from に (location of existence / destination), re-verified this
+    // session against Bunpro's に/で particle entries.
+    prompt: 'Fill in the blank ("I study at the library") — で marks where an action takes place.',
+    before: 'としょかん', after: 'べんきょうします。', answer: 'で', altAnswers: ['de'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 17, qTotal: 20,
+    prompt: 'Fill in the blank ("I, too, am a student") — も means "also".',
+    before: 'わたし', after: 'がくせいです。', answer: 'も', altAnswers: ['mo'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 18, qTotal: 20,
+    prompt: 'Fill in the blank ("Yesterday, I watched a movie") — polite past tense of 見る.',
+    before: 'きのう、えいがを', after: '。', answer: 'みました', altAnswers: ['mimashita'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 19, qTotal: 20,
+    prompt: 'Fill in the blank ("Every morning, I wake up at 7 o\'clock") — に marks a specific clock time.',
+    before: 'まいあさ、しちじ', after: 'おきます。', answer: 'に', altAnswers: ['ni'],
+  },
+  {
+    type: 'exam-question', kind: 'fill', qNum: 20, qTotal: 20,
+    // い-adjective negative: たかい → たかくない (よくない is the one irregular
+    // exception, for いい — not tested here) — confirmed via Tofugu's
+    // "い-Adjective Negative Form くない" this session.
+    prompt: 'Fill in the blank ("This book isn\'t expensive") — negative form of たかい.',
+    before: 'このほんは', after: '。', answer: 'たかくないです', altAnswers: ['たかくない', 'takakunaidesu', 'takakunai'],
+  },
+  {
+    type: 'exam-score',
+    title: 'N4 Entrance Exam',
+    passThreshold: 0.7,
+  },
+  {
+    type: 'grammar-intro',
+    sectionLabel: 'Sources',
+    explain: [
+      'Bunpro — が/は topic vs. subject marker, を object marker, に/で particle usage, ましょう volitional, JLPT N5 grammar index',
+      'Tae Kim\'s Guide to Japanese Grammar — topic/subject distinction, adjective conjugation',
+      'Tofugu — い-adjective negative form (くない / よくない)',
+      'JLPT official N5 vocabulary and grammar lists, cross-checked against the same source set used for every N5 shelf (see Task 3\'s proofreading pass)',
+    ],
+  },
+];
+const EXAM_CONTENT = { 'final-quiz': N4_ENTRANCE_EXAM_PAGES };
 
 // Builds the lesson-end recap page (LessonBox type: 'summary') from
 // whatever 'greeting' pages a lesson has, and appends it — generic to
@@ -7370,6 +7795,54 @@ function catFrameRange(rowKey) {
   const start = row * CAT_SHEET_COLS;
   return { start, end: start + count - 1 };
 }
+
+// Run sheets — dedicated 5-col x 4-row @ 64px spritesheets, one per
+// color, added per explicit "add running sprites... speed up the time to
+// view the library... if the cat can run as well as walk" request.
+// Built by re-packing the user-supplied Aseprite exports
+// (<color>cat-running.ase) into a uniform grid via a one-off Python pass
+// (connected-component blob detection per row, since the hand-placed
+// source frames weren't on a fixed grid to begin with) — see
+// assets/images/avatars/<color>cat-run-sheet.png. Row layout confirmed by
+// visual inspection of the decoded source art (not assumed): row0=run
+// toward camera (4f), row1=run away from camera (4f), row2=run facing
+// right (5f), row3=run facing left (5f) — same 4-direction convention as
+// CAT_SHEET_ROWS' walk rows, just a separate sheet/column-count.
+const RUN_SHEETS = {
+  orange: { key: 'orangeCatRunSheet', path: '../../assets/images/avatars/orangecat-run-sheet.png' },
+  black: { key: 'blackCatRunSheet', path: '../../assets/images/avatars/blackcat-run-sheet.png' },
+  white: { key: 'whiteCatRunSheet', path: '../../assets/images/avatars/whitecat-run-sheet.png' },
+};
+const RUN_SHEET_COLS = 5;
+const RUN_SHEET_ROWS = {
+  runDown: { row: 0, count: 4 },
+  runUp: { row: 1, count: 4 },
+  runRight: { row: 2, count: 5 },
+  runLeft: { row: 3, count: 5 },
+};
+function runFrameRange(rowKey) {
+  const { row, count } = RUN_SHEET_ROWS[rowKey];
+  const start = row * RUN_SHEET_COLS;
+  return { start, end: start + count - 1 };
+}
+
+// Sleep sheets — dedicated 14-col x 1-row @ 64px spritesheet per color
+// (same repacking technique as RUN_SHEETS), added for the "lay down when
+// idle" request. Frames 0-9 are a one-shot sit -> curl -> fully-asleep
+// sequence; 6-9 (the fully-curled poses) loop afterward as a gentle
+// breathing idle. Frames 10-13 (stretch + dash off, already in the source
+// art) aren't used yet — reserved for a future "waking up" transition.
+const SLEEP_SHEETS = {
+  orange: { key: 'orangeCatSleepSheet', path: '../../assets/images/avatars/orangecat-sleep-sheet.png' },
+  black: { key: 'blackCatSleepSheet', path: '../../assets/images/avatars/blackcat-sleep-sheet.png' },
+  white: { key: 'whiteCatSleepSheet', path: '../../assets/images/avatars/whitecat-sleep-sheet.png' },
+};
+// How long (ms) with zero movement before the player cat lies down and
+// falls asleep — see updatePlayerAnimation().
+const IDLE_SLEEP_MS = 10000;
+// Speed multiplier while the run key (Shift) is held — see update().
+const RUN_SPEED_MULTIPLIER = 1.8;
+
 const CAT_COLOR_ORDER = ['orange', 'black', 'white'];
 // Both thresholds must exceed the realistic minimum approach distance:
 // every shelf/pile has a solid collision body (addSolid), so the player
@@ -7445,6 +7918,10 @@ function loadCatSpritesheets(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
     scene.load.spritesheet(c.key, c.path, { frameWidth: 64, frameHeight: 64 });
+    const r = RUN_SHEETS[id];
+    scene.load.spritesheet(r.key, r.path, { frameWidth: 64, frameHeight: 64 });
+    const s = SLEEP_SHEETS[id];
+    scene.load.spritesheet(s.key, s.path, { frameWidth: 64, frameHeight: 64 });
   });
 }
 
@@ -7460,6 +7937,16 @@ const CAT_ANIM_DEFS = [
   { suffix: 'walk-left', rowKey: 'walkLeft', frameRate: 10 },
   { suffix: 'walk-right', rowKey: 'walkRight', frameRate: 10 },
 ];
+// Same naming convention as CAT_ANIM_DEFS (`${colorId}-run-${dir}`), just
+// sourced from RUN_SHEETS instead of CAT_COLORS, and played at a faster
+// frameRate so the gait itself reads as quicker, not just the underlying
+// movement speed.
+const RUN_ANIM_DEFS = [
+  { suffix: 'run-down', rowKey: 'runDown', frameRate: 14 },
+  { suffix: 'run-up', rowKey: 'runUp', frameRate: 14 },
+  { suffix: 'run-left', rowKey: 'runLeft', frameRate: 16 },
+  { suffix: 'run-right', rowKey: 'runRight', frameRate: 16 },
+];
 function registerCatAnimations(scene) {
   CAT_COLOR_ORDER.forEach((id) => {
     const c = CAT_COLORS[id];
@@ -7473,6 +7960,39 @@ function registerCatAnimations(scene) {
         repeat: -1,
       });
     });
+
+    const runSheetKey = RUN_SHEETS[id].key;
+    RUN_ANIM_DEFS.forEach((def) => {
+      const animKey = `${id}-${def.suffix}`;
+      if (scene.anims.exists(animKey)) return;
+      scene.anims.create({
+        key: animKey,
+        frames: scene.anims.generateFrameNumbers(runSheetKey, runFrameRange(def.rowKey)),
+        frameRate: def.frameRate,
+        repeat: -1,
+      });
+    });
+
+    // Sleep — a one-shot "fall asleep" anim (frames 0-9: sit -> curl up
+    // -> fully asleep), plays ONCE (repeat: 0) and then just holds on its
+    // last frame — Phaser leaves a non-repeating animation's final frame
+    // showing once it completes, it doesn't reset or need a follow-up
+    // anim. Originally chained into a repeat:-1 loop over frames 6-9, but
+    // those 4 frames aren't a subtle breathing cycle — they visibly turn
+    // the cat's head/tuck side to side, which looped forever read as
+    // "tossing and turning" instead of settling down (explicit bug
+    // report). One turn into the curled pose, then stay there, is what
+    // was actually wanted.
+    const sleepSheetKey = SLEEP_SHEETS[id].key;
+    const sleepFallKey = `${id}-sleep-fall`;
+    if (!scene.anims.exists(sleepFallKey)) {
+      scene.anims.create({
+        key: sleepFallKey,
+        frames: scene.anims.generateFrameNumbers(sleepSheetKey, { start: 0, end: 9 }),
+        frameRate: 8,
+        repeat: 0,
+      });
+    }
   });
 }
 
@@ -7523,12 +8043,18 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
   const rivet = '#c9a66b';
   const ink = '#e8d4a8';
   const textStyle = {
-    // Was '"Press Start 2P", "DotGothic16", monospace' -- too blocky/blurry
-    // at plaque sizes. VT323 (self-hosted, already loaded via
-    // lesson-box.css's @font-face) is this game's own established
-    // "readable at header-or-bigger sizes" retro face; DotGothic16 stays
-    // as the fallback for Japanese-character coverage VT323 lacks.
-    fontFamily: '"VT323", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
+    // Was '"Press Start 2P", "DotGothic16", monospace' (too blocky/blurry
+    // at plaque sizes), then '"VT323", "DotGothic16", monospace' (this
+    // game's general "readable at header-or-bigger sizes" retro face).
+    // Switched to Space Mono per explicit request to give shelf plaque
+    // titles specifically (not dialogue/HUD/buttons) their own distinct
+    // look — self-hosted the same way as VT323/Space Grotesk/Datatype
+    // (see lesson-box.css's @font-face block) rather than a Google Fonts
+    // link, matching this project's established convention. Space Mono
+    // has no Japanese glyphs, so DotGothic16 stays as the fallback for any
+    // plaque title (e.g. shelf-03's "A は B です") that mixes Japanese
+    // characters into the title text.
+    fontFamily: '"Space Mono", "DotGothic16", monospace', fontSize: fontSize + 'px', color: ink,
     align: 'center', wordWrap: { width: maxWidth - paddingX * 2, useAdvancedWrap: true },
   };
 
@@ -7733,6 +8259,13 @@ class LibraryScene extends Phaser.Scene {
     // opens every lesson's "print the full list" PDF in one place (see
     // buildVocabPressStation). Square 1024x1024 source, no crop needed.
     this.load.image('gutenbergPress', '../../assets/images/lesson/gutenberg-press-Original.png');
+    // Kanji Easel prop (see buildKanjiEasel) — a blank wooden tripod
+    // easel image the user supplied, already pre-cropped to its true
+    // alpha bounding box (693x870) via a one-off Python/PIL pass so it
+    // loads as a tight sprite with no transparent padding to account for
+    // in placement math, matching the convention every other standalone
+    // prop image in this preload() already follows.
+    this.load.image('kanjiEaselRaw', '../../assets/images/ui/easel-tripod-cropped.png');
     // Calico sensei — a stationary NPC sitting at the reception desk.
     // Loaded as a plain image, not a spritesheet: the source PNG (decoded
     // from the .aseprite file, no exported PNG existed yet) holds 3
@@ -7798,6 +8331,10 @@ class LibraryScene extends Phaser.Scene {
     this.printLinksByShelf = PRINT_LINKS_BY_SHELF;
     this.allPrintLinks = ALL_PRINT_LINKS;
     this.lessonContent = LESSON_CONTENT;
+    // Real N4 entrance exam content for the 'final-quiz' staircase gate
+    // (see openQuizAttemptMenu/startExamAttempt in library-scene-shared.js)
+    // — was a "Pass (test)/Fail (test)" placeholder menu until this pass.
+    this.examContent = EXAM_CONTENT;
     this.quizGateKey = 'nekoBunko.n5.quizGate'; // was the module-level QUIZ_GATE_KEY
     this.catColors = CAT_COLORS;
     this.talkColorPaths = TALK_COLOR_PATHS;
@@ -8317,10 +8854,32 @@ class LibraryScene extends Phaser.Scene {
 
     // Globe, centered on the corridor per the requested layout — non-
     // solid like every other decor piece, so centering it doesn't block
-    // auto-walk (no collider is ever added for it).
+    // auto-walk (no collider is ever added for it). Clickable: opens the
+    // in-canvas library map panel (kind: 'map', openLibraryMap()/
+    // closeLibraryMap() below) — same click/keyboard-interact path as
+    // every other prop, wired via handleInteractiveClick like the press/
+    // easel/sensei. (An earlier version of this panel was built, then
+    // fully scrapped per "completely scratch the map" feedback and
+    // replaced with a chat-delivered widget; this is a fresh rebuild of
+    // the in-game feature per explicit "bring that back to the globe as
+    // the map" follow-up — same visual design as the widget: Zone
+    // 2 (1-8, left/spawn side) and Zone 1 (9-16, right/staircase side,
+    // gated behind Zone 2's review piles), a gate banner, review badges,
+    // shelf-list cards, a corridor globe marker, an arrival bar, and a
+    // legend.)
     const globeX = WORLD_W / 2 - ASSET_RECTS.globe.w / 2;
     const globeY = LAYOUT.carpetGlobeY - ASSET_RECTS.globe.h / 2;
-    this.furnitureSprites.globe = this.add.image(globeX, globeY, globeKey).setOrigin(0, 0).setDepth(1);
+    const globeSprite = this.add.image(globeX, globeY, globeKey).setOrigin(0, 0).setDepth(1);
+    this.furnitureSprites.globe = globeSprite;
+    const globeEntry = {
+      id: 'library-map', kind: 'map', title: 'Library Map',
+      sprite: globeSprite,
+      x: globeX + ASSET_RECTS.globe.w / 2, y: globeY + ASSET_RECTS.globe.h / 2,
+      baseScale: 1,
+    };
+    globeSprite.setInteractive({ useHandCursor: true });
+    globeSprite.on('pointerdown', () => this.handleInteractiveClick(globeEntry));
+    this.interactives.push(globeEntry);
 
     // Two carpet accents — moved out from flanking the globe to sitting
     // below each shelf column instead (x centered on that column's own
@@ -8401,42 +8960,6 @@ class LibraryScene extends Phaser.Scene {
       .image(rightPairRightEdge + loveseatGap + loveseatW / 2, loveseatY, loveseatKey)
       .setOrigin(0.5, 0.5).setDepth(1).setDisplaySize(loveseatW, loveseatH).setFlipX(true);
 
-    // 2 interactive TVs — hiragana (left) / katakana (right) reference
-    // kiosks, per explicit request: "above the carpet in front of the
-    // sofa" reads as TV-then-rug-then-sofa stacked north to south (same
-    // arrangement a real living room uses), so each TV sits just above
-    // (north of) that side's accent rug, on the opposite side of the rug
-    // from its sofa pair. Always-available content (kind: 'npc', same
-    // pattern buildReceptionSensei uses for Neko-sensei) rather than
-    // gated shelf/pile content — no lock state, just click to open.
-    // setScale (not setDisplaySize), same reason as buildReceptionSensei:
-    // update()'s proximity pulse calls entry.sprite.setScale(entry.
-    // baseScale * ...) every frame while nearest, which would silently
-    // fight a setDisplaySize-derived size.
-    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'tvCabinetTex');
-    // Bumped 1.3->1.5 per explicit "make the TV a few pixels bigger"
-    // feedback, alongside the tvCabinet re-crop above.
-    const tvScale = 1.5;
-    const tvDisplayW = ASSET_RECTS.tvCabinet.w * tvScale;
-    const tvDisplayH = ASSET_RECTS.tvCabinet.h * tvScale;
-    const carpetTopY = LAYOUT.carpetGlobeY - carpetH / 2;
-    const tvGap = 14;
-    const tvCenterY = carpetTopY - tvGap - tvDisplayH / 2;
-    const buildTV = (cx, id, title) => {
-      const tv = this.add.image(cx, tvCenterY, tvKey)
-        .setOrigin(0.5, 0.5).setScale(tvScale).setDepth(1);
-      const entry = {
-        id, kind: 'npc', title,
-        sprite: tv, x: cx, y: tvCenterY,
-        baseScale: tvScale,
-      };
-      tv.setInteractive({ useHandCursor: true });
-      tv.on('pointerdown', () => this.handleInteractiveClick(entry));
-      this.interactives.push(entry);
-    };
-    buildTV(leftShelfColCenterX, 'tv-hiragana', 'Hiragana Viewer');
-    buildTV(rightShelfColCenterX, 'tv-katakana', 'Katakana Viewer');
-
     // 2 shoe cabinets, symmetric, flanking the corridor between
     // reception and spawn — per the reference diagram's "CAB CAB". The
     // crop rect was re-measured twice: first pass ({x:176,y:80,w:39,h:80})
@@ -8455,13 +8978,62 @@ class LibraryScene extends Phaser.Scene {
     const shoeCabinetW = ASSET_RECTS.shoeCabinet.w * shoeCabinetScale;
     const shoeCabinetH = ASSET_RECTS.shoeCabinet.h * shoeCabinetScale;
     const cabinetY = LAYOUT.spawnY - shoeCabinetH;
+    const shoeCabinetLeftX = WORLD_W / 2 - 120 - shoeCabinetW;
+    const shoeCabinetRightX = WORLD_W / 2 + 120;
     this.furnitureSprites.shoeCabinetLeft = this.add
-      .image(WORLD_W / 2 - 120 - shoeCabinetW, cabinetY, shoeCabinetKey)
+      .image(shoeCabinetLeftX, cabinetY, shoeCabinetKey)
       .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
     this.furnitureSprites.shoeCabinetRight = this.add
-      .image(WORLD_W / 2 + 120, cabinetY, shoeCabinetKey)
+      .image(shoeCabinetRightX, cabinetY, shoeCabinetKey)
       .setOrigin(0, 0).setDepth(1).setDisplaySize(shoeCabinetW, shoeCabinetH);
+
+    // The shoe cabinets themselves are now the hiragana (left) / katakana
+    // (right) trigger — per explicit follow-up: "transferring the
+    // information into the shoeboxes instead and it being the trigger
+    // instead of the TV's... return back to the old position the TV...
+    // put all the information into the shoecabinet." Reuses the SAME
+    // 'tv-hiragana'/'tv-katakana' LESSON_CONTENT ids as before (see
+    // buildTV below, which now only draws the decorative TV back at its
+    // original spot) so no content needed to change, only which physical
+    // prop opens it — and it's still the very first interactive past
+    // spawn, satisfying the earlier "all characters in the beginning"
+    // request without needing a separate TV prop at the entrance at all.
+    // Origin is (0,0) (top-left), unlike buildTV's (0.5,0.5) sprites
+    // below, so x/y for the interactive entry (and the proximity-pulse
+    // scale center) use the cabinet's own visual center instead of its
+    // image() anchor point.
+    const cabinetInteractives = [
+      { sprite: this.furnitureSprites.shoeCabinetLeft, x: shoeCabinetLeftX, id: 'tv-hiragana', title: 'Hiragana Viewer' },
+      { sprite: this.furnitureSprites.shoeCabinetRight, x: shoeCabinetRightX, id: 'tv-katakana', title: 'Katakana Viewer' },
+    ];
+    cabinetInteractives.forEach(({ sprite, x, id, title }) => {
+      const entry = {
+        id, kind: 'npc', title,
+        sprite, x: x + shoeCabinetW / 2, y: cabinetY + shoeCabinetH / 2,
+        baseScale: shoeCabinetScale,
+      };
+      sprite.setInteractive({ useHandCursor: true });
+      sprite.on('pointerdown', () => this.handleInteractiveClick(entry));
+      this.interactives.push(entry);
+    });
+
+    // Decorative TVs — restored to their ORIGINAL spot above the
+    // sofa-area accent rug (per the same follow-up feedback above) but no
+    // longer clickable — the hiragana/katakana content lives on the shoe
+    // cabinets now (see above). Kept purely as set dressing so the rest
+    // area still reads as a "TV nook" visually, same reasoning a real
+    // living room has a TV whether or not it's "the" place you go to
+    // learn something.
+    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'tvCabinetTex');
+    const tvScale = 1.5;
+    const tvDisplayH = ASSET_RECTS.tvCabinet.h * tvScale;
+    const carpetTopY = LAYOUT.carpetGlobeY - carpetH / 2;
+    const tvGap = 14;
+    const tvCenterY = carpetTopY - tvGap - tvDisplayH / 2;
+    this.add.image(leftShelfColCenterX, tvCenterY, tvKey).setOrigin(0.5, 0.5).setScale(tvScale).setDepth(1);
+    this.add.image(rightShelfColCenterX, tvCenterY, tvKey).setOrigin(0.5, 0.5).setScale(tvScale).setDepth(1);
   }
+
 
   // -- 16 lesson shelves, two zones (Round 4 relayout) --------------------
   // Zone 2 (shelves 1-8) sits near spawn; Zone 1 (shelves 9-16) sits near
@@ -8610,8 +9182,24 @@ class LibraryScene extends Phaser.Scene {
       // shelf's own edges — the (now scaled-up) gap between shelves in
       // the same column pair has room for this without the plaque
       // colliding with its neighbor.
+      //
+      // shelf-12 gets a slightly smaller fontSize than every other N5
+      // plaque: Space Mono's characters measure ~53% wider than VT323's
+      // at the same size (checked against both fonts' actual hmtx advance
+      // widths), and shelf-12's title is the one N5 plaque long/mixed
+      // enough (`Volitional & Invitations (～ましょう・～ませんか)`) that
+      // this pushed it from 2 lines to 3 at the default size 10 — the 3rd
+      // line's extra height was tight against zone 1's own shelfRowGap
+      // clearance to the row below. 8.5 brings it back to 2 lines inside
+      // the *same* maxWidth (no horizontal widening, so no new collision
+      // risk with the neighboring shelf's own plaque). Every other N5
+      // title already fits in the same line count at size 10 with Space
+      // Mono as it did with VT323, so this override is scoped to just
+      // this one shelf rather than shrinking every plaque's font.
+      const plaqueFontSize = lesson.id === 'shelf-12' ? 8.5 : 10;
       const label = createBookshelfLabel(this, x + shelfW / 2, y + shelfH - 20, lesson.title, {
         maxWidth: shelfW + 20,
+        fontSize: plaqueFontSize,
       });
       label.bg.setDepth(2);
       label.label.setDepth(3);
@@ -8796,6 +9384,7 @@ class LibraryScene extends Phaser.Scene {
 
     this.buildReceptionSensei(chairX + chairW / 2, chairY, chairH);
     this.buildVocabPressStation(originX, originY + 10, deskH);
+    this.buildKanjiEasel(originX, originY + 10, deskW, deskH);
   }
 
   // Vocabulary Press prop, side-by-side with the reception desk (west of
@@ -8813,11 +9402,19 @@ class LibraryScene extends Phaser.Scene {
   // (from buildReception, not re-derived) so this lines up with it
   // regardless of future desk resizes.
   buildVocabPressStation(deskOriginX, deskOriginY, deskH) {
-    const pressDisplay = 90; // was 80, bumped +10px per explicit request — now matches N4's own press size
+    // Bumped 90->100 per explicit "make them [press+easel] the same
+    // size" feedback — now matches the Kanji Easel's own 100px display
+    // height (see buildKanjiEasel's easelDisplayH) instead of the two
+    // props reading as slightly mismatched sizes standing side by side.
+    const pressDisplay = 100;
     const pressScale = pressDisplay / 1024;
     const pressGap = 24; // clearance west of the desk's left edge
-    const pressX = deskOriginX - pressGap - pressDisplay / 2;
-    const pressY = deskOriginY + deskH / 2; // vertically centered on the desk's own height
+    // +12 right / -10 up (north) per explicit "move it up a bit right
+    // and then north like a few pixels" feedback.
+    const pressNudgeX = 12;
+    const pressNudgeY = -10;
+    const pressX = deskOriginX - pressGap - pressDisplay / 2 + pressNudgeX;
+    const pressY = deskOriginY + deskH / 2 + pressNudgeY; // vertically centered on the desk's own height, then nudged north
     const press = this.add.image(pressX, pressY, 'gutenbergPress')
       .setOrigin(0.5, 0.5).setDepth(1).setScale(pressScale);
 
@@ -8829,6 +9426,61 @@ class LibraryScene extends Phaser.Scene {
     press.setInteractive({ useHandCursor: true });
     press.on('pointerdown', () => this.handleInteractiveClick(printerEntry));
     this.interactives.push(printerEntry);
+  }
+
+  // Kanji Easel prop, mirrored on the EAST side of the reception desk
+  // (the Vocabulary Press sits west of it — see buildVocabPressStation
+  // just above) — a blank wooden tripod easel (kanjiEaselRaw, user-
+  // supplied asset) standing in for a "reference board." Always-available
+  // interactive (kind: 'npc', same pattern as the press/sensei/TVs) that
+  // opens a paginated lookup table of every kanji word taught on this
+  // floor (LESSON_CONTENT['kanji-easel'], built by the shared
+  // buildKanjiEaselPages() helper from N5_KANJI_EASEL_WORDS) — a quick
+  // reference, not a gated lesson, added per explicit request to give
+  // players a dedicated place for kanji-recognition practice/lookup
+  // instead of testing bare kanji recall inside ordinary vocab/grammar
+  // shelf "try-it" pages (see the reading-caption change on those pages
+  // earlier in this file).
+  // deskOriginX/deskOriginY/deskW/deskH are the desk's own placed
+  // position/size (from buildReception, not re-derived) so this lines up
+  // with it regardless of future desk resizes.
+  buildKanjiEasel(deskOriginX, deskOriginY, deskW, deskH) {
+    // Source image is 693x870 (tall, narrow) — displayed at the same
+    // rough "standing prop" height as the press (90px square) but kept
+    // at its native aspect ratio instead of being squashed to a square.
+    const easelDisplayH = 100;
+    const easelScale = easelDisplayH / 870;
+    const easelDisplayW = 693 * easelScale;
+    const easelGap = 24; // clearance east of the desk's right edge, mirrors pressGap
+    const easelX = deskOriginX + deskW + easelGap + easelDisplayW / 2;
+    const easelY = deskOriginY + deskH / 2; // vertically centered on the desk's own height, same as the press
+    const easel = this.add.image(easelX, easelY, 'kanjiEaselRaw')
+      .setOrigin(0.5, 0.5).setDepth(1).setScale(easelScale);
+
+    // "漢字" written on the easel's own whiteboard area, per explicit
+    // "put kanji lettering in the easel to make it obvious that's the
+    // item to click for KANJI" feedback — without this the easel just
+    // looked like a blank prop with no visual hint of what it does.
+    // Offset measured directly off the source PNG: the whiteboard's own
+    // opaque near-white bounding box is x:69-450, y:99-446 out of the
+    // full 693x870 canvas, centered at (259.5, 272.5) — 87px left / 162.5px
+    // up from the sprite's own center (346.5, 435) at native scale, scaled
+    // by the same easelScale the sprite itself uses so this stays correct
+    // if the easel's display size is ever retuned again.
+    this.add.text(easelX - 87 * easelScale, easelY - 162.5 * easelScale, '漢字', {
+      fontFamily: '"DotGothic16", "Press Start 2P", monospace',
+      fontSize: `${Math.round(24 * (easelDisplayH / 100))}px`, // scales with easelDisplayH, tuned to read clearly at the 100px baseline size
+      color: '#2a1f14',
+    }).setOrigin(0.5, 0.5).setDepth(2);
+
+    const easelEntry = {
+      id: 'kanji-easel', kind: 'npc', title: 'Kanji Easel',
+      sprite: easel, x: easelX, y: easelY,
+      baseScale: easelScale,
+    };
+    easel.setInteractive({ useHandCursor: true });
+    easel.on('pointerdown', () => this.handleInteractiveClick(easelEntry));
+    this.interactives.push(easelEntry);
   }
 
   // Calico sensei — sits in the reception chair, idling while she waits
@@ -8928,6 +9580,13 @@ class LibraryScene extends Phaser.Scene {
     this.retroMenu = null;
     this.retroUpKeyWasDown = false;
     this.retroDownKeyWasDown = false;
+
+    // Idle-sleep tracking (see updatePlayerAnimation()) — starts "fresh"
+    // as of spawn, not already idle, so the cat doesn't fall asleep
+    // instantly on load.
+    this.lastActivityTime = this.time.now;
+    this.isSleeping = false;
+    this.isRunning = false;
   }
 
   // Called by CatSelectScene when reopened mid-game via the HUD "Change"
@@ -8952,17 +9611,45 @@ class LibraryScene extends Phaser.Scene {
   // on every branch, not just once, so re-entering the same direction
   // every tick doesn't restart the anim from frame 0 (that would show as
   // a visible pop/stutter every frame while holding a direction).
+  // Extended (was just idle/walk) to also handle: (a) the run cycle
+  // while this.isRunning is true (set in update() from the Shift key),
+  // and (b) falling asleep after IDLE_SLEEP_MS of zero movement, per
+  // explicit "add running... and a laying down cat when idle 10secs"
+  // request. panelOpen (a menu/lesson open) resets the idle clock in
+  // update() before this runs, so reading a lesson never counts toward
+  // the idle timer.
   updatePlayerAnimation() {
     const vel = this.player.body.velocity;
     const moving = Math.abs(vel.x) > 0.5 || Math.abs(vel.y) > 0.5;
+    const now = this.time.now;
     if (moving) {
+      this.lastActivityTime = now;
+      this.isSleeping = false;
       const dir = Math.abs(vel.x) > Math.abs(vel.y)
         ? (vel.x > 0 ? 'right' : 'left')
         : (vel.y > 0 ? 'down' : 'up');
-      this.player.play(`${this.catColorId}-walk-${dir}`, true);
-    } else {
-      this.player.play(`${this.catColorId}-idle`, true);
+      const gait = this.isRunning ? 'run' : 'walk';
+      this.player.play(`${this.catColorId}-${gait}-${dir}`, true);
+      return;
     }
+    if (now - this.lastActivityTime >= IDLE_SLEEP_MS) {
+      if (!this.isSleeping) {
+        this.isSleeping = true;
+        // Plays the sit -> curl -> asleep sequence ONCE (repeat: 0 on
+        // this anim — see registerCatAnimations) and then just holds on
+        // its last frame; no follow-up loop. The `if (!this.isSleeping)`
+        // guard above means this never re-fires (and never restarts the
+        // cat mid-curl back to a sitting pose) for as long as the player
+        // stays idle — was previously chaining into a repeat:-1 loop
+        // over 4 frames that visibly turned the cat's head back and
+        // forth forever, which read as "tossing and turning" instead of
+        // settling down (explicit bug report: "only turn 1 and sleep").
+        this.player.play(`${this.catColorId}-sleep-fall`, true);
+      }
+      return; // leave the sleep anim (mid-play or already settled) alone
+    }
+    this.isSleeping = false;
+    this.player.play(`${this.catColorId}-idle`, true);
   }
 
   addSolid(x, y, w, h) {
@@ -8984,6 +9671,16 @@ class LibraryScene extends Phaser.Scene {
     this.scene.launch('DirectionMapScene', { catColorId: this.catColorId });
   }
 
+  // Launches the clickable library map overlay (see LibraryMapScene, far
+  // below) — same pause/launch pattern as launchDirectionMap() just above.
+  // Called from library-scene-shared.js's openInteraction() for the
+  // globe's kind: 'map' entry.
+  openLibraryMap() {
+    this.closeRetroMenu();
+    this.scene.pause('LibraryScene');
+    this.scene.launch('LibraryMapScene', { progress: this.progress });
+  }
+
   // -- Per-frame update: movement, auto-walk, proximity glow -------------
 
   update() {
@@ -8992,6 +9689,10 @@ class LibraryScene extends Phaser.Scene {
     // calling update() on the very next frame regardless, before this.player
     // exists yet. Bail out until buildScene() has actually run.
     if (!this.player) return;
+    // Reading a lesson/menu doesn't count as "idle" toward the sleep
+    // timer — reset it every frame the panel's open so the cat is never
+    // already asleep the moment a long lesson closes.
+    if (this.panelOpen) this.lastActivityTime = this.time.now;
     this.updatePlayerAnimation();
     if (this.panelOpen) {
       this.player.setVelocity(0, 0);
@@ -8999,7 +9700,13 @@ class LibraryScene extends Phaser.Scene {
       return;
     }
 
-    const SPEED = 140;
+    // Hold Shift to run — faster movement + the run-cycle animation (see
+    // updatePlayerAnimation()), added per explicit "speed up the time to
+    // view the library... if the cat can run as well as walk" request.
+    // Applies to both auto-walk (moveQueue, below) and direct keyboard
+    // movement, not just one or the other.
+    this.isRunning = !!(this.runKey && this.runKey.isDown);
+    const SPEED = this.isRunning ? 140 * RUN_SPEED_MULTIPLIER : 140;
     let vx = 0;
     let vy = 0;
 
@@ -9827,6 +10534,201 @@ class DirectionMapScene extends Phaser.Scene {
   }
 }
 
+// -- Library Map overlay scene -------------------------------------------
+// Launched from LibraryScene by interacting with the corridor globe
+// (kind: 'map' interactive — see buildFurniture()/openInteraction()) as a
+// full-screen overlay scene, same this.scene.pause + this.scene.launch +
+// (this scene's own) this.scene.stop/resume pattern DirectionMapScene
+// above uses for "Walk the Route" — not a LessonBox popup or the small
+// retro menu, since this needs a wide 2-column card layout neither of
+// those can fit. Visual design matches the chat widget the user approved
+// (n5_first_floor_visual_mockup) exactly: a two-column "Zone 2 (shelves
+// 1-8, left) / Zone 1 (shelves 9-16, right)" comparison, a gate banner,
+// review-pile badge headers + shelf-list cards per 4-shelf block, a
+// corridor globe marker between the two card rows, an arrival bar, and a
+// legend — except every block's locked/available/completed state here is
+// read live off the real player progress passed in from LibraryScene
+// (the chat widget had no game state to read, so it was static).
+const LIBMAP_TEXT_RESOLUTION = 3;
+const LIBMAP_FONT = '"Space Mono", "DotGothic16", monospace';
+const LIBMAP_COLORS = {
+  bg: 0x150f0a, border: 0x8a6a3a,
+  gate: { bg: 0x1c1630, border: 0x6a4fae, text: '#c9bdf0' },
+  active: { border: 0xc9a66b, bg: 0x1a1410, text: '#e8d4a8', header: '#F0C674' },
+  locked: { border: 0x5a4fa0, bg: 0x141018, text: '#5c5678', header: '#8a83ae' },
+  globe: { border: 0x4a90d9, bg: 0x0f1e2e, text: '#8ec1f0' },
+  arrival: { border: 0x3ca35c, bg: 0x16321f, text: '#8fd8a5' },
+  gold: '#F0C674', muted: '#8a7a5e',
+};
+const LIBMAP_BLOCKS = [
+  { shelves: ['shelf-01', 'shelf-02', 'shelf-03', 'shelf-04'], reviewTitle: 'Foundations Review', gate: null, label: 'Zone 2', range: '1-4' },
+  { shelves: ['shelf-05', 'shelf-06', 'shelf-07', 'shelf-08'], reviewTitle: 'Everyday Vocabulary Review', gate: 'review-1', label: 'Zone 2', range: '5-8' },
+  { shelves: ['shelf-09', 'shelf-10', 'shelf-11', 'shelf-12'], reviewTitle: 'Core Grammar Review', gate: 'review-2', label: 'Zone 1', range: '9-12' },
+  { shelves: ['shelf-13', 'shelf-14', 'shelf-15', 'shelf-16'], reviewTitle: 'Grammar Mastery Review', gate: 'review-3', label: 'Zone 1', range: '13-16' },
+];
+
+class LibraryMapScene extends Phaser.Scene {
+  constructor() {
+    super('LibraryMapScene');
+  }
+
+  init(data) {
+    this.mapProgress = (data && data.progress) || {};
+  }
+
+  create() {
+    this.add.rectangle(0, 0, 768, 480, 0x0a0705).setOrigin(0, 0).setDepth(0);
+    this.ensureLibMapFontsReady().then(() => this.buildScene());
+  }
+
+  // Same reasoning as DirectionMapScene.ensureDirmapFontsReady() just
+  // above — bake text in only once the real webfont is actually available,
+  // rather than risk it silently rasterizing with a browser fallback font
+  // that never gets swapped in later.
+  async ensureLibMapFontsReady() {
+    try {
+      await Promise.all([
+        document.fonts.load('16px "Space Mono"'),
+        document.fonts.load('16px "DotGothic16"'),
+        document.fonts.ready,
+      ]);
+    } catch (e) {
+      // Font Loading API unsupported or failed — proceed with fallback
+      // rather than block the panel from ever opening.
+    }
+  }
+
+  // Every text label here goes through this instead of this.add.text()
+  // directly — see DirectionMapScene.addPixelText() just above for why:
+  // pixelArt:true forces NEAREST filtering on Text textures too, which
+  // reads as blurry mush once Scale.FIT stretches the canvas; rendering at
+  // a higher internal resolution then switching back to LINEAR filtering
+  // is the established fix used everywhere else in this file.
+  addPixelText(x, y, text, style) {
+    const t = this.add.text(x, y, text, { fontFamily: LIBMAP_FONT, ...style, resolution: LIBMAP_TEXT_RESOLUTION });
+    t.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    return t;
+  }
+
+  blockState(block) {
+    if (block.shelves.every((id) => this.mapProgress[id])) return 'completed';
+    if (block.gate && !this.mapProgress[block.gate]) return 'locked';
+    return 'available';
+  }
+
+  // Rebuilt for legibility: the first version packed 16 individual shelf
+  // titles into four 96px-tall two-column cards at 9-11px text — far too
+  // small/dense for a 768x480 canvas even with the anti-blur resolution
+  // trick (that fix keeps small text CRISP, it doesn't make it bigger or
+  // less cramped, and cramped-but-crisp still reads as an unreadable mess
+  // at this resolution). Per explicit "unable to read it at all" feedback,
+  // this drops the per-shelf breakdown and shows one big, full-width row
+  // per 4-shelf block instead — same real block order (north/stairs at
+  // top, south/spawn at bottom) and same live progress-driven lock state,
+  // just far fewer, far bigger lines.
+  buildScene() {
+    const panelX = 20;
+    const panelY = 10;
+    const panelW = 728;
+    const panelH = 460;
+    this.add.rectangle(panelX, panelY, panelW, panelH, LIBMAP_COLORS.bg, 0.98)
+      .setOrigin(0, 0).setStrokeStyle(2, LIBMAP_COLORS.border).setDepth(1);
+
+    const cx = panelX + panelW / 2;
+    const rowW = panelW - 40;
+    const rowX = panelX + 20;
+    let y = panelY + 30;
+
+    this.addPixelText(cx, y, '▶ FIRST FLOOR MAP', {
+      fontSize: '22px', color: LIBMAP_COLORS.gold,
+    }).setOrigin(0.5).setDepth(2);
+    y += 30;
+
+    // Gate note — real state, not assumed: Zone 1 (shelves 9-16) is
+    // actually locked in SHELF_PREREQ until review-2 is complete.
+    const zone1Locked = !this.mapProgress['review-2'];
+    const gateH = 32;
+    this.add.rectangle(cx, y + gateH / 2, rowW, gateH, LIBMAP_COLORS.gate.bg)
+      .setStrokeStyle(1, LIBMAP_COLORS.gate.border).setDepth(2);
+    this.addPixelText(cx, y + gateH / 2, zone1Locked
+      ? 'Zone 1 unlocks after both Zone 2 reviews are done'
+      : 'Zone 1 is unlocked!', {
+      fontSize: '14px', color: LIBMAP_COLORS.gate.text,
+    }).setOrigin(0.5).setDepth(3);
+    y += gateH + 14;
+
+    // North (staircase) to south (spawn) — matches the room's real layout.
+    this.drawBlockRow(LIBMAP_BLOCKS[3], rowX, y, rowW);
+    y += 56;
+    this.drawBlockRow(LIBMAP_BLOCKS[2], rowX, y, rowW);
+    y += 56 + 10;
+
+    const globeH = 26;
+    this.add.rectangle(cx, y + globeH / 2, rowW, 1, 0x4a3a24).setDepth(2);
+    this.add.rectangle(cx, y + globeH / 2, 260, globeH, LIBMAP_COLORS.globe.bg)
+      .setStrokeStyle(1, LIBMAP_COLORS.globe.border).setDepth(3);
+    this.addPixelText(cx, y + globeH / 2, 'Globe (you are here)', {
+      fontSize: '13px', color: LIBMAP_COLORS.globe.text,
+    }).setOrigin(0.5).setDepth(4);
+    y += globeH + 10;
+
+    this.drawBlockRow(LIBMAP_BLOCKS[1], rowX, y, rowW);
+    y += 56;
+    this.drawBlockRow(LIBMAP_BLOCKS[0], rowX, y, rowW);
+    y += 56 + 14;
+
+    const arrivalH = 32;
+    this.add.rectangle(cx, y + arrivalH / 2, rowW, arrivalH, LIBMAP_COLORS.arrival.bg)
+      .setStrokeStyle(1, LIBMAP_COLORS.arrival.border).setDepth(2);
+    this.addPixelText(cx, y + arrivalH / 2, 'Spawn / entrance (south)', {
+      fontSize: '14px', color: LIBMAP_COLORS.arrival.text,
+    }).setOrigin(0.5).setDepth(3);
+    y += arrivalH + 16;
+
+    this.addPixelText(cx, y, '[Esc / E / Enter] close', {
+      fontSize: '12px', color: LIBMAP_COLORS.muted,
+    }).setOrigin(0.5).setDepth(2);
+
+    const goBack = () => {
+      this.scene.stop('LibraryMapScene');
+      this.scene.resume('LibraryScene');
+    };
+    this.input.keyboard.once('keydown-ESC', goBack);
+    this.input.keyboard.once('keydown-ENTER', goBack);
+    this.input.keyboard.once('keydown-E', goBack);
+    this.input.keyboard.once('keydown-SPACE', goBack);
+    // Click anywhere outside the panel (the dark backdrop) also closes it
+    // — a full-canvas invisible rect BEHIND the panel (depth 0 vs the
+    // panel's depth 1+) so clicks on the panel itself pass through to its
+    // own content instead of always closing.
+    this.add.rectangle(0, 0, 768, 480, 0x000000, 0).setOrigin(0, 0)
+      .setInteractive().setDepth(0).on('pointerdown', goBack);
+  }
+
+  // One big full-width row per 4-shelf block: label/range/review-name on
+  // the left, a live locked/available/done state on the right — replaces
+  // the old per-shelf-line card (see buildScene()'s comment above).
+  drawBlockRow(block, x, y, w) {
+    const state = this.blockState(block);
+    const palette = state === 'locked' ? LIBMAP_COLORS.locked : LIBMAP_COLORS.active;
+    const h = 52;
+    this.add.rectangle(x, y, w, h, palette.bg).setOrigin(0, 0).setDepth(2);
+    this.add.rectangle(x, y, 4, h, palette.border).setOrigin(0, 0).setDepth(3);
+    this.addPixelText(x + 16, y + 10, `Zone ${block.label === 'Zone 1' ? '1' : '2'} · Shelves ${block.range}`, {
+      fontSize: '16px', color: palette.header,
+    }).setOrigin(0, 0).setDepth(3);
+    this.addPixelText(x + 16, y + 30, block.reviewTitle, {
+      fontSize: '12px', color: palette.text,
+    }).setOrigin(0, 0).setDepth(3);
+    const stateLabel = state === 'locked' ? 'LOCKED' : (state === 'completed' ? 'DONE' : 'AVAILABLE');
+    const stateColor = state === 'locked' ? LIBMAP_COLORS.locked.header
+      : (state === 'completed' ? LIBMAP_COLORS.arrival.text : LIBMAP_COLORS.gold);
+    this.addPixelText(x + w - 16, y + h / 2, stateLabel, {
+      fontSize: '14px', color: stateColor,
+    }).setOrigin(1, 0.5).setDepth(3);
+  }
+}
+
 const n5PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'phaserGame',
@@ -9863,7 +10765,7 @@ const n5PhaserGame = new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [CatSelectScene, LibraryScene, DirectionMapScene],
+  scene: [CatSelectScene, LibraryScene, DirectionMapScene, LibraryMapScene],
 });
 
 window.__n5Game = n5PhaserGame;

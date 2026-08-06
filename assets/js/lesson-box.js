@@ -17,7 +17,7 @@
 // cursor with arrow keys works normally.
 //
 // Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, startIndex, onComplete, onClose })
-//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score', ...fields }
+//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score'|'exam-question'|'exam-score', ...fields }
 //   startIndex: optional page index to open directly on (clamped to a
 //     valid range) — lets a caller resume a lesson left mid-way; a
 //     "N / total" page indicator is always shown top-right of the panel.
@@ -25,6 +25,14 @@
 //     including on natural completion (closedIndex === totalPages - 1
 //     there) — the caller uses this to save/clear a per-lesson resume
 //     position (see n5-phaser-game.js's lessonPage save/load).
+//   onComplete(examResult?): called once, when Continue is clicked on the
+//     LAST page. examResult is only passed when `pages` contained at least
+//     one 'exam-question' page — { correct, total } tallied from every
+//     'exam-question' page's locked-in answer (see advance()). Every
+//     caller that isn't running a graded exam (i.e. every lesson/review
+//     pile) just gets called with undefined, same as before this argument
+//     existed — plain JS callbacks silently ignore extra arguments, so
+//     this is fully backward compatible.
 //   page.wireDiagram(container): optional, any page type — called right
 //     after render with the page's rendered content element, for
 //     diagramSvg markup that needs live click interactivity (not just
@@ -35,6 +43,17 @@
 //     answers page reveals + grades them against the SAME questions array
 //     reference, and the score page just displays the resulting tally —
 //     see renderContent() below for each page's exact field contract.
+//   'exam-question'/'exam-score' are the N4 entrance-exam equivalent, but
+//     ONE question per page instead of a batch (used by N5's staircase
+//     gate — see library-scene-shared.js's startExamAttempt): each
+//     'exam-question' page is graded and locked in immediately on the
+//     player's first answer (no retry — a real exam, unlike 'try-it'
+//     which regates until correct), and gates Continue until answered.
+//     { kind: 'mc', prompt, choices, correctIndex, qNum?, qTotal? } or
+//     { kind: 'fill', prompt, before, after, answer, altAnswers?, qNum?, qTotal? }.
+//     A single trailing 'exam-score' page ({ passThreshold?, title?, note? })
+//     tallies every 'exam-question' page's result and shows pass/fail —
+//     see getExamTally()/renderContent() below for the exact math.
 //   catImagePath: URL to that color's idle+walk spritesheet (896x4608,
 //     64x64 frames, 14 cols — same sheet CAT_COLORS already loads in
 //     n5-phaser-game.js) — used for the ambient corner cat (looping idle).
@@ -78,9 +97,52 @@
     </div>
   `;
 
+  // Grammar-abbreviation legend — auto-shown (same "not opted into per
+  // page" reasoning as COLOR_LEGEND_HTML above) right under any
+  // page.pattern line that uses a bare N/V/Adj placeholder letter, e.g.
+  // 'N1は' + 'N2ほど' + '〜ない', or 'Vて' + 'もいい／はいけない'. Without this,
+  // those single letters read as unexplained jargon to a learner who
+  // hasn't seen the convention before. patternUsesAbbr() below decides
+  // whether a given pattern needs it; the legend text itself never
+  // changes, so it's one shared constant like COLOR_LEGEND_HTML.
+  const ABBR_LEGEND_HTML = `
+    <div class="lesson-box__abbr-legend">
+      <span class="lesson-box__abbr-legend-item"><b>N</b> = Noun</span>
+      <span class="lesson-box__abbr-legend-item"><b>V</b> = Verb</span>
+      <span class="lesson-box__abbr-legend-item"><b>Adj</b> = Adjective</span>
+      <span class="lesson-box__abbr-legend-item">(N1/N2 = "1st noun" / "2nd noun" in the sentence)</span>
+    </div>
+  `;
+  // Matches a pattern chip's text when it STARTS with a bare N (optionally
+  // numbered, N1/N2), V, or Adj placeholder — allowing anything after it
+  // (kana conjugation endings like Vて/Vない/Vた, or a trailing particle
+  // like N1は) as long as what follows isn't itself another Latin letter
+  // (which would mean the token is a real word like "Note", not the
+  // grammar abbreviation). Kana/kanji/symbols right after the letter(s)
+  // are fine and expected.
+  function patternUsesAbbr(pattern) {
+    if (!pattern) return false;
+    return pattern.some((p) => /^(N\d?|V|Adj)(?:[^A-Za-z]|$)/.test(p.text));
+  }
+
   let root = null;
   let els = null;
   let state = null; // { pages, index, onComplete, onClose }
+  // Set during an in-progress 'try-it' drag-and-drop (see wireTryItDragDrop's
+  // startDrag) to a no-arg function that tears down that drag's lifted
+  // clone + document-level listeners. Normally onUp does this teardown
+  // itself on mouseup/touchend, but if the box is closed or re-rendered
+  // (advance/back) mid-drag, no mouseup ever fires — cancelActiveDrag()
+  // below is the fallback path that prevents an orphaned clone and 4
+  // leaked document listeners from piling up across lessons.
+  let activeDragCleanup = null;
+
+  function cancelActiveDrag() {
+    if (!activeDragCleanup) return;
+    const cleanup = activeDragCleanup;
+    activeDragCleanup = null;
+    cleanup();
+  }
   // Set true for one mouseup/touchend after a try-it drag-and-drop
   // interaction (see wireTryItDragDrop) — when mousedown and mouseup land
   // on DIFFERENT elements (tile -> blank), the browser still synthesizes
@@ -235,6 +297,12 @@
         moveTo(p.clientX, p.clientY);
         blank.classList.toggle('is-dragover', isOverBlank(p.clientX, p.clientY));
       };
+      const removeDragListeners = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onUp);
+      };
       const onUp = (ev) => {
         // Mousedown was on the tile, mouseup is on/near the blank — two
         // different elements, so the click the browser synthesizes right
@@ -248,10 +316,8 @@
         blank.classList.remove('is-dragover');
         clone.remove();
         tile.classList.remove('is-dragging');
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        document.removeEventListener('touchmove', onMove);
-        document.removeEventListener('touchend', onUp);
+        removeDragListeners();
+        activeDragCleanup = null;
         if (!dropped) return;
         if (tile.dataset.word === blank.dataset.answer) {
           blank.textContent = tile.dataset.word;
@@ -267,6 +333,14 @@
       document.addEventListener('mouseup', onUp);
       document.addEventListener('touchmove', onMove, { passive: false });
       document.addEventListener('touchend', onUp);
+      // Fallback teardown if the box closes/re-renders mid-drag (no
+      // mouseup/touchend ever fires in that case) — see cancelActiveDrag().
+      activeDragCleanup = () => {
+        blank.classList.remove('is-dragover');
+        clone.remove();
+        tile.classList.remove('is-dragging');
+        removeDragListeners();
+      };
     };
 
     options.forEach((tile) => {
@@ -286,6 +360,21 @@
     const typed = (userAnswer || '').trim().toLowerCase();
     const accepted = [q.answer].concat(q.altAnswers || []).map((a) => a.toLowerCase());
     return accepted.includes(typed);
+  }
+
+  // Shared by 'exam-score' (render) and advance() (onComplete's
+  // examResult) so the two never disagree on the tally — total counts
+  // every 'exam-question' page in this open() session (fixed for the
+  // whole attempt), correct counts how many of state.examAnswers are
+  // true so far (an in-progress exam mid-attempt just shows a partial
+  // tally if this were ever read early; only advance()'s final call and
+  // the trailing 'exam-score' page actually read it, both after every
+  // question has been answered since 'exam-question' pages gate advance()
+  // until answered).
+  function getExamTally() {
+    const total = state.pages.filter((p) => p.type === 'exam-question').length;
+    const correct = Object.values(state.examAnswers).filter(Boolean).length;
+    return { correct, total };
   }
 
   // Shared by 'quiz-score' — a retro-RPG-flavored cat reaction picked from
@@ -420,9 +509,10 @@
       const bigIdeaHtml = page.bigIdea ? `<div class="lesson-box__big-idea">${page.bigIdea}</div>` : '';
       const analogyHtml = page.analogy ? `<div class="lesson-box__analogy">${page.analogy}</div>` : '';
       const takeawayHtml = page.takeaway ? `<div class="lesson-box__takeaway"><b>${page.takeaway}</b></div>` : '';
+      const abbrLegendHtml = patternUsesAbbr(page.pattern) ? ABBR_LEGEND_HTML : '';
       const patternHtml = page.pattern ? `<div class="lesson-box__pattern-line">${
         page.pattern.map((p) => (p.role ? `<span class="role-${p.role}">${p.text}</span>` : p.text)).join(' ')
-      }</div>` : '';
+      }</div>${abbrLegendHtml}` : '';
       // recapChips: array of plain strings — a "you already know this"
       // callout rendered as small pill badges instead of a prose
       // sentence (reusable by any future lesson, not just self-intro).
@@ -557,9 +647,26 @@
       // Both variants render before/after around the blank, matching the
       // pattern-line "code box" styling.
       if (page.choices) {
-        const optionsHtml = page.choices.map((word) => `
-          <div class="lesson-box__tryit-option" data-word="${word}">${word}</div>
-        `).join('');
+        // Each choice is either a plain string (backward compatible, no
+        // reading shown) or { text, reading } — reading renders as a
+        // small caption under the tile so picking the right word tests
+        // grammar/vocab recall ("which word fits this sentence") instead
+        // of doubling as a blind kanji-reading check. Added per explicit
+        // feedback on this exact page type ("avoid the kanji questions...
+        // think of other questions... but not kanji") — kanji-reading
+        // recognition on its own belongs at a dedicated station (the
+        // kanji easel), not incidentally inside every vocab/grammar
+        // shelf's practice pages.
+        const optionsHtml = page.choices.map((choice) => {
+          const text = typeof choice === 'string' ? choice : choice.text;
+          const reading = typeof choice === 'string' ? null : choice.reading;
+          return `
+            <div class="lesson-box__tryit-option" data-word="${text}">
+              <span class="lesson-box__tryit-option-text">${text}</span>
+              ${reading ? `<span class="lesson-box__tryit-option-reading">${reading}</span>` : ''}
+            </div>
+          `;
+        }).join('');
         c.innerHTML = `
           <div class="lesson-box__section-label">${page.sectionLabel || 'Your turn'}</div>
           <div class="lesson-box__explain-text">${page.prompt}</div>
@@ -704,6 +811,61 @@
           <div class="lesson-box__quizscore-note">${note}</div>
         </div>
       `;
+    } else if (page.type === 'exam-question') {
+      // One graded question per page (the N4 entrance exam — see
+      // startExamAttempt() in library-scene-shared.js). Unlike
+      // 'quiz-review' (batches several questions, graded later on a
+      // following 'quiz-answers' page) this grades immediately on the
+      // player's FIRST answer and locks it in — no retry, same as a real
+      // exam. render()'s wiring below does the actual grading/locking;
+      // this only builds the markup. `qNum`/`qTotal` are optional display
+      // numbering (the caller can pass a fixed "Question N of 20" even
+      // though state.index also happens to double as a unique answer key).
+      const qLabel = page.qNum ? `Question ${page.qNum}${page.qTotal ? ` of ${page.qTotal}` : ''}` : '';
+      const header = qLabel ? `<div class="lesson-box__quizreview-prompt">${qLabel}</div>` : '';
+      const promptHtml = `<div class="lesson-box__explain-text">${page.prompt}</div>`;
+      if (page.kind === 'mc') {
+        const choicesHtml = page.choices.map((choice, ci) => `
+          <div class="lesson-box__quizreview-choice" data-choice-idx="${ci}">${choice}</div>
+        `).join('');
+        c.innerHTML = `
+          <div class="lesson-box__section-label">${page.sectionLabel || 'N4 Entrance Exam'}</div>
+          ${header}${promptHtml}
+          <div class="lesson-box__quizreview-choices">${choicesHtml}</div>
+          <div class="lesson-box__exam-feedback"></div>
+        `;
+      } else {
+        c.innerHTML = `
+          <div class="lesson-box__section-label">${page.sectionLabel || 'N4 Entrance Exam'}</div>
+          ${header}${promptHtml}
+          <div class="lesson-box__quiz-row">
+            <div class="lesson-box__quiz-sentence">
+              ${page.before || ''}<input type="text" class="lesson-box__quiz-blank" autocomplete="off">${page.after || ''}
+              <span class="lesson-box__quiz-result"></span>
+            </div>
+          </div>
+          <button type="button" class="lesson-box__quiz-check">Submit Answer</button>
+          <div class="lesson-box__exam-feedback"></div>
+        `;
+      }
+    } else if (page.type === 'exam-score') {
+      // Final tally page for the N4 entrance exam — reads every preceding
+      // 'exam-question' page's locked-in answer via getExamTally() (no
+      // separate grading step needed, unlike quiz-review/quiz-answers,
+      // since each exam-question page already graded itself on the spot).
+      const score = getExamTally();
+      const passThreshold = page.passThreshold != null ? page.passThreshold : 0.7;
+      const passed = score.total > 0 && (score.correct / score.total) >= passThreshold;
+      const note = page.note || (passed
+        ? '*proud meow, tail held high* You\'ve passed the N4 Entrance Exam! The staircase awaits.'
+        : `*ears droop, then perk back up* Not quite there yet — you need at least ${Math.round(passThreshold * 100)}% to pass. Review the shelves and try again.`);
+      c.innerHTML = `
+        <div class="lesson-box__quizscore-box">
+          <div class="lesson-box__quizscore-num">${score.correct} / ${score.total}</div>
+          <div class="lesson-box__quizscore-label">${page.title || (passed ? 'PASSED' : 'Not Yet')}</div>
+          <div class="lesson-box__quizscore-note">${note}</div>
+        </div>
+      `;
     }
   }
 
@@ -763,6 +925,7 @@
   }
 
   function render() {
+    cancelActiveDrag();
     clearPulseIntervals();
     const page = state.pages[state.index];
     const isConversation = page.type === 'conversation';
@@ -887,6 +1050,88 @@
           });
         }
       });
+    } else if (page.type === 'exam-question') {
+      // Grades + locks in a single question the instant the player
+      // answers (click a choice / submit a fill blank) — no retry, unlike
+      // 'try-it'. Gates Continue (advance() also checks
+      // state.examAnswers[state.index] directly, so this lock class is a
+      // visual mirror of that, same pattern as 'try-it' above) until the
+      // player has answered THIS page. back() (never gated) can revisit
+      // an already-answered page though — alreadyAnswered()/showResult()
+      // below handle re-rendering that historical result on arrival
+      // instead of assuming every render of this type is a fresh,
+      // unanswered question.
+      const feedback = els.content.querySelector('.lesson-box__exam-feedback');
+      const alreadyAnswered = () => state.examAnswers[state.index] !== undefined;
+      const showResult = (correct, correctLabel) => {
+        els.continue.classList.remove('lesson-box__continue--locked');
+        if (feedback) {
+          feedback.innerHTML = correct
+            ? '<b>&#10003; Correct!</b>'
+            : `<b>&#10007; Not quite.</b> Correct answer: <b>${correctLabel}</b>`;
+          feedback.classList.add(correct ? 'is-correct' : 'is-wrong');
+        }
+      };
+      const lockIn = (correct, correctLabel) => {
+        state.examAnswers[state.index] = correct;
+        showResult(correct, correctLabel);
+      };
+      if (page.kind === 'mc') {
+        const choices = els.content.querySelectorAll('.lesson-box__quizreview-choice');
+        if (alreadyAnswered()) {
+          // No record of which WRONG option was originally picked (only
+          // whether the answer was right) — reveal the correct choice and
+          // the historical result, same as a fresh answer's end-state,
+          // just without highlighting a since-forgotten wrong pick.
+          choices.forEach((c, i) => { if (i === page.correctIndex) c.classList.add('is-correct'); });
+          showResult(state.examAnswers[state.index], page.choices[page.correctIndex]);
+        } else {
+          els.continue.classList.add('lesson-box__continue--locked');
+          choices.forEach((choiceEl) => {
+            choiceEl.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (alreadyAnswered()) return; // locked in — no changing your answer on a real exam
+              const ci = Number(choiceEl.dataset.choiceIdx);
+              const correct = ci === page.correctIndex;
+              choices.forEach((c, i) => {
+                if (i === page.correctIndex) c.classList.add('is-correct');
+                else if (i === ci) c.classList.add('is-wrong');
+              });
+              lockIn(correct, page.choices[page.correctIndex]);
+            });
+          });
+        }
+      } else {
+        const input = els.content.querySelector('.lesson-box__quiz-blank');
+        const checkBtn = els.content.querySelector('.lesson-box__quiz-check');
+        const result = els.content.querySelector('.lesson-box__quiz-result');
+        input.addEventListener('click', (e) => e.stopPropagation());
+        if (alreadyAnswered()) {
+          const correct = state.examAnswers[state.index];
+          input.disabled = true;
+          checkBtn.disabled = true;
+          if (result) {
+            result.textContent = correct ? '✓' : `✗ (${page.answer})`;
+            result.className = `lesson-box__quiz-result ${correct ? 'is-correct' : 'is-wrong'}`;
+          }
+          showResult(correct, page.answer);
+        } else {
+          els.continue.classList.add('lesson-box__continue--locked');
+          checkBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (alreadyAnswered()) return;
+            const typed = input.value.trim().toLowerCase();
+            const accepted = [page.answer].concat(page.altAnswers || []).map((a) => a.toLowerCase());
+            const correct = accepted.includes(typed);
+            input.disabled = true;
+            if (result) {
+              result.textContent = correct ? '✓' : `✗ (${page.answer})`;
+              result.className = `lesson-box__quiz-result ${correct ? 'is-correct' : 'is-wrong'}`;
+            }
+            lockIn(correct, page.answer);
+          });
+        }
+      }
     }
     if (isConversation) {
       page.turns.forEach((t, i) => {
@@ -925,13 +1170,26 @@
     // something — see render()'s updateGate(), which keeps
     // state.tryItSatisfied in sync with the input's value.
     if (currentPage.type === 'try-it' && !state.tryItSatisfied) return;
+    // 'exam-question' pages gate the same way, but on
+    // state.examAnswers[state.index] being set (by render()'s exam-question
+    // wiring, the instant the player's single locked-in answer is graded)
+    // rather than "typed something" — no partial credit for skipping a
+    // question on a real exam.
+    if (currentPage.type === 'exam-question' && state.examAnswers[state.index] === undefined) return;
     if (state.index < state.pages.length - 1) {
       state.index += 1;
       render();
     } else {
       const onComplete = state.onComplete;
+      // Tally BEFORE close() (which nulls state) so a caller running a
+      // graded exam (see getExamTally()) gets a real { correct, total }
+      // for this attempt — undefined for every other caller (no
+      // 'exam-question' pages means total === 0), same as before this
+      // existed. See this file's own top-of-file usage comment.
+      const examTotal = state.pages.filter((p) => p.type === 'exam-question').length;
+      const examResult = examTotal > 0 ? getExamTally() : undefined;
       close();
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(examResult);
     }
   }
 
@@ -975,6 +1233,11 @@
       // up correctly on the next visit (re-grading against whatever was
       // last selected, not the first attempt).
       quizReviewAnswers: {},
+      // Keyed by page index (not question number — each 'exam-question'
+      // page IS one question, so its own state.index is a stable, unique
+      // key) — true/false once that page's answer is locked in, absent
+      // until then. Read by getExamTally() and by advance()'s gate check.
+      examAnswers: {},
     };
     // Optional floor-specific chrome recolor (currently only 'n4', from
     // N4's `this.lessonBoxTheme` in library-scene-shared.js's
@@ -1035,6 +1298,7 @@
 
   function close() {
     if (!root) return;
+    cancelActiveDrag();
     clearPulseIntervals();
     root.hidden = true;
     const onClose = state && state.onClose;

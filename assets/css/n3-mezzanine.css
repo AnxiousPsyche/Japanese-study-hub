@@ -1,0 +1,39 @@
+/* Mezzanine shell: Archive Vault variant of n4-mezzanine.css — same
+   layered CSS grain/panel-line technique, deep teal + brass instead of
+   N4's walnut brown + gold, matching this floor's recolored shelves and
+   the sage-wall/herringbone-floor Phaser scene. Deliberately
+   texture-free here too (no bitmap floor or wall background) — the
+   playable planks themselves are drawn by the Phaser scene so they stay
+   in world space. */
+#mapFrame {
+  background-color: #0d2b28;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(201, 162, 75, .07) 0 1px, transparent 1px 38px),
+    repeating-linear-gradient(0deg, rgba(4, 12, 10, .45) 0 2px, transparent 2px 54px),
+    linear-gradient(135deg, #1d4a43, #0d2b28 45%, #163a34);
+  border: 14px solid #12332f;
+  box-shadow: inset 0 0 0 3px #c9a24b, inset 0 0 0 7px #0a201d, 0 18px 44px rgba(0, 0, 0, .45);
+}
+
+#mapFrame::before,
+#mapFrame::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+#mapFrame::before {
+  inset: 12px;
+  border: 2px solid rgba(201, 162, 75, .36);
+  box-shadow: inset 0 0 34px rgba(0, 0, 0, .42);
+}
+
+#mapFrame::after {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16px;
+  background: repeating-linear-gradient(90deg, #1d4a43 0 40px, #0d211e 40px 43px);
+  border-top: 2px solid #c9a24b;
+}

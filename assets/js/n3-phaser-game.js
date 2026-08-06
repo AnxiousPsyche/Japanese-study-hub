@@ -1,17 +1,17 @@
-// N4LibraryScene — second explorable floor, reached from N5's staircase.
+// N3LibraryScene — second explorable floor, reached from N5's staircase.
 // Mirrors n5-phaser-game.js's LibraryScene structurally (buildScene()
 // calling buildFloor/buildWalls/buildTopBand/buildFurniture/buildShelves/
 // buildBookPiles/buildPlayer, preload(), update()) but mixes in the
 // reusable engine extracted to library-scene-shared.js (Task 1) instead
-// of duplicating that code. This floor will contain BOTH N4 and N3
+// of duplicating that code. This floor will contain BOTH N3 and N3
 // content (split left/right column, gated by an exam-gate interactive —
-// see docs/superpowers/specs/2026-07-27-n4-second-floor-design.md) — the
-// "N4" naming throughout this file is just this floor's identifier, not
-// a claim that it's N4-only content.
+// see docs/superpowers/specs/2026-07-27-n3-second-floor-design.md) — the
+// "N3" naming throughout this file is just this floor's identifier, not
+// a claim that it's N3-only content.
 //
 // This file (Task 2) is scaffolding only: world-size constants, this
 // floor's own persistence keys, the cat-avatar data copied verbatim from
-// N5 (same 3 avatars, no new art), and an N4LibraryScene skeleton whose
+// N5 (same 3 avatars, no new art), and an N3LibraryScene skeleton whose
 // build*() methods are still no-op stubs. World geometry, shelves, the
 // exam gate, and the player all arrive in Tasks 3-6.
 
@@ -32,7 +32,7 @@ const TILE_SIZE = 16;
 // GRID_COLS would leave a 1-tile gap in those strips.
 const GRID_COLS = 50;
 // 86 -> 106: +20 tiles (320px) of extra south-end floor added this pass to
-// fit a new 4-shelf Reading wing (wing4, N4/left side only) plus a
+// fit a new 4-shelf Reading wing (wing4, N3/left side only) plus a
 // Vocabulary press station (N3/right side, same row) between wing1 and the
 // south wall/entry point, without touching any north-anchored geometry
 // (top wall, N2/N1 gates, jukebox, N3 threshold wall, atrium all stay
@@ -65,10 +65,10 @@ const ARRIVE_THRESHOLD = 74; // px — how close auto-walk needs to get before s
 const TOP_BAND_HEIGHT = 110;
 
 // Local subset of n5-phaser-game.js's ASSET_RECTS (that file isn't loaded
-// on this page — see n4-dashboard.html's script list — so its rects
+// on this page — see n3-dashboard.html's script list — so its rects
 // aren't reachable as bare identifiers here). Same source sheets, same
 // crop coordinates verbatim: this floor's floor/wall texture is
-// deliberately identical art to N5's (theme comes from N4_PALETTE-driven
+// deliberately identical art to N5's (theme comes from N3_PALETTE-driven
 // furniture/accent color in later tasks, not a different floor crop —
 // see the design spec).
 const ASSET_RECTS = {
@@ -78,6 +78,26 @@ const ASSET_RECTS = {
     w: 16,
     h: 16
   }, // floors-walls02.png, n5-phaser-game.js:5
+  // Archive Vault palette (this floor only) — the sage wood-panel wall +
+  // orange-herringbone floor combo, 3rd of 4 wall/floor pairs on
+  // floors-walls02.png's own sheet. Isolated via alpha-bbox scanning
+  // restricted to just this pair's column (x:144-207) — the naive full
+  // "column 2+3 together" bbox merges in column 2's dotted tile pattern,
+  // a real mistake made once already while building the approval mockup
+  // (see mockups/n3-archive-vault/ — worth checking before touching this
+  // rect again). Approved via that mockup before this file existed.
+  archiveVaultWall: {
+    x: 144,
+    y: 16,
+    w: 63,
+    h: 64
+  },
+  archiveVaultFloor: {
+    x: 144,
+    y: 81,
+    w: 63,
+    h: 46
+  },
   topDownFloorTile: {
     x: 81,
     y: 81,
@@ -118,7 +138,7 @@ const ASSET_RECTS = {
     w: 30,
     h: 48
   },
-  // N4's own new crop (no N5 equivalent) — a freestanding grandfather
+  // N3's own new crop (no N5 equivalent) — a freestanding grandfather
   // clock, this floor's globe-equivalent centerpiece landmark (Task 6,
   // buildFurniture). Isolated via per-row/per-column alpha-run scanning
   // of the same libassetpack-tiled.png sheet (not a bounding-box flood
@@ -171,7 +191,7 @@ const ASSET_RECTS = {
   // reused verbatim (already alpha-scan-verified there) for the Rest
   // Area's decorative TV, per explicit "2 loveseats pointed to the tv
   // again" request — this TV is decorative only here, not a 3rd
-  // interactive lesson kiosk (N4 already has its own 2 standalone
+  // interactive lesson kiosk (N3 already has its own 2 standalone
   // stations, the Vocabulary Press and the Jukebox).
   tvCabinet: { x: 191, y: 48, w: 33, h: 32 },
   // Verbatim from n5-phaser-game.js's own ASSET_RECTS.globe (same
@@ -181,40 +201,49 @@ const ASSET_RECTS = {
   globe: { x: 143, y: 217, w: 94, h: 118 },
 };
 
-// Distinct accent palette for this floor (deeper wine/green/wood instead
-// of N5's warm red reception) — see design spec's Theme section. Not
-// wired into any texture yet (Tasks 3-6); drawWovenRug's optional
-// `palette` param (library-scene-shared.js) is what will eventually
-// consume this.
-const N4_PALETTE = {
-  carpet: 0x5c1a2e,
-  accentGreen: 0x1f3d2b,
-  darkWood: 0x3a2415,
-  gold: 0xd4a24c,
+// Archive Vault accent palette (deep teal + brass, approved via the
+// room-layout mockup before this file existed — see
+// mockups/n3-archive-vault/) — replaces the wine/forest-green/wood/gold
+// values this block carried over verbatim from N4 during the initial
+// N4->N3 rename pass. carpet (the entrance rug's base color) is kept
+// warm/brass rather than teal so it still reads as a distinct accent
+// against the teal walls/shelves, same "warm rug against cool walls"
+// contrast N4's own wine-on-warm-reception pairing used. gold is renamed
+// in spirit only (kept as `gold` for every existing call site that reads
+// N3_PALETTE.gold — see N3_RUG_PALETTE.rugMotif below) but is now this
+// floor's actual brass tone, matching --lb-role-particle-bg-adjacent
+// brass trim on the recolored shelves.
+const N3_PALETTE = {
+  carpet: 0x8a651f,
+  accentGreen: 0x1d4a43,
+  darkWood: 0x2a1f14,
+  gold: 0xc9a24b,
 };
 
-// drawWovenRug()'s palette param, in this floor's wine/gold accent —
-// hoisted to module scope (was a local const duplicated only inside
-// buildFurniture()) so buildAtrium()'s "real carpet" preview can reuse
-// the exact same rug this floor's own arrival mat uses, per explicit
-// feedback asking the atrium peek to show "the same... carpet."
-const N4_RUG_PALETTE = {
-  rugDark: 0x2a0d1a,
-  rugFringeLight: 0x3a1526,
-  rugBase: N4_PALETTE.carpet,
-  rugWeave: 0x4a1524,
-  rugMotif: N4_PALETTE.gold,
+// drawWovenRug()'s palette param, in this floor's brass/gold Archive
+// Vault accent (was a leftover wine-toned family from the N4->N3 rename
+// pass, updated to match N3_PALETTE.carpet above) — hoisted to module
+// scope (was a local const duplicated only inside buildFurniture()) so
+// buildAtrium()'s "real carpet" preview can reuse the exact same rug
+// this floor's own arrival mat uses, per the same reasoning N4 already
+// established ("show the same... carpet").
+const N3_RUG_PALETTE = {
+  rugDark: 0x2a1f0a,
+  rugFringeLight: 0x4a3618,
+  rugBase: N3_PALETTE.carpet,
+  rugWeave: 0x5c4420,
+  rugMotif: N3_PALETTE.gold,
   rugMotifShade: 0xa87f3a,
 };
 
 // Vocabulary press reference list (this pass) — verbatim-path copy of
 // n5-phaser-game.js's PRINT_LINKS_BY_SHELF entries (same PDFs, same
-// '../../assets/lesson pdf/...' relative depth, since pages/N4/
-// n4-dashboard.html sits at the identical folder depth as pages/N5/
+// '../../assets/lesson pdf/...' relative depth, since pages/N3/
+// n3-dashboard.html sits at the identical folder depth as pages/N5/
 // n5-dashboard.html — confirmed by grep before use). Flattened into one
 // list (not per-shelf) since the press is a single always-available
 // station, not tied to any one shelf's popup links.
-const ALL_PRINT_LINKS_N4 = [
+const ALL_PRINT_LINKS_N3 = [
   { label: 'Nouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (NOUNS).pdf') },
   { label: 'Pronouns', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS (PRONOUNS).pdf') },
   { label: 'Adjectives', href: encodeURI('../../assets/lesson pdf/NIHONGO VOCABS ADJ.pdf') },
@@ -225,40 +254,31 @@ const ALL_PRINT_LINKS_N4 = [
 ];
 
 // Listening Jukebox reference list (this pass) -- real, freely available
-// external N4/N3-level listening resources (not hosted locally, unlike the
+// external N3/N3-level listening resources (not hosted locally, unlike the
 // press's PDFs): NHK Easy News (text+audio together), the Nihongo con
-// Teppei podcast (free, beginner/N4-N5-friendly slow speech), and two
-// JLPT N4/N3 listening-practice videos.
+// Teppei podcast (free, beginner/N3-N5-friendly slow speech), and two
+// JLPT N3/N3 listening-practice videos.
 const JUKEBOX_LINKS = [
   { label: 'NHK News Web Easy (text + audio)', href: 'https://www3.nhk.or.jp/news/easy/' },
   { label: 'Nihongo con Teppei -- For Beginners (podcast)', href: 'https://nihongoconteppei.com/' },
-  { label: 'JLPT N4 Listening Practice (Mochi Sensei)', href: 'https://www.youtube.com/watch?v=Xh3uMWQxJjM' },
+  { label: 'JLPT N3 Listening Practice (Mochi Sensei)', href: 'https://www.youtube.com/watch?v=Xh3uMWQxJjM' },
   { label: 'JLPT N3 Listening Practice (Mochi Sensei)', href: 'https://www.youtube.com/watch?v=BAy4J9CurtE' },
 ];
 
 // -- Persistence: this floor's own localStorage keys --------------------
-// Per CLAUDE.md's "one key per concern" pattern — N4 progress/favorites/
+// Per CLAUDE.md's "one key per concern" pattern — N3 progress/favorites/
 // lesson-page state is separate from N5's (nekoBunko.n5.*), since it's a
 // different floor's worth of shelves. Cat color/animations are the one
 // exception (see CAT_COLOR_KEY below) — that's a player-level preference
-// set once in N5's CatSelectScene, not a per-floor concern, so N4 reads
+// set once in N5's CatSelectScene, not a per-floor concern, so N3 reads
 // it from N5's existing key rather than duplicating a select step.
 
-const SAVE_KEY = 'nekoBunko.n4.progress';
-const FAVORITES_KEY = 'nekoBunko.n4.favorites';
-const LESSON_PAGE_KEY = 'nekoBunko.n4.lessonPage';
-const QUIZ_GATE_KEY = 'nekoBunko.n4.quizGate'; // N3 wing entrance exam
-// Was N2_ENTRANCE_GATE_KEY/'n2Gate' — this is the gate right after N4,
-// and JLPT's actual order is N5->N4->N3->N2->N1, so the floor after N4
-// is N3, not N2 (a naming mistake inherited from the old superseded
-// two-wing design, where this door was a placeholder for some future
-// floor and "N2" was just a guess). Renamed once N3 became a real floor
-// (see pages/N3/n3-dashboard.html) — flagged live by the user pointing
-// at the in-game door screenshot ("this should be the door to N3, not
-// N2"). N1_ENTRANCE_GATE_KEY below is untouched: two floors past N4 is
-// genuinely N2 territory, not this pass's concern.
-const N3_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n3Gate';
-const N1_ENTRANCE_GATE_KEY = 'nekoBunko.n4.n1Gate';
+const SAVE_KEY = 'nekoBunko.n3.progress';
+const FAVORITES_KEY = 'nekoBunko.n3.favorites';
+const LESSON_PAGE_KEY = 'nekoBunko.n3.lessonPage';
+const QUIZ_GATE_KEY = 'nekoBunko.n3.quizGate'; // N3 wing entrance exam
+const N2_ENTRANCE_GATE_KEY = 'nekoBunko.n3.n2Gate';
+const N1_ENTRANCE_GATE_KEY = 'nekoBunko.n3.n1Gate';
 
 function loadProgress() {
   try {
@@ -315,7 +335,7 @@ function saveLessonPage(lessonPage) {
 // Same 3 cat avatars, same animation rig, same sensei portrait; no new
 // art packs for this floor (per the design spec). CAT_COLOR_KEY
 // deliberately reuses N5's own key ('nekoBunko.n5.catColor') rather than
-// a n4-scoped one — see the persistence note above.
+// a n3-scoped one — see the persistence note above.
 
 const CAT_COLOR_KEY = 'nekoBunko.n5.catColor';
 // Idle + 4-directional walk, all 3 colors, confirmed present for exactly
@@ -475,7 +495,7 @@ function loadCatSpritesheets(scene) {
   });
 }
 
-// Idempotent: safe even though N4 is a separate Game instance from N5
+// Idempotent: safe even though N3 is a separate Game instance from N5
 // (Phaser's anim registry is per-Game, not shared) — but also safe to
 // call more than once within this same page, same as N5's own guard.
 const CAT_ANIM_DEFS = [{
@@ -596,7 +616,7 @@ function buildPlaceholderLesson(title) {
     sectionLabel: title,
     bigIdea: `${title} is on its way — a full lesson isn't written yet.`,
     explain: [
-      'This shelf is part of the N4 floor\'s layout, but its lesson content is still being written. Completing this page marks it done for now, and you can revisit it any time once the real lesson ships.',
+      'This shelf is part of the N3 floor\'s layout, but its lesson content is still being written. Completing this page marks it done for now, and you can revisit it any time once the real lesson ships.',
     ],
   }];
 }
@@ -617,7 +637,7 @@ function buildPlaceholderLesson(title) {
 // that reads them threw "Cannot access before initialization" the instant
 // this file loaded in a real browser (never caught by node --check, which
 // only validates syntax, not this kind of temporal-dead-zone ordering bug).
-const N4_REVIEW_1_QUIZ_QUESTIONS = [
+const N3_REVIEW_1_QUIZ_QUESTIONS = [
   {
     kind: 'mc', prompt: '日本語が話せます -- what form is 話せます?',
     choices: ['Volitional (意向形)', 'Potential (可能形)', 'Passive (受身形)', 'Conditional (ば形)'], correctIndex: 1,
@@ -660,7 +680,7 @@ const N4_REVIEW_1_QUIZ_QUESTIONS = [
   },
 ];
 
-const N4_REVIEW_2_QUIZ_QUESTIONS = [
+const N3_REVIEW_2_QUIZ_QUESTIONS = [
   {
     kind: 'mc', prompt: 'お茶でも飲みませんか -- what job is でも doing here?',
     choices: ['"Even if" (concessive)', 'Softening a suggestion ("or something")', 'Marking a total', 'Marking a location'], correctIndex: 1,
@@ -707,7 +727,7 @@ const N4_REVIEW_2_QUIZ_QUESTIONS = [
   },
 ];
 
-const N4_REVIEW_3_QUIZ_QUESTIONS = [
+const N3_REVIEW_3_QUIZ_QUESTIONS = [
   {
     kind: 'mc', prompt: '友達が本をくれた -- who ends up with the book?',
     choices: ['My friend', 'Me', 'Neither', 'Both'], correctIndex: 1,
@@ -750,7 +770,7 @@ const N4_REVIEW_3_QUIZ_QUESTIONS = [
   },
 ];
 
-const N4_REVIEW_4_QUIZ_QUESTIONS = [
+const N3_REVIEW_4_QUIZ_QUESTIONS = [
   {
     kind: 'mc', prompt: '何でも食べます -- でも here means:',
     choices: ['"Or something"', '"Even if"', '"Anything" (concessive, with a question word)', '"But"'], correctIndex: 2,
@@ -798,15 +818,14 @@ const N4_REVIEW_4_QUIZ_QUESTIONS = [
 ];
 
 // AUTO-STRUCTURED reference data for the Kanji Easel interactive (see
-// buildKanjiEasel() / LESSON_CONTENT['kanji-easel'] below). Unlike N5,
-// this floor's LESSON_CONTENT has no per-word "New Words" vocab tables --
-// every shelf here is a grammar-PATTERN lesson whose 'summary' recap
-// pages hold full example phrases (e.g. "図書館で勉強する"), not discrete
-// vocab entries. So this list is hand-curated: the standalone kanji
-// content-word pulled out of each of those example phrases (dictionary
-// form for verbs), deduplicated, in the same shelf order the phrases
-// appear in this file.
-const N4_KANJI_EASEL_WORDS = [
+// buildKanjiEasel() / LESSON_CONTENT['kanji-easel'] below). N3's
+// LESSON_CONTENT is still a placeholder copy of N4's grammar content (see
+// this file's own top-of-file status note from the N3 floor build), so
+// this word list necessarily duplicates N4's own kanji-easel list --
+// flagged explicitly in this floor's easel intro page (via the `note`
+// passed to buildKanjiEaselPages() below) so it reads as an honest
+// "coming soon, N3 content not authored yet" state, not a silent copy.
+const N3_KANJI_EASEL_WORDS = [
   { kana: '話す', reading: 'はなす', romaji: 'hanasu', meaning: 'to speak' },
   { kana: '見る', reading: 'みる', romaji: 'miru', meaning: 'to see / watch' },
   { kana: '降る', reading: 'ふる', romaji: 'furu', meaning: 'to fall (rain, snow)' },
@@ -860,20 +879,20 @@ const N4_KANJI_EASEL_WORDS = [
 
 const LESSON_CONTENT = {
   // ---------------------------------------------------------------------
-  // N4-ONLY SINGLE FLOOR (N3 wing, frosted wall, and exam gate removed).
+  // N3-ONLY SINGLE FLOOR (N3 wing, frosted wall, and exam gate removed).
   // 16 grammar shelves (merged/renamed from the old 24) + 4 Reading Room
   // shelves + Vocabulary Press + Listening Jukebox. Every merged shelf
   // below concatenates its constituent old shelves' page arrays verbatim
   // (content itself is unchanged/re-verified, only regrouped + relabeled).
   // ---------------------------------------------------------------------
 
-  // Verb Stacks I (n4-shelf-01)
-  'n4-shelf-01': [
+  // Verb Stacks I (n3-shelf-01)
+  'n3-shelf-01': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Conjugations I — Potential, Volitional, Ba-form',
       bigIdea: 'Three new ways to bend a verb this shelf: saying you CAN do something, saying "let\'s do" it, and saying "IF" you do it.',
-      explain: ['This shelf covers 可能形 (potential), 意向形 (volitional), and ば形 (conditional) — three of the most common verb conjugations in N4 grammar.'],
+      explain: ['This shelf covers 可能形 (potential), 意向形 (volitional), and ば形 (conditional) — three of the most common verb conjugations in N3 grammar.'],
     },
     {
       type: 'grammar-intro',
@@ -934,12 +953,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (可能形／意向形／ば形)', 'imabi — potential, volitional, and conditional forms'],
+      explain: ['Bunpro — JLPT N3 grammar list (可能形／意向形／ば形)', 'imabi — potential, volitional, and conditional forms'],
     },
   ],
 
-  // Verb Stacks II (n4-shelf-02+n4-shelf-03)
-  'n4-shelf-02': [
+  // Verb Stacks II (n3-shelf-02+n3-shelf-03)
+  'n3-shelf-02': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Conjugations II — Passive, Causative',
@@ -1027,12 +1046,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (受身形／使役形／自動詞・他動詞)', 'imabi — passive, causative, and transitivity pairs'],
+      explain: ['Bunpro — JLPT N3 grammar list (受身形／使役形／自動詞・他動詞)', 'imabi — passive, causative, and transitivity pairs'],
     },
   ],
 
-  // Particle Reference Desk (n4-shelf-04)
-  'n4-shelf-03': [
+  // Particle Reference Desk (n3-shelf-04)
+  'n3-shelf-03': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 1 — Particles I',
@@ -1089,12 +1108,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (で／に／から／も)', 'Tae Kim\'s Guide to Japanese Grammar — particle reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (で／に／から／も)', 'Tae Kim\'s Guide to Japanese Grammar — particle reference'],
     },
   ],
 
-  // Special Collections (n4-shelf-05)
-  'n4-shelf-04': [
+  // Special Collections (n3-shelf-05)
+  'n3-shelf-04': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 1 — Particles II',
@@ -1145,12 +1164,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (ずつ／ほど〜ない／では・には／からも)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (ずつ／ほど〜ない／では・には／からも)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
-  // Everyday Speech Shelf (n4-shelf-06)
-  'n4-shelf-05': [
+  // Everyday Speech Shelf (n3-shelf-06)
+  'n3-shelf-05': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 2 — でも, で, も',
@@ -1193,12 +1212,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (でも／で／も)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (でも／で／も)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
-  // Timing & Sequence Shelf (n4-shelf-07+n4-shelf-08)
-  'n4-shelf-06': [
+  // Timing & Sequence Shelf (n3-shelf-07+n3-shelf-08)
+  'n3-shelf-06': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 2 — Listing things',
@@ -1291,12 +1310,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (とか／たり〜たり／し〜し／ところ／間に／時に)', 'imabi — timing and listing constructions'],
+      explain: ['Bunpro — JLPT N3 grammar list (とか／たり〜たり／し〜し／ところ／間に／時に)', 'imabi — timing and listing constructions'],
     },
   ],
 
-  // Change & Decision Shelf (n4-shelf-09+n4-shelf-10)
-  'n4-shelf-07': [
+  // Change & Decision Shelf (n3-shelf-09+n3-shelf-10)
+  'n3-shelf-07': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 3 — Cause, state, experience',
@@ -1372,12 +1391,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (て・で／まま／たことがある／にする／になる／ことになる)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (て・で／まま／たことがある／にする／になる／ことになる)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
-  // Obligation & Permission Shelf (n4-shelf-11+n4-shelf-12)
-  'n4-shelf-08': [
+  // Obligation & Permission Shelf (n3-shelf-11+n3-shelf-12)
+  'n3-shelf-08': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 3 — Obligation & permission',
@@ -1442,12 +1461,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (なければ／なくては／ないと／てもいい／てはいけない／ておく／てしまう)', 'Tae Kim\'s Guide to Japanese Grammar — obligation and permission'],
+      explain: ['Bunpro — JLPT N3 grammar list (なければ／なくては／ないと／てもいい／てはいけない／ておく／てしまう)', 'Tae Kim\'s Guide to Japanese Grammar — obligation and permission'],
     },
   ],
 
   // Giving & Purpose Shelf (n3-shelf-01)
-  'n4-shelf-09': [
+  'n3-shelf-09': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 4 — Giving, purpose, goals',
@@ -1487,12 +1506,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (あげる・くれる・もらう／のために／ように)', 'imabi — giving/receiving verbs and purpose expressions'],
+      explain: ['Bunpro — JLPT N3 grammar list (あげる・くれる・もらう／のために／ように)', 'imabi — giving/receiving verbs and purpose expressions'],
     },
   ],
 
   // Effort Shelf, was "Effort & Demonstratives Shelf" (n3-shelf-02)
-  'n4-shelf-10': [
+  'n3-shelf-10': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 4 — Effort, change, and demonstratives',
@@ -1532,12 +1551,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (ようにする・ようになる／こんな・そんな・あんな・どんな)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (ようにする・ようになる／こんな・そんな・あんな・どんな)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
   // Advice & Commands Shelf (n3-shelf-03+n3-shelf-04)
-  'n4-shelf-11': [
+  'n3-shelf-11': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 4 — Manner & advice',
@@ -1607,12 +1626,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (こう・そう・ああ・どう／たほうがいい／命令形・禁止形)', 'imabi — imperative and prohibitive forms'],
+      explain: ['Bunpro — JLPT N3 grammar list (こう・そう・ああ・どう／たほうがいい／命令形・禁止形)', 'imabi — imperative and prohibitive forms'],
     },
   ],
 
   // Question Shelf, was "Embedded Questions Shelf" (n3-shelf-05+n3-shelf-06)
-  'n4-shelf-12': [
+  'n3-shelf-12': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 5 — Embedded questions & nominalizing',
@@ -1688,12 +1707,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (かどうか／の／ことができる／聞こえる・見える／ので・のに)', 'imabi — embedded questions and potential-adjacent verbs'],
+      explain: ['Bunpro — JLPT N3 grammar list (かどうか／の／ことができる／聞こえる・見える／ので・のに)', 'imabi — embedded questions and potential-adjacent verbs'],
     },
   ],
 
   // Requests Shelf, was "Requests & Suggestions Shelf" (n3-shelf-07+n3-shelf-08)
-  'n4-shelf-13': [
+  'n3-shelf-13': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 5 — Concession & requests',
@@ -1769,12 +1788,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (でも／くれ・もらえ・ください・いただけ／てほしい／たらどう／と思う)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (でも／くれ・もらえ・ください・いただけ／てほしい／たらどう／と思う)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
   // Intentions & Plans Shelf (n3-shelf-09)
-  'n4-shelf-14': [
+  'n3-shelf-14': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 5 & 6 — Intentions and "if/when"',
@@ -1829,12 +1848,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (よう／つもりだ／ようと思う／たら)', 'Tae Kim\'s Guide to Japanese Grammar — intention and たら-conditional'],
+      explain: ['Bunpro — JLPT N3 grammar list (よう／つもりだ／ようと思う／たら)', 'Tae Kim\'s Guide to Japanese Grammar — intention and たら-conditional'],
     },
   ],
 
   // If & When Almanac (n3-shelf-10)
-  'n4-shelf-15': [
+  'n3-shelf-15': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 6 — More conditionals & inference',
@@ -1874,12 +1893,12 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (ば・なら／と（条件）／ようだ・みたいだ)', 'imabi — conditional forms compared'],
+      explain: ['Bunpro — JLPT N3 grammar list (ば・なら／と（条件）／ようだ・みたいだ)', 'imabi — conditional forms compared'],
     },
   ],
 
   // Degree & Tone Shelf (n3-shelf-11+n3-shelf-12)
-  'n4-shelf-16': [
+  'n3-shelf-16': [
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 6 — Appearance & excess',
@@ -1962,11 +1981,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (そうだ／でしょう・だろう／すぎる／やすい・にくい／んです／sentence-final particles)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N3 grammar list (そうだ／でしょう・だろう／すぎる／やすい・にくい／んです／sentence-final particles)', 'JLPT Sensei — N3 grammar reference'],
     },
   ],
 
-  'n4-reading-01': [
+  'n3-reading-01': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Reading: A Day Off',
@@ -1999,11 +2018,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Original practice passage, written for this course; grammar reused from Verb Stacks I/Obligation & Permission (potential form, たり〜たり, てもいい) — verified against Bunpro\'s JLPT N4 grammar list.'],
+      explain: ['Original practice passage, written for this course; grammar reused from Verb Stacks I/Obligation & Permission (potential form, たり〜たり, てもいい) — verified against Bunpro\'s JLPT N3 grammar list.'],
     },
   ],
 
-  'n4-reading-02': [
+  'n3-reading-02': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Reading: The New Student',
@@ -2036,11 +2055,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Original practice passage, written for this course; grammar reused from Giving & Purpose (あげる・くれる・もらう, ように), Obligation & Permission (potential negative) — verified against Bunpro\'s JLPT N4 grammar list.'],
+      explain: ['Original practice passage, written for this course; grammar reused from Giving & Purpose (あげる・くれる・もらう, ように), Obligation & Permission (potential negative) — verified against Bunpro\'s JLPT N3 grammar list.'],
     },
   ],
 
-  'n4-reading-03': [
+  'n3-reading-03': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Reading: A Letter Home',
@@ -2073,11 +2092,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Original practice passage, written for this course; grammar reused from Intentions & Plans (たら) and Obligation & Permission (てしまう, ておく) — verified against Bunpro\'s JLPT N4 grammar list.'],
+      explain: ['Original practice passage, written for this course; grammar reused from Intentions & Plans (たら) and Obligation & Permission (てしまう, ておく) — verified against Bunpro\'s JLPT N3 grammar list.'],
     },
   ],
 
-  'n4-reading-04': [
+  'n3-reading-04': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Reading: Lost in Kyoto',
@@ -2110,11 +2129,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Original practice passage, written for this course; grammar reused from Verb Stacks II (causative-passive), Requests (と思う), and Advice & Commands shelves — verified against Bunpro\'s JLPT N4 grammar list.'],
+      explain: ['Original practice passage, written for this course; grammar reused from Verb Stacks II (causative-passive), Requests (と思う), and Advice & Commands shelves — verified against Bunpro\'s JLPT N3 grammar list.'],
     },
   ],
 
-  'n4-vocab-press': [
+  'n3-vocab-press': [
     {
       type: 'grammar-intro',
       sectionLabel: 'The Composing Room',
@@ -2127,16 +2146,21 @@ const LESSON_CONTENT = {
   // column (see buildKanjiEasel) -- always-available content (kind:
   // 'npc', not gated), same reasoning as the press just above. Built via
   // the shared buildKanjiEaselPages() helper (library-scene-shared.js)
-  // from N4_KANJI_EASEL_WORDS so every floor's easel uses the exact same
-  // page shape/pagination logic.
-  'kanji-easel': buildKanjiEaselPages({ floorLabel: 'N4', words: N4_KANJI_EASEL_WORDS }),
+  // from N3_KANJI_EASEL_WORDS, with an explicit `note` flagging that this
+  // word list is still a placeholder copy of N4's until N3 gets real
+  // grammar content (see this file's own top-of-file status note).
+  'kanji-easel': buildKanjiEaselPages({
+    floorLabel: 'N3',
+    words: N3_KANJI_EASEL_WORDS,
+    note: 'This floor\'s full lesson content is still a placeholder copy of N4\'s -- this word list will be replaced once N3 gets its own real grammar shelves.',
+  }),
 
-  'n4-jukebox': [
+  'n3-jukebox': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Listening Jukebox',
       bigIdea: 'An old jukebox that still picks up a late-night radio broadcast -- plus a shelf of real Japanese listening practice you can open on your own device.',
-      explain: ['Use the link list below to open real N4/N3-level listening practice: NHK Easy News (text and audio together), the Nihongo con Teppei podcast for beginners, and JLPT N4/N3 listening drills.', 'Or press play here first -- tonight\'s broadcast is playing now.'],
+      explain: ['Use the link list below to open real N3/N3-level listening practice: NHK Easy News (text and audio together), the Nihongo con Teppei podcast for beginners, and JLPT N3/N3 listening drills.', 'Or press play here first -- tonight\'s broadcast is playing now.'],
     },
     {
       type: 'grammar-intro',
@@ -2164,7 +2188,7 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Original practice passage, written for this course; grammar reused from the Obligation & Permission and Question shelves (ため, ことができる) — verified against Bunpro\'s JLPT N4 grammar list.'],
+      explain: ['Original practice passage, written for this course; grammar reused from the Obligation & Permission and Question shelves (ため, ことができる) — verified against Bunpro\'s JLPT N3 grammar list.'],
     },
   ],
 
@@ -2175,7 +2199,7 @@ const LESSON_CONTENT = {
   // always false for them, so clicking one just instant-completed with
   // nothing to read, unlike every one of N5's own 4 review piles. Same
   // shape as N5's review-1..4: an intro page, one 'summary' recap table
-  // per shelf (Pattern/Romaji/Meaning, since N4 shelves teach grammar
+  // per shelf (Pattern/Romaji/Meaning, since N3 shelves teach grammar
   // patterns rather than N5's flat vocab lists -- 'summary' reads
   // r.meaning for its 3rd column regardless of column header, same as
   // every 'summary' page elsewhere in this file/n5-phaser-game.js), 1-2
@@ -2183,7 +2207,7 @@ const LESSON_CONTENT = {
   // quiz-review -> quiz-answers -> quiz-score group off that pile's own
   // REVIEW_N_QUIZ_QUESTIONS array (defined further down, alongside the
   // other lesson-content resolver helpers).
-  'n4-review-1': [
+  'n3-review-1': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Foundations Review',
@@ -2251,12 +2275,12 @@ const LESSON_CONTENT = {
       type: 'quiz-review',
       sectionLabel: 'Foundations Review Quiz',
       intro: 'Answer each question, then continue to see the answer key.',
-      questions: N4_REVIEW_1_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_1_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-answers',
       sectionLabel: 'Answer Key',
-      questions: N4_REVIEW_1_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_1_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-score',
@@ -2265,11 +2289,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Same sources as Verb Stacks I/II and the Particle Reference Desk/Special Collections above (Bunpro\'s JLPT N4 grammar list, imabi, Tae Kim\'s Guide, JLPT Sensei) -- this pile just recaps their content.'],
+      explain: ['Same sources as Verb Stacks I/II and the Particle Reference Desk/Special Collections above (Bunpro\'s JLPT N3 grammar list, imabi, Tae Kim\'s Guide, JLPT Sensei) -- this pile just recaps their content.'],
     },
   ],
 
-  'n4-review-2': [
+  'n3-review-2': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Everyday Grammar Review',
@@ -2342,12 +2366,12 @@ const LESSON_CONTENT = {
       type: 'quiz-review',
       sectionLabel: 'Everyday Grammar Review Quiz',
       intro: 'Answer each question, then continue to see the answer key.',
-      questions: N4_REVIEW_2_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_2_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-answers',
       sectionLabel: 'Answer Key',
-      questions: N4_REVIEW_2_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_2_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-score',
@@ -2356,11 +2380,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Same sources as the Everyday Speech, Timing & Sequence, Change & Decision, and Obligation & Permission shelves above (Bunpro\'s JLPT N4 grammar list, imabi, JLPT Sensei, Tae Kim\'s Guide) -- this pile just recaps their content.'],
+      explain: ['Same sources as the Everyday Speech, Timing & Sequence, Change & Decision, and Obligation & Permission shelves above (Bunpro\'s JLPT N3 grammar list, imabi, JLPT Sensei, Tae Kim\'s Guide) -- this pile just recaps their content.'],
     },
   ],
 
-  'n4-review-3': [
+  'n3-review-3': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Nuance & Manners Review',
@@ -2417,7 +2441,7 @@ const LESSON_CONTENT = {
     },
     {
       // The trickiest point in this group -- 聞こえる/見える vs 聞ける/
-      // 見られる is the single most commonly confused N4 pair, since all 4
+      // 見られる is the single most commonly confused N3 pair, since all 4
       // translate to "can hear/see" in English but split on a completely
       // different axis (automatic vs. having the ability/opportunity).
       type: 'grammar-intro',
@@ -2430,12 +2454,12 @@ const LESSON_CONTENT = {
       type: 'quiz-review',
       sectionLabel: 'Nuance & Manners Review Quiz',
       intro: 'Answer each question, then continue to see the answer key.',
-      questions: N4_REVIEW_3_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_3_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-answers',
       sectionLabel: 'Answer Key',
-      questions: N4_REVIEW_3_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_3_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-score',
@@ -2444,11 +2468,11 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Same sources as Giving & Purpose, the Effort Shelf, Advice & Commands, and the Question Shelf above (Bunpro\'s JLPT N4 grammar list, imabi, JLPT Sensei) -- this pile just recaps their content.'],
+      explain: ['Same sources as Giving & Purpose, the Effort Shelf, Advice & Commands, and the Question Shelf above (Bunpro\'s JLPT N3 grammar list, imabi, JLPT Sensei) -- this pile just recaps their content.'],
     },
   ],
 
-  'n4-review-4': [
+  'n3-review-4': [
     {
       type: 'grammar-intro',
       sectionLabel: 'Refinement Review',
@@ -2519,12 +2543,12 @@ const LESSON_CONTENT = {
       type: 'quiz-review',
       sectionLabel: 'Refinement Review Quiz',
       intro: 'Answer each question, then continue to see the answer key.',
-      questions: N4_REVIEW_4_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_4_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-answers',
       sectionLabel: 'Answer Key',
-      questions: N4_REVIEW_4_QUIZ_QUESTIONS,
+      questions: N3_REVIEW_4_QUIZ_QUESTIONS,
     },
     {
       type: 'quiz-score',
@@ -2533,7 +2557,7 @@ const LESSON_CONTENT = {
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Same sources as Requests, Intentions & Plans, the If & When Almanac, and the Degree & Tone Shelf above (Bunpro\'s JLPT N4 grammar list, imabi, Tae Kim\'s Guide, JLPT Sensei) -- this pile just recaps their content.'],
+      explain: ['Same sources as Requests, Intentions & Plans, the If & When Almanac, and the Degree & Tone Shelf above (Bunpro\'s JLPT N3 grammar list, imabi, Tae Kim\'s Guide, JLPT Sensei) -- this pile just recaps their content.'],
     },
   ],
 
@@ -2548,7 +2572,7 @@ const LESSON_CONTENT = {
 // LESSON_CONTENT — they were unreachable while LESSON_CONTENT was the
 // Task-7 empty stub (hasContent was always false), so their absence from
 // this file went unnoticed until this task actually populated
-// LESSON_CONTENT. n4-dashboard.html does NOT load n5-phaser-game.js (only
+// LESSON_CONTENT. n3-dashboard.html does NOT load n5-phaser-game.js (only
 // library-scene-shared.js), so these generic, scene-only helpers aren't
 // reachable as bare identifiers here either — copied verbatim from
 // n5-phaser-game.js (around its appendGreetingSummary/
@@ -2563,7 +2587,7 @@ const LESSON_CONTENT = {
 // unconditionally on every row (even rows with no `reading` field), and
 // its own comment says it's "defined in n5-phaser-game.js, safe to call
 // here since this page only ever loads alongside it" — that assumption
-// doesn't hold for n4-dashboard.html, so it's copied verbatim below too;
+// doesn't hold for n3-dashboard.html, so it's copied verbatim below too;
 // every one of this pass's 3 flagship shelves ends in a 'summary' page,
 // so this one is not a someday-future gap like the conversation/diagram
 // helpers above — it's hit immediately.
@@ -2593,7 +2617,7 @@ function appendGreetingSummary(pages, lessonTitle) {
 // (see resolveConversationTurns below) — copied verbatim from
 // n5-phaser-game.js (its own ACTION_SPRITE_PATHS, near
 // resolveConversationTurns there) for the same reason as the resolver
-// functions themselves: no N4 lesson uses a 'conversation' page yet, so
+// functions themselves: no N3 lesson uses a 'conversation' page yet, so
 // this was an unreached ReferenceError waiting for the first one — see
 // the comment block above appendGreetingSummary. Keep in sync with N5's
 // copy if either ever changes (new action, new color, new asset path).
@@ -2839,7 +2863,7 @@ function furigana(word, reading) {
   return reading ? `<ruby>${word}<rt>${reading}</rt></ruby>` : word;
 }
 
-// N4_REVIEW_1..4_QUIZ_QUESTIONS used to live here (right after furigana())
+// N3_REVIEW_1..4_QUIZ_QUESTIONS used to live here (right after furigana())
 // -- moved above LESSON_CONTENT near the top of this file, since
 // LESSON_CONTENT's own object literal reads them by bare name and a
 // `const` declared textually AFTER the code that reads it throws "Cannot
@@ -2849,15 +2873,15 @@ function furigana(word, reading) {
 // explanation.
 
 // cropJukeboxTexture moved to library-scene-shared.js (Task: jukebox in
-// every floor's hall, N4/N3/N5 alike) — reusable now that more than one
+// every floor's hall, N3/N3/N5 alike) — reusable now that more than one
 // scene needs the same crop, instead of a copy per file.
 
 // -- Layout constants: positioning for shelves, piles, exam gate (Task 4) ----
 // North (top) = deeper into the building, toward a future N2 stub (not
 // built this pass). South (bottom) = arrival point from N5's
 // staircase. Mirrors N5's own spawn-south / stairs-north shape (see
-// LAYOUT's doc comment in n5-phaser-game.js) at N4/N3's larger scale.
-// leftColX = N4 shelves throughout every row; rightColX = N3 shelves
+// LAYOUT's doc comment in n5-phaser-game.js) at N3/N3's larger scale.
+// leftColX = N3 shelves throughout every row; rightColX = N3 shelves
 // throughout every row (not arbitrary sub-columns of one topic, like
 // N5's shape — a real per-side split, per explicit feedback). Y values
 // are a first pass — expect to retune them live against actual
@@ -2908,7 +2932,7 @@ const rightColX = [WORLD_W - leftColX[1] - shelfW, WORLD_W - leftColX[0] - shelf
 const rowStep = shelfH + 5; // vertical gap between two shelf rows in the same 2x2 group
 
 // Smaller Y = further north (deeper in). N3's shelves sit in the SAME
-// rows as N4's (just the right column) — visible-but-locked the whole
+// rows as N3's (just the right column) — visible-but-locked the whole
 // time, same as seeing a locked door before you have the key.
 //
 // Three 4-shelf groups per side, each its own 2x2 grid with its own
@@ -2942,7 +2966,7 @@ const wing2RowY = [717, 717 + rowStep]; // Reading Room I-IV (was shelf09-16, re
 const review2Y = 682; // unused -- Reading Room/Press aren't review-gated, so nothing sits in this gap anymore
 // Gap to wing1 widened the same way (was wing1RowY=887, review1Y=815).
 const wing1RowY = [992, 992 + rowStep]; // shelves 09-16 (2 four-shelf groups, left+right)
-const review1Y = 957; // n4-review-4's position -- gates n4-reading-01
+const review1Y = 957; // n3-review-4's position -- gates n3-reading-01
 const centerpieceY = 1062; // no longer used (the clock centerpiece was removed this session) — kept only because LAYOUT still exports it and nothing has needed cleanup yet
 // wing4RowY — reassigned this pass (was empty except the press) to hold
 // shelf01-08 instead, since it's the band closest to the entry and having
@@ -2953,7 +2977,7 @@ const wing4RowY = [1287, 1287 + rowStep]; // shelves 01-08 (2 four-shelf groups,
 // Gap between wing4's band (shelf01-08) and wing1's band (shelf09-16) --
 // previously unnamed since nothing needed to sit here (wing4 held only
 // the press before this reorder). Midpoint of the existing ~90px gap.
-const reviewGateSouthY = 1242; // n4-review-2's position -- gates n4-shelf-09
+const reviewGateSouthY = 1242; // n3-review-2's position -- gates n3-shelf-09
 // Player spawn — moved into the literal southwest corner per explicit
 // follow-up feedback (flush against both the west wall and the south
 // wall, matching the annotated screenshot), just a few pixels north of
@@ -3003,55 +3027,55 @@ const LAYOUT = {
   atriumHeight,
 };
 
-// -- Progression data: lessons, prereqs, review piles (N4-only single floor) --
+// -- Progression data: lessons, prereqs, review piles (N3-only single floor) --
 // N3 wing, frosted threshold wall, and N3 entrance exam gate were removed
 // per explicit follow-up feedback -- this is now ONE continuous 20-shelf
 // floor (16 grammar shelves + 4 Reading Room shelves), not two gated columns.
 // The 16 grammar shelves are a content-preserving merge of the old 24
-// (12 N4 + 12 N3) shelves -- see LESSON_CONTENT's own header comment for the
-// exact old-shelf-id -> new-shelf-id mapping. Bottom-to-top order (n4-shelf-01
+// (12 N3 + 12 N3) shelves -- see LESSON_CONTENT's own header comment for the
+// exact old-shelf-id -> new-shelf-id mapping. Bottom-to-top order (n3-shelf-01
 // nearest the entry) is unchanged; only the number of stops and their names
-// changed. n4-shelf-04 ("Special Collections") is the extra 16th grammar
+// changed. n3-shelf-04 ("Special Collections") is the extra 16th grammar
 // shelf requested this pass, giving the floor 20 total shelves.
 const LESSON_DATA = [
   {
-    id: 'n4-shelf-01',
+    id: 'n3-shelf-01',
     title: 'Verb Stacks I -- Potential, Volitional, Ba-form'
   },
   {
-    id: 'n4-shelf-02',
+    id: 'n3-shelf-02',
     title: 'Verb Stacks II -- Passive, Causative, Transitive/Intransitive'
   },
   {
-    id: 'n4-shelf-03',
+    id: 'n3-shelf-03',
     title: 'Particle Reference Desk -- de, ni, kara, mo'
   },
   {
-    id: 'n4-shelf-04',
+    id: 'n3-shelf-04',
     title: 'Special Collections -- zutsu, hodo-nai, dewa'
   },
   {
-    id: 'n4-shelf-05',
+    id: 'n3-shelf-05',
     title: 'Everyday Speech Shelf -- demo, de, mo'
   },
   {
-    id: 'n4-shelf-06',
+    id: 'n3-shelf-06',
     title: 'Timing & Sequence Shelf -- toka, tari, shi, tokoro, aida, toki'
   },
   {
-    id: 'n4-shelf-07',
+    id: 'n3-shelf-07',
     title: 'Change & Decision Shelf -- cause, mama, experience, deciding, becoming'
   },
   {
-    id: 'n4-shelf-08',
+    id: 'n3-shelf-08',
     title: 'Obligation & Permission Shelf -- nakereba, temoii, teoku, teshimau'
   },
   {
-    id: 'n4-shelf-09',
+    id: 'n3-shelf-09',
     title: 'Giving & Purpose Shelf -- ageru/kureru/morau, tame, youni'
   },
   {
-    id: 'n4-shelf-10',
+    id: 'n3-shelf-10',
     // Was 'Effort & Demonstratives Shelf' -- wrapped to 3 lines on the
     // plaque; shortened to the shelf's more central grammar point
     // (ようにする／ようになる, "making an effort toward / coming to") per
@@ -3061,18 +3085,18 @@ const LESSON_DATA = [
     title: 'Effort Shelf'
   },
   {
-    id: 'n4-shelf-11',
+    id: 'n3-shelf-11',
     title: 'Advice & Commands Shelf -- manner, imperative, prohibitive'
   },
   {
-    id: 'n4-shelf-12',
+    id: 'n3-shelf-12',
     // Was 'Embedded Questions Shelf' on the plaque -- shortened to
     // 'Question Shelf' per explicit request. Subtext (after ' -- ')
     // still shows in the retro-menu popup title.
     title: 'Question Shelf -- kadouka, nominalizing, ability, senses'
   },
   {
-    id: 'n4-shelf-13',
+    id: 'n3-shelf-13',
     // Was 'Requests & Suggestions Shelf' -- the other 3-line-wrapping
     // plaque flagged alongside shelf-10 ("same here... 2 words only").
     // Shortened to the shelf's dominant theme (concession + the request-
@@ -3081,89 +3105,89 @@ const LESSON_DATA = [
     title: 'Requests Shelf -- concession, requests, suggesting, quoting'
   },
   {
-    id: 'n4-shelf-14',
+    id: 'n3-shelf-14',
     title: 'Intentions & Plans Shelf -- tsumori, to omou, tara'
   },
   {
-    id: 'n4-shelf-15',
+    id: 'n3-shelf-15',
     title: 'If & When Almanac -- ba, nara, to conditionals'
   },
   {
-    id: 'n4-shelf-16',
+    id: 'n3-shelf-16',
     title: 'Degree & Tone Shelf -- appearance, sugiru, ndesu, tone particles'
   },
   // Reading Room -- supplementary content, unlocked as a capstone after the
   // final review pile (see SHELF_PREREQ) rather than gating any grammar shelf.
   {
-    id: 'n4-reading-01',
+    id: 'n3-reading-01',
     title: 'Reading Room I -- A Day Off'
   },
   {
-    id: 'n4-reading-02',
+    id: 'n3-reading-02',
     title: 'Reading Room II -- The New Student'
   },
   {
-    id: 'n4-reading-03',
+    id: 'n3-reading-03',
     title: 'Reading Room III -- A Letter Home'
   },
   {
-    id: 'n4-reading-04',
+    id: 'n3-reading-04',
     title: 'Reading Room IV -- Lost in Kyoto'
   },
 ];
 
-// N4-only single-floor chain -- one continuous line of 16 grammar shelves,
+// N3-only single-floor chain -- one continuous line of 16 grammar shelves,
 // a review pile after every 4 (matching N5's own "1 pile per 4 shelves"
 // cadence), then the Reading Room as a capstone unlocked by the final
 // review. No exam gate anywhere on this floor (N5's own staircase gate is
 // still what gates arrival here in the first place).
 const SHELF_PREREQ = {
-  'n4-shelf-01': null,
-  'n4-shelf-02': 'n4-shelf-01',
-  'n4-shelf-03': 'n4-shelf-02',
-  'n4-shelf-04': 'n4-shelf-03',
-  'n4-shelf-05': 'n4-review-1',
-  'n4-shelf-06': 'n4-shelf-05',
-  'n4-shelf-07': 'n4-shelf-06',
-  'n4-shelf-08': 'n4-shelf-07',
-  'n4-shelf-09': 'n4-review-2',
-  'n4-shelf-10': 'n4-shelf-09',
-  'n4-shelf-11': 'n4-shelf-10',
-  'n4-shelf-12': 'n4-shelf-11',
-  'n4-shelf-13': 'n4-review-3',
-  'n4-shelf-14': 'n4-shelf-13',
-  'n4-shelf-15': 'n4-shelf-14',
-  'n4-shelf-16': 'n4-shelf-15',
+  'n3-shelf-01': null,
+  'n3-shelf-02': 'n3-shelf-01',
+  'n3-shelf-03': 'n3-shelf-02',
+  'n3-shelf-04': 'n3-shelf-03',
+  'n3-shelf-05': 'n3-review-1',
+  'n3-shelf-06': 'n3-shelf-05',
+  'n3-shelf-07': 'n3-shelf-06',
+  'n3-shelf-08': 'n3-shelf-07',
+  'n3-shelf-09': 'n3-review-2',
+  'n3-shelf-10': 'n3-shelf-09',
+  'n3-shelf-11': 'n3-shelf-10',
+  'n3-shelf-12': 'n3-shelf-11',
+  'n3-shelf-13': 'n3-review-3',
+  'n3-shelf-14': 'n3-shelf-13',
+  'n3-shelf-15': 'n3-shelf-14',
+  'n3-shelf-16': 'n3-shelf-15',
   // Reading Room -- supplementary, unlocked once the final review pile is
   // cleared rather than gating (or being gated by) any grammar shelf.
-  'n4-reading-01': 'n4-review-4',
-  'n4-reading-02': 'n4-reading-01',
-  'n4-reading-03': 'n4-reading-02',
-  'n4-reading-04': 'n4-reading-03',
+  'n3-reading-01': 'n3-review-4',
+  'n3-reading-02': 'n3-reading-01',
+  'n3-reading-03': 'n3-reading-02',
+  'n3-reading-04': 'n3-reading-03',
 };
 
 // 4 review piles for 16 shelves -- one per 4-shelf group, same "1 per 4"
 // cadence as N5's own BOOK_PILE_DATA.
 const BOOK_PILE_DATA = [
   {
-    id: 'n4-review-1',
+    id: 'n3-review-1',
     title: 'Foundations Review',
-    requires: ['n4-shelf-01', 'n4-shelf-02', 'n4-shelf-03', 'n4-shelf-04']
+    requires: ['n3-shelf-01', 'n3-shelf-02', 'n3-shelf-03', 'n3-shelf-04']
   },
   {
-    id: 'n4-review-2',
+    id: 'n3-review-2',
     title: 'Everyday Grammar Review',
-    requires: ['n4-shelf-05', 'n4-shelf-06', 'n4-shelf-07', 'n4-shelf-08']
+    requires: ['n3-shelf-05', 'n3-shelf-06', 'n3-shelf-07', 'n3-shelf-08']
   },
   {
-    id: 'n4-review-3',
+    id: 'n3-review-3',
     title: 'Nuance & Manners Review',
-    requires: ['n4-shelf-09', 'n4-shelf-10', 'n4-shelf-11', 'n4-shelf-12']
+    requires: ['n3-shelf-09', 'n3-shelf-10', 'n3-shelf-11', 'n3-shelf-12']
   },
   {
-    id: 'n4-review-4',
+    id: 'n3-review-4',
     title: 'Refinement Review',
-    requires: ['n4-shelf-13', 'n4-shelf-14', 'n4-shelf-15', 'n4-shelf-16']
+    requires: ['n3-shelf-13', 'n3-shelf-14', 'n3-shelf-15', 'n3-shelf-16']
   },
 ];
 
@@ -3171,11 +3195,9 @@ const BOOK_PILE_DATA = [
 // door stub stays -- it's an unrelated future-floor placeholder, not part
 // of the N3 wing being removed this pass.
 const EXAM_GATE_DATA = {
-  // Was `n2` — renamed to match JLPT's real order (N5->N4->N3->N2->N1).
-  // See N3_ENTRANCE_GATE_KEY's own comment above for the full story.
-  n3: {
-    id: 'n3-exam-gate',
-    title: 'N3 Entrance Exam',
+  n2: {
+    id: 'n2-exam-gate',
+    title: 'N2 Entrance Exam',
     requires: []
   },
   n1: {
@@ -3188,7 +3210,7 @@ const EXAM_GATE_DATA = {
 // -- Shelf-decoration helpers (Task 6) -----------------------------------
 // Local copies of n5-phaser-game.js's createBookshelfLabel()/
 // buildShelfTrinketAnim()/drawShelfCompleteTexture() (n5-phaser-game.js:
-// 7373-7562), copied verbatim rather than referenced — n4-dashboard.html
+// 7373-7562), copied verbatim rather than referenced — n3-dashboard.html
 // does NOT load n5-phaser-game.js (only library-scene-shared.js), so
 // these generic, scene-only helpers (no N5-specific data referenced
 // anywhere in their bodies) aren't reachable as bare identifiers here.
@@ -3219,7 +3241,7 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
     // self-hosted the same way as VT323/Space Grotesk/Datatype (see
     // lesson-box.css's @font-face block) rather than a Google Fonts link,
     // matching this project's established convention. Space Mono has no
-    // Japanese glyphs, so DotGothic16 stays as the fallback -- N4's own
+    // Japanese glyphs, so DotGothic16 stays as the fallback -- N3's own
     // plaque titles are all-romaji today (the ' -- ' subtext is stripped
     // before this function ever sees it), but the fallback is kept for
     // consistency with N5's copy and in case a future title mixes in
@@ -3245,7 +3267,7 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
   const tagH = Math.ceil(textH + paddingY * 2);
 
   bookshelfLabelSeq += 1;
-  const key = `n4BookshelfLabelTex_${bookshelfLabelSeq}`;
+  const key = `n3BookshelfLabelTex_${bookshelfLabelSeq}`;
   const tex = scene.textures.createCanvas(key, tagW, tagH);
   const ctx = tex.getContext();
   ctx.imageSmoothingEnabled = false;
@@ -3282,16 +3304,16 @@ function createBookshelfLabel(scene, x, y, text, options = {}) {
 // Tiny retro-tech "available" trinket + "completed" badge, same as N5's
 // (n5-phaser-game.js:7429-7562) — a mini loading-panel prop with a
 // genuinely animating segmented progress bar for 'available', a
-// checkmark variant for 'completed'. Keyed with an n4-prefixed anim/
-// texture key since N4 is a separate Game instance (separate texture/
+// checkmark variant for 'completed'. Keyed with an n3-prefixed anim/
+// texture key since N3 is a separate Game instance (separate texture/
 // anim registries from N5) but shares the page's global JS scope with
 // no other floor's script — no actual collision risk, just kept
-// consistent with this file's n4-prefixing convention elsewhere.
-let n4ShelfTrinketAnimKey = null;
+// consistent with this file's n3-prefixing convention elsewhere.
+let n3ShelfTrinketAnimKey = null;
 
 function buildShelfTrinketAnim(scene) {
-  if (n4ShelfTrinketAnimKey) return n4ShelfTrinketAnimKey;
-  n4ShelfTrinketAnimKey = 'n4ShelfTrinketLoad';
+  if (n3ShelfTrinketAnimKey) return n3ShelfTrinketAnimKey;
+  n3ShelfTrinketAnimKey = 'n3ShelfTrinketLoad';
 
   const w = 30;
   const h = 22;
@@ -3307,7 +3329,7 @@ function buildShelfTrinketAnim(scene) {
 
   const frameKeys = [];
   for (let segFilled = 0; segFilled <= segCount; segFilled++) {
-    const key = `n4ShelfTrinketFrame${segFilled}`;
+    const key = `n3ShelfTrinketFrame${segFilled}`;
     const tex = scene.textures.createCanvas(key, w, h);
     const ctx = tex.getContext();
     ctx.imageSmoothingEnabled = false;
@@ -3342,19 +3364,19 @@ function buildShelfTrinketAnim(scene) {
     key
   }));
   scene.anims.create({
-    key: n4ShelfTrinketAnimKey,
+    key: n3ShelfTrinketAnimKey,
     frames,
     frameRate: 3,
     repeat: -1
   });
-  return n4ShelfTrinketAnimKey;
+  return n3ShelfTrinketAnimKey;
 }
 
-let n4ShelfCompleteKey = null;
+let n3ShelfCompleteKey = null;
 
 function drawShelfCompleteTexture(scene) {
-  if (n4ShelfCompleteKey) return n4ShelfCompleteKey;
-  n4ShelfCompleteKey = 'n4ShelfCompleteTex';
+  if (n3ShelfCompleteKey) return n3ShelfCompleteKey;
+  n3ShelfCompleteKey = 'n3ShelfCompleteTex';
 
   const w = 30;
   const h = 22;
@@ -3367,7 +3389,7 @@ function drawShelfCompleteTexture(scene) {
   const trackFill = '#3ca35c';
   const checkColor = '#c8f0d0';
 
-  const tex = scene.textures.createCanvas(n4ShelfCompleteKey, w, h);
+  const tex = scene.textures.createCanvas(n3ShelfCompleteKey, w, h);
   const ctx = tex.getContext();
   ctx.imageSmoothingEnabled = false;
 
@@ -3400,13 +3422,13 @@ function drawShelfCompleteTexture(scene) {
   ctx.stroke();
 
   tex.refresh();
-  return n4ShelfCompleteKey;
+  return n3ShelfCompleteKey;
 }
 
 // Procedural exam-gate DOOR texture — locked (closed, iron-braced, a
 // keyhole) and unlocked (leaves parted, warm light in the gap) variants
 // of the same door frame, matching this file's existing wood/brass
-// palette (N4_PALETTE, the rope-and-brass fence's brass tones). Reusable
+// palette (N3_PALETTE, the rope-and-brass fence's brass tones). Reusable
 // for any future level's own entrance door — pass a distinct `key` per
 // state per level (Phaser throws on re-registering a canvas key).
 // config: { locked: boolean }
@@ -3593,14 +3615,14 @@ function drawDoorTexture(scene, key, config) {
   return key;
 }
 
-class N4LibraryScene extends Phaser.Scene {
+class N3LibraryScene extends Phaser.Scene {
   constructor() {
-    super('N4LibraryScene');
+    super('N3LibraryScene');
   }
 
   preload() {
-    // Phaser's texture cache is per-Game-instance, and N4 is a separate
-    // page/Game instance from N5 — every source sheet N4 needs must be
+    // Phaser's texture cache is per-Game-instance, and N3 is a separate
+    // page/Game instance from N5 — every source sheet N3 needs must be
     // loaded here too, even ones N5 also loads. Paths confirmed against
     // n5-phaser-game.js's own preload() (LibraryScene). This is the
     // minimum set for Tasks 3-6 (walls/floor/shelves/furniture/player) —
@@ -3608,7 +3630,22 @@ class N4LibraryScene extends Phaser.Scene {
     // specific new crop needs a sheet not listed yet.
     this.load.image('libAssetPack', '../../assets/images/ui/libassetpack-tiled.png');
     this.load.image('furniture03', '../../assets/images/ui/furniture03.png');
-    this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState1.png');
+    // Archive Vault reskin — green/olive furniture (State2), not N4's
+    // orange State1, to match the approved mockup's loveseat. Same pixel
+    // layout as State1 (confirmed: both are 208x288 with items in
+    // identical positions), so every ASSET_RECTS.lib*/sofaCouch2 crop
+    // rect below still lines up without changes.
+    this.load.image('topDownFurniture1', '../../assets/images/ui/TopDownHouse_FurnitureState2.png');
+    // Archive Vault reskin — pre-recolored teal/brass shelf sprites
+    // (built via a one-off HSV hue-shift script against the original
+    // red/maroon libassetpack-tiled.png crops, approved in the mockup
+    // before this file existed — see mockups/n3-archive-vault/). Loaded
+    // as standalone already-cropped images instead of ASSET_RECTS crops
+    // from libAssetPack, since the recolor only exists as these 4 files.
+    this.load.image('n3ShelfLockedArchiveVault', '../../assets/images/ui/n3-shelf-locked-archivevault.png');
+    this.load.image('n3ShelfFilled1ArchiveVault', '../../assets/images/ui/n3-shelf-filled1-archivevault.png');
+    this.load.image('n3ShelfFilled2ArchiveVault', '../../assets/images/ui/n3-shelf-filled2-archivevault.png');
+    this.load.image('n3ShelfFilled3ArchiveVault', '../../assets/images/ui/n3-shelf-filled3-archivevault.png');
     // Same floor/wall source sheets as N5's LibraryScene (buildFloor()/
     // buildWalls() below reuse their exact crops) — added for Task 3.
     this.load.image('floorsWalls', '../../assets/images/ui/floors-walls02.png');
@@ -3627,9 +3664,9 @@ class N4LibraryScene extends Phaser.Scene {
     // 1024x1024 image (verified via PIL before use), no cropToTexture
     // isolation needed unlike the packed libassetpack-tiled.png crops.
     this.load.image('gutenbergPress', '../../assets/images/lesson/gutenberg-press-Original.png');
-    // Kanji Easel prop (see buildKanjiEasel) — same pre-cropped asset N5
-    // loads (693x870, true alpha bbox, no transparent padding to account
-    // for in placement math).
+    // Kanji Easel prop (see buildKanjiEasel) — same pre-cropped asset N5/
+    // N4 load (693x870, true alpha bbox, no transparent padding to
+    // account for in placement math).
     this.load.image('kanjiEaselRaw', '../../assets/images/ui/easel-tripod-cropped.png');
     loadCatSpritesheets(this);
   }
@@ -3642,33 +3679,33 @@ class N4LibraryScene extends Phaser.Scene {
     this.worldW = WORLD_W;
     this.worldH = WORLD_H;
     // This floor's one quiz-gate-mechanic entry (3-attempt/24h-cooldown,
-    // same as N5's staircase) is the N4->N3 exam gate, NOT a north-wall
+    // same as N5's staircase) is the N3->N3 exam gate, NOT a north-wall
     // staircase (there's no further N2 stub built this pass — see the
     // design spec's Out of Scope). Passing it just unlocks the N3 column
     // in place -- no page
     // navigation needed, so onFinalGatePass is just a toast.
     this.finalGateId = null; // N3 exam gate removed this pass -- no finalGateId needed on this floor
     // Vocabulary press (this pass) — reuses the exact same reference PDFs
-    // N5's own printer station links to (ALL_PRINT_LINKS_N4 below is a
+    // N5's own printer station links to (ALL_PRINT_LINKS_N3 below is a
     // verbatim-path copy of n5-phaser-game.js's PRINT_LINKS_BY_SHELF
-    // entries, not new documents), just reachable from N4's floor too via
+    // entries, not new documents), just reachable from N3's floor too via
     // its own press prop instead of N5's printer.
-    this.printerStationId = 'n4-vocab-press';
-    this.printLinksByShelf = { 'n4-jukebox': JUKEBOX_LINKS };
-    this.allPrintLinks = ALL_PRINT_LINKS_N4;
+    this.printerStationId = 'n3-vocab-press';
+    this.printLinksByShelf = { 'n3-jukebox': JUKEBOX_LINKS };
+    this.allPrintLinks = ALL_PRINT_LINKS_N3;
     this.lessonContent = LESSON_CONTENT; // Task 7
     this.quizGateKey = QUIZ_GATE_KEY;
     this.catColors = CAT_COLORS;
     this.talkColorPaths = TALK_COLOR_PATHS;
     this.senseiPortraitPaths = SENSEI_PORTRAIT_PATHS;
-    this.extraRetroMenuOptions = undefined; // N4 has no shelf-08-style extra option this pass
-    // Recolors the LessonBox dialogue/quiz chrome to N4_PALETTE's wine/
+    this.extraRetroMenuOptions = undefined; // N3 has no shelf-08-style extra option this pass
+    // Recolors the LessonBox dialogue/quiz chrome to N3_PALETTE's wine/
     // gold/dark-wood instead of N5's navy/indigo default — see the
-    // .lesson-box--theme-n4 override in lesson-box.css and the
+    // .lesson-box--theme-n3 override in lesson-box.css and the
     // `theme: this.lessonBoxTheme` read in library-scene-shared.js's
     // startLesson(). Layout/components are identical to N5; only these
     // CSS custom properties change.
-    this.lessonBoxTheme = 'n4';
+    this.lessonBoxTheme = 'n3';
     this.finalGateProceedLabel = 'Continue';
     this.onFinalGatePass = () => showToast('The N3 wing is now unlocked!');
     this.buildScene();
@@ -3676,7 +3713,7 @@ class N4LibraryScene extends Phaser.Scene {
 
   buildScene() {
     this.interactives = [];
-    registerCatAnimations(this); // idempotent, safe even though N4 is a separate Game instance
+    registerCatAnimations(this); // idempotent, safe even though N3 is a separate Game instance
     this.progress = loadProgress();
     this.favorites = loadFavorites();
     this.lessonPage = loadLessonPage();
@@ -3689,7 +3726,7 @@ class N4LibraryScene extends Phaser.Scene {
     this.buildJukebox();
     this.buildShelves();
     // Moved after buildShelves() (was before) -- buildAtrium()'s "real
-    // shelves" preview reuses this.n4ShelfFilledKeys, which buildShelves()
+    // shelves" preview reuses this.n3ShelfFilledKeys, which buildShelves()
     // is what populates. No ordering dependency the other way: the atrium
     // sits in the center void, shelves sit in the side columns, so
     // nothing about buildShelves() needs the atrium to exist first.
@@ -3719,10 +3756,10 @@ class N4LibraryScene extends Phaser.Scene {
     // Border tileset holds only the brick tile, same as N5 — every
     // non-border cell is "no tile" (-1) so the floor tileSprite above
     // shows through. No gate opening this pass (unlike N5's bottom-row
-    // GATE_COLS cutout): this floor's one gate mechanic is the N4->N3
+    // GATE_COLS cutout): this floor's one gate mechanic is the N3->N3
     // exam-gate interactive built in the middle of the map (Task 6), not
     // a hole in the perimeter wall, so the border stays fully solid.
-    const tileTex = this.textures.createCanvas('n4LibraryTiles', TILE_SIZE, TILE_SIZE);
+    const tileTex = this.textures.createCanvas('n3LibraryTiles', TILE_SIZE, TILE_SIZE);
     const tileCtx = tileTex.getContext();
     tileCtx.imageSmoothingEnabled = false;
     const floorSrc = this.textures.get('floorsWalls').getSourceImage();
@@ -3746,7 +3783,7 @@ class N4LibraryScene extends Phaser.Scene {
       tileWidth: TILE_SIZE,
       tileHeight: TILE_SIZE
     });
-    const tileset = map.addTilesetImage('n4LibraryTiles', null, TILE_SIZE, TILE_SIZE);
+    const tileset = map.addTilesetImage('n3LibraryTiles', null, TILE_SIZE, TILE_SIZE);
     map.createLayer(0, tileset, 0, 0);
     this.floorTilemap = map;
 
@@ -3757,7 +3794,11 @@ class N4LibraryScene extends Phaser.Scene {
 
   buildWalls() {
     const blockSize = 32; // was TILE_SIZE (16) via image crop — see Task 2
-    const brickKey = createBrickWallTexture(this, 'n4BrickWallTex', {
+    // Archive Vault reskin — sage wall-panel tiling instead of N4/N5's
+    // shared brick texture (createBrickWallTexture in
+    // library-scene-shared.js, deliberately left untouched). See
+    // createArchiveVaultWallTexture()'s own comment above.
+    const brickKey = this.createArchiveVaultWallTexture('n3PanelWallTex', {
       blockW: blockSize,
       blockH: blockSize
     });
@@ -3811,7 +3852,7 @@ class N4LibraryScene extends Phaser.Scene {
   buildWingCorners() {
     const stubW = 40;
     const stubH = 16;
-    const brickKey = 'n4BrickWallTex';
+    const brickKey = 'n3BrickWallTex';
 
     const addStub = (x, y, w) => {
       this.add.tileSprite(x, y, w, stubH, brickKey).setOrigin(0, 0).setDepth(0);
@@ -3827,7 +3868,7 @@ class N4LibraryScene extends Phaser.Scene {
     // not in the middle of the map where wing1 used to be the extreme.
     const bottomY = LAYOUT.wing4RowY[1] + LAYOUT.shelfH + 10; // just south of wing4's south row
 
-    addStub(64, topY, stubW); // N4 spine (west, x=64 inner edge) juts east
+    addStub(64, topY, stubW); // N3 spine (west, x=64 inner edge) juts east
     addStub(64, bottomY, stubW);
     addStub(WORLD_W - 64 - stubW, topY, stubW); // N3 spine (east), mirrored, juts west
     addStub(WORLD_W - 64 - stubW, bottomY, stubW);
@@ -3836,7 +3877,7 @@ class N4LibraryScene extends Phaser.Scene {
   buildTopBand() {
     // Simpler than N5's buildTopBand() (n5-phaser-game.js:7770): no
     // staircase/gate art at all this pass — this floor's one gate
-    // mechanic (the N4->N3 exam gate) is a separate interactive built in
+    // mechanic (the N3->N3 exam gate) is a separate interactive built in
     // the middle of the map by Task 6, not a north-wall staircase (a
     // further N3->N2 gate is explicitly out of scope — see the design
     // spec). Just a solid procedural wall header spanning the full
@@ -3868,13 +3909,13 @@ class N4LibraryScene extends Phaser.Scene {
   buildFurniture() {
     // Recolors drawWovenRug's default brick-red/tan palette to this
     // floor's deeper wine/gold accent — now the module-level
-    // N4_RUG_PALETTE (was a local const here only; hoisted so
+    // N3_RUG_PALETTE (was a local const here only; hoisted so
     // buildAtrium() can reuse the identical palette for its own rug
     // preview). Only the small arrival rug (below) uses this in
     // buildFurniture() itself.
-    const n4RugPalette = N4_RUG_PALETTE;
+    const n3RugPalette = N3_RUG_PALETTE;
 
-    // Plain arrival rug at the entry point — N4 has no "Neko-sensei" desk
+    // Plain arrival rug at the entry point — N3 has no "Neko-sensei" desk
     // this pass (out of scope, matches the design spec's placeholder-
     // first approach), just a small accent rug (same woven technique,
     // fixed-size like N5's globeRug accents, no tiling needed) so the
@@ -3892,58 +3933,95 @@ class N4LibraryScene extends Phaser.Scene {
     const arrivalH = 50;
     const cornerX = 16; // just past the single true outer border tile
     const southWallTopY = (GRID_ROWS - 2) * TILE_SIZE;
-    drawWovenRug(this, 'n4ArrivalRugTex', arrivalW, arrivalH, n4RugPalette);
-    this.add.image(cornerX, southWallTopY - arrivalH, 'n4ArrivalRugTex')
+    drawWovenRug(this, 'n3ArrivalRugTex', arrivalW, arrivalH, n3RugPalette);
+    this.add.image(cornerX, southWallTopY - arrivalH, 'n3ArrivalRugTex')
       .setOrigin(0, 0).setDepth(0);
   }
 
   // The mezzanine's floor is drawn in layers rather than borrowed from a
   // bitmap: long alternating planks, fine grain, seams, and a soft warm
   // highlight read as dark hardwood even at the game's pixel scale.
+  // Archive Vault reskin: this used to procedurally draw a dark hardwood
+  // plank floor (same technique as N4/N5's own copy of this method) —
+  // replaced with the REAL orange-herringbone floor crop from
+  // floors-walls02.png (ASSET_RECTS.archiveVaultFloor), tiled into the
+  // same canvas-texture contract every caller already expects (idempotent
+  // by key, returns the texture key) so buildFloor()'s tileSprite and
+  // buildAtrium()'s "peek into the floor below" preview both pick up the
+  // new look with zero changes at their call sites. Chosen over hand-
+  // painting new art per explicit user direction ("or they can use these
+  // walls and flooring from floors-walls02.png") — this is the exact
+  // sage-wall/herringbone-floor combo from that sheet's 3rd column,
+  // approved via the room-layout mockup before this file existed.
   drawHardwoodFloorTexture() {
-    const key = 'n4LayeredHardwoodTex';
+    const key = 'n3ArchiveVaultFloorTex';
     if (this.textures.exists(key)) return key;
-    const tex = this.textures.createCanvas(key, 128, 96);
+    const rect = ASSET_RECTS.archiveVaultFloor;
+    const tilesX = 2;
+    const tilesY = 2;
+    const tex = this.textures.createCanvas(key, rect.w * tilesX, rect.h * tilesY);
     const ctx = tex.getContext();
-    ctx.fillStyle = '#301b12';
-    ctx.fillRect(0, 0, 128, 96);
-    for (let y = 0; y < 96; y += 16) {
-      const offset = (y / 16) % 2 ? -28 : 0;
-      for (let x = offset; x < 128; x += 56) {
-        ctx.fillStyle = (x / 56 + y / 16) % 2 ? '#4c2b1b' : '#422417';
-        ctx.fillRect(x + 1, y + 1, 54, 14);
-        ctx.fillStyle = 'rgba(235, 178, 98, .10)';
-        ctx.fillRect(x + 3, y + 3, 50, 1);
-        ctx.fillStyle = 'rgba(15, 6, 3, .52)';
-        ctx.fillRect(x, y + 15, 56, 1);
-        ctx.strokeStyle = 'rgba(25, 10, 5, .36)';
-        ctx.lineWidth = 1;
-        for (let grain = 7; grain < 52; grain += 13) {
-          ctx.beginPath();
-          ctx.moveTo(x + grain, y + 5);
-          ctx.lineTo(x + grain + 8, y + 6);
-          ctx.stroke();
-        }
+    ctx.imageSmoothingEnabled = false;
+    const src = this.textures.get('floorsWalls').getSourceImage();
+    for (let ty = 0; ty < tilesY; ty++) {
+      for (let tx = 0; tx < tilesX; tx++) {
+        ctx.drawImage(
+          src, rect.x, rect.y, rect.w, rect.h,
+          tx * rect.w, ty * rect.h, rect.w, rect.h
+        );
       }
     }
     tex.refresh();
     return key;
   }
 
-  // A real open central void makes the floor read as a mezzanine — and,
-  // per explicit follow-up feedback ("I should be seeing the N5 floor in
-  // the open ATRIUM"), it needs to actually read as N5's floor, not a
-  // dim silhouette. Two Phaser.Game instances can't share a live scene
-  // (N4 and N5 are separate `new Phaser.Game()` calls on separate HTML
-  // pages — n4-dashboard.html never loads n5-phaser-game.js), so this
-  // can't be a literal peek into the running N5 scene; instead
-  // buildOpenAtriumVoid's floor*/shelfColor knobs are tinted to N5's own
-  // warm reception-red palette (its default values, since N4 is that
-  // function's only caller) and lit brightly enough to read as a real,
-  // occupied room one floor down, with an explicit "N5" label below
-  // reinforcing it. The border fill just outside the void itself stays
-  // dark, a deliberate thin frame/shadow lip at the atrium's rim, not
-  // part of "the floor" the player is meant to read as lit.
+  // Sibling to drawHardwoodFloorTexture() above — same reasoning, but for
+  // the sage wood-panel WALL crop instead of the herringbone floor one.
+  // Not shared via library-scene-shared.js's createBrickWallTexture()
+  // (that function stays untouched so N4/N5's brick walls are unaffected)
+  // — this is a local, N3-only tiling helper with the same canvas-texture
+  // contract (idempotent by key, returns the key) so it can drop straight
+  // into buildWalls() in place of createBrickWallTexture().
+  createArchiveVaultWallTexture(key, config) {
+    if (this.textures.exists(key)) return key;
+    const cfg = config || {};
+    const blockW = cfg.blockW || 32;
+    const blockH = cfg.blockH || 32;
+    const rect = ASSET_RECTS.archiveVaultWall;
+    const tex = this.textures.createCanvas(key, blockW, blockH);
+    const ctx = tex.getContext();
+    ctx.imageSmoothingEnabled = false;
+    const src = this.textures.get('floorsWalls').getSourceImage();
+    // Tile the sage panel crop to cover the requested block size —
+    // ceil() so a partial final tile still fully covers the block rather
+    // than leaving a transparent sliver.
+    for (let y = 0; y < blockH; y += rect.h) {
+      for (let x = 0; x < blockW; x += rect.w) {
+        ctx.drawImage(
+          src, rect.x, rect.y, rect.w, rect.h,
+          x, y, Math.min(rect.w, blockW - x), Math.min(rect.h, blockH - y)
+        );
+      }
+    }
+    tex.refresh();
+    return key;
+  }
+
+  // A real open central void makes the floor read as a mezzanine — this
+  // floor sits above N4 (not N5 — corrected from the N4->N3 clone, which
+  // originally carried over N4's own "peek down at N5" tinting
+  // unchanged), so the void should read as N4's floor, not N5's. Two
+  // Phaser.Game instances can't share a live scene (N3 and N4 are
+  // separate `new Phaser.Game()` calls on separate HTML pages —
+  // n3-dashboard.html never loads n4-phaser-game.js), so this can't be a
+  // literal peek into the running N4 scene; instead buildOpenAtriumVoid's
+  // floor*/shelfColor knobs are explicitly tinted to N4's own wine/gold
+  // LessonBox palette (see lesson-box.css's .lesson-box--theme-n4) and
+  // lit brightly enough to read as a real, occupied room one floor down,
+  // with an explicit "N4" label below reinforcing it. The border fill
+  // just outside the void itself stays dark, a deliberate thin frame/
+  // shadow lip at the atrium's rim, not part of "the floor" the player
+  // is meant to read as lit.
   buildAtrium() {
     const left = LAYOUT.atriumLeft;
     const width = LAYOUT.atriumWidth;
@@ -3956,20 +4034,24 @@ class N4LibraryScene extends Phaser.Scene {
       top: top + 16,
       width: width - 28,
       height: height - 32,
-      corridorColor: N4_PALETTE.carpet,
-      // floorBase/floorTileA/floorTileB/shelfColor deliberately omitted —
-      // this call relies on buildOpenAtriumVoid's own defaults, which ARE
-      // N5's palette (see that function's header comment).
-      // Real floor/carpet/shelves — per explicit follow-up feedback
-      // ("show the N5 first floor... same floor, same shelves and
-      // carpet"), not just the abstract color-block preview above.
+      corridorColor: N3_PALETTE.carpet,
+      // N4's own wine/gold palette (bg-top #7a2b46, dark wood #2f1b12,
+      // gold #d4a24c — see lesson-box.css's .lesson-box--theme-n4),
+      // dimmed a shade for "one floor down" the same way
+      // buildOpenAtriumVoid's own N5-default comment dims N5's palette.
+      floorBase: 0x5c2038,
+      floorTileA: 0x6e2a42,
+      floorTileB: 0x64253a,
+      shelfColor: 0x2f1b12,
+      // Real floor/carpet/shelves — same "show the actual floor below"
+      // reasoning N4 already established for its own N5 peek.
       // this.drawHardwoodFloorTexture() is idempotent (returns the
       // existing key if already created in buildFloor()), and
-      // this.n4ShelfFilledKeys is populated by buildShelves(), which now
+      // this.n3ShelfFilledKeys is populated by buildShelves(), which now
       // runs BEFORE buildAtrium() (see buildScene()'s reordering comment).
       floorTexKey: this.drawHardwoodFloorTexture(),
-      rugPalette: N4_RUG_PALETTE,
-      shelfTexKeys: this.n4ShelfFilledKeys,
+      rugPalette: N3_RUG_PALETTE,
+      shelfTexKeys: this.n3ShelfFilledKeys,
     });
     // Rear walkway strip's own dark fill + trim lines were removed per
     // explicit feedback — it read as a flat black rectangle sitting
@@ -3989,10 +4071,11 @@ class N4LibraryScene extends Phaser.Scene {
       height,
       wallGroup: this.wallGroup
     });
-    // "OPEN ATRIUM / N5 FIRST-FLOOR LIBRARY" label, centered inside the
-    // atrium void, floating over the illustrated content — "N5" added
-    // per explicit follow-up feedback, naming which floor is actually
-    // visible below instead of leaving it generic.
+    // "OPEN ATRIUM / N4 FLOOR BELOW" label, centered inside the atrium
+    // void, floating over the illustrated content — naming which floor
+    // is actually visible below instead of leaving it generic. Was "N5
+    // FIRST-FLOOR LIBRARY" (unchanged carry-over from the N4->N3 clone,
+    // wrong once N3 sits above N4 rather than N5).
     const labelX = left + width / 2;
     const labelY = top + height / 2 - 20;
     this.add.text(labelX, labelY, 'OPEN ATRIUM', {
@@ -4001,7 +4084,7 @@ class N4LibraryScene extends Phaser.Scene {
       color: '#e8d4a8',
       align: 'center',
     }).setOrigin(0.5).setDepth(4);
-    this.add.text(labelX, labelY + 28, 'N5 FIRST-FLOOR LIBRARY', {
+    this.add.text(labelX, labelY + 28, 'N4 FLOOR BELOW', {
       fontFamily: '"Press Start 2P", monospace',
       fontSize: '8px',
       color: '#a89068',
@@ -4014,14 +4097,14 @@ class N4LibraryScene extends Phaser.Scene {
   // interactive, same pattern as buildVocabPressStation(): always
   // available, routes to startLesson() via openInteraction()'s 'npc'
   // branch, carries its own curated external listening links via
-  // this.printLinksByShelf['n4-jukebox'] (set in create()) plus an
+  // this.printLinksByShelf['n3-jukebox'] (set in create()) plus an
   // original in-game "broadcast" transcript + comprehension quiz (see
-  // LESSON_CONTENT['n4-jukebox']). Only one instance now (was two,
-  // mirrored N4/N3). Moved this pass from its old solo spot at the north
+  // LESSON_CONTENT['n3-jukebox']). Only one instance now (was two,
+  // mirrored N3/N3). Moved this pass from its old solo spot at the north
   // wall header into wing3RowY (left side, beside the press) -- see this
   // method's own position comment for why.
   buildJukebox() {
-    const texKey = cropJukeboxTexture(this, 'n4JukeboxTex');
+    const texKey = cropJukeboxTexture(this, 'n3JukeboxTex');
     const scale = 0.12;
     const w = 620 * scale;
     const h = 870 * scale;
@@ -4036,7 +4119,7 @@ class N4LibraryScene extends Phaser.Scene {
     const y = LAYOUT.wing3RowY[0] + (LAYOUT.rowStep + LAYOUT.shelfH) / 2;
 
     const jukeboxEntry = {
-      id: 'n4-jukebox',
+      id: 'n3-jukebox',
       kind: 'npc',
       title: 'Listening Jukebox',
       x,
@@ -4090,7 +4173,7 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   // Generates all 20 shelf positions from LAYOUT's own Y bands. wing1RowY
-  // now hosts shelves 01-08 (4 left + 4 mirrored right -- no more N4/N3
+  // now hosts shelves 01-08 (4 left + 4 mirrored right -- no more N3/N3
   // split, just two shelves' worth of width per row-band), wing2RowY hosts
   // shelves 09-16 the same way, and wing3RowY hosts the 4 Reading Room
   // shelves (left-only). wing4RowY is no longer part of this shelf grid --
@@ -4139,20 +4222,24 @@ class N4LibraryScene extends Phaser.Scene {
     const shelfW = LAYOUT.shelfW;
     const shelfH = LAYOUT.shelfH;
 
-    // Matches LESSON_DATA's order (n4-shelf-01..16, n4-reading-01..04)
+    // Matches LESSON_DATA's order (n3-shelf-01..16, n3-reading-01..04)
     // exactly — buildShelves() zips LESSON_DATA[i] with positions[i] by
     // array index below.
     const positions = this.createMezzanineShelfPositions();
 
-    const filledVariants = ['shelfFilled1', 'shelfFilled2', 'shelfFilled3'];
-    const lockedKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.shelfLocked, 'n4ShelfLockedTex');
-    const filledKeys = filledVariants.map(
-      (v) => cropToTexture(this, 'libAssetPack', ASSET_RECTS[v], 'n4' + v + 'Tex')
-    );
+    // Archive Vault reskin — pre-recolored teal/brass shelves, loaded
+    // whole in preload() (n3Shelf*ArchiveVault keys) rather than cropped
+    // from libAssetPack's red/maroon sheet at runtime. shelfW/shelfH
+    // below (from ASSET_RECTS.shelfLocked/shelfFilled*) are still read
+    // for sizing math even though those crop rects are no longer used to
+    // actually cut these textures — the recolored PNGs are pixel-
+    // identical in dimensions to their original crops.
+    const lockedKey = 'n3ShelfLockedArchiveVault';
+    const filledKeys = ['n3ShelfFilled1ArchiveVault', 'n3ShelfFilled2ArchiveVault', 'n3ShelfFilled3ArchiveVault'];
     // Stashed for buildAtrium()'s "real shelves" preview (see
     // buildOpenAtriumVoid's shelfTexKeys option) — reuses these same
     // real crops instead of re-cropping duplicate textures.
-    this.n4ShelfFilledKeys = filledKeys;
+    this.n3ShelfFilledKeys = filledKeys;
     // Registers the trinket's frame textures + looping animation once,
     // before any shelf sprite tries to use them (must exist first).
     const trinketAnimKey = buildShelfTrinketAnim(this);
@@ -4163,7 +4250,7 @@ class N4LibraryScene extends Phaser.Scene {
       y: 200,
       w: 624,
       h: 624
-    }, 'n4FavoriteDiskTex');
+    }, 'n3FavoriteDiskTex');
 
     LESSON_DATA.forEach((lesson, i) => {
       const [x, y] = positions[i];
@@ -4186,7 +4273,7 @@ class N4LibraryScene extends Phaser.Scene {
       const sprite = this.add.image(x + shelfW / 2, y + shelfH / 2, lockedKey)
         .setOrigin(0.5, 0.5).setDepth(1)
         .setScale(shelfScale);
-      const glow = this.add.sprite(x + shelfW / 2, y + shelfH / 2, 'n4ShelfTrinketFrame0')
+      const glow = this.add.sprite(x + shelfW / 2, y + shelfH / 2, 'n3ShelfTrinketFrame0')
         .setOrigin(0.5).setDepth(4).setVisible(false)
         .play(trinketAnimKey);
       const completeBadge = this.add.image(x + shelfW / 2, y + shelfH / 2, drawShelfCompleteTexture(this))
@@ -4201,15 +4288,15 @@ class N4LibraryScene extends Phaser.Scene {
       // extra detail is still useful, unlike the always-visible plaque).
       const plaqueTitle = lesson.title.split(' -- ')[0];
       // fontSize/maxWidth both bumped from createBookshelfLabel's defaults
-      // (10 / shelfW+20) specifically for this floor's plaques: N4's
+      // (10 / shelfW+20) specifically for this floor's plaques: N3's
       // shelves render much smaller than N5's (shelfW here is ~63px vs
       // N5's ~123px, since this floor's shelfScale is fit to a 100px
       // ceiling height rather than N5's SHELF_SCALE=1.4), so the same
       // default plaque sizing that works for N5 was already wrapping most
-      // N4 titles onto 2 lines with the old VT323 font. Space Mono's
+      // N3 titles onto 2 lines with the old VT323 font. Space Mono's
       // characters measure ~53% wider than VT323's at the same size
       // (checked against both fonts' actual hmtx advance widths), which
-      // at size 10 pushed nearly every N4 title (e.g. "Verb Stacks I",
+      // at size 10 pushed nearly every N3 title (e.g. "Verb Stacks I",
       // one line before) onto an extra line, and a few onto 3-4 lines --
       // tall enough to risk colliding with the shelf row above/below in
       // this floor's tighter vertical spacing. fontSize 8 + maxWidth
@@ -4331,10 +4418,10 @@ class N4LibraryScene extends Phaser.Scene {
   // No live browser to screenshot-check against, so please flag if any
   // of these still read as cramped, colliding, or the wrong scale.
   buildFillerFurniture() {
-    const tableKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libTable, 'n4LibTableTex');
-    const chairKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libChair, 'n4LibChairTex');
-    const couchKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch2, 'n4SofaCouch2Tex');
-    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'n4TvCabinetTex');
+    const tableKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libTable, 'n3LibTableTex');
+    const chairKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.libChair, 'n3LibChairTex');
+    const couchKey = cropToTexture(this, 'topDownFurniture1', ASSET_RECTS.sofaCouch2, 'n3SofaCouch2Tex');
+    const tvKey = cropToTexture(this, 'furniture03', ASSET_RECTS.tvCabinet, 'n3TvCabinetTex');
     const furnitureScale = 1.3; // a bit bigger than native crop size, closer to shelfScale's visual weight
     const tableW = ASSET_RECTS.libTable.w * furnitureScale;
     const tableH = ASSET_RECTS.libTable.h * furnitureScale;
@@ -4385,7 +4472,7 @@ class N4LibraryScene extends Phaser.Scene {
     };
 
     // A small "TV nook": a decorative TV (reusing N5's own tvCabinet crop
-    // — not a 3rd interactive lesson kiosk, N4 already has the
+    // — not a 3rd interactive lesson kiosk, N3 already has the
     // Vocabulary Press + Jukebox as its 2 standalone stations), a woven
     // accent rug directly below it, then 2 couches ("loveseats" per
     // explicit request) sitting below the rug facing UP toward the TV —
@@ -4406,8 +4493,8 @@ class N4LibraryScene extends Phaser.Scene {
     const addTvLoveseatGroup = (cx, topY) => {
       const rugW = 70 * furnitureScale;
       const rugH = 40 * furnitureScale;
-      const rugKey = `n4TvRugTex_${Math.round(cx)}_${Math.round(topY)}`;
-      drawWovenRug(this, rugKey, rugW, rugH, N4_RUG_PALETTE);
+      const rugKey = `n3TvRugTex_${Math.round(cx)}_${Math.round(topY)}`;
+      drawWovenRug(this, rugKey, rugW, rugH, N3_RUG_PALETTE);
       const rugGap = 10;
       const tvY = topY + tvH / 2;
       const rugY = tvY + tvH / 2 + rugGap + rugH / 2;
@@ -4432,29 +4519,27 @@ class N4LibraryScene extends Phaser.Scene {
 
     // Globe — this floor's own copy of N5's decorative centerpiece, per
     // explicit "put the globe in N4 and N3 too, with their respective
-    // positions" follow-up. The center hall is entirely spoken for (the
-    // N3 mist veil runs the full corridor at x=WORLD_W/2 — see
-    // buildN3Mist()), so this doesn't try to reuse that spot. Instead it
-    // lands directly below the Reading Nook's table+couch, in
+    // positions" follow-up (same placement reasoning as N4's own copy —
+    // see that file's buildFurniture() comment): the center hall is
+    // spoken for by the N3 mist veil mechanic there, so this lands
+    // instead directly below the Reading Nook's table+couch, in
     // wing2RowY[1]'s right column — createMezzanineShelfPositions()'s
-    // `reading` group only ever calls group(LAYOUT.wing2RowY) with no
-    // mirror(), so the right column is genuinely shelf-free across BOTH
-    // wing2RowY sub-rows, not just the one the table/couch sit in. Same
-    // woven-rug-plus-globe-sprite pairing as N5 (globeTex is N5's own
-    // libassetpack-tiled.png crop, reused verbatim via ASSET_RECTS.globe
-    // above), just in this floor's own wine/gold rug palette.
-    const n4GlobeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'n4GlobeTex');
-    const n4GlobeRugW = 90 * furnitureScale;
-    const n4GlobeRugH = 50 * furnitureScale;
-    const n4GlobeRugKey = 'n4GlobeRugTex';
-    drawWovenRug(this, n4GlobeRugKey, n4GlobeRugW, n4GlobeRugH, N4_RUG_PALETTE);
-    const n4GlobeCenterX = rightMidX;
-    const n4GlobeCenterY = LAYOUT.wing2RowY[1] + shelfH / 2;
-    this.add.image(n4GlobeCenterX, n4GlobeCenterY, n4GlobeRugKey).setDepth(0);
+    // `reading` group never mirrors into the right column, so that whole
+    // side is shelf-free across both wing2RowY sub-rows. Same woven-rug-
+    // plus-globe-sprite pairing as N5, recolored to this floor's own
+    // Archive Vault teal/brass rug palette instead of N5's default.
+    const n3GlobeKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.globe, 'n3GlobeTex');
+    const n3GlobeRugW = 90 * furnitureScale;
+    const n3GlobeRugH = 50 * furnitureScale;
+    const n3GlobeRugKey = 'n3GlobeRugTex';
+    drawWovenRug(this, n3GlobeRugKey, n3GlobeRugW, n3GlobeRugH, N3_RUG_PALETTE);
+    const n3GlobeCenterX = rightMidX;
+    const n3GlobeCenterY = LAYOUT.wing2RowY[1] + shelfH / 2;
+    this.add.image(n3GlobeCenterX, n3GlobeCenterY, n3GlobeRugKey).setDepth(0);
     this.add.image(
-      n4GlobeCenterX - ASSET_RECTS.globe.w / 2,
-      n4GlobeCenterY - ASSET_RECTS.globe.h / 2,
-      n4GlobeKey
+      n3GlobeCenterX - ASSET_RECTS.globe.w / 2,
+      n3GlobeCenterY - ASSET_RECTS.globe.h / 2,
+      n3GlobeKey
     ).setOrigin(0, 0).setDepth(1);
 
     // 2. Header-to-wing3 gap — ALL 4 slots are now table+2-chair clusters
@@ -4491,7 +4576,7 @@ class N4LibraryScene extends Phaser.Scene {
 
   // -- Vocabulary press (this pass) — a single Gutenberg-style press prop
   // standing in wing4's N3/right-side slot (mirrored from the 4 Reading
-  // shelves on the N4/left side, but NOT part of the LESSON_DATA/
+  // shelves on the N3/left side, but NOT part of the LESSON_DATA/
   // createMezzanineShelfPositions() shelf grid — it's a standalone `kind:
   // 'npc'` interactive, same pattern as N5's own printer-station: no
   // lock/prereq state, always available, routes straight to startLesson()
@@ -4535,7 +4620,7 @@ class N4LibraryScene extends Phaser.Scene {
 
     press.setInteractive({ useHandCursor: true });
     const pressEntry = {
-      id: 'n4-vocab-press',
+      id: 'n3-vocab-press',
       kind: 'npc',
       title: 'Vocabulary Press',
       sprite: press,
@@ -4557,9 +4642,10 @@ class N4LibraryScene extends Phaser.Scene {
   // jukebox) that opens a paginated lookup table of every kanji word this
   // floor's grammar-pattern lessons use (LESSON_CONTENT['kanji-easel'],
   // built by the shared buildKanjiEaselPages() helper from
-  // N4_KANJI_EASEL_WORDS) -- a quick reference, not a gated lesson, added
+  // N3_KANJI_EASEL_WORDS) -- a quick reference, not a gated lesson, added
   // per explicit request to give players a dedicated place for kanji-
-  // recognition practice/lookup.
+  // recognition practice/lookup. See N3_KANJI_EASEL_WORDS's own comment
+  // for why this list currently duplicates N4's.
   buildKanjiEasel() {
     // Source image is 693x870 (tall, narrow) -- displayed at the same
     // rough "standing prop" height as the press (90px square) but kept
@@ -4609,7 +4695,7 @@ class N4LibraryScene extends Phaser.Scene {
   // -- 4 review book piles, one per 4-shelf group --------------------------
 
   buildBookPiles() {
-    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'n4BookPileTex');
+    const bookKey = cropToTexture(this, 'libAssetPack', ASSET_RECTS.bookPileTall, 'n3BookPileTex');
     this.bookPileTexKey = bookKey; // reused by buildExamGate() (same crop, must not re-cropToTexture with a duplicate destKey)
 
     // Each pile is centered on the MIDPOINT between the 2 shelf columns
@@ -4632,19 +4718,19 @@ class N4LibraryScene extends Phaser.Scene {
     const w = ASSET_RECTS.bookPileTall.w * scale;
     const h = ASSET_RECTS.bookPileTall.h * scale;
     const positions = {
-      'n4-review-1': { // reviews n4-shelf-01..04 ("Foundations", left columns)
+      'n3-review-1': { // reviews n3-shelf-01..04 ("Foundations", left columns)
         x: leftMidX - w / 2,
         y: LAYOUT.wing4RowY[0]
       },
-      'n4-review-2': { // reviews n4-shelf-05..08 ("Everyday Grammar", right columns)
+      'n3-review-2': { // reviews n3-shelf-05..08 ("Everyday Grammar", right columns)
         x: rightMidX - w / 2,
         y: LAYOUT.reviewGateSouthY
       },
-      'n4-review-3': { // reviews n4-shelf-09..12 ("Nuance & Manners", left columns)
+      'n3-review-3': { // reviews n3-shelf-09..12 ("Nuance & Manners", left columns)
         x: leftMidX - w / 2,
         y: LAYOUT.wing1RowY[0]
       },
-      'n4-review-4': { // reviews n4-shelf-13..16 ("Refinement", right columns)
+      'n3-review-4': { // reviews n3-shelf-13..16 ("Refinement", right columns)
         x: rightMidX - w / 2,
         y: LAYOUT.review1Y
       },
@@ -4701,7 +4787,7 @@ class N4LibraryScene extends Phaser.Scene {
     });
   }
 
-  // -- N4/N3 entrance exam gates: interactives N5 has no equivalent of ----
+  // -- N3/N3 entrance exam gates: interactives N5 has no equivalent of ----
   // Built like BOOK_PILE_DATA-shaped interactives (kind: 'pile', same
   // shape openInteraction()/refreshAllStates() already expect from any
   // pile), but each has entry.isExamGate: true and its own entry.quizGateKey
@@ -4714,7 +4800,7 @@ class N4LibraryScene extends Phaser.Scene {
   // Builds one exam-gate interactive: sprite (reused book-pile texture,
   // scaled), glow (available-state pulse) / stamp (completed) icons, a
   // floating title label, and the this.interactives entry. Replaces the
-  // hand-duplicated N4/N3 block buildExamGate() used to write out twice.
+  // hand-duplicated N3/N3 block buildExamGate() used to write out twice.
   // config: { id, title, x, y, requires, quizGateKey, onPass, bookKey, scale, hideSprite?, doorTextures? }
   // hideSprite: true builds a click/proximity hitbox with NO visible book-
   // pile sprite, glow pulse, or floating title label — used by the N3 gate
@@ -4804,54 +4890,42 @@ class N4LibraryScene extends Phaser.Scene {
   }
 
   buildExamGate() {
-    // Renamed from "N2" to "N3" — this door is the one right after N4,
-    // and JLPT's real order is N5->N4->N3->N2->N1, so it should always
-    // have said N3. Was a leftover guess from the old superseded
-    // two-wing design (this door used to be an "unrelated future-floor
-    // stub" per the original comment here, back when N3 was a wing
-    // INSIDE this same floor rather than its own floor). Flagged live by
-    // the user pointing at the in-game door screenshot ("this should be
-    // the door to N3, not N2") once pages/N3/n3-dashboard.html actually
-    // existed to link to. A real pixel-art DOOR (drawDoorTexture) in the
-    // very top-right corner of the wing, flush toward the east spine
-    // wall (WORLD_W - 64 inner edge) and as far north as the top wall
-    // band allows — position/placement unchanged from before, only the
-    // id/title/key and its pass behavior changed. N1 is still dropped
-    // entirely — a future pass can add N1's own door once N2 is a real
-    // floor to link to.
+    // N3 entrance exam gate removed entirely this pass (no more N3 wing
+    // to gate) -- the N2 door below is an unrelated future-floor stub.
+    // N2 — a real pixel-art DOOR (drawDoorTexture) in the very top-right
+    // corner of the N3 (right) wing — moved here per explicit follow-up
+    // correction (an earlier version placed it in the N3/left wing,
+    // matching this pass's ORIGINAL spec; the live feedback overrode
+    // that in favor of the N3 side instead). Positioned flush toward
+    // the east spine wall (WORLD_W - 64 inner edge) and as far north as
+    // the top wall band allows. N1 is dropped for this pass entirely —
+    // a future pass can add N1's own door once this one's design and
+    // position are confirmed live.
     const doorScale = 1.4;
-    const n3LockedKey = drawDoorTexture(this, 'n4N3DoorLockedTex', {
+    const n2LockedKey = drawDoorTexture(this, 'n3N2DoorLockedTex', {
       locked: true
     });
-    const n3UnlockedKey = drawDoorTexture(this, 'n4N3DoorUnlockedTex', {
+    const n2UnlockedKey = drawDoorTexture(this, 'n3N2DoorUnlockedTex', {
       locked: false
     });
-    const n3DoorW = 64 * doorScale; // was 48 -- matches drawDoorTexture's new 64x104 canvas
-    const n3X = WORLD_W - 64 - n3DoorW - 8; // flush toward the east spine, top-right corner
-    const n3Y = 115; // as far north as the top wall band allows
-    const n3Entry = this.createExamGateEntry({
-      id: EXAM_GATE_DATA.n3.id,
-      title: EXAM_GATE_DATA.n3.title,
-      x: n3X,
-      y: n3Y,
-      requires: EXAM_GATE_DATA.n3.requires,
-      quizGateKey: N3_ENTRANCE_GATE_KEY,
+    const n2DoorW = 64 * doorScale; // was 48 -- matches drawDoorTexture's new 64x104 canvas
+    const n2X = WORLD_W - 64 - n2DoorW - 8; // flush toward the east spine, top-right corner
+    const n2Y = 115; // as far north as the top wall band allows
+    const n2Entry = this.createExamGateEntry({
+      id: EXAM_GATE_DATA.n2.id,
+      title: EXAM_GATE_DATA.n2.title,
+      x: n2X,
+      y: n2Y,
+      requires: EXAM_GATE_DATA.n2.requires,
+      quizGateKey: N2_ENTRANCE_GATE_KEY,
       scale: doorScale,
       doorTextures: {
-        locked: n3LockedKey,
-        unlocked: n3UnlockedKey
+        locked: n2LockedKey,
+        unlocked: n2UnlockedKey
       },
-      // Real handoff now that pages/N3/n3-dashboard.html exists — same
-      // "toast, then navigate" pattern N5's own finalGateId/
-      // onFinalGatePass uses for its N4 handoff (n5-phaser-game.js).
-      // Was 'The N2 door creaks open... nothing beyond it yet.' (no
-      // navigation at all) before N3 was a real floor to link to.
-      onPass: () => {
-        showToast('The door swings open — the N3 floor awaits...');
-        setTimeout(() => { window.location.href = '../N3/n3-dashboard.html'; }, 900);
-      },
+      onPass: () => showToast('The N2 door creaks open... nothing beyond it yet.'),
     });
-    const doorLabel = createBookshelfLabel(this, n3Entry.x, n3Entry.y + (104 * doorScale) / 2 - 6, 'N3 Entrance Exam', {
+    const doorLabel = createBookshelfLabel(this, n2Entry.x, n2Entry.y + (104 * doorScale) / 2 - 6, 'N2 Entrance Exam', {
       fontSize: 6,
       maxWidth: 90,
     });
@@ -4881,7 +4955,7 @@ class N4LibraryScene extends Phaser.Scene {
   // This is the one spot every click-to-walk route in the scene passes
   // through (see handleInteractiveClick's shared 3-waypoint route,
   // always via x = worldW/2), so putting real collision here needed a
-  // matching fix: the N4LibraryScene.prototype patch below this class
+  // matching fix: the N3LibraryScene.prototype patch below this class
   // detours the route around whichever of this.n3MistBlocks a path would
   // cross, instead of leaving the player stuck against solid collision
   // mid-route.
@@ -4916,7 +4990,7 @@ class N4LibraryScene extends Phaser.Scene {
       this.n3MistBlocks.push(block);
     });
 
-    // "N3 is locked until N4 is finished" signage, floating over the
+    // "N3 is locked until N3 is finished" signage, floating over the
     // dither near the top of the north segment — the first thing a
     // player sees walking up from the top-band header.
     const labelX = WORLD_W / 2;
@@ -4928,7 +5002,7 @@ class N4LibraryScene extends Phaser.Scene {
         color: '#e8d4a8',
         align: 'center',
       }).setOrigin(0.5, 0).setDepth(5),
-      this.add.text(labelX, labelTop + 18, 'COMPLETE N4 TO ENTER', {
+      this.add.text(labelX, labelTop + 18, 'COMPLETE N3 TO ENTER', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '6px',
         color: '#c8bee0',
@@ -4982,7 +5056,7 @@ class N4LibraryScene extends Phaser.Scene {
     // instead.
     const spawnX = LAYOUT.entryX;
     const spawnY = LAYOUT.entryY;
-    // N4LibraryScene is only ever reached after N5's CatSelectScene has
+    // N3LibraryScene is only ever reached after N5's CatSelectScene has
     // run (the cat color is a player-level preference, not per-floor —
     // see CAT_COLOR_KEY above), so a saved color always exists here;
     // 'orange' is a defensive fallback only, same as N5's buildPlayer()
@@ -5141,16 +5215,16 @@ class N4LibraryScene extends Phaser.Scene {
     });
   }
 }
-Object.assign(N4LibraryScene.prototype, LibrarySceneEngine);
+Object.assign(N3LibraryScene.prototype, LibrarySceneEngine);
 
-// Called by N4CatSelectScene when reopened mid-game via the dashboard's
-// "Change" button (previously dead — see N4CatSelectScene below) —
+// Called by N3CatSelectScene when reopened mid-game via the dashboard's
+// "Change" button (previously dead — see N3CatSelectScene below) —
 // mirrors N5's LibraryScene.setPlayerCatColor (n5-phaser-game.js) exactly:
 // swaps the live player's sprite without resetting position, camera, or
 // progress. Added to the prototype directly (not via Object.assign above,
 // since LibrarySceneEngine has no such method to clobber) for the same
-// "small N4-only extension" reasoning as updateDoorGateTextures below.
-N4LibraryScene.prototype.setPlayerCatColor = function (colorId) {
+// "small N3-only extension" reasoning as updateDoorGateTextures below.
+N3LibraryScene.prototype.setPlayerCatColor = function (colorId) {
   this.catColorId = colorId;
   this.player.setTexture(CAT_COLORS[colorId].key);
   this.player.play(colorId + '-idle');
@@ -5163,8 +5237,8 @@ N4LibraryScene.prototype.setPlayerCatColor = function (colorId) {
 // method of the same name would just get clobbered by the Object.assign
 // call above; library-scene-shared.js itself stays untouched, so N5
 // (which has no mist concept) is completely unaffected.
-const sharedRefreshAllStates = N4LibraryScene.prototype.refreshAllStates;
-N4LibraryScene.prototype.refreshAllStates = function () {
+const sharedRefreshAllStates = N3LibraryScene.prototype.refreshAllStates;
+N3LibraryScene.prototype.refreshAllStates = function () {
   sharedRefreshAllStates.call(this);
   this.updateN3MistState();
   this.updateDoorGateTextures();
@@ -5174,12 +5248,12 @@ N4LibraryScene.prototype.refreshAllStates = function () {
 // (drawDoorTexture) as progress changes — the shared refreshAllStates()
 // only knows how to texture-swap kind:'shelf' entries (locked/filled
 // crops); door gates are kind:'pile' (same interaction model as every
-// other exam gate), so this is a small N4-only extension rather than
+// other exam gate), so this is a small N3-only extension rather than
 // touching the shared engine for one gate type. Only entries built with
 // createExamGateEntry's `doorTextures` config are affected (currently
 // just N2) — every other entry has `doorTextures` undefined and this
 // loop skips it immediately.
-N4LibraryScene.prototype.updateDoorGateTextures = function () {
+N3LibraryScene.prototype.updateDoorGateTextures = function () {
   this.interactives.forEach((entry) => {
     if (!entry.doorTextures) return;
     const unlocked = !!this.progress[entry.id];
@@ -5196,7 +5270,7 @@ N4LibraryScene.prototype.updateDoorGateTextures = function () {
 // Putting the N3 threshold wall's solid collision on that exact line —
 // which is what "in the center hall, where the frosted wall now stands"
 // requires — would silently strand click-to-walk for EVERY interactive whose route
-// crosses either wall segment's Y-band, on BOTH sides (N4 and N3 share
+// crosses either wall segment's Y-band, on BOTH sides (N3 and N3 share
 // the same Y-levels, mirrored), not just N3's. Confirmed by tracing the
 // geometry before writing any of this: with a wall placed anywhere
 // between the entry point and the shelves, nearly every shelf/pile in
@@ -5213,8 +5287,8 @@ N4LibraryScene.prototype.updateDoorGateTextures = function () {
 // walk into (and get stuck on) solid collision. Once n3-exam-gate is
 // passed, this.n3MistBlocks is emptied (in updateN3MistState()) and
 // every route goes back to the plain 3-waypoint path with zero overhead.
-const sharedHandleInteractiveClick = N4LibraryScene.prototype.handleInteractiveClick;
-N4LibraryScene.prototype.handleInteractiveClick = function (entry) {
+const sharedHandleInteractiveClick = N3LibraryScene.prototype.handleInteractiveClick;
+N3LibraryScene.prototype.handleInteractiveClick = function (entry) {
   sharedHandleInteractiveClick.call(this, entry);
   if (!this.moveQueue || !this.n3MistBlocks || !this.n3MistBlocks.length) return;
   const [wp0, wp1, wp2] = this.moveQueue;
@@ -5252,22 +5326,22 @@ N4LibraryScene.prototype.handleInteractiveClick = function (entry) {
   ].filter((wp) => wp);
 };
 
-// N4's cat-color select scene — ported from N5's CatSelectScene
-// (n5-phaser-game.js) to fix a dead button: n4-dashboard.html has always
+// N3's cat-color select scene — ported from N5's CatSelectScene
+// (n5-phaser-game.js) to fix a dead button: n3-dashboard.html has always
 // had its own "🐱 Change" button (copy-pasted from N5's dashboard
-// template), but until now nothing wired it to anything, because N4/N5
+// template), but until now nothing wired it to anything, because N3/N5
 // are separate `new Phaser.Game()` instances on separate page loads (see
-// the CAT_COLOR_KEY comment near the top of this file) and N4 never had
-// its own copy of CatSelectScene to open. N4LibraryScene itself never
+// the CAT_COLOR_KEY comment near the top of this file) and N3 never had
+// its own copy of CatSelectScene to open. N3LibraryScene itself never
 // boots through this scene (it reads getSavedCatColor() directly in its
 // own create() — see this.catColorId there), so unlike N5's version this
 // is reached ONLY as an overlay, reopened over an already-running
-// N4LibraryScene. The non-overlay boot path is kept anyway (rather than
+// N3LibraryScene. The non-overlay boot path is kept anyway (rather than
 // deleted) so this scene behaves identically to N5's copy and stays
-// correct if anything ever starts N4 through it directly in the future.
-class N4CatSelectScene extends Phaser.Scene {
+// correct if anything ever starts N3 through it directly in the future.
+class N3CatSelectScene extends Phaser.Scene {
   constructor() {
-    super('N4CatSelectScene');
+    super('N3CatSelectScene');
   }
 
   init(data) {
@@ -5284,7 +5358,7 @@ class N4CatSelectScene extends Phaser.Scene {
     if (!this.isOverlay) {
       const saved = getSavedCatColor();
       if (saved) {
-        this.scene.start('N4LibraryScene');
+        this.scene.start('N3LibraryScene');
         return;
       }
     }
@@ -5340,12 +5414,12 @@ class N4CatSelectScene extends Phaser.Scene {
     const colorId = CAT_COLOR_ORDER[this.selectedIndex];
     saveCatColor(colorId);
     if (this.isOverlay) {
-      const libraryScene = this.scene.get('N4LibraryScene');
+      const libraryScene = this.scene.get('N3LibraryScene');
       libraryScene.setPlayerCatColor(colorId);
-      this.scene.stop('N4CatSelectScene');
-      this.scene.resume('N4LibraryScene');
+      this.scene.stop('N3CatSelectScene');
+      this.scene.resume('N3LibraryScene');
     } else {
-      this.scene.start('N4LibraryScene');
+      this.scene.start('N3LibraryScene');
     }
   }
 
@@ -5366,7 +5440,7 @@ class N4CatSelectScene extends Phaser.Scene {
   }
 }
 
-const n4PhaserGame = new Phaser.Game({
+const n3PhaserGame = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'phaserGame',
   width: 768,
@@ -5386,15 +5460,15 @@ const n4PhaserGame = new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  // N4CatSelectScene registered after N4LibraryScene (opposite of N5's
+  // N3CatSelectScene registered after N3LibraryScene (opposite of N5's
   // order, where CatSelectScene is registered first since it's N5's real
-  // boot scene) — N4LibraryScene is always this game's actual boot scene
-  // (Phaser boots the first entry in this array), and N4CatSelectScene is
+  // boot scene) — N3LibraryScene is always this game's actual boot scene
+  // (Phaser boots the first entry in this array), and N3CatSelectScene is
   // only ever reached later as an overlay via the "Change" button below.
-  scene: [N4LibraryScene, N4CatSelectScene],
+  scene: [N3LibraryScene, N3CatSelectScene],
 });
 
-window.__n4Game = n4PhaserGame;
+window.__n3Game = n3PhaserGame;
 
 // Task 10 (additive): HUD shortcut button that opens the n3-exam-gate's
 // existing menu without walking up to it. Mirrors changeCharBtn's exact
@@ -5403,26 +5477,26 @@ window.__n4Game = n4PhaserGame;
 // (found in this.interactives, not a newly-constructed object) so
 // openInteraction() routes through the exact same openQuizGateMenu/
 // openQuizAttemptMenu path a walk-up interaction uses.
-// Wires n4-dashboard.html's "🐱 Change" button (previously dead — see
-// N4CatSelectScene above) to actually reopen the cat-select overlay.
+// Wires n3-dashboard.html's "🐱 Change" button (previously dead — see
+// N3CatSelectScene above) to actually reopen the cat-select overlay.
 // Mirrors N5's changeCharBtn wiring exactly (n5-phaser-game.js, near its
 // own `new Phaser.Game({...})` call): null-safe getElementById, scene-
 // active check, panelOpen guard so it can't stack over an open lesson/
-// review/gate panel, run() + bringToTop() since N4CatSelectScene is
-// registered after N4LibraryScene and would otherwise render behind the
+// review/gate panel, run() + bringToTop() since N3CatSelectScene is
+// registered after N3LibraryScene and would otherwise render behind the
 // still-visible-while-paused map.
 document.getElementById('changeCharBtn')?.addEventListener('click', () => {
-  if (!n4PhaserGame.scene.isActive('N4LibraryScene')) return;
-  const libraryScene = n4PhaserGame.scene.getScene('N4LibraryScene');
+  if (!n3PhaserGame.scene.isActive('N3LibraryScene')) return;
+  const libraryScene = n3PhaserGame.scene.getScene('N3LibraryScene');
   if (libraryScene.panelOpen) return; // don't stack over an open lesson/review/gate panel
-  n4PhaserGame.scene.pause('N4LibraryScene');
-  n4PhaserGame.scene.run('N4CatSelectScene', { overlay: true });
-  n4PhaserGame.scene.bringToTop('N4CatSelectScene');
+  n3PhaserGame.scene.pause('N3LibraryScene');
+  n3PhaserGame.scene.run('N3CatSelectScene', { overlay: true });
+  n3PhaserGame.scene.bringToTop('N3CatSelectScene');
 });
 
 document.getElementById('n3GateExamBtn')?.addEventListener('click', () => {
-  if (!n4PhaserGame.scene.isActive('N4LibraryScene')) return;
-  const libraryScene = n4PhaserGame.scene.getScene('N4LibraryScene');
+  if (!n3PhaserGame.scene.isActive('N3LibraryScene')) return;
+  const libraryScene = n3PhaserGame.scene.getScene('N3LibraryScene');
   if (libraryScene.panelOpen) return; // don't stack over an open lesson/review/gate panel
   const gateEntry = libraryScene.interactives.find((e) => e.id === libraryScene.finalGateId);
   if (!gateEntry) return;
