@@ -1,4 +1,4 @@
-# Session Summary — N5 + N4 content-complete, font/proofread/debug pass (last updated 2026-08-04)
+# Session Summary — N5 + N4 content-complete; Study Room + sentence-mission pass (last updated 2026-08-26)
 
 ## 1. Where things stand right now (read this first)
 
@@ -21,7 +21,74 @@
     confirmed non-colliding with N5's.
   - Reached from N5 by completing N5's final quiz and clicking "Proceed to N4" on the staircase.
 
-### This session's work (4 user-directed tasks, completed in order, each reported separately)
+### Latest session (2026-08-26): Study Room, sentence missions, dashboards, XP, quiz
+
+Context: the user pushed `ef1fb39` ("added study room") themselves — a **second study mode** for
+Neko Bunko: a Mission Hub landing page (`pages/missions/mission-hub.html`) choosing between the
+Adventure Room (the Phaser library) and a new Codecademy-style Study Room
+(`pages/missions/study-room.html` + `assets/js/study-room.js`, mirroring the same 16-shelf N5
+sequence as `LESSON_CONTENT`: instruction card + typed-hiragana practice), plus a new closed-word-bank
+**sentence-mission** LessonBox page type (`'sentence-mission'` in `lesson-box.js`; chip Word Shelf →
+arrange → check against `acceptedOrderings`, gated advance until correct or revealed after 3 tries)
+with 4 inline missions added to N5 shelves 01/04/05/12 and a generator module
+(`assets/js/sentence-missions.js`, `window.SentenceMissions`). This session then fixed and extended
+that work across two rounds:
+
+Round 1 — correctness + layout + code quality:
+
+1. **Corrected all sentence constructions** — shelf-12's mission taught fake grammar
+   (`たなかさん は みて ます` "please watch politely"); rebuilt around real て-form + ください
+   (`たなかさん、みて ください`). Fixed `のみで`→`のんで` (のむ's actual て-form) everywhere.
+   In `sentence-missions.js`: the 〜たいです template picked verb and stem independently (could pair
+   よむ with たべたい) — stems now live on each BANK verb entry; the request template (which could
+   emit `〜は みて たいです`) rewritten to て+ください. Also fixed study-room.js typos: 更きる/更く→
+   起きる/書く (shelves 11+13), とこ→どこ ("Where is the cat?"), garbled s14 example →
+   今日、宿題をしませんでした.
+2. **Study Room split into two columns** — lesson panel left, practice panel right in a new
+   `.study-practice-col`, separated by a solid divider line (Codecademy layout); completion screen
+   stays in the right column; stacks vertically again under 800px (`study-style.css`).
+3. **"Your Practice Mission" block** — auto-generated at the bottom of every shelf's instruction
+   panel from that shelf's own exercise word bank: step 1 = type every word used (color-coded
+   word-bank chips), step 2 = build the full N sentences with that pattern in the practice panel.
+4. **Fixed the missing practice input (real bug)** — `study-room.js` called `show()`/`hide()` helpers
+   that were never defined, so opening any shelf threw `ReferenceError` right after rendering the
+   lesson text and the hiragana input never appeared. Helpers added after `$()`.
+5. **var → let/const modernization** across `study-room.js`, `sentence-missions.js`,
+   `n5-phaser-game.js`, `lesson-box.js`. Only the sentence-mission blocks had JS vars in the two big
+   files; all other matches were CSS `var(--token)` strings inside SVG/HTML template literals, which
+   must stay. Conversion script skipped those lines; one straggler where both appeared on one line
+   was hand-fixed. All 4 files pass `node --check`.
+
+Round 2 — dashboards, XP, quiz:
+
+6. **Lesson column layout fix** — practice panel was pushed off-screen on some viewports because
+   `.study-practice-col` used fixed width (`44%`, `max-width:560px`). Changed to percentage-based
+   `flex: 0 0 40%; max-width:500px; min-width:280px`; reduced lesson-panel padding to `24px 28px`;
+   added `overflow-x: hidden` on the instruction panel so long word-bank rows don't force horizontal
+   scroll.
+7. **Levels dashboard** (`pages/missions/levels-dashboard.html`) — new page with cards for N5–N1.
+   N5 is unlocked (links to `n5-lessons.html`); N4–N1 show "Coming soon to the Study Room" with
+   locked styling. Includes XP badge in header (`[data-study-xp]`).
+8. **N5 lessons dashboard** (`pages/missions/n5-lessons.html` + `assets/js/n5-lessons-dashboard.js`)
+   — grid of 16 lesson cards (number + title + completed/available status) linking to
+   `study-room.html?lesson=sXX`, plus a "N5 Final Quiz" card linking to `n5-quiz.html`. Completed
+   lessons marked from progress store; quiz card shows best score.
+9. **XP/progress store** (`assets/js/study-progress.js`, `window.StudyProgress`) — single
+   localStorage key (`nekoBunko.study.v1`) holding `{ xp, lessons: { s01: true, ... }, quiz: { n5: { bestPct, passed, perfect } } }`.
+   API: `completeLesson(id)` → awards 50 XP first time; `recordQuizRun(levelId, pct)` → awards 150 XP
+   on first pass (≥ 70%) + 100 bonus on first perfect; `renderXpBadges()` → updates every
+   `[data-study-xp]` element. All access try/catch-wrapped per repo convention.
+10. **10-question N5 quiz** (`pages/missions/n5-quiz.html` + `assets/js/level-quiz.js`) — 5 MC +
+    5 type-in questions drawn from across all 16 shelves (vocabulary, grammar, particles, polite
+    forms, て-form, invitations). Awards XP via StudyProgress on first pass. Retry available.
+    Result screen shows score, verdict, XP earned, and back-to-lessons link.
+11. **Wired ?lesson= param** in `study-room.js` — `?lesson=s03` auto-opens that shelf on load.
+    `showResult()` now calls `StudyProgress.completeLesson()` and marks the sidebar checkmark.
+    Sidebar pre-marks all completed lessons on init.
+12. **Link updates** — Mission Hub "Study Room" card → `levels-dashboard.html`; N5 Adventure Room
+    HUD "Study Room" button → `levels-dashboard.html`; study-room.html back-button → `levels-dashboard.html`.
+
+### Earlier session (2026-08-04): font/proofread/debug pass (4 user-directed tasks, completed in order, each reported separately)
 
 Ground rules for this pass: stay scoped to these 4 tasks, don't refactor unrelated code, search
 rather than assume when structure was unclear, preserve the existing palette/pixel-art aesthetic
@@ -172,6 +239,12 @@ browser, and one proofreading-scale audit. Listed in the order they happened:
 
 ## 2. What's next (not started)
 
+- **Live browser confirmation of the 2026-08-26 Study Room work** — none of it has been rendered in
+  a real browser yet (code + `node --check` only): the two-column lesson/practice split with divider,
+  the auto-generated "Your Practice Mission" block, and the `show()`/`hide()` helpers fix.
+  Also still unconfirmed: levels dashboard card layout, N5 lessons dashboard card rendering
+  (completed/available states), the 10-question quiz flow end-to-end (MC selection, type-in input,
+  XP awarding), and the `?lesson=sXX` auto-open param.
 - **Live browser confirmation of the newest interactive components** — the user HAS confirmed real
   browser rendering works for the game in general this session (screenshots of several LessonBox
   pages, including a clean console after the temporal-dead-zone fix), but none of the 3 new
@@ -208,10 +281,29 @@ Per the design spec's explicit "Out of Scope" section for the original build (st
 
 ## 3. How to resume
 
-`git status` currently shows more modified files than just this session touched — a number of CSS
-files (`animations.css`, `main.css`, `mission.css`, `music-player.css`, `navbar.css`, `quiz.css`,
-`reset.css`, `responsive.css`, `teleport.css`) plus `boot.js`/`homepage.js` are marked modified from
-before this session started. **This session's own edits are scoped to:** `assets/js/lesson-box.js`,
+The latest pushed commit is `ef1fb39` ("added study room" — Mission Hub, Study Room,
+sentence-missions.js, the `'sentence-mission'` LessonBox page type, 4 inline N5 missions, bigger
+watermarked PDFs, homepage/index rework). **On top of that, the 2026-08-26 session's own edits are
+scoped to:** `assets/js/study-room.js` (show/hide helpers fix, typo fixes, practice-mission block,
+var→let, `?lesson=` param, XP awarding, sidebar checkmarks), `assets/js/sentence-missions.js`
+(たい-stem pairing, request-template rewrite, var→let), `assets/js/n5-phaser-game.js` (shelf-12
+mission rebuilt around て+ください, のみで→のんで, var→let in sentence-mission blocks only),
+`assets/js/lesson-box.js` (var→let in sentence-mission block only), `assets/css/study-style.css`
+(two-column split, `.practice-steps`, dashboard/quiz/XP badge styles), `pages/missions/study-room.html`
+(study-progress.js include, XP badge, levels link), plus brand-new files:
+`assets/js/study-progress.js` (shared XP/progress store), `assets/js/n5-lessons-dashboard.js`
+(lesson-card renderer), `assets/js/level-quiz.js` (10-question quiz engine),
+`pages/missions/levels-dashboard.html` (N5–N1 level cards), `pages/missions/n5-lessons.html` (16
+lesson cards + quiz card), `pages/missions/n5-quiz.html` (quiz page). Also updated link targets in
+`pages/missions/mission-hub.html` and `pages/N5/n5-dashboard.html` (both now point at
+`levels-dashboard.html`). Run `git diff` scoped to those paths to see exactly what changed since
+the push.
+
+For the earlier 2026-08-04 session: `git status` showed more modified files than just that session
+touched — a number of CSS files (`animations.css`, `main.css`, `mission.css`, `music-player.css`,
+`navbar.css`, `quiz.css`, `reset.css`, `responsive.css`, `teleport.css`) plus `boot.js`/`homepage.js`
+are marked modified from before that session started. **That session's own edits were scoped to:**
+`assets/js/lesson-box.js`,
 `assets/js/library-scene-shared.js`, `assets/js/n4-phaser-game.js`, `assets/js/n5-phaser-game.js`,
 `assets/css/lesson-box.css` (Space Mono `@font-face` blocks, the claw-slash/portal/branching-path
 diagram styles, the N/V/Adj abbreviation legend, exam-question/exam-score styles), 4 new font files

@@ -2020,6 +2020,26 @@
         "28530"
       ],
       "port": 28530
+    },
+    {
+      "name": "jp-library-static-wordbank-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28641"
+      ],
+      "port": 28641
+    },
+    {
+      "name": "jp-library-static-dropdown-content-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28752"
+      ],
+      "port": 28752
     }
   ],
   "autoVerify": true

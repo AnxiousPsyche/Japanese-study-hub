@@ -64,6 +64,39 @@
     background: rgba(143,184,155,0.4);
     border-color: rgba(143,184,155,0.7);
 }
+
+/* Document / Adventure toggle pill (restyled nav — still a real page link,
+   not a stateful in-page toggle; see PRD decision log). */
+.study-header__toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius-pill, 999px);
+    padding: 3px;
+    gap: 2px;
+}
+.study-header__toggle-seg {
+    font-family: var(--title-font);
+    font-size: 9px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.study-header__toggle-seg:hover {
+    color: #fff;
+}
+.study-header__toggle-seg--active,
+.study-header__toggle-seg--active:hover {
+    background: var(--bg-card);
+    color: var(--text-main);
+}
 .study-header__level {
     font-size: 11px;
     color: rgba(255,255,255,0.7);
@@ -78,94 +111,42 @@
     overflow: hidden;
 }
 
-/* === Sidebar === */
-.study-sidebar {
-    width: 220px;
-    background: var(--bg-window);
-    border-right: 2px solid var(--border);
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 16px 0;
-}
-.study-sidebar__heading {
+/* === Header lesson picker (replaces the old left sidebar) === */
+.study-header__lesson-picker {
     font-family: var(--title-font);
     font-size: 9px;
-    color: var(--title-bar-dark);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 0 16px 12px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 8px;
-}
-.study-lesson-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 16px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 13px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: inherit;
-}
-.study-lesson-btn:hover {
-    background: rgba(0,0,0,0.04);
-    color: var(--text-main);
-}
-.study-lesson-btn.is-active {
-    background: rgba(135,168,216,0.15);
-    color: var(--title-bar-dark);
-    border-right: 3px solid var(--title-bar);
-}
-.study-lesson-btn__num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "VT323", monospace;
-    font-size: 12px;
     color: #fff;
-    flex-shrink: 0;
+    background: rgba(0,0,0,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    max-width: 220px;
+    cursor: pointer;
 }
-.study-lesson-btn.is-active .study-lesson-btn__num {
-    background: var(--title-bar);
+.study-header__lesson-picker:hover {
+    background: rgba(0,0,0,0.25);
 }
-.study-lesson-btn__label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.study-lesson-btn__check {
-    margin-left: auto;
-    font-size: 11px;
-    color: var(--success);
-    display: none;
-}
-.study-lesson-btn.is-complete .study-lesson-btn__check {
-    display: inline;
+.study-header__lesson-picker option {
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text-main);
+    background: var(--bg-card);
 }
 
-/* === Main Content (Split Panel) === */
+/* === Main Content (Split Panel: lesson left, practice right) === */
 .study-main {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
 }
 
-/* === Instruction Panel (top) === */
+/* === Instruction Panel (left — lesson) === */
 .study-instruction {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     overflow-y: auto;
-    padding: 32px 40px;
-    border-bottom: 2px solid var(--border);
+    overflow-x: hidden;
+    padding: 24px 28px;
     line-height: 1.7;
     background: var(--bg-card);
 }
@@ -208,6 +189,39 @@
     background: rgba(241,210,122,0.15);
     padding: 2px 8px;
     border-radius: 4px;
+}
+
+/* Practice mission steps (bottom of lesson panel) */
+.practice-steps {
+    background: var(--bg-window);
+    border: 2px dashed var(--title-bar);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 24px 0 8px;
+    box-shadow: var(--shadow-window);
+}
+.practice-steps__title {
+    font-family: "VT323", monospace;
+    font-size: 18px;
+    color: var(--title-bar-dark);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+.practice-steps ol {
+    margin: 0 0 0 22px;
+    padding: 0;
+}
+.practice-steps li {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 6px 0;
+}
+.practice-steps li strong {
+    color: var(--title-bar-dark);
+}
+.practice-steps .word-bank {
+    margin: 8px 0 4px;
 }
 
 /* Word Bank */
@@ -265,6 +279,139 @@
     font-size: 11px;
     color: var(--text-light);
     margin-top: 4px;
+}
+
+/* Reference-chip variant — non-clickable word-bank reminder shown above the
+   practice input (Study Room Word-Bank Sentence Builder, "hybrid" input). */
+.word-bank__chip--ref {
+    font-size: 13px;
+    padding: 4px 11px;
+    opacity: 0.85;
+    cursor: default;
+}
+.word-bank__chip--ref:hover {
+    transform: none;
+}
+
+/* Fixed word bank box (instruction panel) */
+.word-bank-box {
+    background: var(--bg-window);
+    border: 2px solid var(--border);
+    border-left: 4px solid var(--lavender);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 16px 0;
+    box-shadow: var(--shadow-window);
+}
+.word-bank-box__title {
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    color: #7a6399;
+    margin-bottom: 6px;
+}
+.word-bank-box__category {
+    font-size: 10px;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 10px 0 4px;
+}
+.word-bank-box__category:first-of-type {
+    margin-top: 0;
+}
+.word-bank-box__note {
+    font-size: 11px;
+    color: var(--text-light);
+    margin: 10px 0 0;
+    font-style: italic;
+}
+
+/* Next-lesson preview chips (Study Room word-bank, "coming up") */
+.word-bank-box__preview {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+}
+.word-bank-box__preview-label {
+    font-size: 11px;
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 6px;
+}
+.word-bank__chip--preview {
+    border-color: var(--yellow);
+    background: rgba(241,210,122,0.16);
+    color: #9a7d2e;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 5px 12px;
+}
+.word-bank__chip-tag {
+    font-family: var(--title-font);
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: #9a7d2e;
+}
+
+/* Culture-note paragraphs inside a grammar box */
+.grammar-box__culture {
+    font-size: 13px;
+    color: var(--text-light);
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin: 10px 0 0;
+    font-style: italic;
+}
+
+/* Sources line under a lesson's content */
+.sources-line {
+    font-size: 11px;
+    color: var(--text-light);
+}
+
+/* Full vocabulary table (content-fidelity pass) */
+.vocab-table-wrap {
+    overflow-x: auto;
+    margin: 8px 0 16px;
+}
+.vocab-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.vocab-table td {
+    padding: 5px 10px 5px 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+.vocab-table__jp {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 17px;
+    color: var(--title-bar-dark);
+}
+.vocab-table__romaji {
+    font-size: 11px;
+    color: var(--text-light);
+}
+.vocab-table__en {
+    color: var(--text-main);
+    white-space: normal;
+}
+
+/* Reference-chip row above the practice input */
+.study-practice__wordbank-ref {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.study-practice__wordbank-ref:empty {
+    display: none;
+    margin-bottom: 0;
 }
 
 /* Pattern box */
@@ -325,16 +472,25 @@
     margin-left: 4px;
 }
 
-/* === Practice Panel (bottom) === */
-.study-practice {
-    height: 260px;
-    min-height: 200px;
-    background: var(--bg-window);
+/* === Practice Column (right — practice) === */
+.study-practice-col {
+    flex: 0 0 40%;
+    max-width: 500px;
+    min-width: 280px;
     display: flex;
     flex-direction: column;
-    padding: 20px 40px;
+    background: var(--bg-window);
+    border-left: 2px solid var(--border-dark);
     overflow-y: auto;
-    border-top: 2px solid var(--border);
+}
+
+/* === Practice Panel === */
+.study-practice {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px;
+    overflow-y: auto;
 }
 .study-practice__prompt {
     font-size: 13px;
@@ -509,7 +665,7 @@
     gap: 16px;
     padding: 40px;
     text-align: center;
-    background: var(--bg-card);
+    background: var(--bg-window);
 }
 .study-complete.is-visible {
     display: flex;
@@ -536,26 +692,287 @@
 /* Responsive */
 @media (max-width: 800px) {
     .study-body { flex-direction: column; }
-    .study-sidebar {
-        width: 100%;
-        max-height: 120px;
-        border-right: none;
-        border-bottom: 2px solid var(--border);
-        display: flex;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 8px;
-        gap: 4px;
+    .study-header {
+        flex-wrap: wrap;
+        row-gap: 8px;
     }
-    .study-sidebar__heading { display: none; }
-    .study-lesson-btn {
-        flex-direction: column;
-        padding: 8px 12px;
-        font-size: 11px;
-        gap: 4px;
-        min-width: fit-content;
+    .study-header__title { flex: 1 1 auto; }
+    .study-header__lesson-picker { max-width: none; flex: 1 1 100%; order: 3; }
+    /* Stack lesson above practice again on small screens */
+    .study-main { flex-direction: column; overflow-y: auto; }
+    .study-instruction { padding: 20px; flex-shrink: 0; overflow: visible; }
+    .study-practice-col {
+        flex: 1 1 auto;
+        max-width: none;
+        min-width: 0;
+        border-left: none;
+        border-top: 2px solid var(--border-dark);
     }
-    .study-lesson-btn.is-active { border-right: none; border-bottom: 3px solid var(--title-bar); }
-    .study-instruction { padding: 20px; }
     .study-practice { padding: 16px 20px; height: auto; min-height: 180px; }
+}
+
+/* ===========================================================
+   LEVELS DASHBOARD + LESSON DASHBOARD + QUIZ (shared styles)
+   =========================================================== */
+
+/* XP badge (headers of study pages) */
+.xp-badge {
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    color: var(--yellow);
+    background: rgba(241,210,122,0.12);
+    border: 2px solid var(--yellow);
+    border-radius: var(--radius);
+    padding: 5px 12px;
+    white-space: nowrap;
+}
+
+/* Level cards grid (levels dashboard) */
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+}
+.level-card {
+    display: block;
+    text-decoration: none;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    box-shadow: var(--shadow-window);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.level-card:hover:not(.is-locked) {
+    transform: translateY(-4px);
+    border-color: var(--title-bar);
+    box-shadow: 4px 6px 0px rgba(0,0,0,0.18);
+}
+.level-card__level {
+    font-family: "VT323", monospace;
+    font-size: 30px;
+    color: var(--title-bar-dark);
+    margin-bottom: 4px;
+}
+.level-card__desc {
+    font-size: 13px;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+.level-card__meta {
+    font-family: "VT323", monospace;
+    font-size: 14px;
+    color: var(--text-light);
+}
+.level-card.is-locked {
+    opacity: 0.55;
+    filter: grayscale(0.6);
+    cursor: not-allowed;
+}
+.level-card.is-locked .level-card__level { color: var(--text-light); }
+
+/* Lesson cards grid (per-level lesson dashboard) */
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 1100px;
+}
+.lesson-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: var(--text-main);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.12);
+    transition: transform 0.15s, border-color 0.15s;
+}
+.lesson-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--title-bar);
+}
+.lesson-card__num {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--mint);
+    display: block;
+    margin-bottom: 4px;
+}
+.lesson-card__title {
+    font-size: 14px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+    line-height: 1.35;
+}
+.lesson-card__status {
+    font-family: "VT323", monospace;
+    font-size: 13px;
+    color: var(--text-light);
+}
+.lesson-card.is-complete {
+    border-color: var(--success);
+    background: rgba(131,182,146,0.08);
+}
+.lesson-card.is-complete .lesson-card__status { color: var(--success); }
+
+/* Quiz card on the lessons dashboard */
+.lesson-card--quiz {
+    background: rgba(241,210,122,0.08);
+    border-color: var(--warning);
+}
+.lesson-card--quiz .lesson-card__num { color: var(--yellow); }
+.lesson-card--quiz .lesson-card__status { color: #9a7d2e; }
+
+/* Quiz page body */
+.quiz-body {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 20px;
+    overflow-y: auto;
+}
+.quiz-panel {
+    width: 100%;
+    max-width: 640px;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-window);
+    padding: 28px 28px 24px;
+}
+.quiz-panel h2 {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--title-bar-dark);
+    margin: 0 0 4px;
+}
+.quiz-panel__sub {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+/* Quiz page specific */
+.quiz-fill { transition: width 0.4s ease; }
+.quiz-text { white-space: nowrap; }
+.quiz-progress-bar { flex: 1; display: flex; align-items: center; gap: 12px; }
+
+/* MC buttons */
+.quiz-mc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+}
+.quiz-mc__btn {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 18px;
+    padding: 12px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text-main);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+.quiz-mc__btn:hover:not(.is-correct):not(.is-wrong) {
+    border-color: var(--title-bar);
+    transform: translateY(-2px);
+}
+.quiz-mc__btn.is-correct {
+    background: rgba(131,182,146,0.25);
+    border-color: var(--success);
+    color: #4a7a56;
+}
+.quiz-mc__btn.is-wrong {
+    background: rgba(213,124,124,0.2);
+    border-color: var(--danger);
+    color: #a04040;
+    animation: shake 0.3s ease;
+}
+
+/* Quiz action buttons */
+.quiz-action-btn {
+    font-family: var(--title-font);
+    font-size: 9px;
+    padding: 12px 24px;
+    border: 2px solid var(--border-dark);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+    background: var(--title-bar);
+    color: #fff;
+    border-color: var(--title-bar-dark);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 12px;
+}
+.quiz-action-btn:hover {
+    background: var(--title-bar-dark);
+}
+.quiz-action-btn.is-back {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border-color: var(--border-dark);
+}
+.quiz-action-btn.is-back:hover {
+    background: var(--border);
+}
+
+/* Fill-in input row inside quiz */
+.quiz-practice { margin-top: 12px; }
+.quiz-input { margin-bottom: 0; }
+
+/* Quiz feedback (reuse study-practice feedback styles) */
+.quiz-feedback {
+    margin-top: 12px;
+}
+
+/* Quiz result */
+.quiz-result {
+    text-align: center;
+    padding: 20px 0;
+}
+.quiz-result__icon { font-size: 48px; margin-bottom: 8px; }
+.quiz-result__title {
+    font-family: "VT323", monospace;
+    font-size: 28px;
+    color: var(--title-bar-dark);
+    margin-bottom: 8px;
+}
+.quiz-result__score {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--yellow);
+    margin-bottom: 12px;
+}
+.quiz-result__verdict {
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+.quiz-xp-gained {
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    color: var(--mint);
+    margin-bottom: 16px;
+}
+.quiz-result__buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
 }

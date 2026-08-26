@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Neko Bunko Levels - Choose your JLPT level">
+    <title>Levels - Neko Bunko Study Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&family=DotGothic16&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/study-style.css">
+</head>
+<body>
+    <div class="study-room is-active">
+        <header class="study-header">
+            <a href="../missions/mission-hub.html" class="study-header__back">&larr; Mission Hub</a>
+            <h1 class="study-header__title">&#128218; Study Room &mdash; Choose Your Level</h1>
+            <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
+        </header>
+        <div class="quiz-body">
+            <div class="levels-grid">
+                <a href="n5-lessons.html" class="level-card">
+                    <span class="level-card__level">JLPT N5</span>
+                    <p class="level-card__desc">The foundations: greetings, &#12391;&#12377; patterns, particles, verbs, and the &#12390;-form.</p>
+                    <span class="level-card__meta" id="n5Meta">16 lessons + final quiz</span>
+                </a>
+                <div class="level-card is-locked">
+                    <span class="level-card__level">JLPT N4</span>
+                    <p class="level-card__desc">Transitive/intransitive, conditionals, causative-passive, and more. Explore it in the Adventure Room for now.</p>
+                    <span class="level-card__meta">Coming soon to the Study Room</span>
+                </div>
+                <div class="level-card is-locked">
+                    <span class="level-card__level">JLPT N3</span>
+                    <p class="level-card__desc">Intermediate grammar, keigo foundations, and longer reading passages.</p>
+                    <span class="level-card__meta">Coming soon</span>
+                </div>
+                <div class="level-card is-locked">
+                    <span class="level-card__level">JLPT N2</span>
+                    <p class="level-card__desc">Upper-intermediate patterns, formal writing, and nuance-focused grammar.</p>
+                    <span class="level-card__meta">Coming soon</span>
+                </div>
+                <div class="level-card is-locked">
+                    <span class="level-card__level">JLPT N1</span>
+                    <p class="level-card__desc">Advanced literary grammar, dense readings, and near-native nuance.</p>
+                    <span class="level-card__meta">Coming soon</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/js/study-progress.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.StudyProgress) window.StudyProgress.renderXpBadges();
+        const meta = document.getElementById("n5Meta");
+        if (meta && window.StudyProgress) {
+            const done = StudyProgress.lessonsCompleted();
+            const quiz = StudyProgress.quizBest("n5");
+            let txt = done + " / 16 lessons complete";
+            if (quiz !== null) txt += " &middot; quiz best " + quiz + "%";
+            meta.innerHTML = txt;
+        }
+    });
+    </script>
+</body>
+</html>

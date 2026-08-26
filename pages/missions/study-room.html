@@ -17,38 +17,46 @@
 <body>
     <div class="study-room is-active">
         <header class="study-header">
-            <a href="../../index.html" class="study-header__back">&larr; Home</a>
+            <a href="levels-dashboard.html" class="study-header__back">&larr; Levels</a>
             <h1 class="study-header__title">&#128218; Study Room</h1>
-            <a href="../N5/n5-dashboard.html" class="study-header__adventure-btn">&#127968; Adventure Room</a>
-            <span class="study-header__level">JLPT N5</span>
+            <select class="study-header__lesson-picker" id="studyLessonSelect" aria-label="Choose a lesson"></select>
+            <div class="study-header__toggle">
+                <span class="study-header__toggle-seg study-header__toggle-seg--active">&#128214; Document</span>
+                <a href="../N5/n5-dashboard.html" class="study-header__toggle-seg">&#127983; Adventure</a>
+            </div>
+            <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
         </header>
         <div class="study-body">
-            <nav class="study-sidebar" id="studySidebar"></nav>
             <div class="study-main">
                 <div class="study-instruction" id="studyInstruct"></div>
-                <div class="study-practice" id="studyPractice">
-                    <p class="study-practice__prompt"></p>
-                    <div class="study-progress">
-                        <div class="study-progress__bar"><div class="study-progress__fill" id="studyProgressFill"></div></div>
-                        <span class="study-progress__text" id="studyProgressText">0 / 3</span>
+                <div class="study-practice-col">
+                    <div class="study-practice" id="studyPractice">
+                        <p class="study-practice__prompt"></p>
+                        <div class="study-progress">
+                            <div class="study-progress__bar"><div class="study-progress__fill" id="studyProgressFill"></div></div>
+                            <span class="study-progress__text" id="studyProgressText">0 / 3</span>
+                        </div>
+                        <div class="study-practice__wordbank-ref" id="studyWordBankRef"></div>
+                        <div class="study-practice__input-row">
+                            <input type="text" class="study-practice__input" id="studyInput" placeholder="Type your answer in hiragana..." autocomplete="off" spellcheck="false">
+                            <button class="study-practice__btn study-practice__btn--check" id="studyCheckBtn">Check</button>
+                            <button class="study-practice__btn study-practice__btn--hint" id="studyHintBtn">Hint</button>
+                            <button class="study-practice__btn study-practice__btn--next" id="studyNextBtn" style="display:none">Next &#8594;</button>
+                            <button class="study-practice__btn study-practice__btn--skip" id="studySkipBtn">Skip</button>
+                        </div>
+                        <div class="study-practice__feedback" id="studyFeedback"></div>
                     </div>
-                    <div class="study-practice__input-row">
-                        <input type="text" class="study-practice__input" id="studyInput" placeholder="Type your answer in hiragana..." autocomplete="off" spellcheck="false">
-                        <button class="study-practice__btn study-practice__btn--check" id="studyCheckBtn">Check</button>
-                        <button class="study-practice__btn study-practice__btn--hint" id="studyHintBtn">Hint</button>
-                        <button class="study-practice__btn study-practice__btn--next" id="studyNextBtn" style="display:none">Next &#8594;</button>
-                        <button class="study-practice__btn study-practice__btn--skip" id="studySkipBtn">Skip</button>
-                    </div>
-                    <div class="study-practice__feedback" id="studyFeedback"></div>
+                    <div class="study-complete" id="studyComplete"></div>
                 </div>
-                <div class="study-complete" id="studyComplete"></div>
             </div>
         </div>
     </div>
+    <script src="../../assets/js/study-progress.js"></script>
     <script src="../../assets/js/study-room.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-        if (window.StudyRoom) window.StudyRoom.init();
+        if (window.StudyProgress) StudyProgress.renderXpBadges();
+        if (window.StudyRoom) StudyRoom.init();
     });
     </script>
 </body>

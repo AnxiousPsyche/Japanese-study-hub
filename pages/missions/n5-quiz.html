@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Neko Bunko N5 Final Quiz - 10 questions">
+    <title>N5 Final Quiz - Neko Bunko</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&family=DotGothic16&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/study-style.css">
+</head>
+<body>
+    <div class="study-room is-active">
+        <header class="study-header">
+            <a href="n5-lessons.html" class="study-header__back">&larr; N5 Lessons</a>
+            <h1 class="study-header__title">&#127894; N5 Final Quiz</h1>
+            <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
+        </header>
+        <div class="quiz-body">
+            <div class="quiz-panel" id="quizPanel">
+                <h2>10 Questions</h2>
+                <p class="quiz-panel__sub">Test your knowledge across all 16 shelves. Score 70% or higher to pass and earn 150 XP.</p>
+                <button class="quiz-action-btn" id="quizStartBtn">Start Quiz &#8594;</button>
+            </div>
+        </div>
+        <div style="flex-shrink:0; padding:8px 20px; display:flex; align-items:center; gap:12px; border-top:2px solid var(--border);">
+            <div class="quiz-progress-bar" id="quizProgressWrap">
+                <div class="study-progress__bar"><div class="study-progress__fill quiz-fill" id="quizFill"></div></div>
+                <span class="study-progress__text quiz-text" id="quizText">0 / 10</span>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/js/study-progress.js"></script>
+    <script src="../../assets/js/level-quiz.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.StudyProgress) window.StudyProgress.renderXpBadges();
+        var startBtn = document.getElementById("quizStartBtn");
+        if (startBtn) startBtn.addEventListener("click", function () {
+            if (window.N5Quiz) N5Quiz.init();
+        });
+    });
+    </script>
+</body>
+</html>
