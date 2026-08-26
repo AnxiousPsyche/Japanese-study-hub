@@ -2929,6 +2929,225 @@ span.lesson-box__print-icon {
   visibility: hidden;
 }
 
+/* -- type: sentence-mission (closed-word-bank sentence builder) ---------- */
+
+.lesson-box__sm-goal {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 22px;
+  color: var(--lb-role-particle-bg);
+  margin-bottom: 6px;
+}
+
+.lesson-box__sm-shelf-label,
+.lesson-box__sm-sentence-label {
+  font-size: 18px;
+  color: var(--jr-text-dim);
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.lesson-box__sm-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  min-height: 44px;
+}
+
+.lesson-box__sm-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.1s, opacity 0.15s, box-shadow 0.15s;
+}
+
+.lesson-box__sm-chip:active {
+  transform: scale(0.95);
+}
+
+.lesson-box__sm-chip:hover {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.lesson-box__sm-chip.is-placed {
+  opacity: 0.25;
+  pointer-events: none;
+  transform: scale(0.92);
+}
+
+/* Role colors for shelf chips — mirrors the word-tile role system. */
+.lesson-box__sm-chip[data-role="subject"]   { background: var(--lb-role-subject-bg); color: var(--lb-role-subject-fg); }
+.lesson-box__sm-chip[data-role="predicate"] { background: var(--lb-role-predicate-bg); color: var(--lb-role-predicate-fg); }
+.lesson-box__sm-chip[data-role="particle"]  { background: var(--lb-role-particle-bg); color: var(--lb-role-particle-fg); }
+.lesson-box__sm-chip[data-role="copula"]    { background: var(--lb-role-copula-bg); color: var(--lb-role-copula-fg); }
+.lesson-box__sm-chip[data-role="neutral"]   { background: var(--lb-role-neutral-bg); color: var(--lb-role-neutral-fg); }
+
+.lesson-box__sm-chip-kana {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.lesson-box__sm-chip-meta {
+  font-size: 11px;
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+.lesson-box__sm-chip-meaning {
+  font-size: 12px;
+  opacity: 0.85;
+  line-height: 1.2;
+}
+
+/* Sentence line — where placed chips appear. */
+.lesson-box__sm-sentence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 10px;
+  min-height: 56px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px dashed var(--jr-text-dim);
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.lesson-box__sm-sentence:empty::before {
+  content: attr(data-placeholder);
+  font-size: 18px;
+  color: var(--jr-text-dim);
+  opacity: 0.5;
+}
+
+.lesson-box__sm-placed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, box-shadow 0.15s;
+  animation: lesson-box-sm-pop 0.2s ease-out;
+}
+
+@keyframes lesson-box-sm-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-box__sm-placed { animation: none; }
+}
+
+.lesson-box__sm-placed:active {
+  transform: scale(0.93);
+}
+
+.lesson-box__sm-placed:hover {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Same role colors as shelf chips. */
+.lesson-box__sm-placed[data-role="subject"]   { background: var(--lb-role-subject-bg); color: var(--lb-role-subject-fg); }
+.lesson-box__sm-placed[data-role="predicate"] { background: var(--lb-role-predicate-bg); color: var(--lb-role-predicate-fg); }
+.lesson-box__sm-placed[data-role="particle"]  { background: var(--lb-role-particle-bg); color: var(--lb-role-particle-fg); }
+.lesson-box__sm-placed[data-role="copula"]    { background: var(--lb-role-copula-bg); color: var(--lb-role-copula-fg); }
+.lesson-box__sm-placed[data-role="neutral"]   { background: var(--lb-role-neutral-bg); color: var(--lb-role-neutral-fg); }
+
+.lesson-box__sm-placed.is-correct {
+  box-shadow: 0 0 10px rgba(127, 214, 146, 0.5);
+}
+
+.lesson-box__sm-placed.is-revealed {
+  box-shadow: 0 0 10px rgba(240, 198, 116, 0.4);
+}
+
+.lesson-box__sm-placed-kana {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.lesson-box__sm-placed-meta {
+  font-size: 10px;
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+.lesson-box__sm-placed-meaning {
+  font-size: 11px;
+  opacity: 0.85;
+  line-height: 1.2;
+}
+
+/* Controls row — Clear + Check buttons. */
+.lesson-box__sm-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.lesson-box__sm-btn {
+  font-family: "VT323", "DotGothic16", monospace;
+  font-size: 20px;
+  padding: 6px 16px;
+  border: 2px solid var(--jr-text-dim);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--jr-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.lesson-box__sm-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--jr-text);
+}
+
+.lesson-box__sm-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lesson-box__sm-check {
+  border-color: var(--lb-role-verb-bg);
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__sm-check:hover:not(:disabled) {
+  background: rgba(127, 214, 146, 0.15);
+}
+
+/* Feedback area. */
+.lesson-box__sm-feedback {
+  font-size: 20px;
+  color: var(--jr-text);
+  margin-top: 10px;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.lesson-box__sm-feedback.is-correct {
+  color: var(--lb-role-verb-bg);
+}
+
+.lesson-box__sm-feedback.is-wrong {
+  color: #ff9a8a;
+}
+
 /* -- type: quiz-fill --------------------------------------------------------- */
 
 .lesson-box__quiz-row {

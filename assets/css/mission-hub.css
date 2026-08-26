@@ -1,0 +1,208 @@
+/* Mission Hub — two-door landing page */
+
+body {
+  background: var(--bg-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hub-container {
+  width: 100%;
+  max-width: 900px;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+
+.hub-header {
+  text-align: center;
+}
+
+.hub-logo-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.hub-title {
+  font-family: var(--title-font);
+  font-size: 28px;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.hub-subtitle {
+  font-family: var(--body-font);
+  font-size: 18px;
+  color: var(--text-light);
+  margin: var(--space-xs) 0 0;
+}
+
+/* ── Room Cards ─────────────────────────────────────────────── */
+
+.hub-rooms {
+  display: flex;
+  gap: var(--space-lg);
+  width: 100%;
+  justify-content: center;
+}
+
+.hub-room {
+  flex: 1;
+  max-width: 380px;
+  min-height: 340px;
+  background: var(--bg-window);
+  border: 3px solid var(--border);
+  border-radius: 18px;
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-main);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-window);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+}
+
+.hub-room:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+.hub-room__glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.hub-room:hover .hub-room__glow {
+  opacity: 1;
+}
+
+.hub-room--adventure {
+  border-color: #8FB89B;
+}
+
+.hub-room--adventure:hover {
+  border-color: #6a9e76;
+}
+
+.hub-room--adventure .hub-room__glow {
+  background: radial-gradient(circle, rgba(143, 184, 155, 0.3), transparent 70%);
+}
+
+.hub-room--adventure .hub-room__icon {
+  color: #6a9e76;
+}
+
+.hub-room--study {
+  border-color: #87A8D8;
+}
+
+.hub-room--study:hover {
+  border-color: #5E7DBB;
+}
+
+.hub-room--study .hub-room__glow {
+  background: radial-gradient(circle, rgba(135, 168, 216, 0.3), transparent 70%);
+}
+
+.hub-room--study .hub-room__icon {
+  color: #5E7DBB;
+}
+
+.hub-room__icon {
+  font-size: 56px;
+  margin-bottom: var(--space-sm);
+  transition: transform 0.25s ease;
+}
+
+.hub-room:hover .hub-room__icon {
+  transform: scale(1.1);
+}
+
+.hub-room__title {
+  font-family: var(--title-font);
+  font-size: 14px;
+  margin: 0 0 var(--space-sm);
+  letter-spacing: 1px;
+}
+
+.hub-room__desc {
+  font-family: var(--body-font);
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 0 0 var(--space-sm);
+  flex: 1;
+}
+
+.hub-room__tag {
+  font-family: var(--readable-font);
+  font-size: 12px;
+  color: var(--text-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding-top: var(--space-xs);
+  border-top: 1px dashed var(--border);
+  width: 100%;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+
+.hub-footer {
+  text-align: center;
+}
+
+.hub-back {
+  font-family: var(--readable-font);
+  font-size: 14px;
+  color: var(--text-light);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.hub-back:hover {
+  color: var(--text-main);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .hub-rooms {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hub-room {
+    max-width: 100%;
+    min-height: auto;
+    padding: var(--space-md);
+  }
+
+  .hub-title {
+    font-size: 20px;
+  }
+}

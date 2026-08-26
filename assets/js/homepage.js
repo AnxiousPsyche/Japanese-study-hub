@@ -162,7 +162,7 @@ function initializeDiscCarousel(){
                     activeSlide.dataset.href || "#"
                 );
 
-                resumeBtn.textContent = "▶ Resume Adventure";
+                resumeBtn.textContent = "▶ Start Mission";
 
             }
 

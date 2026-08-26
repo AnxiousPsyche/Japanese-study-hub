@@ -1227,6 +1227,48 @@ const LESSON_CONTENT = {
       answer: 'でした',
     },
     {
+      type: 'sentence-mission',
+      grammarGoal: "Use は to mark the topic and です to say 'is/am/are'.",
+      prompt: 'Arrange the words to say: "[Person] is a [noun]."',
+      sentence: 'たなかさんは せんせいです',
+      wordChips: (function () {
+        var names = [
+          { text: 'たなかさん', reading: 'たなかさん', romaji: 'Tanaka-san', meaning: 'Mr./Ms. Tanaka' },
+          { text: 'なかむらさん', reading: 'なかむらさん', romaji: 'Nakamura-san', meaning: 'Mr./Ms. Nakamura' },
+          { text: 'さとうさん', reading: 'さとうさん', romaji: 'Sato-san', meaning: 'Mr./Ms. Sato' },
+        ];
+        var nouns = [
+          { text: 'せんせい', reading: 'せんせい', romaji: 'sensei', meaning: 'teacher' },
+          { text: 'がくせい', reading: 'がくせい', romaji: 'gakusei', meaning: 'student' },
+        ];
+        var person = names[Math.floor(Math.random() * names.length)];
+        var noun = nouns[Math.floor(Math.random() * nouns.length)];
+        var chips = [
+          { kana: person.text, reading: person.reading, romaji: person.romaji, meaning: person.meaning, role: 'subject' },
+          { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
+          { kana: noun.text, reading: noun.reading, romaji: noun.romaji, meaning: noun.meaning, role: 'predicate' },
+          { kana: 'です', reading: 'です', romaji: 'desu', meaning: 'polite copula (am/is/are)', role: 'copula' },
+        ];
+        // Shuffle
+        for (var i = chips.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = chips[i]; chips[i] = chips[j]; chips[j] = tmp;
+        }
+        return chips;
+      })(),
+      acceptedOrderings: (function () {
+        var names = ['たなかさん', 'なかむらさん', 'さとうさん'];
+        var nouns = ['せんせい', 'がくせい'];
+        var result = [];
+        names.forEach(function (n) { nouns.forEach(function (no) { result.push([n, 'は', no, 'です']); }); });
+        return result;
+      })(),
+      expectedTokens: ['___', 'は', '___', 'です'],
+      explainPattern: function () {
+        return "The は particle marks the topic, and です makes it polite — 'X は Y です' means 'X is Y.'";
+      },
+    },
+    {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
       explain: ['Tae Kim\'s Guide to Japanese Grammar — the です/だ copula chapter', 'Genki I (An Integrated Course in Elementary Japanese) — Lesson 1'],
@@ -2017,6 +2059,49 @@ const LESSON_CONTENT = {
         { before: 'りんごは', after: 'ですか。 (asking "how many?")', answer: 'いくつ', altAnswers: ['ikutsu'], hint: '(small countable things)' },
         { before: 'これは', after: 'ですか。 (asking "how much?")', answer: 'いくら', altAnswers: ['ikura'], hint: '(asking about price)' },
       ],
+    },
+    {
+      type: 'sentence-mission',
+      grammarGoal: "Turn a statement into a yes/no question with か.",
+      prompt: 'Arrange the words to ask: "Is the [noun] [adjective]?"',
+      sentence: 'ねこは きれいですか',
+      wordChips: (function () {
+        var nouns = [
+          { text: 'ねこ', reading: 'ねこ', romaji: 'neko', meaning: 'cat' },
+          { text: 'ほん', reading: 'ほん', romaji: 'hon', meaning: 'book' },
+          { text: 'としょかん', reading: 'としょかん', romaji: 'toshokan', meaning: 'library' },
+        ];
+        var adjs = [
+          { text: 'きれい', reading: 'きれい', romaji: 'kirei', meaning: 'pretty / clean' },
+          { text: 'おおきい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
+          { text: 'たのしい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'fun' },
+        ];
+        var noun = nouns[Math.floor(Math.random() * nouns.length)];
+        var adj = adjs[Math.floor(Math.random() * adjs.length)];
+        var chips = [
+          { kana: noun.text, reading: noun.reading, romaji: noun.romaji, meaning: noun.meaning, role: 'subject' },
+          { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
+          { kana: adj.text, reading: adj.reading, romaji: adj.romaji, meaning: adj.meaning, role: 'predicate' },
+          { kana: 'です', reading: 'です', romaji: 'desu', meaning: 'polite copula (am/is/are)', role: 'copula' },
+          { kana: 'か', reading: 'か', romaji: 'ka', meaning: 'question particle', role: 'particle' },
+        ];
+        for (var i = chips.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = chips[i]; chips[i] = chips[j]; chips[j] = tmp;
+        }
+        return chips;
+      })(),
+      acceptedOrderings: (function () {
+        var nouns = ['ねこ', 'ほん', 'としょかん'];
+        var adjs = ['きれい', 'おおきい', 'たのしい'];
+        var result = [];
+        nouns.forEach(function (n) { adjs.forEach(function (a) { result.push([n, 'は', a, 'です', 'か']); }); });
+        return result;
+      })(),
+      expectedTokens: ['___', 'は', '___', 'です', 'か'],
+      explainPattern: function () {
+        return "Adding か at the end of a polite statement turns it into a yes/no question — no word order change needed.";
+      },
     },
     {
       type: 'grammar-intro',
@@ -3885,6 +3970,59 @@ const LESSON_CONTENT = {
       ],
     },
     {
+      type: 'sentence-mission',
+      grammarGoal: "Use の to show possession ('s / of).",
+      prompt: 'Arrange the words to say: "[Person]\'s [noun] is [adjective]."',
+      sentence: 'たなかさんの ねこは きれいです',
+      wordChips: (function () {
+        var persons = [
+          { text: 'たなかさん', reading: 'たなかさん', romaji: 'Tanaka-san', meaning: 'Mr./Ms. Tanaka' },
+          { text: 'なかむらさん', reading: 'なかむらさん', romaji: 'Nakamura-san', meaning: 'Mr./Ms. Nakamura' },
+          { text: 'さとうさん', reading: 'さとうさん', romaji: 'Sato-san', meaning: 'Mr./Ms. Sato' },
+        ];
+        var nouns = [
+          { text: 'ねこ', reading: 'ねこ', romaji: 'neko', meaning: 'cat' },
+          { text: 'ほん', reading: 'ほん', romaji: 'hon', meaning: 'book' },
+          { text: 'みせ', reading: 'みせ', romaji: 'mise', meaning: 'shop / store' },
+        ];
+        var adjs = [
+          { text: 'きれい', reading: 'きれい', romaji: 'kirei', meaning: 'pretty / clean' },
+          { text: 'おおきい', reading: 'おおきい', romaji: 'ookii', meaning: 'big' },
+          { text: 'たのしい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'fun' },
+        ];
+        var person = persons[Math.floor(Math.random() * persons.length)];
+        var noun = nouns[Math.floor(Math.random() * nouns.length)];
+        var adj = adjs[Math.floor(Math.random() * adjs.length)];
+        var chips = [
+          { kana: person.text, reading: person.reading, romaji: person.romaji, meaning: person.meaning, role: 'subject' },
+          { kana: 'の', reading: 'の', romaji: 'no', meaning: "possessive ('s / of)", role: 'particle' },
+          { kana: noun.text, reading: noun.reading, romaji: noun.romaji, meaning: noun.meaning, role: 'predicate' },
+          { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
+          { kana: adj.text, reading: adj.reading, romaji: adj.romaji, meaning: adj.meaning, role: 'predicate' },
+          { kana: 'です', reading: 'です', romaji: 'desu', meaning: 'polite copula (am/is/are)', role: 'copula' },
+        ];
+        for (var i = chips.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = chips[i]; chips[i] = chips[j]; chips[j] = tmp;
+        }
+        return chips;
+      })(),
+      acceptedOrderings: (function () {
+        var persons = ['たなかさん', 'なかむらさん', 'さとうさん'];
+        var nouns = ['ねこ', 'ほん', 'みせ'];
+        var adjs = ['きれい', 'おおきい', 'たのしい'];
+        var result = [];
+        persons.forEach(function (p) { nouns.forEach(function (n) { adjs.forEach(function (a) {
+          result.push([p, 'の', n, 'は', a, 'です']);
+        }); }); });
+        return result;
+      })(),
+      expectedTokens: ['___', 'の', '___', 'は', '___', 'です'],
+      explainPattern: function () {
+        return "Here, の connects the owner to the thing — just like 's in English. 'たなかさんの ねこ' means 'Tanaka-san's cat.'";
+      },
+    },
+    {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
       explain: ['Tae Kim\'s Guide to Japanese Grammar — pronouns and demonstrative-adjacent words', 'Wasabi — Japanese pronouns guide'],
@@ -5339,6 +5477,51 @@ const LESSON_CONTENT = {
         { before: '', after: 'ください。', answer: '読んで', hint: '"Please read it."' },
         { before: '起きて', after: '。', answer: '食べます', hint: '"I wake up and eat."' },
       ],
+    },
+    {
+      type: 'sentence-mission',
+      grammarGoal: "Use the て-form to make a polite request.",
+      prompt: 'Arrange the words to say: "[Person], please [verb] (politely)."',
+      sentence: 'たなかさん は みて ます',
+      wordChips: (function () {
+        var persons = [
+          { text: 'たなかさん', reading: 'たなかさん', romaji: 'Tanaka-san', meaning: 'Mr./Ms. Tanaka' },
+          { text: 'なかむらさん', reading: 'なかむらさん', romaji: 'Nakamura-san', meaning: 'Mr./Ms. Nakamura' },
+          { text: 'さとうさん', reading: 'さとうさん', romaji: 'Sato-san', meaning: 'Mr./Ms. Sato' },
+        ];
+        var teVerbs = [
+          { text: 'みて', reading: 'みて', romaji: 'mite', meaning: 'て-form of みる (see/watch)' },
+          { text: 'よんで', reading: 'よんで', romaji: 'yonde', meaning: 'て-form of よむ (read)' },
+          { text: 'たべて', reading: 'たべて', romaji: 'tabete', meaning: 'て-form of たべる (eat)' },
+          { text: 'のみで', reading: 'のみで', romaji: 'nomide', meaning: 'て-form of のむ (drink)' },
+        ];
+        var person = persons[Math.floor(Math.random() * persons.length)];
+        var teVerb = teVerbs[Math.floor(Math.random() * teVerbs.length)];
+        var chips = [
+          { kana: person.text, reading: person.reading, romaji: person.romaji, meaning: person.meaning, role: 'subject' },
+          { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
+          { kana: teVerb.text, reading: teVerb.reading, romaji: teVerb.romaji, meaning: teVerb.meaning, role: 'predicate' },
+          { kana: 'ます', reading: 'ます', romaji: 'masu', meaning: 'polite verb ending', role: 'copula' },
+        ];
+        for (var i = chips.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = chips[i]; chips[i] = chips[j]; chips[j] = tmp;
+        }
+        return chips;
+      })(),
+      acceptedOrderings: (function () {
+        var persons = ['たなかさん', 'なかむらさん', 'さとうさん'];
+        var teVerbs = ['みて', 'よんで', 'たべて', 'のみで'];
+        var result = [];
+        persons.forEach(function (p) { teVerbs.forEach(function (v) {
+          result.push([p, 'は', v, 'ます']);
+        }); });
+        return result;
+      })(),
+      expectedTokens: ['___', 'は', '___', 'ます'],
+      explainPattern: function () {
+        return "The て-form + ます makes a polite request — for example, 'みて ます' means 'please watch politely.'";
+      },
     },
     {
       type: 'grammar-intro',

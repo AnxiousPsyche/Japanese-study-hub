@@ -17,7 +17,7 @@
 // cursor with arrow keys works normally.
 //
 // Usage: LessonBox.open(pages, { speaker, catImagePath, talkImagePath, startIndex, onComplete, onClose })
-//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score'|'exam-question'|'exam-score', ...fields }
+//   pages: array of { type: 'greeting'|'sentence'|'conjugation'|'grammar-intro'|'summary'|'conversation'|'try-it'|'quiz-fill'|'quiz-review'|'quiz-answers'|'quiz-score'|'exam-question'|'exam-score'|'sentence-mission', ...fields }
 //   startIndex: optional page index to open directly on (clamped to a
 //     valid range) — lets a caller resume a lesson left mid-way; a
 //     "N / total" page indicator is always shown top-right of the panel.
@@ -866,6 +866,36 @@
           <div class="lesson-box__quizscore-note">${note}</div>
         </div>
       `;
+    } else if (page.type === 'sentence-mission') {
+      // Closed-word-bank sentence building exercise — every word needed is
+      // shown in the Word Shelf; the learner arranges chips into the correct
+      // sentence order.  Gated until the player checks a correct answer.
+      //   wordChips: [{ kana, reading, romaji, meaning, role }, ...]
+      //   acceptedOrderings: [[token, ...], ...] — any match = correct
+      //   sentence: the model sentence for reveal after attempts
+      //   explainPattern: function(used) returning an explanation string
+      var chipsHtml = (page.wordChips || []).map(function (ch, i) {
+        return '<div class="lesson-box__sm-chip" data-idx="' + i + '" data-kana="' + ch.kana + '"'
+          + ' data-reading="' + ch.reading + '" data-romaji="' + ch.romaji + '"'
+          + ' data-meaning="' + ch.meaning + '" data-role="' + (ch.role || 'neutral') + '">'
+          + '<span class="lesson-box__sm-chip-kana">' + ch.kana + '</span>'
+          + '<span class="lesson-box__sm-chip-meta">' + ch.reading + ' · ' + ch.romaji + '</span>'
+          + '<span class="lesson-box__sm-chip-meaning">' + ch.meaning + '</span>'
+          + '</div>';
+      }).join('');
+      c.innerHTML =
+        '<div class="lesson-box__section-label">Sentence Mission</div>'
+        + '<div class="lesson-box__sm-goal">' + (page.grammarGoal || '') + '</div>'
+        + '<div class="lesson-box__explain-text">' + (page.prompt || '') + '</div>'
+        + '<div class="lesson-box__sm-shelf-label">Word Shelf:</div>'
+        + '<div class="lesson-box__sm-shelf">' + chipsHtml + '</div>'
+        + '<div class="lesson-box__sm-sentence-label">Your sentence:</div>'
+        + '<div class="lesson-box__sm-sentence" data-placeholder="Tap words to build your sentence"></div>'
+        + '<div class="lesson-box__sm-controls">'
+        +   '<button type="button" class="lesson-box__sm-btn lesson-box__sm-clear">Clear sentence</button>'
+        +   '<button type="button" class="lesson-box__sm-btn lesson-box__sm-check">Check my sentence</button>'
+        + '</div>'
+        + '<div class="lesson-box__sm-feedback"></div>';
     }
   }
 
@@ -1132,6 +1162,120 @@
           });
         }
       }
+    } else if (page.type === 'sentence-mission') {
+      // Closed-word-bank sentence builder wiring — click shelf chips to
+      // place into the sentence line, click placed chips to return them,
+      // clear to reset all, check to validate against accepted orderings.
+      // Gates advance() via state.tryItSatisfied until correct.
+      var shelf = els.content.querySelector('.lesson-box__sm-shelf');
+      var sentLine = els.content.querySelector('.lesson-box__sm-sentence');
+      var feedback = els.content.querySelector('.lesson-box__sm-feedback');
+      var clearBtn = els.content.querySelector('.lesson-box__sm-clear');
+      var checkBtn = els.content.querySelector('.lesson-box__sm-check');
+      var sentTokens = [];
+      var attemptCount = 0;
+      state.tryItSatisfied = false;
+      els.continue.classList.add('lesson-box__continue--locked');
+
+      function syncSentenceLine() {
+        sentLine.innerHTML = sentTokens.length
+          ? sentTokens.map(function (t, i) {
+            return '<span class="lesson-box__sm-placed" data-pos="' + i + '">'
+              + '<span class="lesson-box__sm-placed-kana">' + t.kana + '</span>'
+              + '<span class="lesson-box__sm-placed-meta">' + t.reading + ' · ' + t.romaji + '</span>'
+              + '<span class="lesson-box__sm-placed-meaning">' + t.meaning + '</span>'
+              + '</span>';
+          }).join('')
+          : '';
+      }
+
+      // Click a shelf chip → append to sentence, hide from shelf.
+      shelf.addEventListener('click', function (e) {
+        var chip = e.target.closest('.lesson-box__sm-chip');
+        if (!chip || chip.classList.contains('is-placed')) return;
+        e.stopPropagation();
+        chip.classList.add('is-placed');
+        sentTokens.push({
+          kana: chip.dataset.kana,
+          reading: chip.dataset.reading,
+          romaji: chip.dataset.romaji,
+          meaning: chip.dataset.meaning,
+          role: chip.dataset.role,
+          shelfIdx: Number(chip.dataset.idx),
+        });
+        syncSentenceLine();
+      });
+
+      // Click a placed chip → remove from sentence, restore to shelf.
+      sentLine.addEventListener('click', function (e) {
+        var placed = e.target.closest('.lesson-box__sm-placed');
+        if (!placed) return;
+        e.stopPropagation();
+        var pos = Number(placed.dataset.pos);
+        var removed = sentTokens.splice(pos, 1)[0];
+        if (removed != null) {
+          var shelfChip = shelf.querySelector('.lesson-box__sm-chip[data-idx="' + removed.shelfIdx + '"]');
+          if (shelfChip) shelfChip.classList.remove('is-placed');
+        }
+        syncSentenceLine();
+      });
+
+      // Clear button → return all chips to shelf.
+      clearBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        sentTokens = [];
+        attemptCount = 0;
+        shelf.querySelectorAll('.lesson-box__sm-chip.is-placed').forEach(function (ch) {
+          ch.classList.remove('is-placed');
+        });
+        syncSentenceLine();
+        feedback.innerHTML = '';
+        feedback.className = 'lesson-box__sm-feedback';
+      });
+
+      // Check button → validate against accepted orderings, give feedback.
+      checkBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var playerSequence = sentTokens.map(function (t) { return t.kana; });
+        var isCorrect = page.acceptedOrderings.some(function (ordering) {
+          if (ordering.length !== playerSequence.length) return false;
+          return ordering.every(function (tok, i) { return tok === playerSequence[i]; });
+        });
+        attemptCount += 1;
+        if (isCorrect) {
+          state.tryItSatisfied = true;
+          els.continue.classList.remove('lesson-box__continue--locked');
+          feedback.innerHTML = '<b>Wonderful!</b> ' + (typeof page.explainPattern === 'function' ? page.explainPattern(playerSequence) : 'You arranged the sentence correctly.');
+          feedback.className = 'lesson-box__sm-feedback is-correct';
+          sentLine.querySelectorAll('.lesson-box__sm-placed').forEach(function (p) {
+            p.classList.add('is-correct');
+          });
+          checkBtn.disabled = true;
+          clearBtn.disabled = true;
+        } else {
+          var msg;
+          if (playerSequence.length < page.expectedTokens.length) {
+            msg = 'Keep going — you have ' + (page.expectedTokens.length - playerSequence.length) + ' more word' + (page.expectedTokens.length - playerSequence.length > 1 ? 's' : '') + ' to place.';
+          } else {
+            msg = 'Not quite — you have all the right words, but the order needs adjusting. Think about which word comes first.';
+          }
+          if (attemptCount >= 3) {
+            msg += '<br><br>The correct sentence is: <b>' + page.sentence + '</b>';
+            if (typeof page.explainPattern === 'function') {
+              msg += '<br>' + page.explainPattern(page.expectedTokens);
+            }
+            state.tryItSatisfied = true;
+            els.continue.classList.remove('lesson-box__continue--locked');
+            checkBtn.disabled = true;
+            clearBtn.disabled = true;
+            sentLine.querySelectorAll('.lesson-box__sm-placed').forEach(function (p) {
+              p.classList.add('is-revealed');
+            });
+          }
+          feedback.innerHTML = msg;
+          feedback.className = 'lesson-box__sm-feedback is-wrong';
+        }
+      });
     }
     if (isConversation) {
       page.turns.forEach((t, i) => {
@@ -1170,6 +1314,9 @@
     // something — see render()'s updateGate(), which keeps
     // state.tryItSatisfied in sync with the input's value.
     if (currentPage.type === 'try-it' && !state.tryItSatisfied) return;
+    // 'sentence-mission' pages block advancing until the player checks a
+    // correct answer or the attempt limit reveals the model sentence.
+    if (currentPage.type === 'sentence-mission' && !state.tryItSatisfied) return;
     // 'exam-question' pages gate the same way, but on
     // state.examAnswers[state.index] being set (by render()'s exam-question
     // wiring, the instant the player's single locked-in answer is graded)
