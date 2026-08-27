@@ -167,15 +167,21 @@
                     sections: [
                         {
                             title: "Checking In & Saying Goodbye",
-                            explain: "<strong>お元気ですか</strong> / <strong>元気です</strong> is the standard how-are-you exchange. Goodbyes have a formality ladder: <strong>では、また</strong> is neutral-polite, <strong>じゃ、また</strong> is a shade more casual, and <strong>じゃあ(ね)</strong> is what you'd actually say to a friend."
+                            explain: "<strong>お元気ですか</strong> (ogenki desu ka) / <strong>元気です</strong> (genki desu) is the standard how-are-you exchange."
+                                + "<br><br>Goodbyes have a formality ladder: <strong>では、また</strong> (dewa, mata) is neutral-polite,"
+                                + "<br><br><strong>じゃ、また</strong> (ja, mata) is a shade more casual,"
+                                + "<br><br>and <strong>じゃあ(ね)</strong> (jaa (ne)) is what you'd actually say to a friend."
                         },
                         {
                             title: "Meeting Someone New",
-                            explain: "<strong>はじめまして</strong> is only ever said the very first time you meet someone. <strong>よろしくお願いします</strong> usually follows it — it doesn't translate 1:1, but it means something like \"please treat me well / I'm counting on you going forward.\" You'll hear it again whenever someone starts working with you on something new, not just at introductions."
+                            explain: "<strong>はじめまして</strong> (hajimemashite) is only ever said the very first time you meet someone."
+                                + "<br><br><strong>よろしくお願いします</strong> (yoroshiku onegaishimasu) usually follows it — it doesn't translate 1:1, but it means something like \"please treat me well / I'm counting on you going forward.\" You'll hear it again whenever someone starts working with you on something new, not just at introductions."
                         },
                         {
                             title: "Asking Politely",
-                            explain: "<strong>お願いします</strong> attaches to a request (\"[this], please\"). <strong>ください</strong> attaches to a noun or a verb's て-form (\"please give me...\" / \"please do...\"). <strong>どうぞ</strong> runs the other direction — it's what YOU say when offering something or letting someone go ahead."
+                            explain: "<strong>お願いします</strong> (onegaishimasu) attaches to a request (\"[this], please\")."
+                                + "<br><br><strong>ください</strong> (kudasai) attaches to a noun or a verb's て-form (\"please give me...\" / \"please do...\")."
+                                + "<br><br><strong>どうぞ</strong> (douzo) runs the other direction — it's what YOU say when offering something or letting someone go ahead."
                         }
                     ],
                     examples: [
@@ -233,15 +239,18 @@
                     sections: [
                         {
                             title: "Leaving & Coming Home",
-                            explain: "<strong>いってきます</strong> (\"I'm off, I'll be back\") is what the person LEAVING says; the person staying answers with いってらっしゃい (\"go and come back\" — not in this lesson's word bank, but good to recognize). <strong>ただいま</strong> (\"I'm home\") gets answered with おかえりなさい (\"welcome back\") the same way — it's always a call-and-response pair, not a phrase you say alone to no one."
+                            explain: "<strong>いってきます</strong> (ittekimasu) — \"I'm off, I'll be back\" — is what the person LEAVING says; the person staying answers with いってらっしゃい (itterasshai — \"go and come back\" — not in this lesson's word bank, but good to recognize)."
+                                + "<br><br><strong>ただいま</strong> (tadaima) — \"I'm home\" — gets answered with おかえりなさい (okaerinasai — \"welcome back\") the same way. It's always a call-and-response pair, not a phrase you say alone to no one."
                         },
                         {
                             title: "As a Guest in Someone's Home",
-                            explain: "<strong>ごめんください</strong> is what you call out at the door before anyone has answered — like knocking, but with words. <strong>お邪魔します</strong> (\"excuse me for intruding\") is said stepping inside, and its past-tense-shaped partner <strong>お邪魔しました</strong> is said on your way back OUT — same phrase, bookending the visit."
+                            explain: "<strong>ごめんください</strong> (gomen kudasai) is what you call out at the door before anyone has answered — like knocking, but with words."
+                                + "<br><br><strong>お邪魔します</strong> (ojama shimasu) — \"excuse me for intruding\" — is said stepping inside,"
+                                + "<br><br>and its past-tense-shaped partner <strong>お邪魔しました</strong> (ojama shimashita) is said on your way back OUT — same phrase, bookending the visit."
                         },
                         {
                             title: "At the Table",
-                            explain: "<strong>いただきます</strong> and <strong>ごちそうさまでした</strong> bookend a meal the same way — said before and after eating, even alone. Neither translates neatly into English; they're closer to a small ritual of gratitude than a literal sentence, so don't overthink a word-for-word translation."
+                            explain: "<strong>いただきます</strong> (itadakimasu) and <strong>ごちそうさまでした</strong> (gochisousama deshita) bookend a meal the same way — said before and after eating, even alone. Neither translates neatly into English; they're closer to a small ritual of gratitude than a literal sentence, so don't overthink a word-for-word translation."
                         }
                     ],
                     examples: [
@@ -272,6 +281,9 @@
     function s02c() {
         let ph = [
             { jp: "さあ", en: "Well... (hesitation)" },
+            { jp: "あの", en: "Um... / excuse me (getting attention)" },
+            { jp: "えっと", en: "Um, let's see..." },
+            { jp: "うーん", en: "Hmm... (thinking)" },
             { jp: "それでは", en: "Well then / in that case" },
             { jp: "それで", en: "And then / because of that" },
             { jp: "まず", en: "First of all" },
@@ -301,19 +313,32 @@
                     sections: [
                         {
                             title: "Hesitation & Transition Words",
-                            explain: "<strong>さあ</strong> is what comes out when you're unsure or stalling for a moment (\"well...\"). <strong>それでは</strong> formally shifts to a new topic or wraps something up (\"well then\"); <strong>それで</strong> is more mid-story — \"and then\" or \"because of that.\" <strong>まず</strong> just means you're starting a list — \"first of all.\""
+                            explain: "<strong>さあ</strong> (saa) is what comes out when you're unsure or stalling for a moment (\"well...\")."
+                                + "<br><br><strong>あの</strong> (ano) is how you open your mouth to get someone's attention or ease into a sentence — \"um, excuse me...\" / \"so, um...\""
+                                + "<br><br><strong>えっと</strong> (etto) is the sound of actively searching for the next word — \"um, let's see...\""
+                                + "<br><br><strong>うーん</strong> (uun) is a longer, thinking-it-over hum — \"hmm...\""
+                                + "<br><br><strong>それでは</strong> (soredewa) formally shifts to a new topic or wraps something up (\"well then\");"
+                                + "<br><br><strong>それで</strong> (sorede) is more mid-story — \"and then\" or \"because of that.\""
+                                + "<br><br><strong>まず</strong> (mazu) just means you're starting a list — \"first of all.\""
                         },
                         {
                             title: "Reacting to What You Hear",
-                            explain: "<strong>なるほど</strong> is one of the most common things you'll say in a conversation — \"I see, that makes sense.\" <strong>やっぱり</strong> is for when something confirms a suspicion you already had (\"as I thought, after all\"). <strong>あ</strong> is a quick, spontaneous \"oh!\"; <strong>ああ</strong> is a longer, more thoughtful \"ahh, right.\""
+                            explain: "<strong>なるほど</strong> (naruhodo) is one of the most common things you'll say in a conversation — \"I see, that makes sense.\""
+                                + "<br><br><strong>やっぱり</strong> (yappari) is for when something confirms a suspicion you already had (\"as I thought, after all\")."
+                                + "<br><br><strong>あ</strong> (a) is a quick, spontaneous \"oh!\";"
+                                + "<br><br><strong>ああ</strong> (aa) is a longer, more thoughtful \"ahh, right.\""
                         },
                         {
                             title: "Hedging & Degree Words",
-                            explain: "<strong>多分</strong> softens a guess (\"probably\"). <strong>できるだけ</strong> means doing the most you're able to (\"as much as possible\"). <strong>それほど</strong> and <strong>全然</strong> both usually pair with a negative verb — それほど 高くない (\"not THAT expensive\") and 全然 わからない (\"I don't understand AT ALL\") — though in casual modern speech 全然 sometimes shows up before something positive too, which is a fairly recent, informal usage."
+                            explain: "<strong>多分</strong> (tabun) softens a guess (\"probably\")."
+                                + "<br><br><strong>できるだけ</strong> (dekiru dake) means doing the most you're able to (\"as much as possible\")."
+                                + "<br><br><strong>それほど</strong> (sorehodo) and <strong>全然</strong> (zenzen) both usually pair with a negative verb — それほど 高くない (\"not THAT expensive\") and 全然 わからない (\"I don't understand AT ALL\") — though in casual modern speech 全然 sometimes shows up before something positive too, which is a fairly recent, informal usage."
                         },
                         {
                             title: "Name Suffixes & Everyday Nouns",
-                            explain: "<strong>ちゃん</strong> is affectionate — for children, close friends, or pets, never for someone you owe respect to. <strong>君（くん）</strong> is typically used for boys or by someone senior addressing a junior; using it upward (to someone above you) can sound off. <strong>用</strong> shows up constantly on signs and labels meaning \"for [x] use\" — 関係者用 (\"staff only\"), 子供用 (\"for children\")."
+                            explain: "<strong>ちゃん</strong> (chan) is affectionate — for children, close friends, or pets, never for someone you owe respect to."
+                                + "<br><br><strong>君（くん）</strong> (kun) is typically used for boys or by someone senior addressing a junior; using it upward (to someone above you) can sound off."
+                                + "<br><br><strong>用</strong> (you) shows up constantly on signs and labels meaning \"for [x] use\" — 関係者用 (\"staff only\"), 子供用 (\"for children\")."
                         }
                     ],
                     examples: [
@@ -324,6 +349,9 @@
                     ],
                     vocab: [
                         { jp: "さあ", romaji: "Saa", en: "Well... (hesitation)" },
+                        { jp: "あの", romaji: "Ano", en: "Um... / excuse me (getting attention)" },
+                        { jp: "えっと", romaji: "Etto", en: "Um, let's see..." },
+                        { jp: "うーん", romaji: "Uun", en: "Hmm... (thinking)" },
                         { jp: "それでは", romaji: "Soredewa", en: "Well then / in that case" },
                         { jp: "それで", romaji: "Sorede", en: "And then / because of that" },
                         { jp: "まず", romaji: "Mazu", en: "First of all" },
@@ -1905,6 +1933,15 @@
             + (nextLesson
                 ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>Next Lesson &#8594; " + nextLesson.title + "</button>"
                 : "<p class='study-complete__note'>You've completed every lesson in the Study Room!</p>");
+        /* show() first to clear the inline style.display:none that
+           openLesson()'s hide($("studyComplete")) sets on every lesson
+           open — classList.add("is-visible") alone can't win against
+           that inline style (inline always beats a CSS class), so the
+           whole completion panel — including the Next Lesson button —
+           silently never appeared. Same gotcha documented elsewhere in
+           this file: hide()/show() must be paired, not mixed with class
+           toggling. */
+        show(panel);
         panel.classList.add("is-visible");
         hide($("studyProgressFill").parentElement.parentElement);
 

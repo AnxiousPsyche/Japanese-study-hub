@@ -2220,6 +2220,16 @@
         "30751"
       ],
       "port": 30751
+    },
+    {
+      "name": "jp-library-static-round10-complete-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30862"
+      ],
+      "port": 30862
     }
   ],
   "autoVerify": true
