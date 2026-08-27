@@ -2160,6 +2160,66 @@
         "30084"
       ],
       "port": 30084
+    },
+    {
+      "name": "jp-library-static-lessons-quiz-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30195"
+      ],
+      "port": 30195
+    },
+    {
+      "name": "jp-library-static-daily-quest",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30306"
+      ],
+      "port": 30306
+    },
+    {
+      "name": "jp-library-static-round9-desktop-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30417"
+      ],
+      "port": 30417
+    },
+    {
+      "name": "jp-library-static-round9-studyroom-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30528"
+      ],
+      "port": 30528
+    },
+    {
+      "name": "jp-library-static-round9-pdf-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30639"
+      ],
+      "port": 30639
+    },
+    {
+      "name": "jp-library-static-round9-recenter-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30751"
+      ],
+      "port": 30751
     }
   ],
   "autoVerify": true

@@ -444,26 +444,19 @@ function finishLogin(explorer){
 function updateDesktop(explorer){
 
     //--------------------------------------------------
-    // Greeting
+    // Greeting — re-run homepage.js's own greeting logic now that
+    // the real player name is known, instead of writing #englishGreeting
+    // directly here. There used to be two independent writers on that
+    // element (this one, plus homepage.js's initializeGreeting() typing
+    // a time-of-day greeting on its own DOMContentLoaded) that raced each
+    // other mid-animation — whichever fired second clobbered whatever the
+    // other had typed so far, splicing the two strings together. Routing
+    // through the single shared function removes the race entirely.
     //--------------------------------------------------
 
-    const greeting =
+    if(typeof initializeGreeting === "function"){
 
-        document.getElementById(
-
-            "englishGreeting"
-
-        );
-
-    if(greeting){
-
-        greeting.textContent =
-
-            "Welcome back, " +
-
-            explorer.name +
-
-            ".";
+        initializeGreeting();
 
     }
 

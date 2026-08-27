@@ -97,28 +97,37 @@ DASHBOARD ROW
 
 }
 
+/* left was 20px, flush against the desktop-icons column — once those
+   icons stack vertically (.desktop-icons flex-direction:column) they
+   occupy roughly x:24-139px down the full left edge, so this window is
+   pushed clear of them instead of sitting on top. */
 #playerWindow{
 
     position:absolute;
 
     width:220px;
 
-    left:20px;
+    left:155px;
 
     top:190px;
 
 }
 
 /* Smaller and centered — was 520px (nearly the full dashboard width);
-   260px reads as "a disc on the desktop" instead of the dashboard's
-   dominant element, and leaves the journey window below it real room. */
+   260px read as "a disc on the desktop" instead of the dashboard's
+   dominant element. Bumped to 350px (~35% bigger, more than the
+   requested 20% floor) — needed once the carousel's prev/next arrows
+   and side padding are subtracted, so "JLPT N5 Edition" actually has
+   room to render on one line instead of overflowing/clipping inside
+   the disc-viewport's overflow:hidden. Left recalculated to stay
+   centered. */
 #discWindow{
 
     position:absolute;
 
-    width:260px;
+    width:350px;
 
-    left:calc(50% - 130px);
+    left:calc(50% - 175px);
 
     top:70px;
 
@@ -132,7 +141,7 @@ DASHBOARD ROW
 
    right:30px;
 
-    top:110px;
+    top:90px;
 
 }
 
@@ -180,11 +189,23 @@ WELCOME WINDOW
 
     position:absolute;
 
-    width:720px;
+    width:612px;
 
-    left:calc(50% - 360px);
+    left:calc(50% - 306px);
 
     top:20px;
+}
+
+.desktop-header h1{
+
+    font-size:1.7rem;
+
+}
+
+.desktop-header .window-content{
+
+    padding:20px;
+
 }
 
 .desktop-header-content{
@@ -417,15 +438,21 @@ CURRENT DISC
 
 .disc-slide h2{
 
-    font-size:1.05rem;
+    font-size:.85rem;
 
     line-height:1.3;
+
+    white-space:nowrap;
+
+    letter-spacing:-1px;
 
 }
 
 .disc-slide p{
 
-    font-size:.7rem;
+    font-size:.65rem;
+
+    white-space:nowrap;
 
 }
 
@@ -457,7 +484,7 @@ DISC CAROUSEL
 
     align-items:center;
 
-    gap:10px;
+    gap:6px;
 
 }
 
@@ -511,9 +538,9 @@ DISC CAROUSEL
 
     flex:0 0 auto;
 
-    width:44px;
+    width:34px;
 
-    height:44px;
+    height:34px;
 
     border-radius:50%;
 
@@ -657,9 +684,20 @@ JOURNEY
    depending on that total height — never reliably "the middle-bottom of
    what's on screen". Fixed positioning is relative to the viewport
    itself, the same reason footer-window below already uses it. */
+/* position:absolute + a measured top (not bottom) — bottom-anchored fixed
+   positioning rendered inconsistently for this element specifically in
+   testing (a grid-descendant + fixed-position interaction that didn't
+   respond to the bottom offset at all), where every other window on this
+   desktop uses position:absolute + top reliably. top:571px is measured
+   live (getBoundingClientRect, not guessed) against #discWindow's actual
+   rendered bottom edge at its current 350px width, plus clearance — the
+   previous top:610px was measured against the disc at its old, smaller
+   260px size and stopped clearing it once the disc grew. If the disc's
+   size changes again, re-measure #discWindow's rendered bottom edge live
+   rather than adjusting this number by feel. */
 .journey-window{
 
-    position:fixed;
+    position:absolute;
 
     left:0;
 
@@ -669,7 +707,7 @@ JOURNEY
 
     margin-right:auto;
 
-    bottom:24px;
+    top:655px;
 
     width:min(230px,52%);
 
@@ -1040,13 +1078,25 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 — renamed to match so the icon column actually renders.
 ======================================================*/
 
+/* position:absolute (was position:relative, in normal flow) — as a
+   flex column this block is ~580px tall (5 stacked icons), and being a
+   normal-flow sibling of .desktop-container pushed the ENTIRE desktop
+   (greeting/disc/quest/journey windows) down by that same ~580px,
+   leaving them stranded in the lower half of the page instead of
+   vertically centered. Taking it out of flow (anchored to #desktop,
+   which is position:relative) overlays it in the top-left corner
+   without affecting where anything else on the desktop sits. */
 .desktop-icons{
 
-    position:relative;
+    position:absolute;
+
+    top:51px;
+
+    left:0;
 
     display:flex;
 
-    flex-direction:row;
+    flex-direction:column;
 
     flex-wrap:wrap;
 
@@ -1265,6 +1315,10 @@ RESPONSIVE
         position:relative;
 
         left:auto;
+
+        right:auto;
+
+        top:auto;
 
         bottom:auto;
 

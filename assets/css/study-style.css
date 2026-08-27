@@ -214,6 +214,29 @@
     background: var(--term-bg);
     color: var(--term-text-dim);
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
+
+    scrollbar-color: var(--term-border) var(--term-panel);
+    scrollbar-width: thin;
+}
+
+/* CRT-themed scrollbar, scoped to the terminal screen only (matches the
+   custom-scrollbar precedent already set in n5-dashboard.css/reset.css/
+   os.css for their own themes) — never a bare/global rule, same modifier-
+   class discipline as the rest of this file. */
+.study-room.is-terminal ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+.study-room.is-terminal ::-webkit-scrollbar-track {
+    background: var(--term-panel);
+}
+.study-room.is-terminal ::-webkit-scrollbar-thumb {
+    background: var(--term-border);
+    border: 2px solid var(--term-panel);
+    border-radius: 6px;
+}
+.study-room.is-terminal ::-webkit-scrollbar-thumb:hover {
+    background: var(--term-label);
 }
 
 /* Subtle CRT scanlines over the terminal screen only, purely decorative */
@@ -336,6 +359,13 @@
     margin: 0 0 12px;
     color: var(--term-text-dim);
     font-size: 14px;
+}
+/* Highlight the actual word/phrase being discussed against the dimmer
+   description text around it — the description keeps --term-text-dim,
+   the word itself jumps to full white so it reads at a glance. */
+.study-instruction p strong {
+    color: var(--term-heading);
+    font-weight: 700;
 }
 .study-instruction .grammar-box {
     background: var(--term-panel);
@@ -686,6 +716,47 @@
     color: var(--term-bad-text);
     animation: shake 0.3s ease;
 }
+/* Multiple-choice "pick the correct word" exercises (vocab-only lessons:
+   s01, s02, s02b, s02c) — same green/red correct/wrong language as
+   .study-practice__input above, just applied to a set of choice buttons
+   instead of a text field. Only ever rendered on study-room.html
+   (.is-terminal), same as the rest of .study-practice*, so this uses
+   --term-* directly with no extra scoping, matching that convention. */
+.study-match-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 6px 0 14px;
+}
+.study-match-choice {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 15px;
+    text-align: left;
+    padding: 12px 16px;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--term-text);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.study-match-choice:hover:not(:disabled) {
+    background: rgba(29, 158, 117, 0.14);
+}
+.study-match-choice:disabled {
+    cursor: not-allowed;
+}
+.study-match-choice.is-correct {
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.22);
+    color: var(--term-text);
+}
+.study-match-choice.is-wrong {
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.22);
+    color: var(--term-bad-text);
+}
+
 @keyframes shake {
     0%,100% { transform: translateX(0); }
     25% { transform: translateX(-6px); }
@@ -907,6 +978,33 @@
    =========================================================== */
 
 /* XP badge (headers of study pages) */
+/* Printer icon (study-room.html only, .is-terminal) — opens the current
+   lesson's watermarked vocab PDF (assets/js/lesson-pdf.js). Same
+   --term-* direct-use convention as .study-practice__* above, since
+   this element only ever renders on the terminal page. */
+.study-header__print-btn {
+    background: transparent;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.study-header__print-btn:hover {
+    background: rgba(29, 158, 117, 0.18);
+}
+.study-header__print-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 .xp-badge {
     font-family: "VT323", monospace;
     font-size: 15px;
@@ -1020,6 +1118,102 @@
 }
 .study-room.is-win95 .level-card.is-locked .level-card__level {
     color: #888;
+}
+
+/* n5-lessons.html */
+.study-room.is-win95 .lesson-card {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        3px 3px 0 rgba(0,0,0,.3);
+    color: #222;
+}
+.study-room.is-win95 .lesson-card:hover {
+    transform: none;
+    background: #F4F1E4;
+    border-color: #fff;
+}
+.study-room.is-win95 .lesson-card__num {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #123a8c;
+}
+.study-room.is-win95 .lesson-card__status {
+    font-family: "JetBrains Mono", monospace;
+    color: #666;
+}
+.study-room.is-win95 .lesson-card.is-complete {
+    border-color: #8FD19E;
+    background: #EAF3EA;
+}
+.study-room.is-win95 .lesson-card.is-complete .lesson-card__status {
+    color: #3a7a4a;
+}
+.study-room.is-win95 .lesson-card--quiz {
+    background: #FFF6DE;
+    border-color: #FFD966;
+}
+.study-room.is-win95 .lesson-card--quiz .lesson-card__num,
+.study-room.is-win95 .lesson-card--quiz .lesson-card__status {
+    color: #9a7d2e;
+}
+
+/* n5-quiz.html */
+.study-room.is-win95 .quiz-panel {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+}
+.study-room.is-win95 .quiz-panel h2 {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #123a8c;
+}
+.study-room.is-win95 .quiz-panel__sub {
+    color: #555;
+}
+.study-room.is-win95 .quiz-mc__btn {
+    font-family: "Nunito", Tahoma, sans-serif;
+    background: #fff;
+    border: 1px solid;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    color: #222;
+}
+.study-room.is-win95 .quiz-mc__btn:hover:not(.is-correct):not(.is-wrong) {
+    transform: none;
+    border-color: #000080;
+}
+.study-room.is-win95 .quiz-action-btn {
+    font-family: "Nunito", Tahoma, sans-serif;
+    background: #C0C0C0;
+    border: 1px solid;
+    border-color: #dfdfdf #404040 #404040 #dfdfdf;
+    border-radius: 0;
+    color: #000;
+}
+.study-room.is-win95 .quiz-action-btn:hover {
+    background: #d4d4d4;
+}
+.study-room.is-win95 .quiz-action-btn.is-back {
+    background: #ECE9D8;
+    color: #222;
+}
+.study-room.is-win95 .quiz-result__title,
+.study-room.is-win95 .quiz-panel h2 {
+    color: #123a8c;
+}
+.study-room.is-win95 .quiz-result__score {
+    color: #b8941e;
+}
+.study-room.is-win95 .quiz-result__verdict {
+    color: #222;
 }
 
 /* Level cards grid (levels dashboard) */

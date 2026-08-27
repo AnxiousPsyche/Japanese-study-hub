@@ -71,6 +71,14 @@
         return Object.keys(state.lessons).filter((id) => state.lessons[id]).length;
     }
 
+    /* The actual lesson ids (e.g. ["s01","s03"]) rather than just a count —
+       lets a caller (the homepage's daily quest) scope itself to lessons
+       the player has actually studied instead of the whole curriculum. */
+    function completedLessonIds() {
+        const state = load();
+        return Object.keys(state.lessons).filter((id) => state.lessons[id]);
+    }
+
     /* Records a finished quiz run and awards XP:
        - first-ever pass (>= QUIZ_PASS_PCT): +quizPass
        - first-ever perfect score: +quizPerfectBonus on top
@@ -107,6 +115,7 @@
         isLessonDone: isLessonDone,
         completeLesson: completeLesson,
         lessonsCompleted: lessonsCompleted,
+        completedLessonIds: completedLessonIds,
         quizBest: quizBest,
         hasPassedQuiz: hasPassedQuiz,
         recordQuizRun: recordQuizRun,

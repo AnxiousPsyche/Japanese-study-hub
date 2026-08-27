@@ -36,8 +36,40 @@
         });
     }
 
+    /* ===== VOCAB-MATCH EXERCISES (vocab-only lessons: s01, s02, s02b,
+       s02c) — "pick the correct Japanese word/phrase for this English
+       word/phrase", multiple choice, instead of typing a sentence.
+       Everything from s03 onward already builds full sentences and
+       keeps the free-text buildWordBankExercises() flow untouched. */
+    function flattenWordBankEntries(wordBank) {
+        let all = [];
+        Object.keys(wordBank).forEach(function (key) {
+            if (key === "preview") return;
+            (wordBank[key] || []).forEach(function (w) { all.push(w); });
+        });
+        return all;
+    }
+    function buildMatchExercisesFromBank(wordBank, count) {
+        let pool = flattenWordBankEntries(wordBank);
+        let n = Math.min(count || 6, pool.length);
+        return uPick(pool, n).map(function (word) {
+            let distractorPool = pool.filter(function (w) { return w.jp !== word.jp; });
+            let distractors = uPick(distractorPool, Math.min(3, distractorPool.length));
+            let choices = shuffle([word].concat(distractors).map(function (w) { return w.jp; }));
+            /* Some glosses are themselves questions ("Excuse me — is anyone
+               home?") — strip a trailing "?" before appending our own so
+               the prompt never doubles up ("...home??"). */
+            let cleanEn = word.en.replace(/[?？]+$/, "");
+            return {
+                prompt: "Which word or phrase means: <strong>" + cleanEn + "</strong>?",
+                correct: word.jp,
+                choices: choices
+            };
+        });
+    }
+
     function buildLessons() {
-        return [s01(),s02(),s03(),s04(),s05(),s06(),s07(),s08(),
+        return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07(),s08(),
                 s09(),s10(),s11(),s12(),s13(),s14(),s15(),s16()];
     }
 
@@ -53,6 +85,7 @@
         ];
         return {
             id: "s01", title: "Basic Greetings", subtitle: "Shelf 01",
+            vocabOnly: true,
             wordBank: {
                 phrases: ph,
                 preview: [{ jp: "お元気ですか", en: "How are you?", note: "Coming up in shelf 02 — everyday expressions" }]
@@ -67,12 +100,12 @@
                         },
                         {
                             title: "When to use each one",
-                            explain: "<strong>こんにちは</strong> — used from late morning through early evening; safe with strangers, coworkers, and acquaintances, but not usually with close family or young children."
-                                + "<br><br><strong>おはようございます</strong> — used in the morning; this is the polite form (drop ございます among friends)."
-                                + "<br><br><strong>こんばんは</strong> — evening/night, once it starts getting dark, same formality as こんにちは."
-                                + "<br><br><strong>さようなら</strong> — a fairly formal goodbye that can imply you won't see the person again for a while; close friends/family usually use a casual alternative instead."
-                                + "<br><br><strong>ありがとうございます</strong> — the polite 'thank you' for strangers, shop staff, and work (drop ございます for casual thanks)."
-                                + "<br><br><strong>すみません</strong> — very versatile: apologizing, getting someone's attention, or even saying thanks when someone went out of their way for you."
+                            explain: "<strong>こんにちは</strong> (konnichiwa) — used from late morning through early evening; safe with strangers, coworkers, and acquaintances, but not usually with close family or young children."
+                                + "<br><br><strong>おはようございます</strong> (ohayou gozaimasu) — used in the morning; this is the polite form (drop ございます among friends)."
+                                + "<br><br><strong>こんばんは</strong> (konbanwa) — evening/night, once it starts getting dark, same formality as こんにちは."
+                                + "<br><br><strong>さようなら</strong> (sayounara) — a fairly formal goodbye that can imply you won't see the person again for a while; close friends/family usually use a casual alternative instead."
+                                + "<br><br><strong>ありがとうございます</strong> (arigatou gozaimasu) — the polite 'thank you' for strangers, shop staff, and work (drop ございます for casual thanks)."
+                                + "<br><br><strong>すみません</strong> (sumimasen) — very versatile: apologizing, getting someone's attention, or even saying thanks when someone went out of their way for you."
                         }
                     ],
                     examples: [
@@ -91,57 +124,62 @@
                     sources: ["Tofugu — Japanese Greetings guide", "Tae Kim's Guide to Japanese Grammar", "Jisho.org"]
                 };
             },
-            /* FR3: phrase-only lesson, still gets a "build your own" exercise by
-               chaining two of the lesson's phrases into one short exchange.
-               No bonus exercise: shelf 02 has no sentence pattern of its own to
-               slot the preview phrase into (both are phrase-recall lessons) —
-               preview stays exposure-only here. */
-            buildWordBankExercises: function () {
-                let pair = uPick(ph, 2);
-                return [
-                    {
-                        prompt: "Combine two greetings: say <strong>" + pair[0].en + "</strong>, then <strong>" + pair[1].en + "</strong>.",
-                        accepted: [
-                            [pair[0].jp + "。" + pair[1].jp],
-                            [pair[0].jp + pair[1].jp],
-                            [pair[0].jp + "、" + pair[1].jp]
-                        ],
-                        hint: pair[0].jp + "。" + pair[1].jp,
-                        refWords: [
-                            { jp: pair[0].jp, role: "greeting" },
-                            { jp: pair[1].jp, role: "greeting" }
-                        ]
-                    }
-                ];
+            /* Vocab-only lesson: practice is "pick the correct word for this
+               English word/phrase" (buildMatchExercisesFromBank), not typing
+               a sentence — there's no grammar pattern here to build one. */
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 6);
             }
         };
     }
 
-    /* SHELF 02: Everyday Expressions (phrase-only lesson) */
+    /* SHELF 02: Everyday Expressions — split into three topic-sectioned
+       lessons (was one flat 34-word list with no grouping or nuance
+       notes). s02 keeps its id so nothing before it in the sequence
+       needs renumbering; s02b/s02c are new ids inserted right after it. */
+
+    /* SHELF 02: Greetings & Everyday Phrases (phrase-only lesson) */
     function s02() {
         let ph = [
             { jp: "お元気ですか", en: "How are you?" },
             { jp: "元気です", en: "I'm doing well" },
-            { jp: "いってきます", en: "I'm heading out" },
-            { jp: "ただいま", en: "I'm home" },
             { jp: "では、また", en: "See you again" },
-            { jp: "じゃあね", en: "See you (casual)" },
+            { jp: "じゃ、また", en: "See you again (casual)" },
+            { jp: "じゃあ(ね)", en: "See you (more casual)" },
             { jp: "よろしくお願いします", en: "Nice to meet you" },
-            { jp: "どうも", en: "Thanks / general" }
+            { jp: "はじめまして", en: "How do you do (first meeting)" },
+            { jp: "お願いします", en: "Please (making a request)" },
+            { jp: "ください", en: "Please (asking for something)" },
+            { jp: "どうぞ", en: "Please (go ahead)" },
+            { jp: "どうも", en: "Thanks / general greeting" },
+            { jp: "はい", en: "Yes" },
+            { jp: "ええ", en: "Yes (softer)" }
         ];
         return {
-            id: "s02", title: "Everyday Expressions", subtitle: "Shelf 02",
+            id: "s02", title: "Greetings & Everyday Phrases", subtitle: "Shelf 02",
+            vocabOnly: true,
             wordBank: {
                 phrases: ph,
-                preview: [{ jp: "がくせい", en: "student", note: "Coming up in shelf 03 — the A は B です pattern" }]
+                preview: [{ jp: "いってきます", en: "I'm heading out", note: "Coming up next — At Home & At the Table" }]
             },
             buildInstruction: function () {
                 return {
-                    sections: [{
-                        title: "Situational Phrases & Fillers",
-                        explain: "Everyday expressions for daily life + filler words that make your Japanese sound natural."
-                    }],
+                    sections: [
+                        {
+                            title: "Checking In & Saying Goodbye",
+                            explain: "<strong>お元気ですか</strong> / <strong>元気です</strong> is the standard how-are-you exchange. Goodbyes have a formality ladder: <strong>では、また</strong> is neutral-polite, <strong>じゃ、また</strong> is a shade more casual, and <strong>じゃあ(ね)</strong> is what you'd actually say to a friend."
+                        },
+                        {
+                            title: "Meeting Someone New",
+                            explain: "<strong>はじめまして</strong> is only ever said the very first time you meet someone. <strong>よろしくお願いします</strong> usually follows it — it doesn't translate 1:1, but it means something like \"please treat me well / I'm counting on you going forward.\" You'll hear it again whenever someone starts working with you on something new, not just at introductions."
+                        },
+                        {
+                            title: "Asking Politely",
+                            explain: "<strong>お願いします</strong> attaches to a request (\"[this], please\"). <strong>ください</strong> attaches to a noun or a verb's て-form (\"please give me...\" / \"please do...\"). <strong>どうぞ</strong> runs the other direction — it's what YOU say when offering something or letting someone go ahead."
+                        }
+                    ],
                     examples: [
+                        { jp: "はじめまして。よろしくお願いします。", en: "How do you do. Please treat me well." },
                         { jp: "お元気ですか？", en: "How are you?" },
                         { jp: "元気です！ありがとうございます。", en: "I'm doing well! Thank you." },
                         { jp: "じゃあね！", en: "See you!" }
@@ -149,36 +187,156 @@
                     vocab: [
                         { jp: "お元気ですか", romaji: "Ogenki desu ka", en: "How are you? (polite check-in)" },
                         { jp: "元気です", romaji: "Genki desu", en: "I'm doing well" },
-                        { jp: "いただきます", romaji: "Itadakimasu", en: "said before eating" },
-                        { jp: "ごちそうさまでした", romaji: "Gochisousama deshita", en: "said after eating" },
-                        { jp: "いってきます", romaji: "Ittekimasu", en: "I'm heading out" },
-                        { jp: "ただいま", romaji: "Tadaima", en: "I'm home" },
-                        { jp: "お願いします", romaji: "Onegaishimasu", en: "Please (making a request)" },
-                        { jp: "ください", romaji: "Kudasai", en: "Please (asking for something)" },
                         { jp: "では、また", romaji: "Dewa, mata", en: "See you again" },
                         { jp: "じゃ、また", romaji: "Ja, mata", en: "See you again (casual)" },
                         { jp: "じゃあ(ね)", romaji: "Jaa (ne)", en: "See you (more casual)" },
-                        { jp: "お邪魔します", romaji: "Ojama shimasu", en: "Excuse me for intruding" },
                         { jp: "よろしくお願いします", romaji: "Yoroshiku onegaishimasu", en: "Nice to meet you / please take care of this" },
                         { jp: "はじめまして", romaji: "Hajimemashite", en: "How do you do (first meeting only)" },
-                        { jp: "どうも", romaji: "Doumo", en: "Thanks / general greeting" },
+                        { jp: "お願いします", romaji: "Onegaishimasu", en: "Please (making a request)" },
+                        { jp: "ください", romaji: "Kudasai", en: "Please (asking for something)" },
                         { jp: "どうぞ", romaji: "Douzo", en: "Please (go ahead)" },
+                        { jp: "どうも", romaji: "Doumo", en: "Thanks / general greeting" },
                         { jp: "はい", romaji: "Hai", en: "Yes" },
-                        { jp: "ええ", romaji: "Ee", en: "Yes (softer)" },
+                        { jp: "ええ", romaji: "Ee", en: "Yes (softer)" }
+                    ],
+                    sources: ["Tofugu — Japanese Greetings guide", "Tae Kim's Guide to Japanese Grammar", "Jisho.org"]
+                };
+            },
+            /* Vocab-only lesson: pick the correct word for the English
+               word/phrase, same as s01 — no sentence pattern to build yet. */
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 6);
+            }
+        };
+    }
+
+    /* SHELF 02b: At Home & At the Table (phrase-only lesson) */
+    function s02b() {
+        let ph = [
+            { jp: "いってきます", en: "I'm heading out" },
+            { jp: "ただいま", en: "I'm home" },
+            { jp: "お邪魔します", en: "Excuse me for intruding" },
+            { jp: "お邪魔しました", en: "Thanks for having me (on leaving)" },
+            { jp: "ごめんください", en: "Excuse me — is anyone home?" },
+            { jp: "いただきます", en: "said before eating" },
+            { jp: "ごちそうさまでした", en: "said after eating" }
+        ];
+        return {
+            id: "s02b", title: "At Home & At the Table", subtitle: "Shelf 02b",
+            vocabOnly: true,
+            wordBank: {
+                phrases: ph,
+                preview: [{ jp: "なるほど", en: "I see / that makes sense", note: "Coming up next — Filler Words & Reactions" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Leaving & Coming Home",
+                            explain: "<strong>いってきます</strong> (\"I'm off, I'll be back\") is what the person LEAVING says; the person staying answers with いってらっしゃい (\"go and come back\" — not in this lesson's word bank, but good to recognize). <strong>ただいま</strong> (\"I'm home\") gets answered with おかえりなさい (\"welcome back\") the same way — it's always a call-and-response pair, not a phrase you say alone to no one."
+                        },
+                        {
+                            title: "As a Guest in Someone's Home",
+                            explain: "<strong>ごめんください</strong> is what you call out at the door before anyone has answered — like knocking, but with words. <strong>お邪魔します</strong> (\"excuse me for intruding\") is said stepping inside, and its past-tense-shaped partner <strong>お邪魔しました</strong> is said on your way back OUT — same phrase, bookending the visit."
+                        },
+                        {
+                            title: "At the Table",
+                            explain: "<strong>いただきます</strong> and <strong>ごちそうさまでした</strong> bookend a meal the same way — said before and after eating, even alone. Neither translates neatly into English; they're closer to a small ritual of gratitude than a literal sentence, so don't overthink a word-for-word translation."
+                        }
+                    ],
+                    examples: [
+                        { jp: "いってきます！", en: "I'm heading out!" },
+                        { jp: "ただいま。", en: "I'm home." },
+                        { jp: "お邪魔します。", en: "Excuse me for intruding. (entering)" },
+                        { jp: "いただきます。", en: "(said before eating)" }
+                    ],
+                    vocab: [
+                        { jp: "いってきます", romaji: "Ittekimasu", en: "I'm heading out" },
+                        { jp: "ただいま", romaji: "Tadaima", en: "I'm home" },
+                        { jp: "お邪魔します", romaji: "Ojama shimasu", en: "Excuse me for intruding (entering)" },
+                        { jp: "お邪魔しました", romaji: "Ojama shimashita", en: "Thanks for having me (leaving)" },
+                        { jp: "ごめんください", romaji: "Gomen kudasai", en: "Excuse me — is anyone home?" },
+                        { jp: "いただきます", romaji: "Itadakimasu", en: "said before eating" },
+                        { jp: "ごちそうさまでした", romaji: "Gochisousama deshita", en: "said after eating" }
+                    ],
+                    sources: ["Tofugu — Japanese Greetings guide", "Tae Kim's Guide to Japanese Grammar", "Jisho.org"]
+                };
+            },
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 6);
+            }
+        };
+    }
+
+    /* SHELF 02c: Filler Words & Reactions (phrase-only lesson) */
+    function s02c() {
+        let ph = [
+            { jp: "さあ", en: "Well... (hesitation)" },
+            { jp: "それでは", en: "Well then / in that case" },
+            { jp: "それで", en: "And then / because of that" },
+            { jp: "まず", en: "First of all" },
+            { jp: "なるほど", en: "I see / now I understand" },
+            { jp: "やっぱり", en: "As I thought / after all" },
+            { jp: "あ", en: "Ah!/Oh!" },
+            { jp: "ああ", en: "Ah, yes" },
+            { jp: "多分", en: "Probably / perhaps" },
+            { jp: "できるだけ", en: "As much as possible" },
+            { jp: "それほど", en: "Not that much (+negative)" },
+            { jp: "全然", en: "Not at all (+negative)" },
+            { jp: "これから", en: "From now on / after this" },
+            { jp: "もし", en: "If / in case" },
+            { jp: "ちゃん", en: "familiar name suffix (affectionate)" },
+            { jp: "君", en: "familiar name suffix (boys/young men)" },
+            { jp: "用", en: "business / errand / use" }
+        ];
+        return {
+            id: "s02c", title: "Filler Words & Reactions", subtitle: "Shelf 02c",
+            vocabOnly: true,
+            wordBank: {
+                phrases: ph,
+                preview: [{ jp: "がくせい", en: "student", note: "Coming up in shelf 03 — the A は B です pattern" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Hesitation & Transition Words",
+                            explain: "<strong>さあ</strong> is what comes out when you're unsure or stalling for a moment (\"well...\"). <strong>それでは</strong> formally shifts to a new topic or wraps something up (\"well then\"); <strong>それで</strong> is more mid-story — \"and then\" or \"because of that.\" <strong>まず</strong> just means you're starting a list — \"first of all.\""
+                        },
+                        {
+                            title: "Reacting to What You Hear",
+                            explain: "<strong>なるほど</strong> is one of the most common things you'll say in a conversation — \"I see, that makes sense.\" <strong>やっぱり</strong> is for when something confirms a suspicion you already had (\"as I thought, after all\"). <strong>あ</strong> is a quick, spontaneous \"oh!\"; <strong>ああ</strong> is a longer, more thoughtful \"ahh, right.\""
+                        },
+                        {
+                            title: "Hedging & Degree Words",
+                            explain: "<strong>多分</strong> softens a guess (\"probably\"). <strong>できるだけ</strong> means doing the most you're able to (\"as much as possible\"). <strong>それほど</strong> and <strong>全然</strong> both usually pair with a negative verb — それほど 高くない (\"not THAT expensive\") and 全然 わからない (\"I don't understand AT ALL\") — though in casual modern speech 全然 sometimes shows up before something positive too, which is a fairly recent, informal usage."
+                        },
+                        {
+                            title: "Name Suffixes & Everyday Nouns",
+                            explain: "<strong>ちゃん</strong> is affectionate — for children, close friends, or pets, never for someone you owe respect to. <strong>君（くん）</strong> is typically used for boys or by someone senior addressing a junior; using it upward (to someone above you) can sound off. <strong>用</strong> shows up constantly on signs and labels meaning \"for [x] use\" — 関係者用 (\"staff only\"), 子供用 (\"for children\")."
+                        }
+                    ],
+                    examples: [
+                        { jp: "なるほど、わかりました。", en: "I see, got it." },
+                        { jp: "やっぱりそうだね。", en: "Yeah, just as I thought." },
+                        { jp: "多分、大丈夫です。", en: "It's probably fine." },
+                        { jp: "全然わかりません。", en: "I don't understand at all." }
+                    ],
+                    vocab: [
                         { jp: "さあ", romaji: "Saa", en: "Well... (hesitation)" },
                         { jp: "それでは", romaji: "Soredewa", en: "Well then / in that case" },
-                        { jp: "多分", romaji: "Tabun", en: "Probably/perhaps" },
+                        { jp: "それで", romaji: "Sorede", en: "And then / because of that" },
+                        { jp: "まず", romaji: "Mazu", en: "First of all" },
+                        { jp: "なるほど", romaji: "Naruhodo", en: "I see / now I understand" },
+                        { jp: "やっぱり", romaji: "Yappari", en: "As I thought / after all" },
                         { jp: "あ", romaji: "A", en: "Ah!/Oh!" },
                         { jp: "ああ", romaji: "Aa", en: "Ah, yes" },
+                        { jp: "多分", romaji: "Tabun", en: "Probably/perhaps" },
                         { jp: "できるだけ", romaji: "Dekiru dake", en: "As much as possible" },
-                        { jp: "これから", romaji: "Kore kara", en: "From now on/after this" },
-                        { jp: "まず", romaji: "Mazu", en: "First of all" },
-                        { jp: "もし", romaji: "Moshi", en: "If/in case" },
-                        { jp: "なるほど", romaji: "Naruhodo", en: "I see/now I understand" },
-                        { jp: "それで", romaji: "Sorede", en: "And then/because of that" },
                         { jp: "それほど", romaji: "Sorehodo", en: "To that extent/not that much" },
-                        { jp: "やっぱり", romaji: "Yappari", en: "As I thought/after all" },
                         { jp: "全然", romaji: "Zenzen", en: "Not at all (+negative)" },
+                        { jp: "これから", romaji: "Kore kara", en: "From now on/after this" },
+                        { jp: "もし", romaji: "Moshi", en: "If/in case" },
                         { jp: "ちゃん", romaji: "Chan", en: "familiar name suffix (affectionate)" },
                         { jp: "君", romaji: "Kun", en: "familiar name suffix (boys/young men)" },
                         { jp: "用", romaji: "You", en: "Business/errand/use" }
@@ -189,23 +347,8 @@
             /* No bonus exercise: shelf 03 introduces a full grammar pattern
                (A は B です), not a single drop-in word — preview stays
                exposure-only until shelf 03 itself teaches the pattern. */
-            buildWordBankExercises: function () {
-                let pair = uPick(ph, 2);
-                return [
-                    {
-                        prompt: "Combine two expressions: say <strong>" + pair[0].en + "</strong>, then <strong>" + pair[1].en + "</strong>.",
-                        accepted: [
-                            [pair[0].jp + "。" + pair[1].jp],
-                            [pair[0].jp + pair[1].jp],
-                            [pair[0].jp + "、" + pair[1].jp]
-                        ],
-                        hint: pair[0].jp + "。" + pair[1].jp,
-                        refWords: [
-                            { jp: pair[0].jp, role: "greeting" },
-                            { jp: pair[1].jp, role: "greeting" }
-                        ]
-                    }
-                ];
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 6);
             }
         };
     }
@@ -1433,7 +1576,9 @@
     function openLesson(id) {
         currentLesson = lessons.find(function (l) { return l.id === id; });
         if (!currentLesson) return;
-        currentExercises = currentLesson.buildWordBankExercises();
+        currentExercises = currentLesson.vocabOnly
+            ? currentLesson.buildMatchExercises()
+            : currentLesson.buildWordBankExercises();
         exerciseIndex = 0;
         totalExercises = currentExercises.length;
         completedExercises = 0;
@@ -1573,7 +1718,14 @@
         let refWrap = $("studyWordBankRef");
         if (refWrap) {
             if (ex.refWords && ex.refWords.length) {
-                refWrap.innerHTML = ex.refWords.map(function (w) {
+                /* Shuffled on display only (grading never reads this order) —
+                   the chips used to render in the exact order the correct
+                   sentence needs, which meant the "exercise" was just
+                   copying top-to-bottom instead of actually recalling word
+                   order. Applies to every sentence-building lesson (s03
+                   onward) automatically since this is the one shared
+                   render path they all go through. */
+                refWrap.innerHTML = shuffle(ex.refWords).map(function (w) {
                     return "<span class='word-bank__chip word-bank__chip--ref' data-role='" + (w.role || "neutral") + "'>" + w.jp + "</span>";
                 }).join("");
             } else {
@@ -1582,11 +1734,28 @@
         }
 
         let input = $("studyInput");
-        if (input) {
-            input.value = "";
-            input.disabled = false;
-            input.className = "study-practice__input";
-            setTimeout(function () { input.focus(); }, 80);
+        let checkBtn = $("studyCheckBtn");
+        let hintBtn = $("studyHintBtn");
+        let matchWrap = $("studyMatchChoices");
+
+        if (currentLesson.vocabOnly) {
+            hide(input);
+            hide(checkBtn);
+            hide(hintBtn);
+            show(matchWrap);
+            renderMatchChoices(ex);
+        } else {
+            hide(matchWrap);
+            if (matchWrap) matchWrap.innerHTML = "";
+            show(checkBtn);
+            show(hintBtn);
+            if (input) {
+                show(input);
+                input.value = "";
+                input.disabled = false;
+                input.className = "study-practice__input";
+                setTimeout(function () { input.focus(); }, 80);
+            }
         }
 
         let fill = $("studyProgressFill");
@@ -1598,9 +1767,45 @@
         let fb = $("studyFeedback");
         if (fb) { fb.className = "study-practice__feedback"; fb.innerHTML = ""; }
 
-        show($("studyCheckBtn"));
-        show($("studyHintBtn"));
         hide($("studyNextBtn"));
+    }
+
+    /* ===== MATCH-CHOICE EXERCISES (vocab-only lessons) ===== */
+    function renderMatchChoices(ex) {
+        let wrap = $("studyMatchChoices");
+        if (!wrap) return;
+        wrap.classList.remove("is-locked");
+        wrap.innerHTML = ex.choices.map(function (choice) {
+            return "<button type='button' class='study-match-choice'>" + choice + "</button>";
+        }).join("");
+        Array.prototype.forEach.call(wrap.querySelectorAll(".study-match-choice"), function (btn) {
+            btn.addEventListener("click", function () { checkMatchAnswer(ex, btn, wrap); });
+        });
+    }
+
+    function checkMatchAnswer(ex, btnEl, wrap) {
+        if (wrap.classList.contains("is-locked")) return;
+        wrap.classList.add("is-locked");
+
+        let choiceButtons = wrap.querySelectorAll(".study-match-choice");
+        Array.prototype.forEach.call(choiceButtons, function (btn) {
+            btn.disabled = true;
+            if (btn.textContent === ex.correct) btn.classList.add("is-correct");
+        });
+
+        let correct = btnEl.textContent === ex.correct;
+        completedExercises++;
+        if (correct) {
+            lessonScore++;
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
+        } else {
+            streak = 0;
+            btnEl.classList.add("is-wrong");
+            showFeedback("&#10007; the answer was: <strong>" + ex.correct + "</strong>", "reveal");
+        }
+        show($("studyNextBtn"));
     }
 
     /* ===== CHECK ANSWER ===== */
@@ -1698,7 +1903,7 @@
             + "</div>"
             + (alreadyDone ? "<p class='study-complete__note'>Lesson already completed before &mdash; no bonus XP.</p>" : "")
             + (nextLesson
-                ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>&gt; continue to " + nextLesson.title + "</button>"
+                ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>Next Lesson &#8594; " + nextLesson.title + "</button>"
                 : "<p class='study-complete__note'>You've completed every lesson in the Study Room!</p>");
         panel.classList.add("is-visible");
         hide($("studyProgressFill").parentElement.parentElement);
@@ -1734,6 +1939,13 @@
             if (currentLesson) {
                 exerciseIndex++;
                 renderExercise();
+            }
+        });
+
+        let printBtn = $("studyPrintBtn");
+        if (printBtn) printBtn.addEventListener("click", function () {
+            if (currentLesson && typeof window.exportLessonPdf === "function") {
+                window.exportLessonPdf(currentLesson);
             }
         });
     }

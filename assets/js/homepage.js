@@ -327,12 +327,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //======================================================
 // PLAYER NAME
-// Swap this out for wherever the player's actual name
-// is stored once you have profiles/login. Hardcoded for
-// now to match the rest of the homepage.
+// Reads the real saved profile name (same "jpExplorer" key
+// login.js writes) instead of a hardcoded placeholder — this used
+// to be hardcoded to "Rei" while login.js's updateDesktop() wrote
+// the *actual* saved name into the same element separately, and
+// the two writers racing each other is what produced the garbled
+// spliced-together greeting text. Falls back to "Explorer" before
+// any profile is saved.
 //======================================================
 
-const PLAYER_NAME = "Rei";
+function getPlayerName(){
+
+    try{
+
+        const raw = localStorage.getItem("jpExplorer");
+
+        if(!raw) return "Explorer";
+
+        const explorer = JSON.parse(raw);
+
+        return (explorer && explorer.name) ? explorer.name : "Explorer";
+
+    } catch(err){
+
+        return "Explorer";
+
+    }
+
+}
 
 
 //======================================================
@@ -340,6 +362,8 @@ const PLAYER_NAME = "Rei";
 //======================================================
 
 function getGreetingForHour(hour){
+
+    const PLAYER_NAME = getPlayerName();
 
     // Late night / very early morning
 
@@ -463,7 +487,22 @@ function initializeGreeting(){
 // onDone    -> optional callback once finished
 //======================================================
 
+let typeTextCallId = 0;
+
 function typeText(el, text, speed, onDone){
+
+    // initializeGreeting() can now legitimately be called more than once
+    // on the same elements (once from homepage.js's own DOMContentLoaded,
+    // again from login.js's updateDesktop() once the real profile loads).
+    // Without this guard, two overlapping typeNextChar loops both append
+    // to the same el.textContent, producing doubled characters. Stamping
+    // each call with its own id and having the loop bail out the moment
+    // a newer call takes over lets the latest call always win cleanly.
+    typeTextCallId++;
+
+    const myCallId = typeTextCallId;
+
+    el.dataset.typeCallId = myCallId;
 
     el.textContent = "";
 
@@ -472,6 +511,8 @@ function typeText(el, text, speed, onDone){
     let index = 0;
 
     function typeNextChar(){
+
+        if(Number(el.dataset.typeCallId) !== myCallId) return;
 
         if(index < text.length){
 

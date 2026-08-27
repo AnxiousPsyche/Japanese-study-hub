@@ -5,7 +5,9 @@
 
     const LESSONS = [
         { id: "s01", title: "Basic Greetings" },
-        { id: "s02", title: "Everyday Expressions" },
+        { id: "s02", title: "Greetings & Everyday Phrases" },
+        { id: "s02b", title: "At Home & At the Table" },
+        { id: "s02c", title: "Filler Words & Reactions" },
         { id: "s03", title: "A \u306F B \u3067\u3059" },
         { id: "s04", title: "Self Introduction" },
         { id: "s05", title: "Demonstratives" },

@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/study-style.css">
+    <!-- jsPDF + html2canvas: client-side PDF generation for the printer
+         icon's per-lesson vocab export (assets/js/lesson-pdf.js). jsPDF's
+         own built-in fonts can't render Japanese glyphs, so the export
+         renders an off-screen HTML table (in the page's own DotGothic16
+         Japanese web font, loaded above) via jsPDF's doc.html(), which
+         rasterizes through html2canvas instead of relying on jsPDF's
+         font system — same plain-CDN-script pattern as Bootstrap/Phaser
+         elsewhere in this no-build project. -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="study-room is-terminal is-active">
@@ -26,6 +36,9 @@
                 <span class="study-header__toggle-seg study-header__toggle-seg--active">&#128214; Document</span>
                 <a href="../N5/n5-dashboard.html" class="study-header__toggle-seg">&#127983; Adventure</a>
             </div>
+            <button type="button" class="study-header__print-btn" id="studyPrintBtn" title="Print this lesson's vocabulary (PDF)" aria-label="Print this lesson's vocabulary">
+                <img src="../../assets/images/lesson/printer-image-Original.png" alt="">
+            </button>
             <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
         </header>
         <div class="study-body">
@@ -39,6 +52,7 @@
                             <span class="study-progress__text" id="studyProgressText">0 / 3</span>
                         </div>
                         <div class="study-practice__wordbank-ref" id="studyWordBankRef"></div>
+                        <div class="study-match-choices" id="studyMatchChoices" style="display:none"></div>
                         <div class="study-practice__input-row">
                             <input type="text" class="study-practice__input" id="studyInput" placeholder="Type your answer in hiragana..." autocomplete="off" spellcheck="false">
                             <button class="study-practice__btn study-practice__btn--check" id="studyCheckBtn">Check</button>
@@ -54,6 +68,7 @@
         </div>
     </div>
     <script src="../../assets/js/study-progress.js"></script>
+    <script src="../../assets/js/lesson-pdf.js"></script>
     <script src="../../assets/js/study-room.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {

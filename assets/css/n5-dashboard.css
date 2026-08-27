@@ -12,11 +12,15 @@ ROOT
 
     --hud-height:90px;
 
-    /* Round 1 feedback B7: exact retro-pastel treatment (#C9BFA5 border
-       on #F6F2EA background), not the earlier gold/cream approximation. */
-    --hud-bg:#F6F2EA;
+    /* Retheme: matches the Study Room's actual win95 taskbar look
+       (.study-room.is-win95 .study-header in study-style.css) exactly —
+       the same navy-to-blue title-bar gradient, not an approximation —
+       so the Adventure Room's HUD stops clashing with every screen
+       behind it (Choose Your Cat, the library map) that already runs a
+       dark retro palette. Was a cream/pastel-blue combo before this. */
+    --hud-bg:linear-gradient(90deg,#000080,#1084d0);
 
-    --hud-border:#C9BFA5;
+    --hud-border:#6fa3ea;
 
     --hud-shadow:var(--shadow-window);
 
@@ -104,7 +108,7 @@ HUD
 
     background:var(--hud-bg);
 
-    border-bottom:3px solid var(--hud-border);
+    border-bottom:2px solid var(--hud-border);
 
     box-shadow:var(--hud-shadow);
 
@@ -164,18 +168,17 @@ HUD BUTTONS
 
 .hud-btn{
 
-    border:2px solid var(--hud-border);
+    border:1px solid rgba(255,255,255,.4);
 
     border-radius:var(--radius);
 
     padding:12px 22px;
 
-    /* Scoped override of --title-bar (#87A8D8): that value is only
-       2.44:1 contrast against white text, failing WCAG AA (4.5:1) -
-       confirmed site-wide since --title-bar is shared across
-       components.css/mission.css/reset.css, so darkened locally here
-       rather than touching the global variable. */
-    background:#4E74A8;
+    /* Same translucent-black pill the win95 Study Room taskbar uses for
+       its own nav links (.study-header__back in study-style.css) — sits
+       on the navy/blue gradient bar with no separate contrast fix
+       needed, since it's white text on near-black, not on raw blue. */
+    background:rgba(0,0,0,.15);
 
     color:white;
 
@@ -197,7 +200,7 @@ HUD BUTTONS
 
     transform:translateY(-3px);
 
-    background:#44689C;
+    background:rgba(0,0,0,.28);
 
 }
 
@@ -232,7 +235,7 @@ PLAYER
 
     border-radius:50%;
 
-    border:3px solid white;
+    border:2px solid rgba(255,255,255,.6);
 
     object-fit:cover;
 
@@ -251,13 +254,15 @@ PLAYER NAME
 
     margin-bottom:4px;
 
+    color:#fff;
+
 }
 
 #playerRank{
 
     font-size:.8rem;
 
-    opacity:.75;
+    color:rgba(255,255,255,.75);
 
 }
 
@@ -266,6 +271,8 @@ PLAYER NAME
 HUD ITEMS
 ======================================================*/
 
+/* Beveled win95 pill — matches .study-room.is-win95 .xp-badge in
+   study-style.css (#ECE9D8 with an inset light/dark bevel) exactly. */
 .hud-item{
 
     display:flex;
@@ -276,9 +283,55 @@ HUD ITEMS
 
     font-weight:700;
 
-    font-size:.95rem;
+    font-size:.85rem;
+
+    color:#222;
+
+    background:#ECE9D8;
+
+    border:1px solid #fff;
+
+    box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+
+    border-radius:var(--radius);
+
+    padding:6px 12px;
 
 }
+
+/* Three traffic-light dots, same colors/sizing as the Study Room's
+   .study-header__dots (is-win95) — this HUD isn't part of the shared
+   .study-header markup, so the decoration is replicated here directly
+   rather than pulled in via a shared class. */
+.hud-dots{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    margin-right:4px;
+
+}
+
+.hud-dots span{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+}
+
+.hud-dots span:nth-child(1){ background:#FF8F8F; }
+
+.hud-dots span:nth-child(2){ background:#FFD966; }
+
+.hud-dots span:nth-child(3){ background:#8FD19E; }
 
 
 /*======================================================
