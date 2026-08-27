@@ -2040,6 +2040,126 @@
         "28752"
       ],
       "port": 28752
+    },
+    {
+      "name": "jp-library-static-s01-formatting-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28863"
+      ],
+      "port": 28863
+    },
+    {
+      "name": "jp-library-static-terminal-reskin",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28974"
+      ],
+      "port": 28974
+    },
+    {
+      "name": "jp-library-static-scoping-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29085"
+      ],
+      "port": 29085
+    },
+    {
+      "name": "jp-library-static-layout-titles-bg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29196"
+      ],
+      "port": 29196
+    },
+    {
+      "name": "jp-library-static-boot-nav-resize",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29307"
+      ],
+      "port": 29307
+    },
+    {
+      "name": "jp-library-static-dashboard-resize-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29418"
+      ],
+      "port": 29418
+    },
+    {
+      "name": "jp-library-static-autologin-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29529"
+      ],
+      "port": 29529
+    },
+    {
+      "name": "jp-library-static-icons-antiflash",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29640"
+      ],
+      "port": 29640
+    },
+    {
+      "name": "jp-library-static-search-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29751"
+      ],
+      "port": 29751
+    },
+    {
+      "name": "jp-library-static-login-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29862"
+      ],
+      "port": 29862
+    },
+    {
+      "name": "jp-library-static-hub-levels-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29973"
+      ],
+      "port": 29973
+    },
+    {
+      "name": "jp-library-static-desktop-layout-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30084"
+      ],
+      "port": 30084
     }
   ],
   "autoVerify": true

@@ -23,7 +23,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initRecallPassphrase();
 
+    initLogout();
+
+    // Auto-continue for a returning explorer — a "Home" link elsewhere in
+    // the app (Study Room, Adventure Room, mission hub, ...) should land
+    // back on the desktop directly, not force the login form again, since
+    // jpExplorer already identifies who's playing. No fade here (unlike
+    // finishLogin) since this isn't a "just logged in" moment.
+    const explorer = getSavedExplorer();
+
+    if(explorer){
+
+        const loginScreen = document.getElementById("login-screen");
+
+        const desktop = document.getElementById("desktop");
+
+        updateDesktop(explorer);
+
+        loginScreen.style.display = "none";
+
+        desktop.style.display = "block";
+
+    }
+
 });
+
+//======================================================
+// LOG OUT / SWITCH PROFILE — clears the saved explorer so the login
+// screen's "New Explorer" section becomes reachable again. Without this,
+// the auto-continue above would make the login form a dead end forever
+// once a profile exists (both buttons existed in the markup already but
+// had no handler at all).
+//======================================================
+
+function initLogout(){
+
+    document
+
+        .querySelectorAll(".start-item.logout, .start-item.exit")
+
+        .forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                localStorage.removeItem("jpExplorer");
+
+                window.location.reload();
+
+            });
+
+        });
+
+}
 
 //======================================================
 // SAFE READ — self-heals corrupted/legacy save data

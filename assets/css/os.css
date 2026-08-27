@@ -139,6 +139,23 @@ SEARCH
 
 }
 
+/* Brief shake when Enter/search-icon finds no matching window or page */
+.search-box input.search-no-match{
+
+    animation:searchNoMatch .3s ease;
+
+}
+
+@keyframes searchNoMatch{
+
+    0%,100%{ transform:translateX(0); }
+
+    25%{ transform:translateX(-5px); }
+
+    75%{ transform:translateX(5px); }
+
+}
+
 /*======================================================
 OPEN APPS
 ======================================================*/

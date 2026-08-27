@@ -1,4 +1,4 @@
-# Session Summary — N5 + N4 content-complete; Study Room + sentence-mission pass (last updated 2026-08-26)
+# Session Summary — N5 + N4 content-complete; Study Room + sentence-mission pass (last updated 2026-08-27)
 
 ## 1. Where things stand right now (read this first)
 
@@ -87,6 +87,71 @@ Round 2 — dashboards, XP, quiz:
     Sidebar pre-marks all completed lessons on init.
 12. **Link updates** — Mission Hub "Study Room" card → `levels-dashboard.html`; N5 Adventure Room
     HUD "Study Room" button → `levels-dashboard.html`; study-room.html back-button → `levels-dashboard.html`.
+
+### Follow-up session (2026-08-27): word-bank exercises, header dropdown, full content fidelity
+
+Three follow-on requests against the Study Room work above, driven by a PRD
+(`neko-bunko-study-room-word-bank-prd.md`) plus a recovered prior-session mockup Artifact whose
+`canvas.json` annotations recorded decisions already made (toggle = restyled link/pill, input =
+type-with-reference-chips "hybrid", replaces rather than adds to the 3 fixed exercises):
+
+1. **Word-bank sentence-builder engine** — replaced every lesson's 3 hand-written fixed exercises
+   with a closed word-bank system: each of the 16 lessons in `study-room.js` now declares its own
+   `wordBank` (categorized vocab) and a `buildWordBankExercises()` that randomly slot-fills from it
+   at build time (reusing the `pick()`/`uPick()` pattern already used for names) — never asking a
+   word the lesson hasn't taught. A new "🔒 Fixed word bank for this lesson" box in the instruction
+   panel (`buildWordBankBox()`) shows exactly what's in play; a small non-clickable reference-chip
+   row above the practice input shows the current exercise's own words (Option C "hybrid" from the
+   mockup). Grading needed no engine change — `checkAnswer()` already accepted multiple token-array
+   variants, so alt-answers (e.g. は/が where valid) are just extra `accepted` entries.
+2. **Document/Adventure header toggle** — the old single "Adventure Room" link in
+   `study-room.html`'s header is now a two-segment pill (📖 Document / 🏯 Adventure), styled with the
+   site's own CSS tokens. Still a plain page link, not a stateful in-page toggle (matches the PRD's
+   own non-goal). Scoped to `study-room.html` only — `n5-dashboard.html`'s HUD "Study Room" button is
+   a different, unrelated link (confirmed via exploration before touching anything).
+3. **Real bug found and fixed**: `showFeedback()` set the `is-visible` class but never cleared the
+   inline `style="display:none"` that `hide()` had left on the feedback box — inline styles beat
+   class rules, so Correct/Wrong/Hint messages were never actually visible, for every lesson, since
+   the word-bank feature (and the underlying Study Room work) was built. Only surfaced now because
+   this was the first time any of this code ran in a real browser — direct `click()`/DOM-state
+   verification was used throughout this session since the Browser pane here doesn't composite
+   frames (clicks via coordinates don't land; `form_input` + dispatched events + `getComputedStyle`
+   checks stood in for screenshots).
+4. **Sidebar → header dropdown** — replaced the left `.study-sidebar` lesson-list column with a
+   `<select id="studyLessonSelect">` in the header (`renderLessonPicker()`), freeing the width for
+   content. Along the way, fixed a pre-existing mobile header overflow (the XP badge was rendering
+   off-screen past 375px even before this session's changes — confirmed by testing with the toggle's
+   `flex-shrink` removed and the XP badge, which this session never touched, still overflowing) by
+   adding a `flex-wrap` rule to `.study-header` under the existing `@media (max-width: 800px)` block.
+5. **Full content fidelity** — `buildInstruction()` per lesson now returns real ported content
+   instead of the condensed 2-3-sentence summaries written in the word-bank pass: `sections` (one
+   per distinct grammar point/analogy a shelf actually covers — several have 4-8, not 1), full
+   `examples` (with romaji), a full `vocab` table, and `sources`. Extracted from
+   `LESSON_CONTENT['shelf-01']`..`['shelf-16']` in `n5-phaser-game.js` (lines 681-6317) by 3 parallel
+   Explore agents reading the whole range and returning the teaching text verbatim (prose/examples/
+   vocab/sources kept, sprite paths/coordinates/quiz-internal grading arrays dropped) — saved to
+   `shelf-content/shelf-01.md`..`shelf-16.md` for reference. Caught and fixed two small pre-existing
+   typos while porting (`じこしょくおい` → `自己紹介`, `くれい` → `きれい`). Very large enumerable sets
+   (shelf-07's number/counter drills) render as compact ranged rows, not one token per row.
+6. **Next-lesson word-bank preview** — each lesson 1-15 (16 has no next lesson) now shows 1-2
+   words/a particle from the *next* lesson in the word-bank box, marked "coming up" with its
+   meaning. Where the preview word fits grammatically into the CURRENT lesson's own sentence pattern
+   (s01, s05, s08, s09, s10, s11, s15), it's also used in a bonus exercise; where it doesn't
+   (s02/s03/s04/s06/s07/s12/s13/s14 — a different grammar point entirely, or missing prerequisite
+   vocab), it stays exposure-only, flagged inline with why rather than force-fit.
+7. **Live-verified in a real browser**, resolving the "never rendered" gap called out in §2 below for
+   the Study Room *lesson engine* specifically: all 16 lessons load with no console errors (via both
+   the dropdown and `?lesson=sXX`), word-bank exercises grade correctly including bonus/preview
+   exercises, XP awards once and the dropdown checkmark/label updates, the toggle and vocab table
+   render with correct styles, and the mobile header no longer overflows. **Not** covered by this
+   verification pass: `levels-dashboard.html`, `n5-lessons.html`, `n5-quiz.html` — untouched this
+   session, still exactly as unconfirmed as §2 already says.
+8. **Committed and pushed**, unlike this repo's usual pattern (the user normally commits their own
+   work) — done here because the user explicitly invoked a create-PR command. Branch
+   `study-room-word-bank-and-dropdown`, PR [#2](https://github.com/AnxiousPsyche/Japanese-study-hub/pull/2)
+   against `main`. The commit bundles this whole session's changes together with the previously-
+   uncommitted 2026-08-26 Study Room work (dashboards/XP/quiz/etc.) listed above, since none of it
+   had been committed yet either.
 
 ### Earlier session (2026-08-04): font/proofread/debug pass (4 user-directed tasks, completed in order, each reported separately)
 
@@ -239,12 +304,13 @@ browser, and one proofreading-scale audit. Listed in the order they happened:
 
 ## 2. What's next (not started)
 
-- **Live browser confirmation of the 2026-08-26 Study Room work** — none of it has been rendered in
-  a real browser yet (code + `node --check` only): the two-column lesson/practice split with divider,
-  the auto-generated "Your Practice Mission" block, and the `show()`/`hide()` helpers fix.
-  Also still unconfirmed: levels dashboard card layout, N5 lessons dashboard card rendering
-  (completed/available states), the 10-question quiz flow end-to-end (MC selection, type-in input,
-  XP awarding), and the `?lesson=sXX` auto-open param.
+- **Live browser confirmation of `levels-dashboard.html`/`n5-lessons.html`/`n5-quiz.html`** — still
+  unconfirmed: levels dashboard card layout, N5 lessons dashboard card rendering (completed/available
+  states), the 10-question quiz flow end-to-end (MC selection, type-in input, XP awarding).
+  (The `study-room.html` lesson engine itself — dropdown, word-bank exercises, `?lesson=sXX`,
+  the two-column split, XP awarding — **was** confirmed live in the 2026-08-27 follow-up session
+  above; the "Your Practice Mission" block it mentioned no longer exists, replaced by the word-bank
+  box.)
 - **Live browser confirmation of the newest interactive components** — the user HAS confirmed real
   browser rendering works for the game in general this session (screenshots of several LessonBox
   pages, including a clean console after the temporal-dead-zone fix), but none of the 3 new
@@ -281,23 +347,34 @@ Per the design spec's explicit "Out of Scope" section for the original build (st
 
 ## 3. How to resume
 
-The latest pushed commit is `ef1fb39` ("added study room" — Mission Hub, Study Room,
+The last commit **on `main`** is still `ef1fb39` ("added study room" — Mission Hub, Study Room,
 sentence-missions.js, the `'sentence-mission'` LessonBox page type, 4 inline N5 missions, bigger
-watermarked PDFs, homepage/index rework). **On top of that, the 2026-08-26 session's own edits are
-scoped to:** `assets/js/study-room.js` (show/hide helpers fix, typo fixes, practice-mission block,
-var→let, `?lesson=` param, XP awarding, sidebar checkmarks), `assets/js/sentence-missions.js`
-(たい-stem pairing, request-template rewrite, var→let), `assets/js/n5-phaser-game.js` (shelf-12
-mission rebuilt around て+ください, のみで→のんで, var→let in sentence-mission blocks only),
-`assets/js/lesson-box.js` (var→let in sentence-mission block only), `assets/css/study-style.css`
-(two-column split, `.practice-steps`, dashboard/quiz/XP badge styles), `pages/missions/study-room.html`
-(study-progress.js include, XP badge, levels link), plus brand-new files:
-`assets/js/study-progress.js` (shared XP/progress store), `assets/js/n5-lessons-dashboard.js`
+watermarked PDFs, homepage/index rework). Everything described in "Latest session (2026-08-26)" and
+"Follow-up session (2026-08-27)" above — dashboards, XP store, quiz, word-bank exercises, header
+dropdown, full content fidelity — is **not on `main`**: it's committed on branch
+`study-room-word-bank-and-dropdown` and open as
+[PR #2](https://github.com/AnxiousPsyche/Japanese-study-hub/pull/2). This was a one-off departure
+from the usual pattern (the user normally commits their own work for GitHub contribution tracking)
+— done because the user explicitly invoked a create-PR command; don't take it as a standing
+permission to commit/push unprompted going forward. If PR #2 has since merged, this whole paragraph
+and the branch name are stale — check `git log`/`gh pr view` rather than trusting it.
+
+That commit's scope: `assets/js/study-room.js` (rewritten — word-bank engine, header dropdown,
+full ported content, next-lesson preview; see the two session write-ups above for detail),
+`assets/js/sentence-missions.js` (たい-stem pairing, request-template rewrite, var→let),
+`assets/js/n5-phaser-game.js` (shelf-12 mission rebuilt around て+ください, のみで→のんで, var→let in
+sentence-mission blocks only), `assets/js/lesson-box.js` (var→let in sentence-mission block only),
+`assets/css/study-style.css` (word-bank box/chip/toggle/dropdown/vocab-table styles, dashboard/quiz/
+XP badge styles — the two-column split's `.practice-steps` block from 2026-08-26 no longer exists,
+replaced by the word-bank box), `pages/missions/study-room.html` (dropdown + toggle markup,
+study-progress.js include), `.claude/launch.json` (accumulated preview-port entries), plus brand-new
+files: `assets/js/study-progress.js` (shared XP/progress store), `assets/js/n5-lessons-dashboard.js`
 (lesson-card renderer), `assets/js/level-quiz.js` (10-question quiz engine),
 `pages/missions/levels-dashboard.html` (N5–N1 level cards), `pages/missions/n5-lessons.html` (16
 lesson cards + quiz card), `pages/missions/n5-quiz.html` (quiz page). Also updated link targets in
 `pages/missions/mission-hub.html` and `pages/N5/n5-dashboard.html` (both now point at
-`levels-dashboard.html`). Run `git diff` scoped to those paths to see exactly what changed since
-the push.
+`levels-dashboard.html`). Run `git diff main...study-room-word-bank-and-dropdown` (or the PR's Files
+Changed tab) to see exactly what's pending against `main`.
 
 For the earlier 2026-08-04 session: `git status` showed more modified files than just that session
 touched — a number of CSS files (`animations.css`, `main.css`, `mission.css`, `music-player.css`,

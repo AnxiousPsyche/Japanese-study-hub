@@ -364,9 +364,12 @@ function initializeWindowButtons(){
         const buttons = buttonGroup.querySelectorAll("span");
         if(buttons.length < 3) return;
 
-        // Red — close (noop for now)
+        // Red — close (immediate, no slide animation — that's minimize's
+        // job below). Reopen the same way any closed window comes back:
+        // its taskbar button, desktop shortcut, or the search box.
         buttons[0].addEventListener("click", (e) => {
             e.stopPropagation();
+            windowEl.style.display = "none";
         });
 
         // Yellow — minimize

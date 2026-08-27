@@ -59,11 +59,22 @@
             },
             buildInstruction: function () {
                 return {
-                    sections: [{
-                        title: "Essential Greetings",
-                        explain: "These 6 phrases are your survival toolkit. Memorize them and you can handle most everyday social situations.",
-                        pattern: "No pattern — just phrases to memorize!"
-                    }],
+                    sections: [
+                        {
+                            title: "Essential Greetings",
+                            explain: "These 6 phrases are your survival toolkit. Memorize them and you can handle most everyday social situations.",
+                            pattern: "No pattern — just phrases to memorize!"
+                        },
+                        {
+                            title: "When to use each one",
+                            explain: "<strong>こんにちは</strong> — used from late morning through early evening; safe with strangers, coworkers, and acquaintances, but not usually with close family or young children."
+                                + "<br><br><strong>おはようございます</strong> — used in the morning; this is the polite form (drop ございます among friends)."
+                                + "<br><br><strong>こんばんは</strong> — evening/night, once it starts getting dark, same formality as こんにちは."
+                                + "<br><br><strong>さようなら</strong> — a fairly formal goodbye that can imply you won't see the person again for a while; close friends/family usually use a casual alternative instead."
+                                + "<br><br><strong>ありがとうございます</strong> — the polite 'thank you' for strangers, shop staff, and work (drop ございます for casual thanks)."
+                                + "<br><br><strong>すみません</strong> — very versatile: apologizing, getting someone's attention, or even saying thanks when someone went out of their way for you."
+                        }
+                    ],
                     examples: [
                         { jp: "こんにちは！", en: "Hello!" },
                         { jp: "こんにちは！ありがとうございます。", en: "Hello! Thank you." },
@@ -808,6 +819,14 @@
                         {
                             title: "い-adjective past tense",
                             explain: "です/でした never attach directly to an い-adjective — the tense always lives INSIDE the adjective itself. Past affirmative: drop い, add かった (大きかったです, 'it was big'). Past negative: drop い, add くなかった (大きくなかったです, 'it was not big')."
+                        },
+                        {
+                            title: "な-adjectives (and nouns) have a 4-way copula family",
+                            explain: "Unlike い-adjectives, な-adjectives and nouns lean entirely on です/でした/じゃ for tense and negation — you already know 静かです and 静かじゃないです; じゃありません is the same negative, just more neutral/formal than じゃないです (both correct, じゃないです leans slightly casual). でした and じゃありませんでした fill in the two past forms: 静かでした ('was quiet'), 静かじゃなかったです / 静かじゃありませんでした ('was not quiet')."
+                        },
+                        {
+                            title: "The plain (casual) register: だ instead of です",
+                            explain: "Drop です down to plain speech and it becomes だ — everything else contracts the same way: 静かだ ('is quiet,' plain), 静かだった ('was quiet,' plain), 静かじゃない / 静かではない ('is not quiet,' plain), 静かじゃなかった / 静かではなかった ('was not quiet,' plain). じゃ isn't its own separate word here — it only ever shows up glued to ない, so the negative conjugates as じゃなかった, built the same drop-then-add way an い-adjective would."
                         }
                     ],
                     examples: [
@@ -817,7 +836,9 @@
                         { jp: "図書館は静かです", romaji: "Toshokan wa shizuka desu.", en: "The library is quiet." },
                         { jp: "これは便利じゃないです", romaji: "Kore wa benri ja nai desu.", en: "This isn't convenient." },
                         { jp: "あの先生は有名じゃないです", romaji: "Ano sensei wa yuumei ja nai desu.", en: "That teacher isn't famous." },
-                        { jp: "この本はとても大きいです", romaji: "Kono hon wa totemo ookii desu.", en: "This book is very big." }
+                        { jp: "この本はとても大きいです", romaji: "Kono hon wa totemo ookii desu.", en: "This book is very big." },
+                        { jp: "図書館は静かでした", romaji: "Toshokan wa shizuka deshita.", en: "The library was quiet. (past)" },
+                        { jp: "静かだ", romaji: "Shizuka da.", en: "It's quiet. (plain/casual register)" }
                     ],
                     vocab: [
                         { jp: "大きい", romaji: "ookii", en: "big" }, { jp: "小さい", romaji: "chiisai", en: "small" },
@@ -833,7 +854,11 @@
                         { jp: "いつも", romaji: "itsumo", en: "always" }, { jp: "ときどき", romaji: "tokidoki", en: "sometimes" },
                         { jp: "あまり", romaji: "amari", en: "not much (+negative)" }, { jp: "すぐに", romaji: "sugu ni", en: "right away" },
                         { jp: "まだ", romaji: "mada", en: "still/not yet" }, { jp: "もう", romaji: "mou", en: "already" },
-                        { jp: "とても", romaji: "totemo", en: "very" }
+                        { jp: "とても", romaji: "totemo", en: "very" },
+                        { jp: "静かです→静かでした", romaji: "shizuka deshita", en: "was quiet (な-adj/noun past)" },
+                        { jp: "静かじゃないです→静かじゃなかったです", romaji: "shizuka ja nakatta desu", en: "was not quiet (past negative)" },
+                        { jp: "静かです→静かだ", romaji: "shizuka da", en: "is quiet (plain/casual register)" },
+                        { jp: "静かじゃないです→静かじゃない", romaji: "shizuka ja nai", en: "is not quiet (plain/casual)" }
                     ],
                     sources: ["Tae Kim's Guide (い-adjectives, な-adjectives)", "Wasabi Japanese adjectives guide"]
                 };
@@ -1086,11 +1111,11 @@
                         },
                         {
                             title: "Ichidan — drop る, add て",
-                            explain: "Same shape as the ます-stem already known — just add て instead: 食べる→食べて, 起きる→起きて. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — 帰る (shelf 11) is one, hence 帰って not 帰て."
+                            explain: "Same shape as the ます-stem already known — just add て instead: 食べる→食べて, 起きる→起きて. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — 帰る (shelf 11) is one, hence 帰って not 帰て. A few more you'll meet later (reference only, not tested here): 入る (はいる, enter), 走る (はしる, run), 知る (しる, know), 要る (いる, need), 切る (きる, cut), 減る (へる, decrease)."
                         },
                         {
                             title: "Irregular verbs & connecting actions",
-                            explain: "Only one truly irregular pattern at this level: する-verbs swap to して the same way they swap to します (勉強する→勉強して). て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'"
+                            explain: "Only one truly irregular pattern at this level: する-verbs swap to して the same way they swap to します (勉強する→勉強して). The other classic irregular is 来る (くる, 'to come') → 来て (きて) — not taught as vocabulary in this course, but worth knowing by name since it follows no group's rule at all, same as する. て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'"
                         }
                     ],
                     examples: [
@@ -1360,6 +1385,8 @@
     let totalExercises = 0;
     let completedExercises = 0;
     let lessonScore = 0;
+    let streak = 0;
+    let bestStreak = 0;
 
     const lessons = buildLessons();
 
@@ -1411,6 +1438,8 @@
         totalExercises = currentExercises.length;
         completedExercises = 0;
         lessonScore = 0;
+        streak = 0;
+        bestStreak = 0;
         highlightActiveLesson(id);
         renderInstruction();
         show($("studyPractice"));
@@ -1590,23 +1619,26 @@
             input.classList.add("is-correct");
             completedExercises++;
             lessonScore++;
-            showFeedback("Correct! +1 point", "correct");
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
             show($("studyNextBtn"));
             hide($("studyCheckBtn"));
             hide($("studyHintBtn"));
         } else {
             attempts++;
+            streak = 0;
             input.classList.add("is-wrong");
             setTimeout(function () { input.classList.remove("is-wrong"); }, 400);
             if (attempts >= maxAttempts) {
                 input.disabled = true;
                 completedExercises++;
-                showFeedback("The answer is: <strong>" + ex.hint + "</strong>", "reveal");
+                showFeedback("&#10007; the answer was: <strong>" + ex.hint + "</strong>", "reveal");
                 show($("studyNextBtn"));
                 hide($("studyCheckBtn"));
                 hide($("studyHintBtn"));
             } else {
-                showFeedback("Wrong! " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left", "wrong");
+                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
             }
         }
     }
@@ -1644,25 +1676,35 @@
         else if (pct >= 50) msg = "Not bad! Keep practicing!";
         else msg = "Don't give up! Try again!";
 
-        let xpLine = "";
+        let xpGained = 0;
+        let alreadyDone = false;
         if (currentLesson && window.StudyProgress) {
             let result = StudyProgress.completeLesson(currentLesson.id);
-            if (result.gained > 0) {
-                xpLine = "<div class='quiz-xp-gained'>+" + result.gained + " XP earned!</div>";
-            } else {
-                xpLine = "<div class='quiz-xp-gained'>Lesson already completed before &mdash; no bonus XP.</div>";
-            }
+            xpGained = result.gained || 0;
+            alreadyDone = !(result.gained > 0);
             StudyProgress.renderXpBadges();
             refreshLessonPickerLabels();
         }
 
-        panel.innerHTML = "<div class='study-complete__icon'>&#127968;</div>"
-            + "<div class='study-complete__title'>Lesson Complete!</div>"
-            + "<div class='study-complete__msg'>" + msg + "</div>"
-            + "<div class='study-complete__score'>" + lessonScore + " / " + totalExercises + " (" + pct + "%)</div>"
-            + xpLine;
+        let lessonIdx = lessons.indexOf(currentLesson);
+        let nextLesson = lessonIdx >= 0 ? lessons[lessonIdx + 1] : null;
+
+        panel.innerHTML = "<p class='study-complete__heading'>&#9670; lesson " + (lessonIdx + 1) + " complete &mdash; " + currentLesson.title + " cleared</p>"
+            + "<p class='study-complete__msg'>" + msg + "</p>"
+            + "<div class='study-complete__tiles'>"
+            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>accuracy</p><p class='study-complete__tile-value'>" + pct + "%</p></div>"
+            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>xp earned</p><p class='study-complete__tile-value'>+" + xpGained + "</p></div>"
+            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>best streak</p><p class='study-complete__tile-value'>" + bestStreak + "</p></div>"
+            + "</div>"
+            + (alreadyDone ? "<p class='study-complete__note'>Lesson already completed before &mdash; no bonus XP.</p>" : "")
+            + (nextLesson
+                ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>&gt; continue to " + nextLesson.title + "</button>"
+                : "<p class='study-complete__note'>You've completed every lesson in the Study Room!</p>");
         panel.classList.add("is-visible");
         hide($("studyProgressFill").parentElement.parentElement);
+
+        let continueBtn = $("studyContinueBtn");
+        if (continueBtn) continueBtn.addEventListener("click", function () { openLesson(nextLesson.id); });
     }
 
     /* ===== EVENT WIRING ===== */

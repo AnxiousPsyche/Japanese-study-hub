@@ -16,6 +16,21 @@
 
     <title>JP Library OS</title>
 
+    <!-- Runs before anything paints, so a returning explorer never sees a
+         flash of the login screen before login.js's DOMContentLoaded
+         handler gets a chance to hide it — keeps "click Home" feeling
+         like a real jump straight to the desktop, not a login page that
+         happens to immediately swap itself out. -->
+    <script>
+    (function () {
+        try {
+            if (localStorage.getItem("jpExplorer")) {
+                document.documentElement.classList.add("has-saved-explorer");
+            }
+        } catch (err) { /* localStorage unavailable — fall back to the normal login screen */ }
+    })();
+    </script>
+
     <!-- =========================================
          GOOGLE FONTS
     ========================================== -->
@@ -85,12 +100,16 @@
     <link rel="stylesheet" href="assets/css/quiz.css">
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
-    <link rel="stylesheet" href="assets/css/boot.css">
     <link rel="stylesheet" href="assets/css/teleport.css">
 
     <link rel="stylesheet" href="assets/css/study-style.css">
 
     <style>
+    /* Paired with the early has-saved-explorer script above — hides the
+       login screen and shows the desktop before first paint. */
+    html.has-saved-explorer #login-screen{display:none}
+    html.has-saved-explorer #desktop{display:block}
+
     /* Mode Toggle */
     .mode-toggle{display:flex;justify-content:center;gap:0;margin:12px auto 0;position:relative;z-index:10;width:fit-content;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--bg-window);box-shadow:var(--shadow-window)}
     .mode-toggle__btn{font-family:var(--title-font);font-size:9px;padding:10px 22px;border:none;background:transparent;color:var(--text-light);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
@@ -114,12 +133,21 @@
         <div class="login-glass">
 
             <!-- =====================================
+             TITLE BAR — Windows 95-style chrome
+        ====================================== -->
+
+            <div class="login-titlebar">
+                <span>Neko Bunko OS</span>
+                <span class="login-titlebar__dots"><span></span><span></span><span></span></span>
+            </div>
+
+            <!-- =====================================
              HEADER
         ====================================== -->
 
             <div class="login-header">
 
-                <img src="assets/images/logo/JPLnewlogo.png" class="login-logo" alt="JP Library Logo">
+                <img src="assets/images/logo/JPLnewlogo.png" class="login-logo" alt="Neko Bunko Logo">
 
                 <h1 class="scroll-title">
 
@@ -304,146 +332,6 @@
                 </div>
 
             </form>
-
-        </div>
-
-    </section>
-
-    <!-- =========================================
-     BOOT SCREEN
-========================================== -->
-
-    <section id="boot-screen" class="boot-screen">
-
-        <div class="boot-window">
-
-            <div class="boot-title">
-
-                JP Library OS v1.0
-
-            </div>
-
-            <div class="boot-body">
-
-                <!-- Logo -->
-
-                <img src="assets/images/logo/JPLnewlogo.png" alt="JP Library Logo" class="boot-logo">
-
-                <h1>
-
-                    Starting System...
-
-                </h1>
-
-                <p class="boot-message">
-
-                    Initializing learning environment...
-
-                </p>
-
-                <!-- Loading Bars -->
-
-                <div class="loading-group">
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Grammar Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill grammar"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Vocabulary Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill vocabulary"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Kanji Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill kanji"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Quest Engine
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill quest"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Audio System
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill audio"></div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- Boot Status -->
-
-                <p id="boot-status-text">
-
-                    Preparing your adventure...
-
-                </p>
-
-                <!-- Boot Button -->
-
-                <button id="startBoot-btn" class="retro-btn" type="button" disabled>
-
-                    BOOTING...
-
-                </button>
-
-            </div>
 
         </div>
 
@@ -689,7 +577,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>🔥</h3>
+                                <h3><img src="assets/images/icons/pixels/flame-icon-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerStreakText">0</strong>
 
@@ -699,7 +587,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>🏆</h3>
+                                <h3><img src="assets/images/icons/pixels/award-icon-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerBadgesText">0</strong>
 
@@ -709,7 +597,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>📚</h3>
+                                <h3><img src="assets/images/icons/pixels/open-book-2-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerLessonsText">0</strong>
 
@@ -1596,8 +1484,6 @@ STUDY ROOM — Codecademy-style N5 learning
             </div>
         </div>
     </div>
-
-    <script src="assets/js/boot.js"></script>
 
     <script src="assets/js/homepage.js"></script>
 

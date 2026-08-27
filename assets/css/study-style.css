@@ -1,8 +1,40 @@
 /* ===========================================================
-   STUDY ROOM — Retro OS theme (matches existing site)
+   STUDY ROOM — CRT terminal theme
    =========================================================== */
 
-/* === Study Room Container === */
+/* Self-hosted display + body monospace faces (latin-only subsets, same
+   self-hosting rationale as lesson-box.css: Google-Fonts VT323 previously
+   fell back silently when the request was slow/blocked). Japanese glyphs
+   still come from DotGothic16, loaded via Google Fonts in study-room.html. */
+@font-face {
+    font-family: "VT323";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/VT323-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Bold.woff2") format("woff2");
+}
+
+/* === Study Room Container ===
+   NOTE: .study-room / .study-header / .xp-badge are a shared page-chrome
+   wrapper reused by levels-dashboard.html, n5-lessons.html, and n5-quiz.html
+   too — NOT exclusive to the actual lesson/practice screen. The CRT
+   terminal look must only apply where study-room.html adds the extra
+   `.is-terminal` modifier class, or it leaks the terminal palette onto the
+   pastel dashboard/lessons-list/quiz pages that share this stylesheet. */
 .study-room {
     display: none;
     position: fixed;
@@ -17,7 +49,7 @@
     display: flex;
 }
 
-/* === Study Header === */
+/* === Study Header (pastel default, shared across all Study Room pages) === */
 .study-header {
     display: flex;
     align-items: center;
@@ -111,7 +143,8 @@
     overflow: hidden;
 }
 
-/* === Header lesson picker (replaces the old left sidebar) === */
+/* === Header lesson picker (replaces the old left sidebar; study-room.html
+   only — dashboards/quiz don't render this element) === */
 .study-header__lesson-picker {
     font-family: var(--title-font);
     font-size: 9px;
@@ -132,6 +165,143 @@
     background: var(--bg-card);
 }
 
+/* ===========================================================
+   TERMINAL MODIFIER — only the actual lesson/practice screen
+   (study-room.html adds .is-terminal alongside .study-room). Redeclares
+   the palette/fonts/scanlines and every header sub-element above so the
+   CRT look never reaches the dashboards/lessons-list/quiz pages.
+   =========================================================== */
+
+/* Self-hosted display + body monospace faces (latin-only subsets, same
+   self-hosting rationale as lesson-box.css: Google-Fonts VT323 previously
+   fell back silently when the request was slow/blocked). Japanese glyphs
+   still come from DotGothic16, loaded via Google Fonts in study-room.html. */
+@font-face {
+    font-family: "VT323";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/VT323-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Bold.woff2") format("woff2");
+}
+
+.study-room.is-terminal {
+    --term-bg: #04342C;
+    --term-panel: #032821;
+    --term-border: #1D9E75;
+    --term-text: #E1F5EE;
+    --term-text-dim: #9FE1CB;
+    --term-label: #5DCAA5;
+    --term-amber: #FAC775;
+    --term-bad-border: #A32D2D;
+    --term-bad-text: #F09595;
+    --term-bad-accent: #F0997B;
+    --term-heading: #FFFFFF;
+
+    background: var(--term-bg);
+    color: var(--term-text-dim);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+}
+
+/* Subtle CRT scanlines over the terminal screen only, purely decorative */
+.study-room.is-terminal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.035) 0px,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+}
+
+.study-room.is-terminal .study-header {
+    background: var(--term-panel);
+    border-bottom: 1px solid var(--term-border);
+    border-bottom-width: 1px;
+}
+.study-header__dots {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.study-header__dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--term-label);
+    opacity: 0.55;
+}
+.study-room.is-terminal .study-header__back {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__back:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.study-room.is-terminal .study-header__title {
+    font-size: 18px;
+    color: var(--term-text);
+}
+.study-room.is-terminal .study-header__adventure-btn {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__adventure-btn:hover {
+    background: rgba(29, 158, 117, 0.2);
+    border-color: var(--term-border);
+}
+.study-room.is-terminal .study-header__toggle {
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__toggle-seg {
+    color: var(--term-label);
+}
+.study-room.is-terminal .study-header__toggle-seg:hover {
+    color: var(--term-text);
+}
+.study-room.is-terminal .study-header__toggle-seg--active,
+.study-room.is-terminal .study-header__toggle-seg--active:hover {
+    background: var(--term-border);
+    color: var(--term-bg);
+}
+.study-room.is-terminal .study-header__level {
+    color: var(--term-label);
+}
+.study-room.is-terminal .study-header__lesson-picker {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__lesson-picker:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.study-room.is-terminal .study-header__lesson-picker option {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text);
+    background: var(--term-panel);
+}
+
 /* === Main Content (Split Panel: lesson left, practice right) === */
 .study-main {
     flex: 1;
@@ -148,45 +318,44 @@
     overflow-x: hidden;
     padding: 24px 28px;
     line-height: 1.7;
-    background: var(--bg-card);
+    background: var(--term-bg);
 }
 .study-instruction h2 {
     font-family: "VT323", monospace;
-    font-size: 24px;
-    color: var(--title-bar-dark);
+    font-size: 26px;
+    color: var(--term-heading);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
     font-family: "VT323", monospace;
-    font-size: 18px;
-    color: var(--mint);
+    font-size: 19px;
+    color: var(--term-label);
     margin: 24px 0 8px;
 }
 .study-instruction p {
     margin: 0 0 12px;
-    color: var(--text-main);
+    color: var(--term-text-dim);
     font-size: 14px;
 }
 .study-instruction .grammar-box {
-    background: var(--bg-window);
-    border: 2px solid var(--border);
-    border-left: 4px solid var(--title-bar);
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-left: 3px solid var(--term-border);
     border-radius: var(--radius);
     padding: 16px 20px;
     margin: 16px 0;
-    box-shadow: var(--shadow-window);
 }
 .study-instruction .grammar-box__title {
     font-family: "VT323", monospace;
-    font-size: 16px;
-    color: var(--title-bar-dark);
+    font-size: 17px;
+    color: var(--term-heading);
     margin-bottom: 8px;
 }
 .study-instruction .grammar-box code {
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 20px;
-    color: var(--yellow);
-    background: rgba(241,210,122,0.15);
+    color: var(--term-amber);
+    background: rgba(250, 199, 117, 0.12);
     padding: 2px 8px;
     border-radius: 4px;
 }
@@ -236,48 +405,31 @@
     font-size: 16px;
     padding: 6px 14px;
     border-radius: 20px;
-    border: 2px solid;
+    border: 1px solid;
     cursor: default;
     white-space: nowrap;
     transition: transform 0.15s;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 }
 .word-bank__chip:hover {
     transform: scale(1.05);
 }
-.word-bank__chip[data-role="subject"] {
-    background: rgba(135,168,216,0.15);
-    border-color: var(--title-bar);
-    color: var(--title-bar-dark);
-}
-.word-bank__chip[data-role="particle"] {
-    background: rgba(241,210,122,0.2);
-    border-color: var(--yellow);
-    color: #b8941e;
-}
-.word-bank__chip[data-role="predicate"] {
-    background: rgba(143,184,155,0.2);
-    border-color: var(--mint);
-    color: #5a8a66;
-}
-.word-bank__chip[data-role="adjective"] {
-    background: rgba(199,184,221,0.2);
-    border-color: var(--lavender);
-    color: #7a6399;
-}
+.word-bank__chip[data-role="subject"],
+.word-bank__chip[data-role="predicate"],
+.word-bank__chip[data-role="adjective"],
 .word-bank__chip[data-role="object"] {
-    background: rgba(216,154,166,0.2);
-    border-color: var(--pink);
-    color: #a0616f;
+    background: rgba(29, 158, 117, 0.12);
+    border-color: var(--term-border);
+    color: var(--term-text);
 }
+.word-bank__chip[data-role="particle"],
 .word-bank__chip[data-role="auxiliary"] {
-    background: rgba(241,210,122,0.15);
-    border-color: var(--warning);
-    color: #9a7d2e;
+    background: rgba(250, 199, 117, 0.12);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .word-bank__hint {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     margin-top: 4px;
 }
 
@@ -295,23 +447,22 @@
 
 /* Fixed word bank box (instruction panel) */
 .word-bank-box {
-    background: var(--bg-window);
-    border: 2px solid var(--border);
-    border-left: 4px solid var(--lavender);
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-left: 3px solid var(--term-amber);
     border-radius: var(--radius);
     padding: 14px 18px;
     margin: 16px 0;
-    box-shadow: var(--shadow-window);
 }
 .word-bank-box__title {
     font-family: "VT323", monospace;
     font-size: 15px;
-    color: #7a6399;
+    color: var(--term-amber);
     margin-bottom: 6px;
 }
 .word-bank-box__category {
     font-size: 10px;
-    color: var(--text-light);
+    color: var(--term-label);
     letter-spacing: 0.5px;
     text-transform: uppercase;
     margin: 10px 0 4px;
@@ -321,7 +472,7 @@
 }
 .word-bank-box__note {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     margin: 10px 0 0;
     font-style: italic;
 }
@@ -330,18 +481,18 @@
 .word-bank-box__preview {
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px dashed var(--border);
+    border-top: 1px dashed var(--term-border);
 }
 .word-bank-box__preview-label {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     font-style: italic;
     margin-bottom: 6px;
 }
 .word-bank__chip--preview {
-    border-color: var(--yellow);
-    background: rgba(241,210,122,0.16);
-    color: #9a7d2e;
+    border-color: var(--term-amber);
+    background: rgba(250, 199, 117, 0.14);
+    color: var(--term-amber);
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
@@ -352,14 +503,14 @@
     font-family: var(--title-font);
     font-size: 7px;
     letter-spacing: 0.5px;
-    color: #9a7d2e;
+    color: var(--term-amber);
 }
 
 /* Culture-note paragraphs inside a grammar box */
 .grammar-box__culture {
     font-size: 13px;
-    color: var(--text-light);
-    background: var(--bg-card);
+    color: var(--term-text-dim);
+    background: var(--term-bg);
     border-radius: var(--radius);
     padding: 8px 12px;
     margin: 10px 0 0;
@@ -369,7 +520,7 @@
 /* Sources line under a lesson's content */
 .sources-line {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
 }
 
 /* Full vocabulary table (content-fidelity pass) */
@@ -384,21 +535,21 @@
 }
 .vocab-table td {
     padding: 5px 10px 5px 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--term-border);
     vertical-align: baseline;
     white-space: nowrap;
 }
 .vocab-table__jp {
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 17px;
-    color: var(--title-bar-dark);
+    color: var(--term-text);
 }
 .vocab-table__romaji {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
 }
 .vocab-table__en {
-    color: var(--text-main);
+    color: var(--term-text-dim);
     white-space: normal;
 }
 
@@ -416,37 +567,36 @@
 
 /* Pattern box */
 .pattern-box {
-    background: var(--bg-card);
-    border: 2px solid var(--border);
+    background: var(--term-bg);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
     padding: 14px 20px;
     margin: 12px 0;
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 20px;
-    color: var(--text-main);
+    color: var(--term-text);
     letter-spacing: 1px;
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    box-shadow: var(--shadow-window);
 }
 .pattern-box__label {
     font-size: 11px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-label);
+    font-family: "Space Mono", monospace;
     letter-spacing: 0;
     margin-right: 4px;
 }
 .pattern-box__slot {
     padding: 2px 8px;
-    background: rgba(135,168,216,0.12);
-    border: 2px dashed var(--title-bar);
+    background: rgba(29, 158, 117, 0.14);
+    border: 1px dashed var(--term-border);
     border-radius: 4px;
-    color: var(--title-bar-dark);
+    color: var(--term-text);
 }
 .pattern-box__fixed {
-    color: var(--pink);
+    color: var(--term-amber);
     font-weight: bold;
 }
 
@@ -458,29 +608,30 @@
     margin: 8px 0;
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 18px;
+    color: var(--term-text);
 }
 .example-sentence__romaji {
     font-size: 12px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-label);
+    font-family: "Space Mono", monospace;
     margin-left: 8px;
 }
 .example-sentence__english {
     font-size: 12px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-text-dim);
+    font-family: "Space Mono", monospace;
     margin-left: 4px;
 }
 
 /* === Practice Column (right — practice) === */
 .study-practice-col {
-    flex: 0 0 40%;
-    max-width: 500px;
-    min-width: 280px;
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 320px;
     display: flex;
     flex-direction: column;
-    background: var(--bg-window);
-    border-left: 2px solid var(--border-dark);
+    background: var(--term-bg);
+    border-left: 1px solid var(--term-border);
     overflow-y: auto;
 }
 
@@ -493,14 +644,13 @@
     overflow-y: auto;
 }
 .study-practice__prompt {
-    font-size: 13px;
-    color: var(--text-light);
+    color: var(--term-text);
     margin-bottom: 8px;
     font-family: "VT323", monospace;
-    font-size: 15px;
+    font-size: 17px;
 }
 .study-practice__prompt strong {
-    color: var(--title-bar-dark);
+    color: var(--term-amber);
 }
 .study-practice__input-row {
     display: flex;
@@ -513,27 +663,27 @@
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 22px;
     padding: 12px 18px;
-    background: var(--bg-card);
-    border: 2px solid var(--border);
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
-    color: var(--text-main);
+    color: var(--term-text);
     outline: none;
-    transition: border-color 0.2s;
-    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, background 0.2s;
 }
 .study-practice__input:focus {
-    border-color: var(--title-bar);
+    border-color: var(--term-text);
 }
 .study-practice__input:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 .study-practice__input.is-correct {
-    border-color: var(--success);
-    background: rgba(131,182,146,0.1);
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.14);
 }
 .study-practice__input.is-wrong {
-    border-color: var(--danger);
-    background: rgba(213,124,124,0.1);
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.14);
+    color: var(--term-bad-text);
     animation: shake 0.3s ease;
 }
 @keyframes shake {
@@ -545,53 +695,53 @@
     font-family: var(--title-font);
     font-size: 9px;
     padding: 12px 24px;
-    border: 2px solid var(--border-dark);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
 }
 .study-practice__btn:active {
-    transform: translateY(2px);
-    box-shadow: none;
+    transform: translateY(1px);
 }
 .study-practice__btn--check {
-    background: var(--title-bar);
-    color: #fff;
-    border-color: var(--title-bar-dark);
+    background: var(--term-border);
+    color: var(--term-bg);
+    border-color: var(--term-border);
 }
 .study-practice__btn--check:hover {
-    background: var(--title-bar-dark);
+    background: var(--term-text-dim);
+    border-color: var(--term-text-dim);
 }
 .study-practice__btn--check:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 .study-practice__btn--hint {
-    background: var(--bg-card);
-    color: var(--text-light);
+    background: transparent;
+    color: var(--term-text-dim);
 }
 .study-practice__btn--hint:hover {
-    background: var(--yellow);
-    color: var(--text-main);
+    background: rgba(250, 199, 117, 0.14);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .study-practice__btn--next {
-    background: var(--mint);
-    color: #fff;
-    border-color: #6a9a76;
+    background: var(--term-amber);
+    color: var(--term-bg);
+    border-color: var(--term-amber);
 }
 .study-practice__btn--next:hover {
-    background: #6a9a76;
+    background: #fdd78e;
 }
 .study-practice__btn--skip {
-    background: var(--bg-card);
-    color: var(--text-light);
-    border-color: var(--border);
+    background: transparent;
+    color: var(--term-label);
+    border-color: var(--term-label);
 }
 .study-practice__btn--skip:hover {
-    background: var(--border);
-    color: #fff;
+    background: rgba(93, 202, 165, 0.15);
+    color: var(--term-text);
 }
 
 /* Feedback */
@@ -602,31 +752,30 @@
     font-size: 13px;
     line-height: 1.5;
     display: none;
-    border: 2px solid;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.08);
+    border: 1px solid;
 }
 .study-practice__feedback.is-visible {
     display: block;
 }
 .study-practice__feedback--correct {
-    background: rgba(131,182,146,0.15);
-    border-color: var(--success);
-    color: #4a7a56;
+    background: rgba(29, 158, 117, 0.14);
+    border-color: var(--term-border);
+    color: var(--term-text-dim);
 }
 .study-practice__feedback--wrong {
-    background: rgba(213,124,124,0.15);
-    border-color: var(--danger);
-    color: #a04040;
+    background: rgba(163, 45, 45, 0.14);
+    border-color: var(--term-bad-border);
+    color: var(--term-bad-text);
 }
 .study-practice__feedback--hint {
-    background: rgba(241,210,122,0.2);
-    border-color: var(--warning);
-    color: #8a6d1e;
+    background: rgba(250, 199, 117, 0.14);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .study-practice__feedback--reveal {
-    background: rgba(199,184,221,0.2);
-    border-color: var(--lavender);
-    color: #5a4377;
+    background: rgba(240, 153, 123, 0.14);
+    border-color: var(--term-bad-accent);
+    color: var(--term-bad-accent);
 }
 
 /* Progress bar */
@@ -639,20 +788,21 @@
 .study-progress__bar {
     flex: 1;
     height: 6px;
-    background: var(--border);
+    background: var(--term-panel);
     border-radius: 3px;
     overflow: hidden;
 }
 .study-progress__fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--title-bar), var(--mint));
+    background: var(--term-border);
     border-radius: 3px;
     transition: width 0.4s ease;
 }
 .study-progress__text {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Completion overlay */
@@ -662,31 +812,72 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 14px;
     padding: 40px;
     text-align: center;
-    background: var(--bg-window);
+    background: var(--term-bg);
 }
 .study-complete.is-visible {
     display: flex;
 }
-.study-complete__icon {
-    font-size: 48px;
-}
-.study-complete__title {
+.study-complete__heading {
     font-family: "VT323", monospace;
-    font-size: 28px;
-    color: var(--mint);
+    font-size: 22px;
+    color: var(--term-amber);
+    margin: 0;
+    max-width: 420px;
 }
 .study-complete__msg {
-    color: var(--text-light);
+    color: var(--term-text-dim);
     font-size: 14px;
     max-width: 400px;
+    margin: 0;
 }
-.study-complete__score {
+.study-complete__tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+}
+.study-complete__tile {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 12px 8px;
+}
+.study-complete__tile-label {
+    font-size: 10px;
+    color: var(--term-label);
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+}
+.study-complete__tile-value {
     font-family: "VT323", monospace;
-    font-size: 20px;
-    color: var(--yellow);
+    font-size: 22px;
+    color: var(--term-text);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+.study-complete__note {
+    color: var(--term-label);
+    font-size: 12px;
+    font-style: italic;
+    margin: 0;
+}
+.study-complete__cta {
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+    color: var(--term-amber);
+    background: transparent;
+    border: 1px solid var(--term-amber);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.study-complete__cta:hover {
+    background: rgba(250, 199, 117, 0.14);
 }
 
 /* Responsive */
@@ -725,6 +916,110 @@
     border-radius: var(--radius);
     padding: 5px 12px;
     white-space: nowrap;
+}
+/* Terminal-scoped override — only the actual lesson/practice screen
+   (.study-room.is-terminal), not the pastel levels/lessons dashboards or
+   quiz page that share this class via plain .study-room. */
+.study-room.is-terminal .xp-badge {
+    color: var(--term-amber);
+    background: transparent;
+    border: 1px solid var(--term-amber);
+}
+
+/* ===========================================================
+   WIN95 MODIFIER — Windows 95 chrome for the level-picker page
+   only (levels-dashboard.html adds .is-win95 alongside .study-
+   room). Same pattern as .is-terminal above: redeclare colors/
+   fonts under the modifier so nothing leaks onto the other
+   .study-room pages (study-room.html, n5-lessons.html, n5-quiz.html)
+   that share this stylesheet.
+   =========================================================== */
+.study-room.is-win95 {
+    background-color: #017c7c;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #017c7c 0px,
+        #017c7c 3px,
+        #016969 3px,
+        #016969 6px
+    );
+    color: #222;
+    font-family: "Nunito", Tahoma, sans-serif;
+}
+.study-room.is-win95 .study-header {
+    background: linear-gradient(90deg,#000080,#1084d0);
+    border-bottom: 2px solid #6fa3ea;
+}
+.study-room.is-win95 .study-header__dots {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.study-room.is-win95 .study-header__dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.study-room.is-win95 .study-header__dots span:nth-child(1) { background: #FF8F8F; }
+.study-room.is-win95 .study-header__dots span:nth-child(2) { background: #FFD966; }
+.study-room.is-win95 .study-header__dots span:nth-child(3) { background: #8FD19E; }
+.study-room.is-win95 .study-header__back {
+    color: #fff;
+    background: rgba(0,0,0,.15);
+    border: 1px solid rgba(255,255,255,.4);
+}
+.study-room.is-win95 .study-header__back:hover {
+    background: rgba(0,0,0,.28);
+}
+.study-room.is-win95 .study-header__title {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #fff;
+}
+.study-room.is-win95 .xp-badge {
+    color: #222;
+    background: #ECE9D8;
+    border: 1px solid #fff;
+    box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+}
+.study-room.is-win95 .quiz-body {
+    background: transparent;
+}
+.study-room.is-win95 .level-card {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+    color: #222;
+}
+.study-room.is-win95 .level-card:hover:not(.is-locked) {
+    transform: none;
+    background: #F4F1E4;
+    border-color: #fff;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+}
+.study-room.is-win95 .level-card__level {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: #123a8c;
+}
+.study-room.is-win95 .level-card__desc {
+    color: #444;
+}
+.study-room.is-win95 .level-card__meta {
+    font-family: "JetBrains Mono", monospace;
+    color: #666;
+}
+.study-room.is-win95 .level-card.is-locked .level-card__level {
+    color: #888;
 }
 
 /* Level cards grid (levels dashboard) */

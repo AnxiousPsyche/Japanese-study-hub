@@ -1188,3 +1188,11 @@ window.getQuizGateStatus = getQuizGateStatus;
 window.ensureToast = ensureToast;
 window.showToast = showToast;
 window.TRIGGER_RANGE = TRIGGER_RANGE;
+
+// "Desktop" HUD button (house icon, top-left of every floor's HUD) — was
+// present in the markup on N5/N4/N3 dashboards but had no click handler
+// anywhere, so it did nothing. Shared here since all three floors load
+// this file, rather than duplicating the same one-liner per floor script.
+document.getElementById('backDesktop')?.addEventListener('click', () => {
+  window.location.href = '../../index.html';
+});

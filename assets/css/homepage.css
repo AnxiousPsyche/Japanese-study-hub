@@ -85,6 +85,14 @@ DASHBOARD ROW
 
     width:100%;
 
+    /* Same grid/flex-item "min-width:auto" content-blowout gotcha as the
+       fix below on #playerWindow/#discWindow/#questWindow, one level up:
+       .dashboard-grid is itself a grid item of .desktop-container (display:
+       grid), so without this it refused to shrink narrower than its
+       children's own max-width (560px), clipping past the viewport edge
+       on any window under ~590px wide. */
+    min-width:0;
+
     height:700px;
 
 }
@@ -95,22 +103,24 @@ DASHBOARD ROW
 
     width:220px;
 
-    left:0;
+    left:20px;
 
-    top:25px;
+    top:190px;
 
 }
 
+/* Smaller and centered — was 520px (nearly the full dashboard width);
+   260px reads as "a disc on the desktop" instead of the dashboard's
+   dominant element, and leaves the journey window below it real room. */
 #discWindow{
 
     position:absolute;
 
-    width:520px;
+    width:260px;
 
-    left:calc(50% - 260px);
+    left:calc(50% - 130px);
 
-    top:150px;
-
+    top:70px;
 
 }
 
@@ -122,7 +132,7 @@ DASHBOARD ROW
 
    right:30px;
 
-    top:160px;
+    top:110px;
 
 }
 
@@ -260,6 +270,19 @@ PLAYER WINDOW
 
 }
 
+/* container-type here is what makes the sizes below respond to the
+   PLAYER-CARD WINDOW's own resized width (drag-resized via its corner/edge
+   handles, independent of the viewport) rather than only the page's
+   viewport width — a plain vw/rem unit can't see that the window itself
+   got smaller, only cqw (container query width) can. */
+.player-card{
+
+    container-type:inline-size;
+
+    container-name:player-card;
+
+}
+
 .player-card .window-content{
 
     display:flex;
@@ -270,7 +293,7 @@ PLAYER WINDOW
 
     justify-content:flex-start;
 
-    gap:clamp(8px,1vw,16px);
+    gap:clamp(8px,4cqw,16px);
 
     width:100%;
 
@@ -284,19 +307,19 @@ PLAYER WINDOW
 
 .player-card .window-content h2{
 
-    font-size:.85rem;
+    font-size:clamp(.6rem,7cqw,.85rem);
 
 }
 
 .player-card .window-content > h3{
 
-    font-size:.7rem;
+    font-size:clamp(.5rem,6cqw,.7rem);
 
 }
 
 .player-card .window-content > p{
 
-    font-size:.6rem;
+    font-size:clamp(.45rem,5cqw,.6rem);
 
     line-height:1.7;
 
@@ -308,19 +331,34 @@ PLAYER WINDOW
 
     grid-template-columns:repeat(3,1fr);
 
-    gap:10px;
+    gap:clamp(4px,3cqw,10px);
 
     width:100%;
 
     justify-content:space-around;
 
-    margin-top:20px;
+    margin-top:clamp(8px,5cqw,20px);
 
     align-items:stretch;
 
     flex:0 1 auto;
 
-    font-size:clamp(.55rem,.75vw,.75rem);
+    font-size:clamp(.5rem,4.5cqw,.75rem);
+
+}
+
+/* Below this the 3-column grid has too little room per stat — collapse to
+   a single centered column instead of letting labels clip ("Lessons"
+   truncating to "Les" was this exact symptom). */
+@container player-card (max-width:190px){
+
+    .player-stats{
+
+        grid-template-columns:1fr;
+
+        justify-items:center;
+
+    }
 
 }
 
@@ -340,9 +378,23 @@ PLAYER WINDOW
 
 .player-stats h3{
 
-    font-size:1.4rem;
+    font-size:clamp(.85rem,9cqw,1.4rem);
 
     line-height:1;
+
+}
+
+.player-stat-icon{
+
+    width:1.4em;
+
+    height:1.4em;
+
+    object-fit:contain;
+
+    image-rendering:pixelated;
+
+    vertical-align:middle;
 
 }
 
@@ -350,7 +402,7 @@ PLAYER WINDOW
 
     color:#5B77A8;
 
-    font-size:clamp(.7rem,1.5vw,.9rem);
+    font-size:clamp(.6rem,5.5cqw,.9rem);
 }
 
 /*======================================================
@@ -597,15 +649,27 @@ QUEST WINDOW
 JOURNEY
 ======================================================*/
 
+/* position:fixed (not absolute) — bottom:Npx on an absolutely-positioned
+   element is relative to the CONTAINER's bottom edge, and #desktop/
+   .desktop-container are routinely taller than the viewport (all the
+   absolutely-positioned content stacks up real scroll height), so
+   "bottom:100px" was landing well above the visible bottom of the screen
+   depending on that total height — never reliably "the middle-bottom of
+   what's on screen". Fixed positioning is relative to the viewport
+   itself, the same reason footer-window below already uses it. */
 .journey-window{
 
-    position:absolute;
+    position:fixed;
 
-    left:50%;
+    left:0;
 
-    transform:translateX(-50%);
+    right:0;
 
-    bottom:100px;
+    margin-left:auto;
+
+    margin-right:auto;
+
+    bottom:24px;
 
     width:min(230px,52%);
 
@@ -691,13 +755,15 @@ making the footer appear un-centered and fully opaque.
 
     position:fixed;
 
-    left:50%;
+    right:20px;
 
-    bottom:70px;
+    bottom:20px;
+
+    left:auto;
 
     width:220px;
 
-    transform:translateX(-50%);
+    transform:none;
 
     z-index:50;
 
@@ -984,11 +1050,11 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
     flex-wrap:wrap;
 
-    justify-content:center;
+    justify-content:flex-start;
 
     gap:24px;
 
-    padding:20px 0 10px;
+    padding:20px 0 10px 24px;
 
     z-index:1;
 
@@ -1084,13 +1150,15 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 RESPONSIVE
 ======================================================*/
 
-@media(max-width:1200px){
-
-    #discWindow{ width:420px; }
-
-}
-
-@media(max-width:992px){
+/* #playerWindow/#discWindow/#questWindow are absolutely positioned with
+   fixed pixel widths+offsets (220px, up to 520px, 220px) — that only has
+   room between roughly 992-1300px wide, a narrow band that turned out
+   unreliable to fine-tune (a partial-shrink rule here for #discWindow
+   alone still left things clipping/overlapping in testing). Simpler and
+   more robust: widen the single breakpoint below so the tested stacked
+   layout kicks in for the whole fragile range instead of trying to make
+   the absolute-positioned 3-column layout hold together down to 992px. */
+@media(max-width:1300px){
 
     .dashboard-grid{
 
@@ -1113,6 +1181,14 @@ RESPONSIVE
         position:relative;
 
         width:100%;
+
+        /* Flex items default to min-width:auto, which lets a child's
+           intrinsic content (the disc carousel's images/track here) hold
+           the box at its content width and defeat this 100% — the classic
+           flexbox "min-width:auto" content-overflow gotcha. Without this,
+           #discWindow stayed pinned near 520px regardless of the width
+           rule above, clipping against the viewport edges as it narrowed. */
+        min-width:0;
 
         left:auto;
 

@@ -1,5 +1,5 @@
 /*======================================================
-LOGIN SECTION
+LOGIN SECTION — Windows 95-style "group box"
 ======================================================*/
 
 .login-section{
@@ -10,17 +10,17 @@ LOGIN SECTION
 
     margin-bottom:14px;
 
-    border-radius:14px;
+    background:#C0C0C0;
 
-    background:rgba(255,255,255,.06);
+    border:1px solid #808080;
 
-    border:1px solid rgba(255,255,255,.12);
+    box-shadow:inset 1px 1px 0 #fff;
 
 }
 
 
 /*======================================================
-LOGIN SCREEN
+LOGIN SCREEN — Windows 3.1 hatched-teal desktop
 ======================================================*/
 
 #login-screen{
@@ -37,23 +37,15 @@ LOGIN SCREEN
 
     align-items:center;
 
-    background:
+    background-color:#017c7c;
 
-        linear-gradient(
-
-            rgba(15,18,28,.35),
-
-            rgba(15,18,28,.45)
-
-        ),
-
-        url("../images/backgrounds/login-bg.png");
-
-    background-size:cover;
-
-    background-position:center;
-
-    background-repeat:no-repeat;
+    background-image:repeating-linear-gradient(
+        45deg,
+        #017c7c 0px,
+        #017c7c 3px,
+        #016969 3px,
+        #016969 6px
+    );
 
     overflow:hidden;
 
@@ -65,7 +57,7 @@ LOGIN SCREEN
 
 
 /*======================================================
-LOGIN CARD
+LOGIN WINDOW — Windows 95 3D-beveled chrome
 ======================================================*/
 
 .login-glass{
@@ -78,43 +70,108 @@ LOGIN CARD
 
     overflow-y:auto;
 
-    padding:26px;
+    padding:0;
 
-    border-radius:22px;
+    background:#C0C0C0;
 
-    background:rgba(255,255,255,.12);
-
-    backdrop-filter:blur(18px);
-
-    -webkit-backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.25);
+    border:2px solid #fff;
 
     box-shadow:
+        inset -2px -2px 0 #404040,
+        inset 2px 2px 0 #dfdfdf,
+        4px 4px 0 rgba(0,0,0,.4);
 
-        0 20px 60px rgba(0,0,0,.35),
-
-        inset 0 1px 0 rgba(255,255,255,.35);
-
-    animation:scrollOpen .8s ease;
+    animation:winPopIn .8s cubic-bezier(.2,1.3,.3,1) both;
 
     position:relative;
 
 }
 
-.login-glass::before{
+@media (prefers-reduced-motion: reduce){
 
-    content:"";
+    .login-glass{ animation:none; }
 
-    position:absolute;
+}
 
-    inset:0;
 
-    border-radius:inherit;
+/*======================================================
+TITLE BAR
+======================================================*/
 
-    border:1px solid rgba(255,255,255,.25);
+.login-titlebar{
 
-    pointer-events:none;
+    background:linear-gradient(90deg,#000080,#1084d0);
+
+    color:#fff;
+
+    font-family:var(--title-font);
+
+    font-size:10px;
+
+    font-weight:700;
+
+    letter-spacing:.5px;
+
+    padding:8px 10px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+.login-titlebar__dots{
+
+    display:flex;
+
+    gap:5px;
+
+}
+
+.login-titlebar__dots span{
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+}
+
+.login-titlebar__dots span:nth-child(1){ background:#FF8F8F; }
+
+.login-titlebar__dots span:nth-child(2){ background:#FFD966; }
+
+.login-titlebar__dots span:nth-child(3){ background:#8FD19E; }
+
+
+/*======================================================
+BODY PADDING (everything below the title bar)
+======================================================*/
+
+.login-header,
+
+#loginForm{
+
+    padding-left:24px;
+
+    padding-right:24px;
+
+}
+
+.login-header{
+
+    padding-top:20px;
+
+}
+
+#loginForm{
+
+    padding-bottom:22px;
 
 }
 
@@ -125,9 +182,11 @@ LOGO
 
 .login-logo{
 
-    width:56px;
+    width:48px;
 
-    margin-bottom:10px;
+    margin-bottom:8px;
+
+    image-rendering:pixelated;
 
 }
 
@@ -138,19 +197,17 @@ TITLE
 
 .scroll-title{
 
-    font-family:Eagle Lake,serif;
+    font-family:var(--login-font);
 
-    font-size:1.5rem;
+    font-weight:800;
 
-    color:white;
+    font-size:1.2rem;
+
+    color:#000;
 
     text-align:center;
 
     margin-bottom:8px;
-
-    text-shadow:
-
-        0 4px 18px rgba(0,0,0,.35);
 
 }
 
@@ -160,13 +217,13 @@ DESCRIPTION
 
 .scroll-description{
 
-    color:rgba(255,255,255,.92);
+    color:#333;
 
     text-align:center;
 
     line-height:1.5;
 
-    font-size:.9rem;
+    font-size:.85rem;
 
     margin-bottom:16px;
 
@@ -185,7 +242,7 @@ FORM
 
 
 /*======================================================
-LOGIN INPUT
+LOGIN INPUT — sunken Windows 95 field
 ======================================================*/
 
 .login-input{
@@ -202,11 +259,11 @@ LOGIN INPUT
 
     margin-bottom:6px;
 
-    color:#FFF8EE;
+    color:#000;
 
     font-weight:700;
 
-    font-size:.85rem;
+    font-size:.8rem;
 
 }
 
@@ -214,23 +271,23 @@ LOGIN INPUT
 
     width:100%;
 
-    padding:11px 14px;
+    padding:9px 12px;
 
-    border:none;
+    border:1px solid;
 
-    border-radius:10px;
+    border-color:#404040 #dfdfdf #dfdfdf #404040;
 
-    background:rgba(255,255,255,.88);
+    background:#fff;
 
-    color:#2C2C2C;
+    color:#111;
 
     font-family:var(--login-font);
 
-    font-size:.9rem;
+    font-size:.88rem;
 
     font-weight:600;
 
-    transition:.25s;
+    transition:.15s;
 
 }
 
@@ -238,11 +295,7 @@ LOGIN INPUT
 
     outline:none;
 
-    background:white;
-
-    box-shadow:
-
-        0 0 0 3px rgba(214,157,176,.35);
+    box-shadow:inset 0 0 0 1px #000080;
 
 }
 
@@ -290,7 +343,7 @@ PASSWORD FIELD (show/hide toggle)
 
     padding:0;
 
-    color:#6B6560;
+    color:#404040;
 
     cursor:pointer;
 
@@ -302,7 +355,7 @@ PASSWORD FIELD (show/hide toggle)
 
 .toggle-password:hover{
 
-    color:#2C2C2C;
+    color:#000;
 
 }
 
@@ -322,7 +375,7 @@ FORGOT PASSPHRASE
 
     padding:0;
 
-    color:#F3D9C4;
+    color:#0000EE;
 
     font-size:.78rem;
 
@@ -340,7 +393,7 @@ FORGOT PASSPHRASE
 
 .forgot-link:hover{
 
-    color:#FFF8EE;
+    color:#0000AA;
 
 }
 
@@ -350,7 +403,7 @@ FORGOT PASSPHRASE
 
     font-size:.8rem;
 
-    color:#FFE9B3;
+    color:#333;
 
     line-height:1.4;
 
@@ -363,7 +416,7 @@ FORGOT PASSPHRASE
 }
 
 /*======================================================
-DIVIDER
+DIVIDER — sunken Windows 95 separator line
 ======================================================*/
 
 .scroll-divider{
@@ -376,24 +429,29 @@ DIVIDER
 
     margin:18px 0;
 
-    color:rgba(255,255,255,.85);
+    height:2px;
 
-    font-size:1rem;
+    border-top:1px solid #808080;
 
-    letter-spacing:8px;
+    border-bottom:1px solid #fff;
+
+    font-size:0;
 
 }
+
 /*======================================================
 NEW EXPLORER
 ======================================================*/
 
 .scroll-heading{
 
-    font-family:"Eagle Lake", serif;
+    font-family:var(--login-font);
 
-    font-size:1.15rem;
+    font-weight:800;
 
-    color:#FFF8EE;
+    font-size:1rem;
+
+    color:#000080;
 
     margin-top:8px;
 
@@ -401,19 +459,15 @@ NEW EXPLORER
 
     text-align:center;
 
-    text-shadow:
-
-        0 2px 12px rgba(0,0,0,.55);
-
 }
 
 .scroll-small{
 
-    color:rgba(255,255,255,.88);
+    color:#333;
 
     line-height:1.5;
 
-    font-size:.85rem;
+    font-size:.82rem;
 
     text-align:center;
 
@@ -442,11 +496,11 @@ AVATAR
 
     margin-bottom:8px;
 
-    color:#FFF8EE;
+    color:#000;
 
     font-weight:700;
 
-    font-size:.9rem;
+    font-size:.85rem;
 
 }
 
@@ -454,19 +508,19 @@ AVATAR
 
     width:100%;
 
-    padding:10px;
+    padding:8px;
 
-    border-radius:10px;
+    border:1px solid;
 
-    border:2px dashed rgba(255,255,255,.35);
+    border-color:#404040 #dfdfdf #dfdfdf #404040;
 
-    background:rgba(255,255,255,.14);
+    background:#fff;
 
-    color:white;
+    color:#111;
 
     font-family:var(--login-font);
 
-    font-size:.85rem;
+    font-size:.8rem;
 
 }
 
@@ -476,16 +530,18 @@ AVATAR
 
     margin-top:6px;
 
-    color:rgba(255,255,255,.78);
+    color:#555;
 
-    font-size:.75rem;
+    font-size:.72rem;
 
     line-height:1.4;
 
 }
 
 /*======================================================
-BUTTON
+BUTTON — Windows 95 3D-beveled button, overrides the
+shared .retro-btn look (used elsewhere sitewide) just on
+this screen via ID specificity, so nothing else changes.
 ======================================================*/
 
 .login-button-group{
@@ -502,15 +558,33 @@ BUTTON
 
     margin-top:6px;
 
-    padding:11px;
+    padding:9px;
 
-    border-radius:10px;
+    background:#C0C0C0;
 
-    font-family:"Eagle Lake", serif;
+    border:1px solid;
 
-    font-size:.9rem;
+    border-color:#dfdfdf #404040 #404040 #dfdfdf;
 
-    letter-spacing:1px;
+    border-radius:0;
+
+    color:#000;
+
+    font-family:var(--login-font);
+
+    font-weight:700;
+
+    font-size:.85rem;
+
+    letter-spacing:.3px;
+
+}
+
+#loginButton:active,
+
+#continueButton:active{
+
+    border-color:#404040 #dfdfdf #dfdfdf #404040;
 
 }
 
@@ -519,25 +593,34 @@ BUTTON
 ANIMATION
 ======================================================*/
 
-@keyframes scrollOpen{
+@keyframes winPopIn{
 
-    from{
+    0%{
 
         opacity:0;
 
-        transform:translateY(40px) scale(.9);
+        transform:scale(.25);
 
     }
 
-    to{
+    60%{
 
         opacity:1;
 
-        transform:translateY(0) scale(1);
+        transform:scale(1.05);
+
+    }
+
+    100%{
+
+        opacity:1;
+
+        transform:scale(1);
 
     }
 
 }
+
 /*======================================================
 HIDE DESKTOP DURING LOGIN
 ======================================================*/
@@ -585,7 +668,13 @@ no internal scrolling needed
 
         max-height:95vh;
 
-        padding:14px;
+    }
+
+    .login-titlebar{
+
+        padding:6px 8px;
+
+        font-size:9px;
 
     }
 
@@ -593,11 +682,13 @@ no internal scrolling needed
 
         margin-bottom:6px;
 
+        padding-top:12px;
+
     }
 
     .login-logo{
 
-        width:40px;
+        width:36px;
 
         margin-bottom:6px;
 
@@ -605,7 +696,7 @@ no internal scrolling needed
 
     .scroll-title{
 
-        font-size:1.15rem;
+        font-size:1rem;
 
         line-height:1.3;
 
@@ -615,7 +706,7 @@ no internal scrolling needed
 
     .scroll-description{
 
-        font-size:.75rem;
+        font-size:.72rem;
 
         line-height:1.35;
 
@@ -633,7 +724,7 @@ no internal scrolling needed
 
     .scroll-heading{
 
-        font-size:.9rem;
+        font-size:.85rem;
 
         line-height:1.25;
 
@@ -645,7 +736,7 @@ no internal scrolling needed
 
     .scroll-small{
 
-        font-size:.7rem;
+        font-size:.68rem;
 
         line-height:1.25;
 
@@ -657,8 +748,6 @@ no internal scrolling needed
 
         margin:5px 0;
 
-        font-size:.85rem;
-
     }
 
     .login-input{
@@ -669,7 +758,7 @@ no internal scrolling needed
 
     .login-input label{
 
-        font-size:.72rem;
+        font-size:.7rem;
 
         line-height:1.3;
 
@@ -679,9 +768,9 @@ no internal scrolling needed
 
     .login-input input{
 
-        padding:9px 12px;
+        padding:8px 10px;
 
-        font-size:.82rem;
+        font-size:.8rem;
 
     }
 
@@ -705,7 +794,7 @@ no internal scrolling needed
 
         margin-top:5px;
 
-        font-size:.7rem;
+        font-size:.68rem;
 
     }
 
@@ -713,7 +802,7 @@ no internal scrolling needed
 
         margin-top:5px;
 
-        font-size:.7rem;
+        font-size:.68rem;
 
     }
 
@@ -727,7 +816,7 @@ no internal scrolling needed
 
     .avatar-label{
 
-        font-size:.78rem;
+        font-size:.75rem;
 
         line-height:1.3;
 
@@ -737,9 +826,9 @@ no internal scrolling needed
 
     #avatarUpload{
 
-        padding:7px;
+        padding:6px;
 
-        font-size:.75rem;
+        font-size:.72rem;
 
     }
 
@@ -759,9 +848,9 @@ no internal scrolling needed
 
     #continueButton{
 
-        padding:9px;
+        padding:8px;
 
-        font-size:.8rem;
+        font-size:.78rem;
 
         margin-top:2px;
 

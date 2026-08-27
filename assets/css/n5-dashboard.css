@@ -53,17 +53,21 @@ body{
 
     font-family:var(--body-font);
 
-    background-color:var(--bg-main);
+    /* Same dark-teal terminal palette as the Study Room (assets/css/
+       study-style.css's .study-room.is-terminal) — background only, so the
+       letterboxing around #mapFrame matches instead of showing the old
+       pastel checker. Nothing inside the Phaser canvas is touched. */
+    background-color:#04342C;
 
     background-image:
 
-        linear-gradient(45deg, var(--bg-window) 25%, transparent 25%),
+        linear-gradient(45deg, #032821 25%, transparent 25%),
 
-        linear-gradient(-45deg, var(--bg-window) 25%, transparent 25%),
+        linear-gradient(-45deg, #032821 25%, transparent 25%),
 
-        linear-gradient(45deg, transparent 75%, var(--bg-window) 75%),
+        linear-gradient(45deg, transparent 75%, #032821 75%),
 
-        linear-gradient(-45deg, transparent 75%, var(--bg-window) 75%);
+        linear-gradient(-45deg, transparent 75%, #032821 75%);
 
     background-size:32px 32px;
 

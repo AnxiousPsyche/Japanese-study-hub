@@ -1,23 +1,23 @@
-/* Mission Hub — two-door landing page */
+/* Mission Hub — two-door landing page, Windows 95 retro theme */
 
 body {
-  background: var(--bg-main);
+  background-color: #008080;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  font-family: "Nunito", Tahoma, sans-serif;
 }
 
 .hub-container {
   width: 100%;
-  max-width: 900px;
-  padding: var(--space-lg);
+  max-width: 720px;
+  padding: var(--space-lg) var(--space-md) 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
   position: relative;
   z-index: 1;
 }
@@ -28,146 +28,166 @@ body {
   text-align: center;
 }
 
-.hub-logo-icon {
-  font-size: 48px;
-  display: block;
-  margin-bottom: var(--space-sm);
-}
-
 .hub-title {
-  font-family: var(--title-font);
-  font-size: 28px;
-  color: var(--text-main);
+  font-family: "Press Start 2P", monospace;
+  font-size: 20px;
+  color: #fff;
   margin: 0;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .hub-subtitle {
-  font-family: var(--body-font);
-  font-size: 18px;
-  color: var(--text-light);
+  font-family: "Nunito", Tahoma, sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
   margin: var(--space-xs) 0 0;
 }
 
-/* ── Room Cards ─────────────────────────────────────────────── */
+/* ── Room Cards — Windows 95 3D-beveled panels ─────────────────── */
 
 .hub-rooms {
   display: flex;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   width: 100%;
   justify-content: center;
 }
 
 .hub-room {
   flex: 1;
-  max-width: 380px;
-  min-height: 340px;
-  background: var(--bg-window);
-  border: 3px solid var(--border);
-  border-radius: 18px;
-  padding: var(--space-lg) var(--space-md);
+  max-width: 320px;
+  min-height: 260px;
+  background: #ECE9D8;
+  border: 2px solid #fff;
+  box-shadow:
+    inset -2px -2px 0 #808080,
+    inset 2px 2px 0 #fff,
+    4px 4px 0 rgba(0, 0, 0, 0.35);
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   text-decoration: none;
-  color: var(--text-main);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-window);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  cursor: pointer;
+  color: #222;
+  transition: background 0.15s ease;
 }
 
 .hub-room:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
+  background: #F4F1E4;
 }
 
-.hub-room__glow {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.hub-room:hover .hub-room__glow {
-  opacity: 1;
-}
-
-.hub-room--adventure {
-  border-color: #8FB89B;
-}
-
-.hub-room--adventure:hover {
-  border-color: #6a9e76;
-}
-
-.hub-room--adventure .hub-room__glow {
-  background: radial-gradient(circle, rgba(143, 184, 155, 0.3), transparent 70%);
-}
-
-.hub-room--adventure .hub-room__icon {
-  color: #6a9e76;
-}
-
-.hub-room--study {
-  border-color: #87A8D8;
-}
-
-.hub-room--study:hover {
-  border-color: #5E7DBB;
-}
-
-.hub-room--study .hub-room__glow {
-  background: radial-gradient(circle, rgba(135, 168, 216, 0.3), transparent 70%);
-}
-
-.hub-room--study .hub-room__icon {
-  color: #5E7DBB;
+.hub-room:active {
+  box-shadow:
+    inset 2px 2px 0 #808080,
+    inset -2px -2px 0 #fff;
 }
 
 .hub-room__icon {
-  font-size: 56px;
+  font-size: 44px;
   margin-bottom: var(--space-sm);
-  transition: transform 0.25s ease;
+  color: #123a8c;
 }
 
-.hub-room:hover .hub-room__icon {
-  transform: scale(1.1);
+/* Adventure Room icon — real idle sprite-sheet animation (same asset the
+   Phaser game and character-select UI already use), not an emoji. */
+.hub-room__icon--cat {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  background-image: url("../images/icons/pixels/whitecatIdle.png");
+  background-size: 864px 48px;
+  background-repeat: no-repeat;
+  animation: catIdle 1.6s steps(18) infinite;
+}
+
+@keyframes catIdle {
+  from { background-position: 0 0; }
+  to { background-position: -864px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-room__icon--cat { animation: none; }
 }
 
 .hub-room__title {
-  font-family: var(--title-font);
-  font-size: 14px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  color: #123a8c;
   margin: 0 0 var(--space-sm);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .hub-room__desc {
-  font-family: var(--body-font);
-  font-size: 15px;
-  color: var(--text-light);
+  font-family: "Nunito", Tahoma, sans-serif;
+  font-size: 13px;
+  color: #444;
   line-height: 1.6;
   margin: 0 0 var(--space-sm);
   flex: 1;
 }
 
 .hub-room__tag {
-  font-family: var(--readable-font);
-  font-size: 12px;
-  color: var(--text-light);
-  letter-spacing: 2px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  color: #666;
+  letter-spacing: 1px;
   text-transform: uppercase;
   padding-top: var(--space-xs);
-  border-top: 1px dashed var(--border);
+  border-top: 1px solid #808080;
   width: 100%;
+}
+
+/* ── How to Play — inline instructions, same Windows 95 chrome ──── */
+
+.hub-instructions {
+  width: 100%;
+  background: #ECE9D8;
+  border: 2px solid #fff;
+  box-shadow:
+    inset -2px -2px 0 #808080,
+    inset 2px 2px 0 #fff,
+    4px 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hub-instructions__title {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #fff;
+  font-family: "Nunito", Tahoma, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.hub-instructions__body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hub-instr-block h3 {
+  font-size: 13px;
+  color: #123a8c;
+  margin: 0 0 4px;
+}
+
+.hub-instr-block p {
+  font-size: 12.5px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hub-instr-block ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.hub-instr-block li {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.7;
 }
 
 /* ── Footer ─────────────────────────────────────────────────── */
@@ -177,15 +197,15 @@ body {
 }
 
 .hub-back {
-  font-family: var(--readable-font);
-  font-size: 14px;
-  color: var(--text-light);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .hub-back:hover {
-  color: var(--text-main);
+  color: #fff;
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
@@ -199,10 +219,9 @@ body {
   .hub-room {
     max-width: 100%;
     min-height: auto;
-    padding: var(--space-md);
   }
 
   .hub-title {
-    font-size: 20px;
+    font-size: 15px;
   }
 }

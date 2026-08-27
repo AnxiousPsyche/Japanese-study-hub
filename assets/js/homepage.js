@@ -540,3 +540,81 @@ function updateHeaderClock(clockEl){
 
 }
 
+//======================================================
+// DESKTOP SEARCH — the taskbar search box had no handler
+// at all before this; matches typed text against known
+// desktop windows/pages and jumps to the best hit, the same
+// way restoreWindow() already brings a window to front when
+// its desktop icon or taskbar button is clicked.
+//======================================================
+
+const DESKTOP_SEARCH_INDEX = [
+    { keywords: ["greeting", "welcome", "home", "desktop"], run: () => restoreWindow("greetingWindow") },
+    { keywords: ["player", "status", "profile", "level", "xp", "streak", "badge"], run: () => restoreWindow("playerWindow") },
+    { keywords: ["disc", "start mission", "current disc"], run: () => restoreWindow("discWindow") },
+    { keywords: ["quest", "today"], run: () => restoreWindow("questWindow") },
+    { keywords: ["journey", "progress"], run: () => restoreWindow("journeyWindow") },
+    { keywords: ["study", "study room", "lesson", "grammar"], run: () => { window.location.href = "pages/missions/levels-dashboard.html"; } },
+    { keywords: ["adventure", "phaser", "library", "n5", "mission"], run: () => { window.location.href = "pages/N5/n5-dashboard.html"; } }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initializeDesktopSearch();
+
+});
+
+function initializeDesktopSearch(){
+
+    const input = document.getElementById("desktopSearch");
+
+    if(!input) return;
+
+    const icon = document.querySelector(".search-box .bi-search");
+
+    function runSearch(){
+
+        const query = input.value.trim().toLowerCase();
+
+        if(!query) return;
+
+        const match = DESKTOP_SEARCH_INDEX.find((entry) =>
+
+            entry.keywords.some((kw) => kw.includes(query) || query.includes(kw))
+
+        );
+
+        if(match){
+
+            match.run();
+
+            input.value = "";
+
+            input.blur();
+
+        } else {
+
+            input.classList.add("search-no-match");
+
+            setTimeout(() => input.classList.remove("search-no-match"), 400);
+
+        }
+
+    }
+
+    input.addEventListener("keydown", (e) => {
+
+        if(e.key === "Enter") runSearch();
+
+    });
+
+    if(icon){
+
+        icon.style.cursor = "pointer";
+
+        icon.addEventListener("click", runSearch);
+
+    }
+
+}
+
