@@ -1465,3 +1465,134 @@
     flex-wrap: wrap;
     margin-top: 8px;
 }
+
+/* ===========================================================
+   KANA DOJO — hiragana stroke-order tracing (kana-dojo.html).
+   Reuses .study-room.is-win95 for the page chrome (header/back link/
+   background), so only the grid + trace-viewer need new rules here.
+   =========================================================== */
+.kana-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+}
+.kana-intro {
+    max-width: 640px;
+    margin: 0 auto 24px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 14px;
+}
+.kana-grid {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.kana-grid__row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.kana-grid__tile {
+    width: 84px;
+    background: var(--bg-card);
+    border: 2px solid #fff;
+    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff;
+    border-radius: 0;
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.kana-grid__tile:hover {
+    background: #F4F1E4;
+}
+.kana-grid__tile.is-active {
+    background: var(--title-bar);
+    box-shadow: inset 2px 2px 0 #808080, inset -2px -2px 0 #fff;
+}
+.kana-grid__tile.is-active .kana-grid__char,
+.kana-grid__tile.is-active .kana-grid__romaji {
+    color: #fff;
+}
+.kana-grid__char {
+    font-family: "DotGothic16", sans-serif;
+    font-size: 26px;
+    color: var(--text-main);
+}
+.kana-grid__romaji {
+    font-family: "Nunito", sans-serif;
+    font-size: 10px;
+    color: var(--text-light);
+    text-transform: lowercase;
+}
+
+.kana-viewer {
+    display: none;
+    max-width: 420px;
+    margin: 28px auto 0;
+    background: var(--bg-card);
+    border: 2px solid #fff;
+    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,.25);
+    padding: 20px;
+    text-align: center;
+}
+.kana-viewer.is-visible {
+    display: block;
+}
+.kana-writer__svg {
+    width: 220px;
+    height: 220px;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    margin: 0 auto 14px;
+}
+.kana-writer__guide {
+    fill: none;
+    stroke: #d8d2c2;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.kana-writer__stroke {
+    fill: none;
+    stroke: var(--title-bar-dark, #1084d0);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.kana-viewer__label {
+    font-family: "VT323", monospace;
+    font-size: 26px;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+.kana-viewer__count {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+}
+.kana-viewer__controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.kana-viewer__controls button {
+    font-family: "Press Start 2P", monospace;
+    font-size: 9px;
+    padding: 10px 14px;
+    background: var(--title-bar);
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+    cursor: pointer;
+}
+.kana-viewer__controls button:active {
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
+}

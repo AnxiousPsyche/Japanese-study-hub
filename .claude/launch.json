@@ -2230,6 +2230,36 @@
         "30862"
       ],
       "port": 30862
+    },
+    {
+      "name": "jp-library-static-round11-kana-dojo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30973"
+      ],
+      "port": 30973
+    },
+    {
+      "name": "jp-library-static-round11-kana-anim-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31084"
+      ],
+      "port": 31084
+    },
+    {
+      "name": "jp-library-static-round12-kana-realdata",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31195"
+      ],
+      "port": 31195
     }
   ],
   "autoVerify": true
