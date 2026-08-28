@@ -335,7 +335,12 @@
 
 /* === Instruction Panel (left — lesson) === */
 .study-instruction {
-    flex: 1 1 0;
+    /* A fixed narrow basis rather than a proportional split — a ratio
+       (even a lopsided one) still grows with the window, and on a wide
+       desktop that read as not meaningfully thinner. Capping the width
+       outright keeps it a slim reference column regardless of screen
+       size, while .study-practice-col below takes every remaining px. */
+    flex: 0 1 300px;
     min-width: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1547,6 +1552,28 @@
     font-size: 14px;
     color: var(--text-light);
     margin-top: 28px;
+}
+/* Under the win95 skin, .kana-body/.credits-page sit directly on the
+   dark teal striped backdrop (.study-room.is-win95's own background)
+   with no white card underneath — unlike the level/lesson cards, which
+   get a cream #ECE9D8 panel first. --text-main/--text-light are dark
+   grays tuned for that light card background, so on the bare teal
+   backdrop they're barely legible. Both credits.html and kana-dojo.html
+   use is-win95 + these same classes, so this covers both. */
+.study-room.is-win95 .kana-intro,
+.study-room.is-win95 .kana-credit,
+.study-room.is-win95 .credits-page,
+.study-room.is-win95 .credits-page__intro,
+.study-room.is-win95 .credits-page__section p,
+.study-room.is-win95 .credits-page__outro {
+    color: #E4F5F1;
+}
+.study-room.is-win95 .credits-page__section h2 {
+    color: #FFD966;
+}
+.study-room.is-win95 .credits-page__section a,
+.study-room.is-win95 .kana-credit a {
+    color: #9FE0FF;
 }
 .kana-grid {
     max-width: 720px;

@@ -2400,6 +2400,46 @@
         "32749"
       ],
       "port": 32749
+    },
+    {
+      "name": "jp-library-static-round27-kanji-ux-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32860"
+      ],
+      "port": 32860
+    },
+    {
+      "name": "jp-library-static-round27-verify2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32971"
+      ],
+      "port": 32971
+    },
+    {
+      "name": "jp-library-static-round28-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33082"
+      ],
+      "port": 33082
+    },
+    {
+      "name": "jp-library-static-round28-imefix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33193"
+      ],
+      "port": 33193
     }
   ],
   "autoVerify": true

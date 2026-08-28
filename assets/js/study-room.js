@@ -2639,7 +2639,7 @@
                         }
                     ],
                     vocab: kanji.map(function (k) { return { jp: k.jp, romaji: k.on + " / " + k.kun, en: k.en }; }),
-                    sources: ["N5 Kanji Trace worksheet (assets/lesson pdf/N5_Kanji_Trace.pdf)", "KanjiVG (stroke data)", "Jisho.org"]
+                    sources: ["NihongoSensei", "KanjiVG (stroke data)", "Jisho.org"]
                 };
             }
         };
@@ -2781,15 +2781,23 @@
             });
         }
 
-        if (inst.vocab && inst.vocab.length) {
-            html += "<h3>Vocabulary</h3>" + buildVocabTable(inst.vocab);
+        /* The kanji-track lesson's own "vocab" IS its 103-entry kanji
+           list and its wordBank.kanji is that same list again — both
+           just duplicate the card gallery next to it (see kanji-cards.js)
+           and, at 103 rows, dominate the panel for no reason. Skip both
+           here; the shelf lessons still get the full vocab table + word
+           bank box. */
+        if (!currentLesson.kanjiGroup) {
+            if (inst.vocab && inst.vocab.length) {
+                html += "<h3>Vocabulary</h3>" + buildVocabTable(inst.vocab);
+            }
+            html += buildWordBankBox(currentLesson.wordBank);
         }
 
         if (inst.sources && inst.sources.length) {
             html += "<h3>Sources</h3><p class='sources-line'>" + inst.sources.join(" &middot; ") + "</p>";
         }
 
-        html += buildWordBankBox(currentLesson.wordBank);
         panel.innerHTML = html;
     }
 
