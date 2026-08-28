@@ -29,7 +29,11 @@ const QUEST_POOL = [
     { lessonId: "s13", title: "Conjugations (て-form)", desc: "Practice the て-form." },
     { lessonId: "s14", title: "Past & Negative", desc: "Talk about the past." },
     { lessonId: "s15", title: "Sentence Construction", desc: "Build a full sentence." },
-    { lessonId: "s16", title: "Particle Mastery", desc: "Practice your particles." }
+    { lessonId: "s16", title: "Particle Mastery", desc: "Practice your particles." },
+    { lessonId: "k01", title: "N5 Kanji: Numbers", desc: "Recognize a number kanji." },
+    { lessonId: "k02", title: "N5 Kanji: People & Family", desc: "Recognize a people/family kanji." },
+    { lessonId: "k03", title: "N5 Kanji: Nature & Weather", desc: "Recognize a nature/weather kanji." },
+    { lessonId: "k04", title: "N5 Kanji: Time & Calendar", desc: "Recognize a time/calendar kanji." }
 ];
 
 const QUEST_STATE_KEY = "nekoBunko.dailyQuest.v1";

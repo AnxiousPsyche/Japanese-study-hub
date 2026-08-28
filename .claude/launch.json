@@ -2290,6 +2290,86 @@
         "31528"
       ],
       "port": 31528
+    },
+    {
+      "name": "jp-library-static-round16-kanjivg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31639"
+      ],
+      "port": 31639
+    },
+    {
+      "name": "jp-library-static-round17-hud-credits",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31750"
+      ],
+      "port": 31750
+    },
+    {
+      "name": "jp-library-static-round18-kanji-lesson",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31861"
+      ],
+      "port": 31861
+    },
+    {
+      "name": "jp-library-static-round19-companion-cat",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31972"
+      ],
+      "port": 31972
+    },
+    {
+      "name": "jp-library-static-round20-tailwag-sprite",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32083"
+      ],
+      "port": 32083
+    },
+    {
+      "name": "jp-library-static-round21-kanji-groups",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32194"
+      ],
+      "port": 32194
+    },
+    {
+      "name": "jp-library-static-round22-cat-measure",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32305"
+      ],
+      "port": 32305
+    },
+    {
+      "name": "jp-library-static-round23-cat-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32416"
+      ],
+      "port": 32416
     }
   ],
   "autoVerify": true

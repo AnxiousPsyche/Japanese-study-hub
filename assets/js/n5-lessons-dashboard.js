@@ -1,5 +1,6 @@
-/* N5 Lessons Dashboard — renders the 16 shelf lesson cards + the 10-question
-   final quiz card, and marks completed lessons from the shared progress store. */
+/* N5 Lessons Dashboard — renders the 17 shelf lesson cards, the segregated
+   N5 Kanji track's own cards, and the 10-question final quiz card, marking
+   completed lessons from the shared progress store. */
 (function () {
     "use strict";
 
@@ -24,22 +25,45 @@
         { id: "s16", title: "Particle Mastery" }
     ];
 
+    /* Segregated from LESSONS above on purpose — a distinct "kanji"
+       track, not shelf-numbered — see the matching k01-k04 factories
+       + kanjiGroup flag in assets/js/study-room.js. */
+    const KANJI_LESSONS = [
+        { id: "k01", title: "N5 Kanji: Numbers" },
+        { id: "k02", title: "N5 Kanji: People & Family" },
+        { id: "k03", title: "N5 Kanji: Nature & Weather" },
+        { id: "k04", title: "N5 Kanji: Time & Calendar" }
+    ];
+
+    function makeCard(les, numLabel) {
+        const done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
+        const card = document.createElement("a");
+        card.className = "lesson-card" + (done ? " is-complete" : "");
+        card.href = "study-room.html?lesson=" + les.id;
+        card.innerHTML =
+            "<span class='lesson-card__num'>" + numLabel + "</span>"
+            + "<span class='lesson-card__title'>" + les.title + "</span>"
+            + "<span class='lesson-card__status'>"
+            + (done ? "&#10003; Complete &mdash; +50 XP earned" : "Lesson + practice &mdash; rewards 50 XP")
+            + "</span>";
+        return card;
+    }
+
     function render() {
         const grid = document.getElementById("lessonGrid");
         if (!grid) return;
 
         LESSONS.forEach((les) => {
-            const done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
-            const card = document.createElement("a");
-            card.className = "lesson-card" + (done ? " is-complete" : "");
-            card.href = "study-room.html?lesson=" + les.id;
-            card.innerHTML =
-                "<span class='lesson-card__num'>" + les.id.replace("s", "") + "</span>"
-                + "<span class='lesson-card__title'>" + les.title + "</span>"
-                + "<span class='lesson-card__status'>"
-                + (done ? "&#10003; Complete &mdash; +50 XP earned" : "Lesson + practice &mdash; rewards 50 XP")
-                + "</span>";
-            grid.appendChild(card);
+            grid.appendChild(makeCard(les, les.id.replace("s", "")));
+        });
+
+        const kanjiHeading = document.createElement("h2");
+        kanjiHeading.className = "lesson-grid__section-title";
+        kanjiHeading.textContent = "N5 Kanji";
+        grid.appendChild(kanjiHeading);
+
+        KANJI_LESSONS.forEach((les) => {
+            grid.appendChild(makeCard(les, "漢")); // shared marker instead of a shelf number
         });
 
         const quizDone = window.StudyProgress && StudyProgress.hasPassedQuiz("n5");

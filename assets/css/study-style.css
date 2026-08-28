@@ -673,6 +673,13 @@
     padding: 24px 28px;
     overflow-y: auto;
 }
+.study-practice__reminder {
+    color: var(--term-label);
+    font-size: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--term-border);
+}
 .study-practice__prompt {
     color: var(--term-text);
     margin-bottom: 8px;
@@ -1270,6 +1277,18 @@
     width: 100%;
     max-width: 1100px;
 }
+/* Segregates the N5 Kanji track visually from the shelf cards above it —
+   grid-column spans every column so it reads as a section break, not
+   another card. */
+.lesson-grid__section-title {
+    grid-column: 1 / -1;
+    font-family: "Press Start 2P", monospace;
+    font-size: 13px;
+    color: var(--text-main);
+    margin: 10px 0 -4px;
+    padding-top: 14px;
+    border-top: 2px dashed var(--border);
+}
 .lesson-card {
     position: relative;
     display: block;
@@ -1482,6 +1501,52 @@
     text-align: center;
     color: var(--text-light);
     font-size: 14px;
+}
+.kana-credit {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 11px;
+}
+.kana-credit a {
+    color: inherit;
+}
+/* Credits page (pages/missions/credits.html) — reuses .kana-body's centered
+   scroll column rather than inventing a new page shell. */
+.credits-page {
+    max-width: 640px;
+    margin: 0 auto;
+    color: var(--text-main);
+}
+.credits-page__intro {
+    color: var(--text-light);
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+.credits-page__section {
+    margin-bottom: 22px;
+}
+.credits-page__section h2 {
+    font-family: "Press Start 2P", monospace;
+    font-size: 12px;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+.credits-page__section p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+.credits-page__section a {
+    color: var(--title-bar-dark, #1084d0);
+}
+.credits-page__outro {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 28px;
 }
 .kana-grid {
     max-width: 720px;

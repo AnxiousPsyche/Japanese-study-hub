@@ -70,7 +70,8 @@
 
     function buildLessons() {
         return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07(),s08(),
-                s09(),s10(),s11(),s12(),s13(),s14(),s15(),s16()];
+                s09(),s10(),s11(),s12(),s13(),s14(),s15(),s16(),
+                k01(),k02(),k03(),k04()];
     }
 
     /* SHELF 01: Basic Greetings (phrase-only lesson) */
@@ -1547,6 +1548,170 @@
         };
     }
 
+    /* ===== N5 KANJI TRACK — segregated from the s01-s16 grammar shelves
+       (own "k##" id namespace, own <optgroup> in the lesson picker, own
+       section in the N5 Lessons dashboard) rather than numbered as more
+       shelves. Each lesson is vocab-only kanji recognition, grouped by
+       theme the same way shelf 02 was split into s02/s02b/s02c topic
+       lessons — a flat 100-kanji wall would be a worse lesson than four
+       focused ones. k01 (Numbers) reuses sounds already taught in Shelf
+       07; every group below stays this same small, closed, single-kanji
+       scope (compounds only ever appear in the worked examples, never in
+       the wordBank itself). */
+    function k01() {
+        let kanji = [
+            { jp: "一", romaji: "ichi", en: "one" }, { jp: "二", romaji: "ni", en: "two" }, { jp: "三", romaji: "san", en: "three" },
+            { jp: "四", romaji: "yon", en: "four" }, { jp: "五", romaji: "go", en: "five" }, { jp: "六", romaji: "roku", en: "six" },
+            { jp: "七", romaji: "nana", en: "seven" }, { jp: "八", romaji: "hachi", en: "eight" }, { jp: "九", romaji: "kyuu", en: "nine" },
+            { jp: "十", romaji: "juu", en: "ten" }
+        ];
+        return {
+            id: "k01", title: "N5 Kanji: Numbers", subtitle: "一〜十",
+            vocabOnly: true, kanjiGroup: true,
+            wordBank: { kanji: kanji },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "What's a kanji?",
+                            explain: "Kana (ひらがな/カタカナ) spell out sounds; kanji are whole characters borrowed from Chinese that stand for a word or idea on their own. N5 asks for around 100 of the most common ones, split across this track by theme rather than as one long list — this group starts with the ten easiest and most useful: the numbers you already learned as sounds back in Shelf 07."
+                        },
+                        {
+                            title: "The same sounds, their real characters",
+                            explain: "一 (いち), 二 (に), 三 (さん), 四 (よん), 五 (ご), 六 (ろく), 七 (なな), 八 (はち), 九 (きゅう), 十 (じゅう) — exactly the readings from Shelf 07's counters, just written the way native text actually writes them. In real Japanese, ひとつ・ふたつ style counting is one of the only places numbers routinely stay in kana; everywhere else (dates, prices, phone numbers, addresses) uses the kanji.",
+                            pattern: "No grammar pattern here — just ten characters to recognize on sight."
+                        },
+                        {
+                            title: "Reading quirks to remember",
+                            explain: "四, 七, and 九 each have a second common reading depending on context — 四 also reads し (as in 四月, April), 七 also reads しち (as in 七月, July), and 九 also reads く (as in 九月, September). This group only tests the everyday standalone readings (よん・なな・きゅう); the alternates are worth recognizing once you start seeing dates and months."
+                        }
+                    ],
+                    examples: [
+                        { jp: "二人", romaji: "futari", en: "two people (irregular reading — not \"ににん\")" },
+                        { jp: "三時", romaji: "sanji", en: "3 o'clock" },
+                        { jp: "十分", romaji: "juppun", en: "ten minutes" },
+                        { jp: "八百屋", romaji: "yaoya", en: "greengrocer (literally \"800 shop\")" }
+                    ],
+                    vocab: kanji.map(function (k) { return { jp: k.jp, romaji: k.romaji, en: k.en }; }),
+                    sources: ["Tofugu — Japanese Numbers guide", "Jisho.org"]
+                };
+            },
+            buildMatchExercises: function () { return buildMatchExercisesFromBank(this.wordBank, 6); }
+        };
+    }
+
+    function k02() {
+        let kanji = [
+            { jp: "人", romaji: "hito", en: "person" }, { jp: "子", romaji: "ko", en: "child" },
+            { jp: "女", romaji: "onna", en: "woman" }, { jp: "男", romaji: "otoko", en: "man" },
+            { jp: "父", romaji: "chichi", en: "father" }, { jp: "母", romaji: "haha", en: "mother" },
+            { jp: "友", romaji: "tomo", en: "friend" }, { jp: "名", romaji: "na", en: "name" },
+            { jp: "私", romaji: "watashi", en: "I / me" }, { jp: "生", romaji: "sei", en: "life / birth" }
+        ];
+        return {
+            id: "k02", title: "N5 Kanji: People & Family", subtitle: "人・子・女・男…",
+            vocabOnly: true, kanjiGroup: true,
+            wordBank: { kanji: kanji },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "The people around you",
+                            explain: "These ten kanji cover the words you reach for constantly: naming people, describing who's a man/woman/child, and the family terms 父/母. 人 itself is one of the most productive kanji in the whole language — it shows up standalone (a person) and glued onto other kanji as a counter/suffix (日本人, a Japanese person)."
+                        },
+                        {
+                            title: "生 — one kanji, many jobs",
+                            explain: "生 alone means \"life\" or \"birth,\" but you'll meet it constantly as part of bigger words you may already know: 先生 (sensei, teacher), 学生 (gakusei, student), 誕生日 (tanjoubi, birthday). Recognizing 生 on sight helps those compounds stop looking like random kanji soup."
+                        }
+                    ],
+                    examples: [
+                        { jp: "私の友達", romaji: "watashi no tomodachi", en: "my friend" },
+                        { jp: "男の子", romaji: "otoko no ko", en: "boy (literally \"male child\")" },
+                        { jp: "女の子", romaji: "onna no ko", en: "girl (literally \"female child\")" },
+                        { jp: "お名前は？", romaji: "onamae wa?", en: "What's your name?" }
+                    ],
+                    vocab: kanji.map(function (k) { return { jp: k.jp, romaji: k.romaji, en: k.en }; }),
+                    sources: ["Tofugu — N5 kanji guide", "Jisho.org"]
+                };
+            },
+            buildMatchExercises: function () { return buildMatchExercisesFromBank(this.wordBank, 6); }
+        };
+    }
+
+    function k03() {
+        let kanji = [
+            { jp: "山", romaji: "yama", en: "mountain" }, { jp: "川", romaji: "kawa", en: "river" },
+            { jp: "木", romaji: "ki", en: "tree" }, { jp: "花", romaji: "hana", en: "flower" },
+            { jp: "空", romaji: "sora", en: "sky" }, { jp: "雨", romaji: "ame", en: "rain" },
+            { jp: "天", romaji: "ten", en: "heaven / sky" }, { jp: "気", romaji: "ki", en: "spirit / weather" },
+            { jp: "水", romaji: "mizu", en: "water" }, { jp: "火", romaji: "hi", en: "fire" }
+        ];
+        return {
+            id: "k03", title: "N5 Kanji: Nature & Weather", subtitle: "山・川・木・花…",
+            vocabOnly: true, kanjiGroup: true,
+            wordBank: { kanji: kanji },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "The natural world",
+                            explain: "山, 川, 木, and 花 are some of the oldest, simplest kanji there are — several literally started as little pictures (山 as three mountain peaks, 木 as a trunk with branches). They're also everywhere in place names, so recognizing them helps far beyond just vocabulary."
+                        },
+                        {
+                            title: "天気 — when two kanji meet",
+                            explain: "天 (heaven/sky) and 気 (spirit) combine into 天気 (tenki), \"weather\" — neither kanji means \"weather\" alone, but together they do. 気 alone is also the second half of 元気 (genki, \"doing well\") from Shelf 01 — the same character, a different pairing, a different meaning."
+                        }
+                    ],
+                    examples: [
+                        { jp: "今日はいい天気です。", romaji: "Kyou wa ii tenki desu.", en: "The weather is nice today." },
+                        { jp: "雨が降っています。", romaji: "Ame ga futte imasu.", en: "It's raining." },
+                        { jp: "山に木がたくさんあります。", romaji: "Yama ni ki ga takusan arimasu.", en: "There are a lot of trees on the mountain." }
+                    ],
+                    vocab: kanji.map(function (k) { return { jp: k.jp, romaji: k.romaji, en: k.en }; }),
+                    sources: ["Tofugu — N5 kanji guide", "Jisho.org"]
+                };
+            },
+            buildMatchExercises: function () { return buildMatchExercisesFromBank(this.wordBank, 6); }
+        };
+    }
+
+    function k04() {
+        let kanji = [
+            { jp: "今", romaji: "ima", en: "now" }, { jp: "年", romaji: "nen", en: "year" },
+            { jp: "月", romaji: "tsuki", en: "month / moon" }, { jp: "日", romaji: "hi", en: "day / sun" },
+            { jp: "時", romaji: "ji", en: "o'clock / time" }, { jp: "間", romaji: "kan", en: "interval / space" },
+            { jp: "週", romaji: "shuu", en: "week" }, { jp: "朝", romaji: "asa", en: "morning" },
+            { jp: "昼", romaji: "hiru", en: "noon / daytime" }, { jp: "夜", romaji: "yoru", en: "night" }
+        ];
+        return {
+            id: "k04", title: "N5 Kanji: Time & Calendar", subtitle: "今・年・月・日…",
+            vocabOnly: true, kanjiGroup: true,
+            wordBank: { kanji: kanji },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Telling time, the kanji way",
+                            explain: "月 and 日 do double duty depending on what they're attached to: alone, 月 is \"moon\" and 日 is \"sun/day,\" but stack a number in front (三月, 三日) and they become \"March\" and \"the 3rd\" — the same characters Shelf 07 already touched on with 時/分. 間 rarely stands alone; you'll mostly meet it glued onto other kanji, e.g. 時間 (jikan, \"time/hours\") or 週間 (shuukan, \"week(s)\")."
+                        },
+                        {
+                            title: "Morning, noon, and night",
+                            explain: "朝 (asa), 昼 (hiru), and 夜 (yoru) carve the day into thirds and combine freely with other words: 朝ご飯 (asagohan, breakfast), 昼ご飯 (hirugohan, lunch), 今夜 (konya, tonight)."
+                        }
+                    ],
+                    examples: [
+                        { jp: "今、何時ですか。", romaji: "Ima, nanji desu ka.", en: "What time is it now?" },
+                        { jp: "来週の月曜日", romaji: "raishuu no getsuyoubi", en: "next Monday (literally \"next week's moon-day\")" },
+                        { jp: "毎朝、六時に起きます。", romaji: "Maiasa, rokuji ni okimasu.", en: "I wake up at 6 every morning." }
+                    ],
+                    vocab: kanji.map(function (k) { return { jp: k.jp, romaji: k.romaji, en: k.en }; }),
+                    sources: ["Tofugu — N5 kanji guide", "Jisho.org"]
+                };
+            },
+            buildMatchExercises: function () { return buildMatchExercisesFromBank(this.wordBank, 6); }
+        };
+    }
+
     /* ===== STATE ===== */
     let currentLesson = null;
     let currentExercises = [];
@@ -1570,6 +1735,11 @@
     /* ===== HEADER LESSON PICKER (dropdown, replaces the old sidebar list) ===== */
     function lessonOptionLabel(les) {
         let done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
+        /* Kanji-track lessons carry their theme in the title already
+           ("N5 Kanji: Numbers") — numbering them like shelves ("17. N5
+           Kanji: Numbers") would just restate the segregation the
+           optgroup below already provides. */
+        if (les.kanjiGroup) return (done ? "✓ " : "") + les.title;
         return (done ? "✓ " : "") + les.id.replace("s", "") + ". " + les.title;
     }
 
@@ -1577,12 +1747,21 @@
         let select = $("studyLessonSelect");
         if (!select) return;
         select.innerHTML = "";
+        /* Kanji lessons are a segregated track, not more numbered shelves —
+           their own <optgroup> keeps that visually true in the dropdown
+           instead of just interleaving them into the shelf sequence. */
+        let shelvesGroup = document.createElement("optgroup");
+        shelvesGroup.label = "Shelves — Grammar & Vocab";
+        let kanjiGroupEl = document.createElement("optgroup");
+        kanjiGroupEl.label = "N5 Kanji";
         lessons.forEach(function (les) {
             let opt = document.createElement("option");
             opt.value = les.id;
             opt.textContent = lessonOptionLabel(les);
-            select.appendChild(opt);
+            (les.kanjiGroup ? kanjiGroupEl : shelvesGroup).appendChild(opt);
         });
+        select.appendChild(shelvesGroup);
+        select.appendChild(kanjiGroupEl);
         select.addEventListener("change", function () { openLesson(this.value); });
     }
 
@@ -1680,7 +1859,8 @@
         topics: "Topics", questionWords: "Question Words", people: "People", things: "Things",
         names: "Names", iAdjectives: "い-Adjectives", naAdjectives: "な-Adjectives",
         adjectives: "Adjectives", verbs: "Verbs", objects: "Objects", places: "Places",
-        counters: "Counters", connectors: "Connectors", predicates: "Predicates", directions: "Directions"
+        counters: "Counters", connectors: "Connectors", predicates: "Predicates", directions: "Directions",
+        kanji: "Kanji"
     };
     const WORD_BANK_ROLES = {
         phrases: "greeting", subjects: "subject", thingSubjects: "subject",
@@ -1689,7 +1869,8 @@
         topics: "subject", questionWords: "particle", people: "subject", things: "predicate",
         names: "subject", iAdjectives: "adjective", naAdjectives: "adjective",
         adjectives: "adjective", verbs: "predicate", objects: "object", places: "object",
-        counters: "object", connectors: "particle", predicates: "predicate", directions: "object"
+        counters: "object", connectors: "particle", predicates: "predicate", directions: "object",
+        kanji: "neutral"
     };
 
     /* Renders the "Fixed word bank for this lesson" box in the instruction panel

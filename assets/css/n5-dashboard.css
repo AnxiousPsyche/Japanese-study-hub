@@ -12,15 +12,22 @@ ROOT
 
     --hud-height:90px;
 
-    /* Retheme: matches the Study Room's actual win95 taskbar look
-       (.study-room.is-win95 .study-header in study-style.css) exactly —
-       the same navy-to-blue title-bar gradient, not an approximation —
-       so the Adventure Room's HUD stops clashing with every screen
-       behind it (Choose Your Cat, the library map) that already runs a
-       dark retro palette. Was a cream/pastel-blue combo before this. */
-    --hud-bg:linear-gradient(90deg,#000080,#1084d0);
+    /* Retheme: matches the Study Room LESSON screen's green CRT terminal
+       look (.study-room.is-terminal .study-header in study-style.css)
+       exactly — same --term-panel/--term-border values, not an
+       approximation — so the Adventure Room's HUD reads as the same
+       "terminal" chrome as the rest of the dark retro palette behind it
+       (Choose Your Cat, the library map), instead of the win95 navy/blue
+       bar this used to be.  */
+    --hud-bg:#032821;
 
-    --hud-border:#6fa3ea;
+    --hud-border:#1D9E75;
+
+    --hud-text:#E1F5EE;
+
+    --hud-text-dim:#9FE1CB;
+
+    --hud-label:#5DCAA5;
 
     --hud-shadow:var(--shadow-window);
 
@@ -168,19 +175,19 @@ HUD BUTTONS
 
 .hud-btn{
 
-    border:1px solid rgba(255,255,255,.4);
+    border:1px solid var(--hud-border);
 
     border-radius:var(--radius);
 
     padding:12px 22px;
 
-    /* Same translucent-black pill the win95 Study Room taskbar uses for
-       its own nav links (.study-header__back in study-style.css) — sits
-       on the navy/blue gradient bar with no separate contrast fix
-       needed, since it's white text on near-black, not on raw blue. */
-    background:rgba(0,0,0,.15);
+    /* Same transparent/outlined pill the terminal Study Room lesson
+       screen uses for its own nav links (.study-header__back with
+       .is-terminal in study-style.css) — border-only on the dark green
+       panel, not a filled shape. */
+    background:transparent;
 
-    color:white;
+    color:var(--hud-text-dim);
 
     font-family:var(--title-font);
 
@@ -190,7 +197,7 @@ HUD BUTTONS
 
     cursor:pointer;
 
-    box-shadow:var(--shadow-window);
+    box-shadow:none;
 
     transition:var(--transition);
 
@@ -200,7 +207,9 @@ HUD BUTTONS
 
     transform:translateY(-3px);
 
-    background:rgba(0,0,0,.28);
+    background:rgba(29,158,117,.2);
+
+    color:var(--hud-text);
 
 }
 
@@ -235,7 +244,7 @@ PLAYER
 
     border-radius:50%;
 
-    border:2px solid rgba(255,255,255,.6);
+    border:2px solid var(--hud-border);
 
     object-fit:cover;
 
@@ -254,7 +263,7 @@ PLAYER NAME
 
     margin-bottom:4px;
 
-    color:#fff;
+    color:var(--hud-text);
 
 }
 
@@ -285,13 +294,13 @@ HUD ITEMS
 
     font-size:.85rem;
 
-    color:#222;
+    color:var(--hud-text);
 
-    background:#ECE9D8;
+    background:rgba(0,0,0,.2);
 
-    border:1px solid #fff;
+    border:1px solid var(--hud-border);
 
-    box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+    box-shadow:none;
 
     border-radius:var(--radius);
 
@@ -299,10 +308,10 @@ HUD ITEMS
 
 }
 
-/* Three traffic-light dots, same colors/sizing as the Study Room's
-   .study-header__dots (is-win95) — this HUD isn't part of the shared
-   .study-header markup, so the decoration is replicated here directly
-   rather than pulled in via a shared class. */
+/* Three dots, same sizing/opacity as the Study Room lesson screen's own
+   .study-header__dots — a single green tone there (only the win95 pages
+   get red/yellow/green traffic lights), so this terminal-matched HUD
+   follows suit rather than keeping the old traffic-light coloring. */
 .hud-dots{
 
     display:flex;
@@ -325,13 +334,11 @@ HUD ITEMS
 
     display:inline-block;
 
+    background:var(--hud-label);
+
+    opacity:.55;
+
 }
-
-.hud-dots span:nth-child(1){ background:#FF8F8F; }
-
-.hud-dots span:nth-child(2){ background:#FFD966; }
-
-.hud-dots span:nth-child(3){ background:#8FD19E; }
 
 
 /*======================================================

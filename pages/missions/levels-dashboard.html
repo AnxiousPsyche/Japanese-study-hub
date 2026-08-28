@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/study-style.css">
+    <link rel="stylesheet" href="../../assets/css/companion-cat.css">
 </head>
 <body>
     <div class="study-room is-win95 is-active">
@@ -26,7 +27,7 @@
                 <a href="n5-lessons.html" class="level-card">
                     <span class="level-card__level">JLPT N5</span>
                     <p class="level-card__desc">The foundations: greetings, &#12391;&#12377; patterns, particles, verbs, and the &#12390;-form.</p>
-                    <span class="level-card__meta" id="n5Meta">18 lessons + final quiz</span>
+                    <span class="level-card__meta" id="n5Meta">22 lessons + final quiz</span>
                 </a>
                 <div class="level-card is-locked">
                     <span class="level-card__level">JLPT N4</span>
@@ -59,11 +60,12 @@
         if (meta && window.StudyProgress) {
             const done = StudyProgress.lessonsCompleted();
             const quiz = StudyProgress.quizBest("n5");
-            let txt = done + " / 18 lessons complete";
+            let txt = done + " / 22 lessons complete";
             if (quiz !== null) txt += " &middot; quiz best " + quiz + "%";
             meta.innerHTML = txt;
         }
     });
     </script>
+    <script src="../../assets/js/companion-cat.js"></script>
 </body>
 </html>
