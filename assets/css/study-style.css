@@ -333,14 +333,20 @@
     overflow: hidden;
 }
 
+/* The N5 Kanji lesson's instruction panel is a thin reference column
+   next to the card gallery — study-room.js toggles this class on
+   .study-main only when the active lesson is the kanji track
+   (currentLesson.kanjiGroup), so the s01-s16 grammar shelves keep
+   their normal even split below. A fixed basis (not just a lopsided
+   ratio) is used because a ratio still grows with the window and read
+   as not meaningfully thinner on a wide desktop. */
+.study-main.is-kanji-lesson .study-instruction {
+    flex: 0 1 300px;
+}
+
 /* === Instruction Panel (left — lesson) === */
 .study-instruction {
-    /* A fixed narrow basis rather than a proportional split — a ratio
-       (even a lopsided one) still grows with the window, and on a wide
-       desktop that read as not meaningfully thinner. Capping the width
-       outright keeps it a slim reference column regardless of screen
-       size, while .study-practice-col below takes every remaining px. */
-    flex: 0 1 300px;
+    flex: 1 1 0;
     min-width: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1354,7 +1360,7 @@
 }
 .quiz-panel {
     width: 100%;
-    max-width: 640px;
+    max-width: 760px;
     background: var(--bg-window);
     border: 3px solid var(--border);
     border-radius: var(--radius);
@@ -1489,6 +1495,254 @@
     flex-wrap: wrap;
     margin-top: 8px;
 }
+
+/* ===========================================================
+   N5 FINAL QUIZ — extra question-kind chrome (level-quiz.js).
+   The five kinds (mc / kanji-reading / star / reading /
+   word-sentence) all render through the same .quiz-mc choice list;
+   these are just the per-kind "extra" blocks shown above the prompt. */
+.quiz-section-label {
+    font-family: "Space Mono", "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+
+.quiz-kanji-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 10px 0 16px;
+}
+.quiz-kanji-display__glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--title-bar-dark);
+}
+.quiz-kanji-display__meaning {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.quiz-star-sentence {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 10px 0 16px;
+}
+.quiz-star-fixed { }
+.quiz-star-blank {
+    display: inline-block;
+    min-width: 2.2em;
+    text-align: center;
+    opacity: .55;
+}
+.quiz-star-mark {
+    display: inline-block;
+    min-width: 1.4em;
+    text-align: center;
+    color: var(--danger, #c0392b);
+    font-weight: 700;
+}
+.quiz-star-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    color: #fff;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+.quiz-star-reveal {
+    margin-top: 6px;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 17px;
+    opacity: .85;
+}
+
+.quiz-passage {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--title-bar);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 10px 0 16px;
+}
+
+.quiz-word-prompt {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 16px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.quiz-word-prompt__word {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 26px;
+    color: var(--title-bar-dark);
+}
+.quiz-word-prompt__reading {
+    font-size: 13px;
+    color: var(--text-light);
+}
+.quiz-word-prompt__meaning {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.study-room.is-win95 .quiz-section-label { color: #555; }
+.study-room.is-win95 .quiz-kanji-display__glyph { color: #123a8c; }
+.study-room.is-win95 .quiz-star-sentence,
+.study-room.is-win95 .quiz-passage,
+.study-room.is-win95 .quiz-word-prompt {
+    background: #fff;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    border-radius: 0;
+}
+.study-room.is-win95 .quiz-passage { border-left: 3px solid #123a8c; }
+.study-room.is-win95 .quiz-word-prompt__word { color: #123a8c; }
+
+/* Exam sheet — every question in the current section, answered via
+   radio buttons and graded all at once on Submit. */
+.quiz-exam-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 12px 0;
+}
+.quiz-exam-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--border);
+}
+.quiz-exam-item:last-child { border-bottom: none; }
+.quiz-exam-item__num {
+    flex: 0 0 auto;
+    font-family: "VT323", monospace;
+    font-size: 18px;
+    color: var(--text-light);
+    min-width: 22px;
+}
+.quiz-exam-item__body { flex: 1; min-width: 0; }
+.quiz-exam-item__prompt {
+    font-size: 14px;
+    color: var(--text-main);
+    margin: 0 0 4px;
+}
+.quiz-exam-item .quiz-kanji-display,
+.quiz-exam-item .quiz-star-sentence,
+.quiz-exam-item .quiz-passage,
+.quiz-exam-item .quiz-word-prompt {
+    margin: 6px 0 10px;
+}
+
+.quiz-exam-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.quiz-exam-choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    font-size: 13px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+.quiz-exam-choice:hover { border-color: var(--title-bar); }
+.quiz-exam-choice input[type="radio"] { flex: 0 0 auto; accent-color: var(--title-bar); }
+.quiz-exam-choice input[type="radio"]:disabled { cursor: default; }
+/* Reviewed state: the correct choice underlines regardless of what the
+   player picked — this is the "correct answers show underlined" ask —
+   and the player's own wrong pick gets struck through in red so it's
+   clear what they answered vs. what was right. */
+.quiz-exam-choice.is-correct-answer {
+    text-decoration: underline;
+    text-decoration-color: var(--success);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    border-color: var(--success);
+    background: rgba(131,182,146,0.18);
+    color: #3a6b46;
+    font-weight: 600;
+}
+.quiz-exam-choice.is-user-wrong {
+    border-color: var(--danger);
+    background: rgba(213,124,124,0.15);
+    color: #a04040;
+    text-decoration: line-through;
+}
+.quiz-exam-item__reveal {
+    margin-top: 8px;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 16px;
+    color: var(--text-light);
+}
+.quiz-exam-item__reveal::before { content: "Full sentence: "; font-family: var(--body-font, inherit); font-size: 11px; }
+
+.quiz-exam-submit-bar {
+    position: sticky;
+    bottom: -1px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+    padding: 14px 0 2px;
+    background: var(--bg-window);
+    border-top: 1px solid var(--border);
+}
+.quiz-exam-submit-bar__status {
+    font-size: 12px;
+    color: var(--text-light);
+    flex: 1;
+}
+.quiz-exam-submit-bar .quiz-action-btn { margin-top: 0; }
+
+.study-room.is-win95 .quiz-exam-item { border-bottom-color: #b0b0b0; }
+.study-room.is-win95 .quiz-exam-choice {
+    background: #fff;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    border-radius: 0;
+}
+.study-room.is-win95 .quiz-exam-choice.is-correct-answer {
+    background: #e4f3e4;
+    border-color: #4a8f4a;
+}
+.study-room.is-win95 .quiz-exam-choice.is-user-wrong {
+    background: #f7e2e2;
+    border-color: #a04040;
+}
+.study-room.is-win95 .quiz-exam-submit-bar { background: #ECE9D8; }
 
 /* ===========================================================
    KANA DOJO — hiragana stroke-order tracing (kana-dojo.html).

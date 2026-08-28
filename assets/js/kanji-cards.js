@@ -21,6 +21,24 @@
 
     let activeModal = null;
 
+    /* User-adjustable Book Spread size — persisted so it stays put across
+       kanji and across visits, since this exists for readability (someone
+       who needs bigger text shouldn't have to redo it every card). Shared
+       by every kanji card (there's only ever one openCard() modal at a
+       time), so this one setting is effectively "for all kanji" already. */
+    const SCALE_KEY = "nekoBunko.kanjiCards.scale.v1";
+    const SCALE_MIN = 0.85, SCALE_MAX = 1.6, SCALE_STEP = 0.15;
+    function loadScale() {
+        try {
+            const n = parseFloat(localStorage.getItem(SCALE_KEY));
+            return isFinite(n) ? Math.min(SCALE_MAX, Math.max(SCALE_MIN, n)) : 1;
+        } catch (err) { return 1; }
+    }
+    function saveScale(scale) {
+        try { localStorage.setItem(SCALE_KEY, String(scale)); } catch (err) { /* privacy mode / quota — just won't persist */ }
+    }
+    let cardScale = loadScale();
+
     /* ===== Kana → romaji, so the search bar's "kanji, kana, or romaji"
        placeholder is actually true. The 103-entry kanji list only ever
        stores on'yomi/kun'yomi as kana (e.g. "エキ" / "たか") — there is
@@ -137,27 +155,30 @@
     /* The on'yomi/kun'yomi fields are often just the bare reading stem
        (行's kun is "い", not "いく" with okurigana), so a query for a
        full everyday reading like "iku" wouldn't match anything under
-       those alone. The sample words each kanji already carries (with
-       full readings + English glosses) cover exactly that gap, so they
-       go into the same searchable index — this also means an English
-       word the kanji's own `en` field doesn't happen to use (e.g. the
-       "bank"/"travel" glosses on 行's sample words) becomes findable. */
+       those alone — the sample words each kanji carries (with full
+       readings) cover exactly that gap, so their kana/romaji go into
+       the same searchable index. Their English glosses do NOT: an
+       earlier pass also indexed those, on the theory that it would
+       surface more relevant words (行's "bank"/"travel" glosses), but
+       it meant searching "mother" surfaced 父 ("father") too, since one
+       of 父's sample words is 父母 glossed "father and mother" — a
+       false match on an unrelated kanji. English search now only
+       checks the kanji's own `en` field (its actual meaning), which is
+       exactly what a search bar should be matching a kanji against. */
     function matchesQuery(k, q) {
         if (!q) return true;
         q = q.toLowerCase();
         if (k._searchIndex === undefined) {
             const kanaBits = [k.on, k.kun];
             const romajiBits = [kanaToRomaji(k.on), kanaToRomaji(k.kun)];
-            const enBits = [k.en];
             (k.words || []).forEach(function (w) {
                 kanaBits.push(w.reading);
                 romajiBits.push(kanaToRomaji(w.reading));
-                enBits.push(w.en);
             });
             k._searchIndex = {
                 kana: kanaBits.filter(Boolean).join(" "),
                 romaji: romajiBits.filter(Boolean).join(" ").toLowerCase(),
-                en: enBits.filter(Boolean).join(" ").toLowerCase()
+                en: (k.en || "").toLowerCase()
             };
         }
         const idx = k._searchIndex;
@@ -330,13 +351,14 @@
         a.panel.classList.remove("is-visible");
         a.closeBtn.classList.remove("is-visible");
         a.hint.classList.remove("is-visible");
+        a.zoom.classList.remove("is-visible");
         a.overlay.classList.remove("is-active");
         const rect = a.sourceBtn.getBoundingClientRect();
         a.card.style.top = rect.top + "px"; a.card.style.left = rect.left + "px";
         a.card.style.width = rect.width + "px"; a.card.style.height = rect.height + "px";
         const wait = immediate ? 0 : 440;
         setTimeout(function () {
-            a.card.remove(); a.panel.remove(); a.closeBtn.remove(); a.hint.remove(); a.overlay.remove();
+            a.card.remove(); a.panel.remove(); a.closeBtn.remove(); a.hint.remove(); a.zoom.remove(); a.overlay.remove();
             a.sourceBtn.classList.remove("is-source-hidden");
         }, wait);
         activeModal = null;
@@ -350,11 +372,28 @@
        getBoundingClientRect/getComputedStyle/offsetWidth all disagreed
        with it). Recomputing sidesteps the whole class of bug. */
     /* Book Spread size, confirmed 30% bigger than the original mockup
-       pass (300px/70vw cap -> 390px/91vw). */
-    function soloCenteredRect() {
-        const w = Math.min(507, window.innerWidth * 0.94), h = w * 1.35;
+       pass twice over (300px/70vw cap -> 390px/91vw -> 507px/94vw), times
+       the player's own zoom preference on top. Height is clamped to the
+       viewport (re-deriving width from it, keeping the 5:7-ish aspect)
+       so a high zoom on a short window can't push the card off-screen
+       top and bottom. */
+    function soloCenteredRect(scale) {
+        scale = scale || 1;
+        let w = Math.min(507, window.innerWidth * 0.94) * scale;
+        let h = w * 1.35;
+        const maxH = window.innerHeight * 0.92;
+        if (h > maxH) { h = maxH; w = h / 1.35; }
         const top = window.innerHeight / 2 - h / 2, left = window.innerWidth / 2 - w / 2;
         return { top: top, left: left, width: w, height: h };
+    }
+
+    /* Detail-panel width for the open Book Spread, scaled the same way,
+       but capped so the card+panel pair never exceeds the viewport width
+       (floors at 180px so it can't shrink to nothing on a tiny window). */
+    function detailPanelWidth(solo, scale) {
+        const desired = Math.min(608, window.innerWidth * 0.6) * scale;
+        const maxTotal = window.innerWidth * 0.96;
+        return Math.max(180, Math.min(desired, maxTotal - solo.width));
     }
 
     function openCard(sourceBtn, k) {
@@ -388,6 +427,21 @@
         hint.className = "kanji-tap-hint"; hint.textContent = "Tap the card to see the full write-up";
         document.body.appendChild(hint);
 
+        /* Zoom control — lets the player resize the whole Book Spread
+           (front card + the write-up panel once it's open) for
+           readability, rather than a fixed size everyone's stuck with.
+           Mirrors closeBtn's positioning approach (fixed, pinned to a
+           corner of the card) rather than living inside the card, since
+           the card's own size is exactly what it controls. */
+        const zoom = document.createElement("div");
+        zoom.className = "kanji-modal-zoom";
+        zoom.innerHTML =
+            "<button type='button' class='kanji-modal-zoom__btn kanji-modal-zoom__btn--out' aria-label='Make the card smaller'>&minus;</button>"
+            + "<span class='kanji-modal-zoom__pct'></span>"
+            + "<button type='button' class='kanji-modal-zoom__btn kanji-modal-zoom__btn--in' aria-label='Make the card bigger'>+</button>";
+        document.body.appendChild(zoom);
+        const pctEl = zoom.querySelector(".kanji-modal-zoom__pct");
+
         const stripMount = panel.querySelector(".kanji-stroke-order-mount");
         stripMount.appendChild(buildStrokeOrderStrip(k.strokes));
 
@@ -400,45 +454,83 @@
         });
 
         let detailOpen = false;
-        activeModal = { card: card, panel: panel, closeBtn: closeBtn, hint: hint, overlay: overlay, sourceBtn: sourceBtn };
+        activeModal = { card: card, panel: panel, closeBtn: closeBtn, hint: hint, zoom: zoom, overlay: overlay, sourceBtn: sourceBtn };
 
-        function positionClose(top, left, width) {
-            closeBtn.style.top = (top - 15) + "px";
-            closeBtn.style.left = (left + width - 15) + "px";
+        /* Single source of truth for where everything sits, so opening
+           the write-up and changing the zoom level go through the exact
+           same math instead of two slightly-different copies of it. With
+           the panel closed, the card alone is centered. With it open,
+           the CARD shifts left so the card+panel pair — the whole Book
+           Spread, not just the card — is what ends up centered; leaving
+           the card at its solo-centered spot and only appending the
+           panel to its right (the previous behavior) made the combined
+           spread lean right of true center by half the panel's width. */
+        function layout(opts) {
+            const animate = !opts || opts.animate !== false;
+            const solo = soloCenteredRect(cardScale);
+            /* Growing the box alone doesn't help anyone read it better —
+               every font-size in kanji-cards.css under .kanji-card-modal/
+               .kanji-detail-panel is anchored to this custom property
+               (calc(16px * var(--zoom)) em base), so the glyph, readings,
+               sample words, and stroke labels all scale right along with
+               the box the player resized. */
+            card.style.setProperty("--zoom", cardScale);
+            panel.style.setProperty("--zoom", cardScale);
+            if (detailOpen) {
+                const pw = detailPanelWidth(solo, cardScale);
+                const spreadLeft = window.innerWidth / 2 - (solo.width + pw) / 2;
+                card.style.top = solo.top + "px"; card.style.left = spreadLeft + "px";
+                card.style.width = solo.width + "px"; card.style.height = solo.height + "px";
+                panel.style.top = solo.top + "px";
+                panel.style.left = (spreadLeft + solo.width) + "px";
+                panel.style.height = solo.height + "px";
+                if (animate) panel.getBoundingClientRect(); // force reflow before growing from 0
+                const setPanelWidth = function () { panel.style.width = pw + "px"; panel.classList.add("is-visible"); };
+                if (animate) afterReflow(setPanelWidth); else setPanelWidth();
+                closeBtn.style.top = (solo.top - 15) + "px";
+                closeBtn.style.left = (spreadLeft + solo.width + pw - 15) + "px";
+                zoom.style.top = (solo.top - 15) + "px";
+                zoom.style.left = spreadLeft + "px";
+            } else {
+                card.style.top = solo.top + "px"; card.style.left = solo.left + "px";
+                card.style.width = solo.width + "px"; card.style.height = solo.height + "px";
+                panel.style.width = "0px";
+                panel.classList.remove("is-visible");
+                closeBtn.style.top = (solo.top - 15) + "px";
+                closeBtn.style.left = (solo.left + solo.width - 15) + "px";
+                zoom.style.top = (solo.top - 15) + "px";
+                zoom.style.left = solo.left + "px";
+            }
+            pctEl.textContent = Math.round(cardScale * 100) + "%";
+        }
+
+        function changeScale(delta) {
+            cardScale = Math.min(SCALE_MAX, Math.max(SCALE_MIN, +(cardScale + delta).toFixed(2)));
+            saveScale(cardScale);
+            layout();
         }
 
         card.getBoundingClientRect(); // force reflow so the entrance transition plays
         afterReflow(function () {
-            const solo = soloCenteredRect();
-            card.style.top = solo.top + "px"; card.style.left = solo.left + "px";
-            card.style.width = solo.width + "px"; card.style.height = solo.height + "px";
-            positionClose(solo.top, solo.left, solo.width);
-            setTimeout(function () { closeBtn.classList.add("is-visible"); hint.classList.add("is-visible"); }, 300);
+            layout();
+            setTimeout(function () {
+                closeBtn.classList.add("is-visible");
+                hint.classList.add("is-visible");
+                zoom.classList.add("is-visible");
+            }, 300);
         });
 
         card.addEventListener("click", function () {
             detailOpen = !detailOpen;
-            const solo = soloCenteredRect();
-            if (detailOpen) {
-                const pw = Math.min(608, window.innerWidth * 0.6);
-                panel.style.top = solo.top + "px";
-                panel.style.left = solo.left + solo.width + "px";
-                panel.style.width = "0px";
-                panel.style.height = solo.height + "px";
-                panel.getBoundingClientRect();
-                afterReflow(function () {
-                    panel.style.width = pw + "px";
-                    panel.classList.add("is-visible");
-                    positionClose(solo.top, solo.left + solo.width, pw);
-                });
-                hint.textContent = "Tap the card to close the write-up";
-                player.play();
-            } else {
-                panel.style.width = "0px";
-                panel.classList.remove("is-visible");
-                positionClose(solo.top, solo.left, solo.width);
-                hint.textContent = "Tap the card to see the full write-up";
-            }
+            layout();
+            hint.textContent = detailOpen ? "Tap the card to close the write-up" : "Tap the card to see the full write-up";
+            if (detailOpen) player.play();
+        });
+        zoom.querySelector(".kanji-modal-zoom__btn--out").addEventListener("click", function (e) {
+            e.stopPropagation(); changeScale(-SCALE_STEP);
+        });
+        zoom.querySelector(".kanji-modal-zoom__btn--in").addEventListener("click", function (e) {
+            e.stopPropagation(); changeScale(SCALE_STEP);
         });
         closeBtn.addEventListener("click", function (e) { e.stopPropagation(); closeModal(false); });
         overlay.addEventListener("click", function () { closeModal(false); });
@@ -513,9 +605,18 @@
         function check() {
             if (!current) return;
             if (checked) { nextKanji(); return; }
-            const accepted = readingVariants(current.on).concat(readingVariants(current.kun));
+            const core = readingVariants(current.on).concat(readingVariants(current.kun));
+            /* Only accepting the bare on'yomi/kun'yomi stem meant a
+               real, correct reading like "hairu" (入る) or "ireru"
+               (入れる) — the actual words the stem "はい"/"い" is short
+               for — was marked wrong just for including okurigana. Any
+               of this kanji's sample words' full readings count too. */
+            const words = (current.words || []).map(function (w) {
+                return { reading: toHiragana(w.reading), jp: w.jp, en: w.en };
+            });
             const answer = toHiragana(inputEl.value.trim());
-            const correct = answer !== "" && accepted.indexOf(answer) !== -1;
+            const matchedWord = words.find(function (w) { return w.reading === answer; });
+            const correct = answer !== "" && (core.indexOf(answer) !== -1 || !!matchedWord);
             checked = true;
             attemptCount++;
             if (correct) correctCount++;
@@ -523,8 +624,9 @@
             inputEl.classList.add(correct ? "is-correct" : "is-wrong");
             feedbackEl.classList.toggle("is-correct", correct);
             feedbackEl.innerHTML = (correct ? "Correct! " : "Not quite. ")
-                + "Reading" + (accepted.length > 1 ? "s" : "") + ": "
-                + "<span class='kanji-quiz__answer'>" + accepted.join("、") + "</span>";
+                + "Reading" + (core.length > 1 ? "s" : "") + ": "
+                + "<span class='kanji-quiz__answer'>" + core.join("、") + "</span>"
+                + (matchedWord ? " <span class='kanji-quiz__note'>(via " + matchedWord.jp + " — " + matchedWord.en + ")</span>" : "");
             checkBtn.textContent = "Next →";
             scoreEl.textContent = correctCount + " / " + attemptCount + " correct";
         }

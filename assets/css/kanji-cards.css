@@ -117,7 +117,17 @@
     transition: top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1),
                 width .42s cubic-bezier(.2,.85,.3,1), height .42s cubic-bezier(.2,.85,.3,1);
 }
-.kanji-card-modal .kanji-card__glyph { font-size: 92px; }
+/* --zoom is set inline by kanji-cards.js (card.style.setProperty /
+   panel.style.setProperty) from the player's chosen Book Spread size.
+   Growing .kanji-card-modal/.kanji-detail-panel's own box via top/left/
+   width/height (see soloCenteredRect() in the JS) only makes the
+   *container* bigger — every font-size below used to be a fixed px
+   value, so the actual glyph/reading/gloss text never got any easier
+   to read no matter how far the box grew. Anchoring every text size
+   here to em (relative to the calc(16px * var(--zoom)) base set on the
+   two zoom roots) means the whole write-up's text scales with it. */
+.kanji-card-modal { font-size: calc(16px * var(--zoom, 1)); }
+.kanji-card-modal .kanji-card__glyph { font-size: 5.75em; }
 
 .kanji-detail-panel {
     position: fixed; z-index: 4001;
@@ -133,10 +143,24 @@
 .kanji-detail-panel__inner {
     height: 100%;
     overflow-y: auto;
-    padding: 18px 20px;
+    padding: 1.125em 1.25em;
     font-family: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+    font-size: calc(16px * var(--zoom, 1));
     color: #2c2313;
+    /* Firefox: track a shade of the card's own cream, thumb its own
+       brown border color — the default gray scrollbar clashed with the
+       museum-card palette everywhere else in this panel. */
+    scrollbar-width: thin;
+    scrollbar-color: #a68f5f #e7dabf;
 }
+.kanji-detail-panel__inner::-webkit-scrollbar { width: 10px; }
+.kanji-detail-panel__inner::-webkit-scrollbar-track { background: #e7dabf; }
+.kanji-detail-panel__inner::-webkit-scrollbar-thumb {
+    background: #a68f5f;
+    border: 2px solid #e7dabf;
+    border-radius: 6px;
+}
+.kanji-detail-panel__inner::-webkit-scrollbar-thumb:hover { background: #8a7350; }
 
 .kanji-card__back-head {
     display: flex; align-items: baseline; gap: 12px;
@@ -144,40 +168,42 @@
 }
 .kanji-card__back-glyph {
     font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    font-size: 30px; font-weight: 700;
+    font-size: 1.875em; font-weight: 700;
 }
-.kanji-card__back-meaning { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; opacity: .75; }
+.kanji-card__back-meaning { font-size: 0.75em; text-transform: uppercase; letter-spacing: .05em; opacity: .75; }
 .kanji-card__reading { margin-bottom: 10px; }
-.kanji-card__reading-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__reading-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
 .kanji-card__reading-value {
     font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    font-size: 15px; font-weight: 500;
+    font-size: 0.9375em; font-weight: 500;
 }
 .kanji-card__words {
     margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896;
     display: flex; flex-direction: column; gap: 7px;
 }
-.kanji-card__words-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
-.kanji-card__word { font-size: 12px; }
+.kanji-card__words-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__word { font-size: 0.75em; }
 .kanji-card__word-jp {
     font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    font-size: 14px; margin-right: 6px;
+    font-size: 0.875em; margin-right: 6px;
 }
 .kanji-card__word-reading { opacity: .65; margin-right: 6px; }
 .kanji-card__word-en { opacity: .8; }
 
 .kanji-card__stroke-block { margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896; }
 .kanji-card__stroke-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.kanji-card__stroke-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 8px; }
+.kanji-card__stroke-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 8px; }
 .kanji-card__stroke-head .kanji-card__stroke-label { margin-bottom: 0; }
 .kanji-replay-btn {
-    all: unset; font-family: "Space Mono", monospace; font-size: 10px; cursor: pointer;
+    all: unset; font-family: "Space Mono", monospace; font-size: 0.625em; cursor: pointer;
     padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; opacity: .7; color: #2c2313;
 }
 .kanji-replay-btn:hover { opacity: 1; }
 
 /* Stroke-order strip — jisho.org-style progressive reference, identical
-   technique to Kana Dojo's .kana-stroke-order-strip (kana-writer.js). */
+   technique to Kana Dojo's .kana-stroke-order-strip (kana-writer.js).
+   Sized in em too (rather than just the text) so the whole reference
+   strip grows in step with the rest of the zoomed write-up. */
 .kanji-stroke-order-strip {
     display: flex;
     flex-wrap: nowrap;
@@ -187,8 +213,8 @@
 }
 .kanji-stroke-order-frame {
     flex: 0 0 auto;
-    width: 34px;
-    height: 34px;
+    width: 2.125em;
+    height: 2.125em;
     background:
         linear-gradient(to right, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
         linear-gradient(to bottom, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
@@ -200,10 +226,20 @@
 .kanji-stroke-order-frame__stroke--prior { stroke: #b7b0a0; }
 .kanji-stroke-order-frame__stroke--current { stroke: #2c2313; }
 .kanji-stroke-order-frame__dot { fill: #a23e34; }
-.kanji-stroke-order-frame--complete { background: none; border: none; width: 40px; height: 40px; margin-left: 4px; }
+.kanji-stroke-order-frame--complete { background: none; border: none; width: 2.5em; height: 2.5em; margin-left: 4px; }
 
 /* Animated stroke player — dash-offset "line draws itself," same
-   technique as Kana Dojo's kana-writer.js. */
+   technique as Kana Dojo's kana-writer.js. Deliberately pinned to a
+   fixed size (NOT em/percentage-based like everything else in this
+   panel) so it stays put as the player resizes the Book Spread bigger
+   for readability — the animation's value isn't in being bigger, and
+   letting it balloon along with the panel just wastes space that could
+   go to the readings/words text instead. margin:auto keeps it centered
+   as the panel grows wider around it. */
+.kanji-stroke-player-mount {
+    max-width: 240px;
+    margin: 0 auto;
+}
 .kanji-stroke-player__svg {
     width: 100%;
     aspect-ratio: 1;
@@ -216,7 +252,7 @@
 .kanji-stroke-player__dot.is-active { opacity: 1; }
 .kanji-stroke-player__dot.is-done { opacity: 0.55; }
 .kanji-stroke-player__dot circle { r: 4.4; fill: #a23e34; }
-.kanji-stroke-player__dot text { font-size: 6px; fill: #fff; text-anchor: middle; dominant-baseline: central; font-family: "Space Mono", monospace; }
+.kanji-stroke-player__dot text { font-size: 0.375em; fill: #fff; text-anchor: middle; dominant-baseline: central; font-family: "Space Mono", monospace; }
 
 .kanji-modal-close {
     all: unset;
@@ -229,6 +265,37 @@
     opacity: 0; transition: opacity 0.2s ease;
 }
 .kanji-modal-close.is-visible { opacity: 1; }
+
+/* Zoom control — pinned to the card's opposite (top-left) corner from
+   the close button, same fixed-fade-in treatment. */
+.kanji-modal-zoom {
+    position: fixed; z-index: 4002;
+    display: flex; align-items: center; gap: 2px;
+    height: 30px; padding: 0 6px;
+    background: #fff; color: #2c2313;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    opacity: 0; transition: opacity 0.2s ease, top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1);
+}
+.kanji-modal-zoom.is-visible { opacity: 1; }
+.kanji-modal-zoom__btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px; line-height: 1;
+    background: rgba(44, 35, 19, 0.08);
+}
+.kanji-modal-zoom__btn:hover { background: rgba(44, 35, 19, 0.18); }
+.kanji-modal-zoom__pct {
+    min-width: 32px;
+    text-align: center;
+    font-family: "Space Mono", monospace;
+    font-size: 10px;
+    opacity: .7;
+}
 
 .kanji-tap-hint {
     position: fixed; z-index: 4002;
@@ -304,6 +371,12 @@
 .kanji-quiz__feedback .kanji-quiz__answer {
     font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     color: var(--term-amber);
+}
+.kanji-quiz__feedback .kanji-quiz__note {
+    display: block;
+    font-size: 11px;
+    opacity: .75;
+    margin-top: 2px;
 }
 .kanji-quiz__row {
     display: flex;

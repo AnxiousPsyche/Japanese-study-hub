@@ -2720,6 +2720,9 @@
         highlightActiveLesson(id);
         renderInstruction();
 
+        let mainEl = document.querySelector(".study-main");
+        if (mainEl) mainEl.classList.toggle("is-kanji-lesson", !!currentLesson.kanjiGroup);
+
         if (currentLesson.kanjiGroup) {
             /* Card-gallery UI, not a quiz — there's no single "correct
                answer" to grade when browsing kanji, so this skips the

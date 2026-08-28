@@ -2440,6 +2440,66 @@
         "33193"
       ],
       "port": 33193
+    },
+    {
+      "name": "jp-library-static-round29-spread-zoom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33304"
+      ],
+      "port": 33304
+    },
+    {
+      "name": "jp-library-static-round30-textzoom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33415"
+      ],
+      "port": 33415
+    },
+    {
+      "name": "jp-library-static-round31-refinements",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33526"
+      ],
+      "port": 33526
+    },
+    {
+      "name": "jp-library-static-round32-finalquiz",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33637"
+      ],
+      "port": 33637
+    },
+    {
+      "name": "jp-library-static-round33-examsheet",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33748"
+      ],
+      "port": 33748
+    },
+    {
+      "name": "jp-library-static-round34-homepage",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33859"
+      ],
+      "port": 33859
     }
   ],
   "autoVerify": true
