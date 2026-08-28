@@ -131,6 +131,17 @@
 
     <section id="login-screen">
 
+        <div class="login-window-wrap">
+
+            <!-- Orange cat, curled up asleep, resting on the title bar —
+                 same orangecat-sleep-sheet.png rig the Adventure Room uses
+                 for the player's own idle-sleep animation (frames 6-9, the
+                 fully-curled "breathing" loop), just decorative here. Lives
+                 outside .login-glass (which needs overflow-y:auto for tall
+                 content on short screens) so the part that pokes above the
+                 title bar never gets clipped by that scroll container. -->
+            <div class="login-cat" aria-hidden="true"></div>
+
         <div class="login-glass">
 
             <!-- =====================================
@@ -152,14 +163,13 @@
 
                 <h1 class="scroll-title">
 
-                    🌸 Welcome, Explorer! 🌸
+                    Welcome to Neko Bunko OS<span class="scroll-title__cursor"></span>
 
                 </h1>
 
                 <p class="scroll-description">
 
-                    Every great adventure begins with a single page.
-                    Open your journal and continue your Japanese journey.
+                    Sign in to continue your Japanese study session.
 
                 </p>
 
@@ -179,7 +189,7 @@
 
                     <h3 class="scroll-heading">
 
-                        Returning Explorer
+                        Sign In
 
                     </h3>
 
@@ -187,12 +197,12 @@
 
                         <label for="playerName">
 
-                            Explorer Name
+                            Username
 
                         </label>
 
                         <input type="text" id="playerName" autocomplete="username"
-                            placeholder="Enter your explorer name">
+                            placeholder="Enter your username">
 
                     </div>
 
@@ -200,17 +210,17 @@
 
                         <label for="playerPassword">
 
-                            Secret Passphrase
+                            Password
 
                         </label>
 
                         <div class="password-field">
 
                             <input type="password" id="playerPassword" autocomplete="current-password"
-                                placeholder="Enter your secret passphrase">
+                                placeholder="Enter your password">
 
                             <button type="button" class="toggle-password" data-target="playerPassword"
-                                aria-label="Show secret passphrase">
+                                aria-label="Show password">
 
                                 <i class="bi bi-eye"></i>
 
@@ -220,7 +230,7 @@
 
                         <button type="button" id="recallPassphrase" class="forgot-link">
 
-                            🔮 Passphrase Gone Amiss?
+                            Forgot your password?
 
                         </button>
 
@@ -232,7 +242,7 @@
 
                         <button id="continueButton" class="retro-btn" type="submit">
 
-                            ▶ Continue Your Adventure
+                            ▶ Log In
 
                         </button>
 
@@ -256,14 +266,14 @@
 
                     <h3 class="scroll-heading">
 
-                        New Explorer
+                        Create Account
 
                     </h3>
 
                     <p class="scroll-small">
 
-                        Haven't begun your adventure yet?
-                        Create your explorer and receive your first journal.
+                        Don't have an account yet?
+                        Create one to start tracking your progress.
 
                     </p>
 
@@ -271,11 +281,11 @@
 
                         <label for="newPlayerName">
 
-                            What shall we call you, Explorer?
+                            Choose a username
 
                         </label>
 
-                        <input type="text" id="newPlayerName" placeholder="Choose your explorer name">
+                        <input type="text" id="newPlayerName" placeholder="Pick a username">
 
                     </div>
 
@@ -283,16 +293,16 @@
 
                         <label for="newPlayerPassword">
 
-                            Create your Secret Passphrase
+                            Choose a password
 
                         </label>
 
                         <div class="password-field">
 
-                            <input type="password" id="newPlayerPassword" placeholder="Choose a secret passphrase">
+                            <input type="password" id="newPlayerPassword" placeholder="Pick a password">
 
                             <button type="button" class="toggle-password" data-target="newPlayerPassword"
-                                aria-label="Show secret passphrase">
+                                aria-label="Show password">
 
                                 <i class="bi bi-eye"></i>
 
@@ -306,7 +316,7 @@
 
                         <label class="avatar-label" for="avatarUpload">
 
-                            🎒 Hand us the portrait by which you wish to be known.
+                            Choose a profile picture (optional)
 
                         </label>
 
@@ -324,7 +334,7 @@
 
                         <button id="loginButton" class="retro-btn" type="submit">
 
-                            ▶ Begin Adventure
+                            ▶ Create Account
 
                         </button>
 
@@ -333,6 +343,8 @@
                 </div>
 
             </form>
+
+        </div>
 
         </div>
 
@@ -444,7 +456,7 @@ DESKTOP
     DESKTOP CONTENT
     ======================================================-->
 
-        <main class="desktop-container">
+        <main class="desktop-container is-forest-terminal">
 
             <!-- =========================================
      WELCOME WINDOW
@@ -1032,7 +1044,7 @@ TASKBAR
 
                 <i class="bi bi-search"></i>
 
-                <input type="search" id="desktopSearch" placeholder="Search JP Library" autocomplete="off">
+                <input type="search" id="desktopSearch" placeholder="search_" autocomplete="off">
 
             </div>
 
@@ -1042,31 +1054,31 @@ TASKBAR
 
                 <button class="taskbar-app" data-window="greetingWindow" type="button">
 
-                    🌸 Greeting
+                    greeting
 
                 </button>
 
                 <button class="taskbar-app" data-window="playerWindow" type="button">
 
-                    👤 Player
+                    player
 
                 </button>
 
                 <button class="taskbar-app" data-window="discWindow" type="button">
 
-                    💿 Disc
+                    disc
 
                 </button>
 
                 <button class="taskbar-app" data-window="questWindow" type="button">
 
-                    📜 Quest
+                    quest
 
                 </button>
 
                 <button class="taskbar-app" data-window="journeyWindow" type="button">
 
-                    🗺 Journey
+                    journey
 
                 </button>
 
@@ -1081,6 +1093,14 @@ TASKBAR
                 <button id="languageButton" class="language-btn" type="button">
 
                     ENG
+
+                </button>
+
+                <!-- Theme (light/dark desktop backdrop) -->
+
+                <button id="themeToggleButton" class="system-btn" type="button" aria-label="Switch to dark mode">
+
+                    <i class="bi bi-moon-stars-fill"></i>
 
                 </button>
 

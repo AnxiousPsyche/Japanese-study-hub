@@ -2500,6 +2500,116 @@
         "33859"
       ],
       "port": 33859
+    },
+    {
+      "name": "jp-library-static-round35-forest-terminal",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33970"
+      ],
+      "port": 33970
+    },
+    {
+      "name": "jp-library-static-round36-login-terminal",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34081"
+      ],
+      "port": 34081
+    },
+    {
+      "name": "jp-library-static-round37-desktop-layout",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34192"
+      ],
+      "port": 34192
+    },
+    {
+      "name": "jp-library-static-round38-layout-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34303"
+      ],
+      "port": 34303
+    },
+    {
+      "name": "jp-library-static-round39-journey-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34414"
+      ],
+      "port": 34414
+    },
+    {
+      "name": "jp-library-static-round40-cluster-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34525"
+      ],
+      "port": 34525
+    },
+    {
+      "name": "jp-library-static-round41-final-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34636"
+      ],
+      "port": 34636
+    },
+    {
+      "name": "jp-library-static-round42-studyroom-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34747"
+      ],
+      "port": 34747
+    },
+    {
+      "name": "jp-library-static-round43-theme-toggle",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34858"
+      ],
+      "port": 34858
+    },
+    {
+      "name": "jp-library-static-round44-login-cat",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34969"
+      ],
+      "port": 34969
+    },
+    {
+      "name": "jp-library-static-round45-crt-taskbar",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35080"
+      ],
+      "port": 35080
     }
   ],
   "autoVerify": true

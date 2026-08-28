@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeStartMenu();
     initializeVolumePanel();
+    initializeThemeToggle();
     initializeClock();
     initializeWindowManager();
 
@@ -19,12 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // ELEMENTS
 //======================================================
 
-const startButton  = document.getElementById("startButton");
-const startMenu    = document.getElementById("startMenu");
-const volumeButton = document.getElementById("volumeButton");
-const volumePanel  = document.getElementById("volumePanel");
-const taskbarClock = document.getElementById("taskbarClock");
-const taskbarDate  = document.getElementById("taskbarDate");
+const startButton      = document.getElementById("startButton");
+const startMenu        = document.getElementById("startMenu");
+const volumeButton     = document.getElementById("volumeButton");
+const volumePanel      = document.getElementById("volumePanel");
+const taskbarClock     = document.getElementById("taskbarClock");
+const taskbarDate      = document.getElementById("taskbarDate");
+const themeToggleButton = document.getElementById("themeToggleButton");
 
 
 //======================================================
@@ -68,6 +70,69 @@ function initializeVolumePanel(){
         if(!volumePanel.contains(e.target) && !volumeButton.contains(e.target)){
             volumePanel.classList.remove("show");
         }
+    });
+
+}
+
+
+//======================================================
+// THEME TOGGLE
+//
+// The desktop backdrop (see homepage.css #desktop) already follows the
+// system's light/dark setting automatically via prefers-color-scheme —
+// this button lets the user override that per-device instead of only
+// ever following the OS. "nekoBunko.theme" holds "light"/"dark" once the
+// user has explicitly chosen; with nothing saved, #desktop keeps
+// following the system preference (data-theme is left unset).
+//======================================================
+
+const THEME_STORAGE_KEY = "nekoBunko.theme";
+
+function applyTheme(theme){
+
+    const desktop = document.getElementById("desktop");
+    if(desktop){
+        if(theme === "light" || theme === "dark"){
+            desktop.setAttribute("data-theme", theme);
+        } else {
+            desktop.removeAttribute("data-theme");
+        }
+    }
+
+    if(!themeToggleButton) return;
+    let isDark = theme === "dark";
+    if(theme !== "light" && theme !== "dark"){
+        isDark = window.matchMedia("(prefers-color-scheme:dark)").matches;
+    }
+    const icon = themeToggleButton.querySelector("i");
+    if(icon) icon.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+    themeToggleButton.setAttribute(
+        "aria-label",
+        isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+
+}
+
+function initializeThemeToggle(){
+
+    if(!themeToggleButton) return;
+
+    let saved = null;
+    try{ saved = localStorage.getItem(THEME_STORAGE_KEY); }catch(e){}
+    applyTheme(saved);
+
+    themeToggleButton.addEventListener("click", () => {
+
+        const desktop = document.getElementById("desktop");
+        const current = desktop ? desktop.getAttribute("data-theme") : null;
+        const currentlyDark = current
+            ? current === "dark"
+            : window.matchMedia("(prefers-color-scheme:dark)").matches;
+        const next = currentlyDark ? "light" : "dark";
+
+        try{ localStorage.setItem(THEME_STORAGE_KEY, next); }catch(e){}
+        applyTheme(next);
+
     });
 
 }

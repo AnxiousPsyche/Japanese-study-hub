@@ -40,7 +40,25 @@
         }
     }
 
+    /* Dark mode override: white reads far better than orange/black against
+       a dark backdrop, so the companion shows white regardless of the
+       player's chosen color whenever the effective theme is dark — same
+       "explicit choice beats system preference" logic the homepage's own
+       taskbar toggle uses (os.js applyTheme()), just read here since this
+       widget runs on pages that don't have that toggle's UI at all. */
+    function isDarkTheme() {
+        const explicit = readLocal("nekoBunko.theme");
+        if (explicit === "light") return false;
+        if (explicit === "dark") return true;
+        try {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches;
+        } catch (e) {
+            return false;
+        }
+    }
+
     function getCatColor() {
+        if (isDarkTheme()) return "white";
         const saved = readLocal(CAT_COLOR_KEY);
         return VALID_COLORS.indexOf(saved) !== -1 ? saved : "orange";
     }

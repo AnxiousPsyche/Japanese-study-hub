@@ -26,10 +26,43 @@ DESKTOP
 
     overflow-x:hidden;
 
-    background:url("../images/backgrounds/desktop-wallpaper.png")
-    center center/cover no-repeat;
+    background-color:#DCE6D6;
+
+    background-image:repeating-linear-gradient(0deg, rgba(42,74,48,.035) 0 1px, transparent 1px 3px);
 
     font-family:var(--title-font);
+
+}
+
+/* Dark mode: no toggle switch on this site, just the system preference —
+   swaps to the same hatched-teal-style backdrop the login screen already
+   uses (in forest green instead of teal), so both screens read as one
+   family. The windows themselves stay the same light cream/green cards
+   in both modes — same pattern the login dialog already uses (light
+   Windows-95 card on a dark hatch), so only the empty screen changes. */
+@media (prefers-color-scheme:dark){
+
+    /* :not([data-theme="light"]) so an explicit light choice from the
+       taskbar toggle (os.js applyTheme()) beats the system's dark
+       setting instead of being silently overridden by it. */
+    #desktop:not([data-theme="light"]){
+
+        background-color:#0F3324;
+
+        background-image:repeating-linear-gradient(45deg, #0F3324 0px, #0F3324 3px, #0C2A1D 3px, #0C2A1D 6px);
+
+    }
+
+}
+
+/* Explicit dark choice from the taskbar toggle — applies regardless of
+   the system's own light/dark setting, so the toggle also wins on a
+   system that's set to light. */
+#desktop[data-theme="dark"]{
+
+    background-color:#0F3324;
+
+    background-image:repeating-linear-gradient(45deg, #0F3324 0px, #0F3324 3px, #0C2A1D 3px, #0C2A1D 6px);
 
 }
 
@@ -97,39 +130,38 @@ DASHBOARD ROW
 
 }
 
-/* left was 20px, flush against the desktop-icons column — once those
-   icons stack vertically (.desktop-icons flex-direction:column) they
-   occupy roughly x:24-139px down the full left edge, so this window is
-   pushed clear of them instead of sitting on top. */
+/* Positioned relative to the disc's own center (calc(50% ...)) instead
+   of a fixed left:155px pinned near the desktop-icons column — at wide
+   viewports a fixed left/right pairing left this card and #questWindow
+   stranded near the screen edges with the disc floating alone in the
+   middle ("disarray"). Tying all three to 50% keeps the whole cluster
+   visually grouped regardless of viewport width. Gap between cards is
+   24px; disc half-width is 227.5px (455px / 2), rounded to 228 below. */
 #playerWindow{
 
     position:absolute;
 
     width:220px;
 
-    left:155px;
+    left:calc(50% - 472px);
 
-    top:190px;
+    top:170px;
 
 }
 
-/* Smaller and centered — was 520px (nearly the full dashboard width);
-   260px read as "a disc on the desktop" instead of the dashboard's
-   dominant element. Bumped to 350px (~35% bigger, more than the
-   requested 20% floor) — needed once the carousel's prev/next arrows
-   and side padding are subtracted, so "JLPT N5 Edition" actually has
-   room to render on one line instead of overflowing/clipping inside
-   the disc-viewport's overflow:hidden. Left recalculated to stay
-   centered. */
+/* Bumped ~30% from 350px to 455px per request (bigger, dominant element
+   on the desktop) and shifted down from top:70 to clear the greeting
+   window with more room now that it's taller. Left recalculated to stay
+   centered at the new width. */
 #discWindow{
 
     position:absolute;
 
-    width:350px;
+    width:455px;
 
-    left:calc(50% - 175px);
+    left:calc(50% - 227px);
 
-    top:70px;
+    top:214px;
 
 }
 
@@ -139,9 +171,9 @@ DASHBOARD ROW
 
     width:220px;
 
-   right:30px;
+    left:calc(50% + 252px);
 
-    top:90px;
+    top:170px;
 
 }
 
@@ -438,19 +470,17 @@ CURRENT DISC
 
 .disc-slide h2{
 
-    font-size:.85rem;
+    font-size:clamp(1.25rem, 1.6vw, 1.5rem);
 
     line-height:1.3;
 
     white-space:nowrap;
 
-    letter-spacing:-1px;
-
 }
 
 .disc-slide p{
 
-    font-size:.65rem;
+    font-size:.85rem;
 
     white-space:nowrap;
 
@@ -694,7 +724,8 @@ JOURNEY
    previous top:610px was measured against the disc at its old, smaller
    260px size and stopped clearing it once the disc grew. If the disc's
    size changes again, re-measure #discWindow's rendered bottom edge live
-   rather than adjusting this number by feel. */
+   rather than adjusting this number by feel. top:890px is that
+   re-measurement for the disc's current 455px-wide/top:214px size. */
 .journey-window{
 
     position:absolute;
@@ -707,7 +738,7 @@ JOURNEY
 
     margin-right:auto;
 
-    top:655px;
+    top:940px;
 
     width:min(230px,52%);
 
@@ -1168,9 +1199,15 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
 }
 
+/* Was plain white with a dark drop-shadow — tuned for the old photo
+   wallpaper, which had enough dark area for that to read. Against the
+   new flat light backdrop it was nearly invisible, so this now follows
+   the same theme system as #desktop's own background: dark ink by
+   default (light backdrop), light text once the backdrop actually is
+   dark (system dark mode, or the taskbar toggle's explicit override). */
 .desktop-icon span{
 
-    color:white;
+    color:#2A4A30;
 
     font-family:var(--readable-font);
 
@@ -1181,6 +1218,26 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
     text-align:center;
 
     line-height:1.4;
+
+    text-shadow:0 1px 2px rgba(255,255,255,.55);
+
+}
+
+@media (prefers-color-scheme:dark){
+
+    #desktop:not([data-theme="light"]) .desktop-icon span{
+
+        color:#EDEAE2;
+
+        text-shadow:2px 2px 3px rgba(0,0,0,.65);
+
+    }
+
+}
+
+#desktop[data-theme="dark"] .desktop-icon span{
+
+    color:#EDEAE2;
 
     text-shadow:2px 2px 3px rgba(0,0,0,.65);
 
@@ -1351,5 +1408,218 @@ RESPONSIVE
 @media(max-width:576px){
 
     .desktop-clock{ font-size:1rem; }
+
+}
+
+/*======================================================
+FOREST TERMINAL GREEN — homepage re-skin
+
+Scoped modifier class on .desktop-container (see the
+"Retro OS re-theming" pattern in CLAUDE.md) so this
+palette stays off every other page that shares
+.retro-window/.window-title/.retro-btn with the homepage.
+Chrome/color/type pass only — no window is repositioned
+or resized here, and VT323 is reserved for genuinely
+header-sized text (small chrome like window titles and
+captions keep Space Mono, per the LessonBox readability
+rule: VT323 goes muddy at caption sizes). Both fonts are
+already self-hosted via study-style.css's @font-face
+(already linked on this page), so no extra font request.
+======================================================*/
+
+.desktop-container.is-forest-terminal{
+
+    --ft-bg:#F0F2EC;
+    --ft-border:#B9C4B0;
+    --ft-title-bg:#E4E9DD;
+    --ft-ink:#2A4A30;
+    --ft-ink-dim:#6E8F5E;
+    --ft-accent:#1D9E75;
+    --ft-track:#DCE6D6;
+
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .retro-window{
+
+    background:var(--ft-bg);
+    border-color:var(--ft-border);
+    box-shadow:
+        0 10px 26px rgba(42,74,48,.14),
+        inset 0 1px 0 rgba(255,255,255,.5);
+
+}
+
+.desktop-container.is-forest-terminal .window-title{
+
+    background:var(--ft-title-bg);
+    color:var(--ft-ink);
+    border-bottom:1px solid var(--ft-border);
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+    font-weight:700;
+
+}
+
+.desktop-container.is-forest-terminal .window-buttons span:first-child{ background:#C97575; }
+.desktop-container.is-forest-terminal .window-buttons span:nth-child(2){ background:#D9B15C; }
+.desktop-container.is-forest-terminal .window-buttons span:last-child{  background:var(--ft-accent); }
+
+.desktop-container.is-forest-terminal .window-content{
+
+    color:var(--ft-ink);
+    /* faint scanline texture, confined to the content box so it can't
+       interfere with the title bar's drag handle or the resize handles
+       that live on the .retro-window root */
+    background:
+        repeating-linear-gradient(0deg, rgba(42,74,48,.035) 0 1px, transparent 1px 3px),
+        var(--ft-bg);
+
+    scrollbar-width:thin;
+    scrollbar-color:var(--ft-accent) var(--ft-bg);
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar-track{
+
+    background:var(--ft-bg);
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar-thumb{
+
+    background:var(--ft-accent);
+    border-radius:4px;
+    border:2px solid var(--ft-bg);
+
+}
+
+/* header/display-sized text -> VT323; everything else stays on the
+   base Space Mono set above */
+.desktop-container.is-forest-terminal .desktop-header h1,
+.desktop-container.is-forest-terminal .desktop-clock,
+.desktop-container.is-forest-terminal .player-stats h3,
+.desktop-container.is-forest-terminal .disc-slide h2,
+.desktop-container.is-forest-terminal .quest-card h2{
+
+    font-family:"VT323", monospace;
+    letter-spacing:.5px;
+
+}
+
+.desktop-container.is-forest-terminal .desktop-clock{
+
+    color:var(--ft-accent);
+    font-size:1.05rem;
+
+}
+
+.desktop-container.is-forest-terminal #englishGreeting,
+.desktop-container.is-forest-terminal #greetingMessage{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal #englishGreeting.typing-cursor::after,
+.desktop-container.is-forest-terminal #greetingMessage.typing-cursor::after{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .player-stats strong{
+
+    color:var(--ft-accent);
+
+}
+
+.desktop-container.is-forest-terminal .xp-bar{
+
+    background:var(--ft-track);
+
+}
+
+.desktop-container.is-forest-terminal .xp-fill{
+
+    background:var(--ft-accent);
+
+}
+
+.desktop-container.is-forest-terminal .retro-btn{
+
+    background:var(--ft-accent);
+    border-color:#17805F;
+    color:#F0F2EC;
+    box-shadow:2px 2px 0 rgba(23,128,95,.35);
+
+}
+
+.desktop-container.is-forest-terminal .retro-btn:hover{
+
+    background:#189270;
+
+}
+
+.desktop-container.is-forest-terminal .disc-arrow{
+
+    border-color:var(--ft-border);
+    background:var(--ft-bg);
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .disc-arrow:hover{
+
+    background:var(--ft-track);
+
+}
+
+.desktop-container.is-forest-terminal .disc-dot{ background:var(--ft-track); }
+.desktop-container.is-forest-terminal .disc-dot.active{ background:var(--ft-accent); }
+
+.desktop-container.is-forest-terminal .disc-slide[data-locked="true"] h2{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .journey-list .status.current{
+
+    background:var(--ft-accent);
+    color:#F0F2EC;
+
+}
+
+.desktop-container.is-forest-terminal .journey-list .status.locked{
+
+    background:var(--ft-track);
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .quest-reward{
+
+    background:var(--ft-track);
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .footer-window .window-content p{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal a{
+
+    color:var(--ft-accent);
 
 }

@@ -141,7 +141,7 @@ function initPasswordToggles(){
 
                 button.setAttribute(
                     "aria-label",
-                    isHidden ? "Hide secret passphrase" : "Show secret passphrase"
+                    isHidden ? "Hide password" : "Show password"
                 );
 
             });
@@ -173,7 +173,7 @@ function initRecallPassphrase(){
             if(message){
 
                 message.textContent =
-                    "📜 No journal has been recorded in this realm yet. Begin your adventure below.";
+                    "No saved account found on this device. Create one below.";
 
             }
 
@@ -204,7 +204,7 @@ function initRecallPassphrase(){
 
             toggleButton.setAttribute(
                 "aria-label",
-                "Hide secret passphrase"
+                "Hide password"
             );
 
         }
@@ -212,9 +212,9 @@ function initRecallPassphrase(){
         if(message){
 
             message.textContent =
-                "🔮 A raven has delivered your secret passphrase, " +
+                "Password recovered for " +
                 explorer.name +
-                ". It now lies revealed below.";
+                ". It's now visible below.";
 
         }
 
@@ -372,7 +372,7 @@ function loginExplorer(event){
 
         alert(
 
-            "Explorer name or Secret Passphrase is incorrect."
+            "Username or password is incorrect."
 
         );
 

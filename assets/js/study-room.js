@@ -36,6 +36,70 @@
         });
     }
 
+    /* ===== FURIGANA =====
+       No existing furigana system anywhere on this site — this is it.
+       One flat dictionary of every kanji-containing word/phrase that
+       appears in this file's vocab/example text (whole-word readings,
+       not per-character — "静か" → "しずか" as one <rt>, not two separate
+       readings for 静 and か — simpler to author correctly and still
+       genuinely useful for a self-study tool, at the cost of not being
+       typographically "proper" per-character furigana). annotateFurigana()
+       scans a string and wraps every dictionary match it finds in <ruby>,
+       longest match first at each position so a compound like "静かです"
+       matches before the shorter "静か" would. Anything not in the
+       dictionary (a kanji that slipped through, or already-kana text)
+       passes through untouched — this degrades gracefully rather than
+       ever breaking rendering. */
+    const KANJI_READINGS = {
+        "お元気ですか": "おげんきですか", "元気です": "げんきです", "元気": "げんき",
+        "よろしくお願いします": "よろしくおねがいします", "お願いします": "おねがいします",
+        "お邪魔します": "おじゃまします", "お邪魔しました": "おじゃましました",
+        "多分": "たぶん", "全然": "ぜんぜん", "君": "くん", "用": "よう",
+        "お名前": "おなまえ", "何": "なん",
+        "前": "まえ", "右": "みぎ", "隣": "となり", "上": "うえ", "中": "なか",
+        "北": "きた", "東": "ひがし", "木": "き",
+        "彼女": "かのじょ", "子供": "こども", "家族": "かぞく", "僕": "ぼく", "彼ら": "かれら", "誰か": "だれか",
+        "大きい": "おおきい", "赤い": "あかい", "新しい": "あたらしい", "高い": "たかい", "楽しい": "たのしい",
+        "有名": "ゆうめい", "大変": "たいへん", "古い": "ふるい", "本": "ほん", "好き": "すき",
+        "静かです": "しずかです", "静かでした": "しずかでした",
+        "静かじゃないです": "しずかじゃないです", "静かじゃなかったです": "しずかじゃなかったです",
+        "静かだ": "しずかだ", "静かじゃない": "しずかじゃない", "静か": "しずか",
+        "起きる": "おきる", "起きて": "おきて", "起きます": "おきます", "起きません": "おきません",
+        "起きました": "おきました", "起きませんでした": "おきませんでした",
+        "行きます": "いきます", "行きません": "いきません", "行きませんでした": "いきませんでした",
+        "行く": "いく", "行って": "いって",
+        "帰る": "かえる", "帰って": "かえって",
+        "読む": "よむ", "読んで": "よんで",
+        "書く": "かく", "書いて": "かいて",
+        "会う": "あう", "会って": "あって",
+        "座る": "すわる", "座って": "すわって",
+        "休む": "やすむ", "休んで": "やすんで",
+        "分かる": "わかる", "分かって": "わかって",
+        "話します": "はなします", "話しました": "はなしました",
+        "勉強します": "べんきょうします", "勉強しません": "べんきょうしません",
+        "公園": "こうえん", "学校": "がっこう", "学生": "がくせい", "先生": "せんせい",
+        "図書館": "としょかん", "遊びます": "あそびます", "猫": "ねこ", "友達": "ともだち"
+    };
+    const KANJI_READING_KEYS = Object.keys(KANJI_READINGS).sort(function (a, b) { return b.length - a.length; });
+    function annotateFurigana(text) {
+        if (!text) return text;
+        let out = "";
+        let i = 0;
+        outer: while (i < text.length) {
+            for (let k = 0; k < KANJI_READING_KEYS.length; k++) {
+                let key = KANJI_READING_KEYS[k];
+                if (text.startsWith(key, i)) {
+                    out += "<ruby>" + key + "<rt>" + KANJI_READINGS[key] + "</rt></ruby>";
+                    i += key.length;
+                    continue outer;
+                }
+            }
+            out += text[i];
+            i++;
+        }
+        return out;
+    }
+
     /* ===== VOCAB-MATCH EXERCISES (vocab-only lessons: s01, s02, s02b,
        s02c) — "pick the correct Japanese word/phrase for this English
        word/phrase", multiple choice, instead of typing a sentence.
@@ -422,6 +486,16 @@
             /* No bonus exercise: shelf 04 is a fixed 3-step template
                (greet/name/close), not a word that drops into an A-は-B-です
                sentence — preview stays exposure-only. */
+            /* Free word-choice: earlier versions baked in one randomly-picked
+               subject/predicate as the ONLY accepted answer, which meant a
+               grammatically correct sentence using a different word from the
+               same word bank (or a word carried over from an earlier lesson,
+               e.g. a name from this lesson reused in shelf 04+) was marked
+               wrong. A は B です has no grammatical link tying one specific
+               subject to one specific predicate, so any non-empty subject +
+               predicate is graded via `pattern` instead of one fixed
+               `accepted` string — subj/pred1/pred2 below are kept only to
+               build a concrete worked example for the hint text. */
             buildWordBankExercises: function () {
                 let subj = pick(this.wordBank.subjects);
                 let pred1 = pick(this.wordBank.peoplePredicates);
@@ -429,22 +503,21 @@
                 let thingSubj = this.wordBank.thingSubjects[0];
                 return [
                     {
-                        prompt: "Write: <strong>" + subj.en + " " + (subj.en === "I" ? "am" : "is") + " a " + pred1.en + "</strong>",
-                        accepted: [[subj.jp, "は", pred1.jp, "です"]],
-                        hint: subj.jp + " + は + " + pred1.jp + " + です",
+                        prompt: "Write a sentence using <strong>A は B です</strong> to say who someone is (e.g. \"I am a student\" or \"Tanaka is a teacher\"). Feel free to pick any word from the word bank below — from this lesson, or an earlier one.",
+                        pattern: /^.+は.+です$/,
+                        hint: "Pattern: [someone] + は + [what they are] + です — e.g. " + subj.jp + "は" + pred1.jp + "です",
                         refWords: [
-                            { jp: subj.jp, role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: pred1.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }
-                        ]
+                            { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" }
+                        ].concat(this.wordBank.subjects.map(function (w) { return { jp: w.jp, role: "subject" }; }))
+                            .concat(this.wordBank.peoplePredicates.map(function (w) { return { jp: w.jp, role: "predicate" }; }))
                     },
                     {
-                        prompt: "Write: <strong>This is a " + pred2.en + "</strong>",
-                        accepted: [[thingSubj.jp, "は", pred2.jp, "です"]],
-                        hint: thingSubj.jp + " + は + " + pred2.jp + " + です",
+                        prompt: "Write a sentence using <strong>これは B です</strong> to say what something is (e.g. \"This is a book\"). Feel free to pick any word from the word bank below — from this lesson, or an earlier one.",
+                        pattern: /^これは.+です$/,
+                        hint: "Pattern: これ + は + [thing] + です — e.g. これは" + pred2.jp + "です",
                         refWords: [
-                            { jp: thingSubj.jp, role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: pred2.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }
-                        ]
+                            { jp: thingSubj.jp, role: "subject" }, { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" }
+                        ].concat(this.wordBank.thingPredicates.map(function (w) { return { jp: w.jp, role: "predicate" }; }))
                     }
                 ];
             }
@@ -496,10 +569,34 @@
                         ]
                     },
                     {
+                        /* よろしくお願いします's 願 is the one kanji this
+                           very-early lesson would otherwise require —
+                           accepting the all-hiragana spelling too, same as
+                           shelves 15/16 do for their own kanji. */
                         prompt: "Write: <strong>Nice to meet you</strong>",
-                        accepted: [["よろしくお願いします"], ["はじめまして"]],
-                        hint: "よろしくお願いします",
+                        accepted: [["よろしくお願いします"], ["よろしくおねがいします"], ["はじめまして"]],
+                        hint: "よろしくお願いします (よろしくおねがいします)",
                         refWords: [{ jp: "よろしくお願いします", role: "greeting" }]
+                    },
+                    /* Capstone: a genuinely free-write jiko-shoukai, not a
+                       fixed-answer blank — there's no single "correct"
+                       self-introduction, so this skips accepted/pattern
+                       grading entirely (see checkAnswer()'s openEnded
+                       branch). validate() just checks for a real attempt
+                       (です present, more than a couple characters) rather
+                       than grading content, since anything beyond that
+                       would need real language understanding this engine
+                       doesn't have. */
+                    {
+                        prompt: "Now write your own <strong>自己紹介 (jikoshoukai)</strong> using what you've learned today — greeting, your name, and closing.",
+                        openEnded: true,
+                        validate: function (raw) { return raw.trim().length >= 8 && raw.indexOf("です") !== -1; },
+                        hint: "はじめまして → わたしは [name] です → よろしくお願いします",
+                        refWords: [
+                            { jp: "はじめまして", role: "greeting" }, { jp: "わたし", role: "subject" },
+                            { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" },
+                            { jp: "よろしくお願いします", role: "greeting" }
+                        ]
                     }
                 ];
             }
@@ -565,13 +662,17 @@
                 let creature = this.wordBank.creatures[0];
                 let exercises = [
                     {
-                        prompt: "Write: <strong>" + dem.en.charAt(0).toUpperCase() + dem.en.slice(1) + " is a " + noun.en + "</strong>",
-                        accepted: [[dem.jp, "は", noun.jp, "です"]],
-                        hint: dem.jp + " + は + " + noun.jp + " + です",
+                        /* Free word-choice on the noun (any noun from this
+                           lesson or an earlier one) — the demonstrative
+                           itself stays restricted to これ/それ/あれ since
+                           that's what this exercise is actually practicing. */
+                        prompt: "Write a sentence using <strong>A は B です</strong> with a demonstrative (これ/それ/あれ) to say what something is. Feel free to pick any noun from the word bank below — from this lesson, or an earlier one.",
+                        pattern: /^(これ|それ|あれ)は.+です$/,
+                        hint: "Pattern: [これ/それ/あれ] + は + [thing] + です — e.g. " + dem.jp + "は" + noun.jp + "です",
                         refWords: [
-                            { jp: dem.jp, role: "demonstrative" }, { jp: "は", role: "particle" },
-                            { jp: noun.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }
-                        ]
+                            { jp: "これ", role: "demonstrative" }, { jp: "それ", role: "demonstrative" }, { jp: "あれ", role: "demonstrative" },
+                            { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" }
+                        ].concat(this.wordBank.nouns.map(function (w) { return { jp: w.jp, role: "predicate" }; }))
                     },
                     {
                         prompt: "Write: <strong>Where is the " + creature.en + "?</strong>",
@@ -1430,25 +1531,34 @@
                     sources: ["Bunpro — から／けど／と grammar entries", "Tae Kim's Guide — connecting clauses"]
                 };
             },
-            /* 静か pairs with から (な-adjective + だ + から), 古い pairs with けど (い-adjective, no だ). */
+            /* 静か pairs with から (な-adjective + だ + から), 古い pairs with けど (い-adjective, no だ).
+               Kana-equivalent `accepted` entries alongside the kanji ones below:
+               this is one of only two lessons (with shelf 16) that put real
+               kanji into a graded answer at all — every other shelf's
+               accepted answers are already pure kana — so a learner who
+               hasn't memorized 静か/古い/本 yet can still answer correctly
+               by writing しずか/ふるい/ほん instead. */
             buildWordBankExercises: function () {
                 let exercises = [
                     {
                         prompt: "Write: <strong>Because it's quiet, I like it</strong>",
-                        accepted: [["静か", "だ", "から", "好き", "です"], ["静かだから", "好き", "です"]],
-                        hint: "静かだから好きです",
+                        accepted: [
+                            ["静か", "だ", "から", "好き", "です"], ["静かだから", "好き", "です"],
+                            ["しずか", "だ", "から", "すき", "です"], ["しずかだから", "すき", "です"]
+                        ],
+                        hint: "静かだから好きです (しずかだからすきです)",
                         refWords: [{ jp: "静か", role: "adjective" }, { jp: "から", role: "particle" }, { jp: "好き", role: "adjective" }, { jp: "です", role: "auxiliary" }]
                     },
                     {
                         prompt: "Write: <strong>It's old, but I like it</strong>",
-                        accepted: [["古い", "けど", "好き", "です"]],
-                        hint: "古いけど好きです",
+                        accepted: [["古い", "けど", "好き", "です"], ["ふるい", "けど", "すき", "です"]],
+                        hint: "古いけど好きです (ふるいけどすきです)",
                         refWords: [{ jp: "古い", role: "adjective" }, { jp: "けど", role: "particle" }, { jp: "好き", role: "adjective" }, { jp: "です", role: "auxiliary" }]
                     },
                     {
                         prompt: "Write: <strong>A book and a bag</strong>",
-                        accepted: [["本", "と", "かばん"]],
-                        hint: "本とかばん",
+                        accepted: [["本", "と", "かばん"], ["ほん", "と", "かばん"]],
+                        hint: "本とかばん (ほんとかばん)",
                         refWords: [{ jp: "本", role: "object" }, { jp: "と", role: "particle" }, { jp: "かばん", role: "object" }]
                     }
                 ];
@@ -1458,8 +1568,8 @@
                 if (preview) {
                     exercises.push({
                         prompt: "(bonus — sneak peek: shelf 16) Write: <strong>It's old, but I like it (formal — swap けど for " + preview.jp + ")</strong>",
-                        accepted: [["古い", preview.jp, "好き", "です"]],
-                        hint: "古い" + preview.jp + "好きです",
+                        accepted: [["古い", preview.jp, "好き", "です"], ["ふるい", preview.jp, "すき", "です"]],
+                        hint: "古い" + preview.jp + "好きです (ふるい" + preview.jp + "すきです)",
                         refWords: [{ jp: "古い", role: "adjective" }, { jp: preview.jp, role: "particle" }, { jp: "好き", role: "adjective" }, { jp: "です", role: "auxiliary" }]
                     });
                 }
@@ -1472,10 +1582,17 @@
     function s16() {
         return {
             id: "s16", title: "Particle Mastery", subtitle: "Shelf 16",
+            /* kana: alongside every kanji jp entry — this shelf and shelf 15
+               are the only two lessons that put real kanji into a graded
+               answer at all (every other shelf's accepted answers are
+               already pure kana), so buildWordBankExercises() below accepts
+               either spelling: a learner who hasn't memorized 学生/先生/
+               図書館/公園/勉強します/遊びます yet can still answer correctly
+               in hiragana. */
             wordBank: {
-                predicates: [{ jp: "学生", en: "a student" }, { jp: "先生", en: "a teacher" }],
-                places: [{ jp: "図書館", en: "the library" }, { jp: "公園", en: "the park" }],
-                actions: [{ jp: "勉強します", en: "study" }, { jp: "遊びます", en: "play" }]
+                predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
+                places: [{ jp: "図書館", kana: "としょかん", en: "the library" }, { jp: "公園", kana: "こうえん", en: "the park" }],
+                actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }]
             },
             buildInstruction: function () {
                 return {
@@ -1527,20 +1644,20 @@
                 return [
                     {
                         prompt: "Write: <strong>The cat is here (using が)</strong>",
-                        accepted: [["猫", "が", "います"]],
-                        hint: "猫がいます",
+                        accepted: [["猫", "が", "います"], ["ねこ", "が", "います"]],
+                        hint: "猫がいます (ねこがいます)",
                         refWords: [{ jp: "猫", role: "subject" }, { jp: "が", role: "particle" }, { jp: "います", role: "predicate" }]
                     },
                     {
                         prompt: "Write: <strong>My friend is also " + pred.en + "</strong>",
-                        accepted: [["友達", "も", pred.jp, "です"]],
-                        hint: "友達も" + pred.jp + "です",
+                        accepted: [["友達", "も", pred.jp, "です"], ["ともだち", "も", pred.kana, "です"]],
+                        hint: "友達も" + pred.jp + "です (ともだちも" + pred.kana + "です)",
                         refWords: [{ jp: "友達", role: "subject" }, { jp: "も", role: "particle" }, { jp: pred.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }]
                     },
                     {
                         prompt: "Write: <strong>I " + action.en + " at " + place.en + " (using で)</strong>",
-                        accepted: [[place.jp, "で", action.jp]],
-                        hint: place.jp + "で" + action.jp,
+                        accepted: [[place.jp, "で", action.jp], [place.kana, "で", action.kana]],
+                        hint: place.jp + "で" + action.jp + " (" + place.kana + "で" + action.kana + ")",
                         refWords: [{ jp: place.jp, role: "object" }, { jp: "で", role: "particle" }, { jp: action.jp, role: "predicate" }]
                     }
                 ];
@@ -2777,7 +2894,7 @@
             html += "<h3>Examples</h3>";
             inst.examples.forEach(function (ex) {
                 html += "<div class='example-sentence'>"
-                    + "<span>" + ex.jp + "</span>"
+                    + "<span>" + annotateFurigana(ex.jp) + "</span>"
                     + (ex.romaji ? "<span class='example-sentence__romaji'>" + ex.romaji + "</span>" : "")
                     + "<span class='example-sentence__english'>&mdash; " + ex.en + "</span>"
                     + "</div>";
@@ -2809,7 +2926,7 @@
        50+ words (e.g. shelf-07's numbers/counters). */
     function buildVocabTable(vocab) {
         let rows = vocab.map(function (w) {
-            return "<tr><td class='vocab-table__jp'>" + w.jp + "</td>"
+            return "<tr><td class='vocab-table__jp'>" + annotateFurigana(w.jp) + "</td>"
                 + "<td class='vocab-table__romaji'>" + (w.romaji || "") + "</td>"
                 + "<td class='vocab-table__en'>" + w.en + "</td></tr>";
         }).join("");
@@ -2922,12 +3039,18 @@
             hide(matchWrap);
             if (matchWrap) matchWrap.innerHTML = "";
             show(checkBtn);
-            show(hintBtn);
+            /* Hint stays hidden until the learner has actually tried —
+               revealed after 2 wrong attempts in checkAnswer() below,
+               instead of being available from the very first look. */
+            hide(hintBtn);
             if (input) {
                 show(input);
                 input.value = "";
                 input.disabled = false;
                 input.className = "study-practice__input";
+                input.placeholder = ex.openEnded
+                    ? "Type your full self-introduction here, all on one line..."
+                    : "Type your answer in hiragana...";
                 setTimeout(function () { input.focus(); }, 80);
             }
         }
@@ -2988,10 +3111,28 @@
         if (!input || !currentLesson) return;
         let ex = currentExercises[exerciseIndex];
         let userVal = norm(input.value);
-        let accepted = ex.accepted.some(function (acc) {
-            let fullSentence = acc.join("");
-            return norm(fullSentence) === userVal;
-        });
+        /* Three grading modes, checked in order of how open-ended they are:
+           - `openEnded` (free-write, e.g. s04's jiko-shoukai capstone): no
+             single correct answer exists, so `validate` (if given) checks
+             for the loose shape of a real attempt; with no `validate` any
+             non-empty input passes.
+           - `pattern` (a RegExp): grades by sentence SHAPE instead of one
+             fixed string — used by exercises that let the learner pick any
+             word from the word bank rather than one baked-in "correct" word
+             (see s03/s05).
+           - otherwise: the original exact-match-against-accepted behavior,
+             unchanged for every exercise that doesn't opt into the above. */
+        let accepted;
+        if (ex.openEnded) {
+            accepted = ex.validate ? ex.validate(input.value, userVal) : userVal.length > 0;
+        } else if (ex.pattern) {
+            accepted = ex.pattern.test(userVal);
+        } else {
+            accepted = ex.accepted.some(function (acc) {
+                let fullSentence = acc.join("");
+                return norm(fullSentence) === userVal;
+            });
+        }
 
         if (accepted) {
             input.disabled = true;
@@ -3012,12 +3153,15 @@
             if (attempts >= maxAttempts) {
                 input.disabled = true;
                 completedExercises++;
-                showFeedback("&#10007; the answer was: <strong>" + ex.hint + "</strong>", "reveal");
+                showFeedback("&#10007; " + (ex.openEnded ? "here's the pattern to follow: " : "the answer was: ") + "<strong>" + ex.hint + "</strong>", "reveal");
                 show($("studyNextBtn"));
                 hide($("studyCheckBtn"));
                 hide($("studyHintBtn"));
             } else {
                 showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
+                /* Reveal the hint button only once the learner has genuinely
+                   struggled (2 wrong tries), not on the very first look. */
+                if (attempts >= 2) show($("studyHintBtn"));
             }
         }
     }

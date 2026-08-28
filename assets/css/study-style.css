@@ -584,6 +584,20 @@
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 17px;
     color: var(--term-text);
+    line-height: 2.1;
+}
+
+/* Furigana — annotateFurigana() in study-room.js wraps kanji in these.
+   rt stays on the readable default font (Space Mono), not VT323 — same
+   "readable font for caption-sized text" rule LessonBox already follows,
+   since VT323 goes muddy at annotation size. */
+.vocab-table__jp rt,
+.example-sentence rt {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 9px;
+    font-weight: normal;
+    letter-spacing: 0;
+    color: var(--term-label);
 }
 .vocab-table__romaji {
     font-size: 11px;
@@ -645,8 +659,10 @@
 .example-sentence {
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 4px;
     margin: 8px 0;
+    padding-top: 14px;
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 18px;
     color: var(--term-text);
