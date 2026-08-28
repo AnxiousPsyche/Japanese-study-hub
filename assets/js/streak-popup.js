@@ -1,12 +1,18 @@
-/* STREAK POPUP — a once-per-day "you're on a N-day streak" check-in
-   shown when the player opens the Study Room to review/learn. Reuses
-   the same jpExplorer.streak/lastPlayedDate the homepage's Player
+/* STREAK POPUP — a once-per-day "you're on a N-day streak" check-in.
+   Reuses the same jpExplorer.streak/lastPlayedDate the homepage's Player
    window already tracks (assets/js/progress.js) rather than a parallel
    counter, and calls applyPlayerProgress() itself so the streak still
    advances correctly on a day the player goes straight to the Study
    Room without ever visiting the homepage. Self-initializing like
    companion-cat.js — the <script> tag alone is enough, no markup
-   required in the page body. */
+   required in the page body.
+
+   Shown the first time any of these happens on a given day (whichever
+   comes first — the once-per-day gate means only one ever actually
+   renders): the page loads, a lesson's practice is completed, or a
+   quiz is submitted. The latter two arrive via the "nekoBunko:studyProgress"
+   event study-progress.js dispatches from completeLesson()/recordQuizRun(),
+   so this file doesn't need to know which page/flow triggered it. */
 (function () {
     "use strict";
 
@@ -98,7 +104,7 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    function maybeShow() {
         const explorer = getExplorer();
         if (!explorer) return;
 
@@ -111,5 +117,10 @@
         markShown(today);
 
         buildPopup(explorer.streak || 1);
-    });
+    }
+
+    document.addEventListener("DOMContentLoaded", maybeShow);
+    document.addEventListener("nekoBunko:studyProgress", maybeShow);
+
+    window.StreakPopup = { maybeShow: maybeShow };
 })();

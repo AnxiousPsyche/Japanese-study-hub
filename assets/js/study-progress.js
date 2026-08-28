@@ -49,11 +49,24 @@
        Returns { gained } — 0 when already completed before. */
     function completeLesson(lessonId) {
         const state = load();
-        if (state.lessons[lessonId]) return { gained: 0 };
+        if (state.lessons[lessonId]) {
+            notifyProgress("lesson", lessonId);
+            return { gained: 0 };
+        }
         state.lessons[lessonId] = true;
         state.xp += XP_REWARDS.lesson;
         save();
+        notifyProgress("lesson", lessonId);
         return { gained: XP_REWARDS.lesson };
+    }
+
+    /* Fires a DOM event any time practice is completed (a lesson finished
+       or a quiz submitted) so unrelated widgets — e.g. streak-popup.js —
+       can react without this module needing to know they exist. */
+    function notifyProgress(kind, id) {
+        try {
+            document.dispatchEvent(new CustomEvent("nekoBunko:studyProgress", { detail: { kind: kind, id: id } }));
+        } catch (e) { /* CustomEvent unsupported — no listener, no harm */ }
     }
 
     function quizBest(levelId) {
@@ -97,6 +110,7 @@
         state.quiz[levelId] = entry;
         state.xp += gained;
         save();
+        notifyProgress("quiz", levelId);
         return { gained: gained, bestPct: entry.bestPct, passed: passed, perfect: perfect };
     }
 

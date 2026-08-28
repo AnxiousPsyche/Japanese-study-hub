@@ -17,6 +17,22 @@
     const EXPLORER_KEY = "jpExplorer";
     const VALID_COLORS = ["orange", "black", "white"]; // matches CAT_COLOR_ORDER in n5-phaser-game.js exactly
 
+    /* Ambient extra actions layered on top of the idle tail-wag loop (see
+       companion-cat.css's .is-standing/.is-playing rules) so the cat isn't
+       just sitting there indefinitely. Black has no "standing" entry:
+       blackCatStandingUp.png is a byte-identical duplicate of
+       blackCatTailWagging.png (verified — no real standing-up pose was
+       ever exported for the black cat), so it's left out here rather than
+       playing the wrong animation. */
+    const EXTRA_ACTIONS = {
+        orange: ["standing", "playing"],
+        white: ["standing", "playing"],
+        black: ["playing"]
+    };
+    const ACTION_DURATION_MS = { standing: 700, playing: 2600 };
+    const ACTION_MIN_GAP_MS = 16000;
+    const ACTION_MAX_GAP_MS = 34000;
+
     const TIPS = [
         "You're doing great — keep it up! 🐾",
         "Tip: try the exercise before peeking at the lesson notes.",
@@ -72,6 +88,43 @@
         return tip;
     }
 
+    function prefersReducedMotion() {
+        try {
+            return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /* Schedules one ambient "standing up" or "playing" burst at a random
+       15-35s gap, then reschedules itself — runs for the lifetime of the
+       page. Skipped entirely under reduced-motion (matches the CSS media
+       query, which also turns off the idle tail-wag loop), and a burst
+       that would land while the tab is hidden just gets skipped rather
+       than queued, so nothing plays out of sync on return. `color` is
+       captured once at init() time — a color change only takes effect
+       on the next page load, same as the rest of this widget. */
+    function scheduleNextAction(wrap, color) {
+        if (prefersReducedMotion()) return;
+        const actions = EXTRA_ACTIONS[color] || [];
+        if (!actions.length) return;
+
+        const gap = ACTION_MIN_GAP_MS + Math.random() * (ACTION_MAX_GAP_MS - ACTION_MIN_GAP_MS);
+        setTimeout(function () {
+            if (document.hidden) {
+                scheduleNextAction(wrap, color);
+                return;
+            }
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            const className = "is-" + action;
+            wrap.classList.add(className);
+            setTimeout(function () {
+                wrap.classList.remove(className);
+                scheduleNextAction(wrap, color);
+            }, ACTION_DURATION_MS[action] || 1000);
+        }, gap);
+    }
+
     function init() {
         if (!readLocal(EXPLORER_KEY)) return; // no profile yet — stay hidden on login
 
@@ -109,6 +162,7 @@
         });
 
         document.body.appendChild(wrap);
+        scheduleNextAction(wrap, color);
     }
 
     if (document.readyState === "loading") {

@@ -2610,6 +2610,16 @@
         "35080"
       ],
       "port": 35080
+    },
+    {
+      "name": "jp-library-static-round46-todaysession",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35191"
+      ],
+      "port": 35191
     }
   ],
   "autoVerify": true

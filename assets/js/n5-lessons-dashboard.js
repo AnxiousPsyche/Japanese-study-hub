@@ -1,5 +1,5 @@
 /* N5 Lessons Dashboard — renders the 18 shelf lesson cards, the
-   segregated N5 Kanji lesson's own card, and the 10-question final quiz
+   segregated N5 Kanji lesson's own card, and the 50-question final quiz
    card, marking completed lessons from the shared progress store. */
 (function () {
     "use strict";
@@ -72,7 +72,7 @@
         quizCard.href = "n5-quiz.html";
         let status;
         if (!quizDone) {
-            status = "10 questions &mdash; pass with 70% for 150 XP";
+            status = "50 questions &mdash; pass with 70% for 150 XP";
         } else {
             status = "&#10003; Passed";
             if (best !== null) status += " &mdash; best " + best + "%";

@@ -68,39 +68,45 @@ LOGIN WINDOW — Windows 95 3D-beveled chrome
 
 }
 
-/* Curled-up sleep pose, frames 6-9 of the same 14-frame @ 64px sheet the
-   Adventure Room uses for the player cat's own idle-sleep animation
+/* Curled-up sleep pose, frames 6-9 of the same 14-frame sheet the Adventure
+   Room uses for the player cat's own idle-sleep animation
    (assets/js/n5-phaser-game.js SLEEP_SHEETS) — frames 6-9 are the
    fully-curled "breathing" loop specifically (0-5 are the sit-down/curl-up
-   transition, not a resting pose on their own). Scaled 1.125x from the
-   native 64px for a bit more presence sitting on the title bar. */
+   transition, not a resting pose on their own). Now the hero visual in the
+   header in place of the old static logo image — sized to ~80% of the
+   dialog's own width (min(78%, 320px), so it stays proportional on
+   narrower screens instead of overflowing) rather than a small icon.
+
+   background-position/-size are expressed as PERCENTAGES of the element's
+   own box, not literal pixels — since the box is now a fluid, responsive
+   size (min(78%, 320px)) rather than the old fixed 72px, a percentage
+   stays mathematically correct at any resolved width with no separate
+   mobile-breakpoint override needed. The math: with background-size set to
+   1400% (14 frames) and the box itself always square (aspect-ratio 1/1),
+   background-position-x = 100 * frameIndex / (frameCount - 1) lands the
+   image exactly frameIndex container-widths to the left — 46.1538% for
+   frame 6, 76.9231% for frame 10 (one past frame 9, kept as an exclusive
+   end the same way the original px version used -720px = frame 10 * 72px),
+   so steps(4) over that range visits exactly frames 6, 7, 8, 9. */
 .login-cat{
 
-    position:absolute;
+    width:min(78%, 320px);
 
-    top:-46px;
+    aspect-ratio:1 / 1;
 
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:72px;
-
-    height:72px;
+    margin:0 auto 10px;
 
     background-image:url("../images/avatars/orangecat-sleep-sheet.png");
 
     background-repeat:no-repeat;
 
-    background-size:1008px 72px;
+    background-size:1400% 100%;
 
-    background-position:-432px 0;
+    background-position:46.1538% 0;
 
     image-rendering:pixelated;
 
     animation:loginCatBreathe 1.8s steps(4) infinite;
-
-    z-index:1;
 
     pointer-events:none;
 
@@ -108,9 +114,9 @@ LOGIN WINDOW — Windows 95 3D-beveled chrome
 
 @keyframes loginCatBreathe{
 
-    from{ background-position-x:-432px; }
+    from{ background-position-x:46.1538%; }
 
-    to{ background-position-x:-720px; }
+    to{ background-position-x:76.9231%; }
 
 }
 
@@ -239,17 +245,6 @@ BODY PADDING (everything below the title bar)
 /*======================================================
 LOGO
 ======================================================*/
-
-.login-logo{
-
-    width:48px;
-
-    margin-bottom:8px;
-
-    image-rendering:pixelated;
-
-}
-
 
 /*======================================================
 TITLE
@@ -784,9 +779,7 @@ no internal scrolling needed
 
     }
 
-    .login-logo{
-
-        width:36px;
+    .login-cat{
 
         margin-bottom:6px;
 

@@ -61,8 +61,67 @@ body:has(#desktop) .companion-cat {
 
 @keyframes companionTailWag { from { background-position: 0 0; } to { background-position: -640px 0; } }
 
+/* PLAYING / STANDING UP — ambient extra actions triggered occasionally by
+   companion-cat.js (see its scheduleNextAction()) so the cat isn't just
+   sitting there the whole time. Percentage-based background-position
+   (0% -> 100%) instead of a literal -Npx end value, so one keyframe per
+   action works for every color's sheet regardless of its exact pixel
+   size — background-size below is set in % of the container too, so
+   "100%" always lands exactly on the last frame no matter the sheet's
+   real width. Container width stays ~128px (2x the shared 64px grid
+   pitch every sheet in this set uses) across every state so the widget
+   doesn't jump sideways when an action starts; only its height grows
+   for the taller standing/playing poses, anchored from the bottom via
+   the fixed-position `bottom` offset already set on .companion-cat.
+
+   blackCatStandingUp.png/.ase are byte-identical to blackCatTailWagging's
+   — a real asset gap (no "standing up" pose was ever exported for the
+   black cat), not a bug in this code. .is-standing is simply never
+   scheduled when the active color is black (see EXTRA_ACTIONS in
+   companion-cat.js) until a real sheet is exported. */
+@keyframes companionAction { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+
+.companion-cat--orange.is-standing {
+    background-image: url("../images/avatars/orangeCatStandingUp.png");
+    width: 128px;
+    height: 130px;
+    background-size: 400% 100%;
+    animation: companionAction 0.7s steps(4) 1 both;
+}
+.companion-cat--white.is-standing {
+    background-image: url("../images/avatars/whiteCatStandingUp.png");
+    width: 128px;
+    height: 132px;
+    background-size: 400% 100%;
+    animation: companionAction 0.7s steps(4) 1 both;
+}
+
+.companion-cat--orange.is-playing {
+    background-image: url("../images/avatars/orangeCatPlaying.png");
+    width: 128px;
+    height: 232px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+.companion-cat--black.is-playing {
+    background-image: url("../images/avatars/blackCatPlaying.png");
+    width: 128px;
+    height: 258px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+.companion-cat--white.is-playing {
+    background-image: url("../images/avatars/whiteCatPlaying.png");
+    width: 128px;
+    height: 262px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .companion-cat { animation: none !important; }
+    .companion-cat.is-standing,
+    .companion-cat.is-playing { animation: none !important; }
 }
 
 .companion-cat__bubble {
@@ -123,6 +182,14 @@ body:has(#desktop) .companion-cat {
         background-size: 480px 99px;
     }
     @keyframes companionTailWag { from { background-position: 0 0; } to { background-position: -480px 0; } }
+
+    /* Same 1.5x scale-down applied to the extra-action states — width
+       stays the shared ~96px, only height changes per sheet/action. */
+    .companion-cat--orange.is-standing { width: 96px; height: 98px; }
+    .companion-cat--white.is-standing { width: 96px; height: 99px; }
+    .companion-cat--orange.is-playing { width: 96px; height: 174px; }
+    .companion-cat--black.is-playing { width: 96px; height: 194px; }
+    .companion-cat--white.is-playing { width: 96px; height: 197px; }
     .companion-cat__bubble {
         bottom: 109px;
         max-width: 170px;

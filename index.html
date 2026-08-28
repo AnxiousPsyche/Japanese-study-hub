@@ -133,15 +133,6 @@
 
         <div class="login-window-wrap">
 
-            <!-- Orange cat, curled up asleep, resting on the title bar —
-                 same orangecat-sleep-sheet.png rig the Adventure Room uses
-                 for the player's own idle-sleep animation (frames 6-9, the
-                 fully-curled "breathing" loop), just decorative here. Lives
-                 outside .login-glass (which needs overflow-y:auto for tall
-                 content on short screens) so the part that pokes above the
-                 title bar never gets clipped by that scroll container. -->
-            <div class="login-cat" aria-hidden="true"></div>
-
         <div class="login-glass">
 
             <!-- =====================================
@@ -159,7 +150,12 @@
 
             <div class="login-header">
 
-                <img src="assets/images/logo/JPLnewlogo.png" class="login-logo" alt="Neko Bunko Logo">
+                <!-- Orange cat, curled up asleep and breathing, standing in
+                     for the old logo image — same orangecat-sleep-sheet.png
+                     rig the Adventure Room uses for the player's own
+                     idle-sleep animation (frames 6-9, the fully-curled
+                     "breathing" loop specifically). -->
+                <div class="login-cat" aria-hidden="true"></div>
 
                 <h1 class="scroll-title">
 

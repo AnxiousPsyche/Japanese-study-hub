@@ -464,6 +464,63 @@
                         title: "A は B です",
                         explain: "Use は to mark the topic and です to make it polite — です changes shape to move the tense: swap it for でした and the whole sentence slides from now to before, nothing else changes. Japanese doesn't have a separate future word either — です already covers 'will be.'",
                         pattern: '<span class="pattern-box__slot">Topic</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Predicate</span> <span class="pattern-box__fixed">です</span>',
+                        /* Ported verbatim (structure/wording) from n5-phaser-game.js's
+                           LESSON_CONTENT['shelf-03'] grammar-intro diagram page. The
+                           original used var(--lb-role-*)/var(--jr-text-dim), which only
+                           resolve inside .lesson-box-overlay (lesson-box.css) — Study
+                           Room's DOM never has that ancestor, so every var(...) below is
+                           replaced with its literal N5-theme hex value straight from
+                           lesson-box.css's :root block: --lb-role-particle-bg #f0c674,
+                           --lb-role-copula-bg #ffffff, --lb-role-subject-bg/fg #6fb3e6/
+                           #0b2438, --lb-role-predicate-bg/fg #e2685f/#2e0e0b,
+                           --lb-role-copula-fg #201d54, --lb-role-particle-fg #4a3211,
+                           --lb-role-neutral-bg #746fa8, --jr-text-dim #c9a66b. */
+                        diagramSvg: `
+        <svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <defs>
+            <marker id="lb-arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#f0c674"></path>
+            </marker>
+            <marker id="lb-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#ffffff"></path>
+            </marker>
+          </defs>
+          <text x="10" y="24" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+            <rect x="10" y="36" width="70" height="34" rx="3" fill="#746fa8"></rect>
+            <text x="45" y="58" text-anchor="middle" fill="#efeeff">I</text>
+            <rect x="96" y="36" width="70" height="34" rx="3" fill="#746fa8"></rect>
+            <text x="131" y="58" text-anchor="middle" fill="#efeeff">am</text>
+            <rect x="182" y="36" width="140" height="34" rx="3" fill="#746fa8"></rect>
+            <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
+          </g>
+          <text x="131" y="30" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
+          <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
+          <text x="70" y="118" text-anchor="middle" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
+          <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
+          <text x="270" y="118" text-anchor="middle" font-size="10" fill="#ffffff" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
+          <text x="10" y="148" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+            <rect x="10" y="160" width="90" height="34" rx="3" fill="#6fb3e6"></rect>
+            <text x="55" y="182" text-anchor="middle" fill="#0b2438">わたし</text>
+            <rect x="108" y="160" width="46" height="34" rx="3" fill="#f0c674"></rect>
+            <text x="131" y="182" text-anchor="middle" fill="#4a3211">は</text>
+            <rect x="162" y="160" width="110" height="34" rx="3" fill="#e2685f"></rect>
+            <text x="217" y="182" text-anchor="middle" fill="#2e0e0b">せんせい</text>
+            <rect x="280" y="160" width="70" height="34" rx="3" fill="#ffffff"></rect>
+            <text x="315" y="182" text-anchor="middle" fill="#201d54">です</text>
+          </g>
+          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="#c9a66b">
+            <text x="55" y="208" text-anchor="middle">subject</text>
+            <text x="131" y="203" text-anchor="middle">topic + "is"</text>
+            <text x="217" y="208" text-anchor="middle">predicate</text>
+            <text x="315" y="203" text-anchor="middle">tense +</text>
+            <text x="315" y="215" text-anchor="middle">politeness</text>
+          </g>
+          <text x="10" y="238" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
+        </svg>
+      `,
+                        diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',
                         culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\""
                     }],
                     examples: [
@@ -619,7 +676,45 @@
                         {
                             title: "こそあど System",
                             explain: "Japanese picks 'this/that' based on distance, not just what the object is — like a 3-ring dartboard centered on YOU, the speaker: the bullseye ring is yours, the middle ring belongs to whoever you're talking to, and everything outside that is 'over there,' full stop. Two shapes per distance: これ/それ/あれ stand alone ('this one'), while この/その/あの attach directly in front of a noun ('this ___').",
-                            pattern: '<span class="pattern-box__slot">This/That</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">です</span>'
+                            pattern: '<span class="pattern-box__slot">This/That</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">です</span>',
+                            /* Ported from n5-phaser-game.js's buildDemonstrativesDiagram(),
+                               which is authored as a (playerColorId, senseiColorId) => string
+                               function so the "YOU"/"LISTENER" cat portraits match whichever
+                               cat color the player picked in the Adventure Room. Study Room
+                               has no cat-color-select flow at all, so per the porting
+                               instructions this is resolved once with fixed defaults
+                               ('orange' for you, 'black' for the listener) instead of staying
+                               a function — the color choice here is purely decorative (which
+                               cat portrait shows), not part of the grammar point itself.
+                               var(--lb-role-subject-bg) (この row-word color) is hardcoded to
+                               its literal N5-theme value #6fb3e6 for the same reason as
+                               shelf-03's diagram above; var(--jr-text-dim) (head/row-note
+                               text) is instead pointed at this page's own
+                               --term-text-dim token (see study-style.css's .study-room.
+                               is-terminal block) so the diagram's captions read in the same
+                               green terminal palette as the rest of the lesson panel. */
+                            diagramSvg: '<div class="grammar-box__demo-grid">'
+                                + '<div class="grammar-box__demo-head grammar-box__demo-head--word"></div>'
+                                + '<div class="grammar-box__demo-head">YOU</div>'
+                                + '<div class="grammar-box__demo-head">LISTENER</div>'
+                                + '<div class="grammar-box__demo-head">FAR AWAY</div>'
+                                + '<div class="grammar-box__demo-row-word" style="color:#6fb3e6;">これ</div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-orange-64x64.png\');"></div><img class="grammar-box__demo-item-icon" src="../../assets/images/lesson/cattomouse-Original.png" alt="item"></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-black-64x64.png\');"></div></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div></div>'
+                                + '<div class="grammar-box__demo-row-note">kore — the item is right there <b>with you</b>.</div>'
+                                + '<div class="grammar-box__demo-row-word" style="color:#6fb3e6;">それ</div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-orange-64x64.png\');"></div></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-black-64x64.png\');"></div><img class="grammar-box__demo-item-icon" src="../../assets/images/lesson/cattomouse-Original.png" alt="item"></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div></div>'
+                                + '<div class="grammar-box__demo-row-note">sore — the item is over <b>with the listener</b>.</div>'
+                                + '<div class="grammar-box__demo-row-word" style="color:#6fb3e6;">あれ</div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-orange-64x64.png\');"></div></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><div class="grammar-box__demo-cat-pip" style="background-image:url(\'../../assets/images/avatars/talk-black-64x64.png\');"></div></div>'
+                                + '<div class="grammar-box__demo-cell"><div class="grammar-box__demo-track"></div><img class="grammar-box__demo-item-icon" src="../../assets/images/lesson/cattomouse-Original.png" alt="item"></div>'
+                                + '<div class="grammar-box__demo-row-note">are — far from <b>both of you</b>.</div>'
+                                + '</div>',
+                            diagramCaption: 'これ/それ/あれ always track distance from the SPEAKER — not from the object to "you" in general.'
                         },
                         {
                             title: "これ vs この",
@@ -862,7 +957,77 @@
                         },
                         {
                             title: "Direction words",
-                            explain: "These describe where something is relative to something else: [Thing]は [something]の [direction]に あります — 前 (front), 後ろ (behind), 右 (right), 左 (left), 隣 (next to), 近く (near), 上 (above), 下 (below). 中/外 ('inside'/'outside') only make sense next to a container."
+                            explain: "These describe where something is relative to something else: [Thing]は [something]の [direction]に あります — 前 (front), 後ろ (behind), 右 (right), 左 (left), 隣 (next to), 近く (near), 上 (above), 下 (below). 中/外 ('inside'/'outside') only make sense next to a container.",
+                            /* n5-phaser-game.js's shelf-08 diagrams (buildDirectionsDiagram,
+                               buildPlacesMapDiagram, buildMovementDiagram, buildRouteDiagram)
+                               are all click-driven DOM widgets — each pairs a diagramSvg
+                               builder with its own wireXDiagram(container) function that
+                               attaches button click handlers after the markup is inserted
+                               (see lesson-box.js's render() hook). Study Room's
+                               renderInstruction() has no equivalent wiring hook and adding
+                               one is out of scope here (this pass only touches study-room.js's
+                               s03/s04/s05/s08 content + renderInstruction's own read-only
+                               template string), so porting any of those four as-is would ship
+                               dead buttons. Instead this is a new static SVG — inline SVG
+                               needs no click wiring to render correctly — that keeps the
+                               source diagrams' actual content: buildDirectionsDiagram's
+                               "around the cat" compass (mae/ushiro/migi/hidari/tonari/chikaku
+                               all shown at once instead of one-at-a-time via button clicks)
+                               plus a worked example sentence using this lesson's own
+                               としょかん/がっこう/ちかく vocab, styled with the same
+                               subject/particle/predicate/copula role colors and literal
+                               N5-theme hex values as shelf-03's ported diagram above (see
+                               that section's comment for the var(--lb-role-*)/var(--jr-text-
+                               dim) -> hex mapping this reuses). */
+                            diagramSvg: `
+        <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <text x="20" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">AROUND ねこ (THE CAT) - DIRECTION WORDS</text>
+
+          <rect x="265" y="30" width="110" height="42" rx="4" fill="#e2685f"></rect>
+          <text x="320" y="50" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">前</text>
+          <text x="320" y="65" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">mae - in front</text>
+
+          <rect x="440" y="65" width="110" height="42" rx="4" fill="#e2685f"></rect>
+          <text x="495" y="85" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">隣</text>
+          <text x="495" y="100" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">tonari - next to</text>
+          <path d="M365,135 C 400,120 420,110 440,95" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4"></path>
+
+          <rect x="60" y="126" width="110" height="42" rx="4" fill="#e2685f"></rect>
+          <text x="115" y="146" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">左</text>
+          <text x="115" y="161" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">hidari - left of</text>
+
+          <rect x="470" y="126" width="110" height="42" rx="4" fill="#e2685f"></rect>
+          <text x="525" y="146" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">右</text>
+          <text x="525" y="161" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">migi - right of</text>
+
+          <ellipse cx="320" cy="150" rx="72" ry="52" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="5 4"></ellipse>
+          <text x="320" y="213" text-anchor="middle" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">近く - chikaku (near)</text>
+
+          <rect x="275" y="126" width="90" height="48" rx="4" fill="#6fb3e6"></rect>
+          <text x="320" y="155" text-anchor="middle" font-size="20" fill="#0b2438" font-family="VT323, DotGothic16, monospace">ねこ</text>
+
+          <rect x="265" y="228" width="110" height="42" rx="4" fill="#e2685f"></rect>
+          <text x="320" y="248" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">後ろ</text>
+          <text x="320" y="263" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">ushiro - behind</text>
+
+          <g font-family="VT323, DotGothic16, monospace" font-size="15">
+            <rect x="90" y="285" width="90" height="34" rx="3" fill="#6fb3e6"></rect>
+            <text x="135" y="307" text-anchor="middle" fill="#0b2438">としょかん</text>
+            <rect x="186" y="285" width="40" height="34" rx="3" fill="#f0c674"></rect>
+            <text x="206" y="307" text-anchor="middle" fill="#4a3211">は</text>
+            <rect x="232" y="285" width="100" height="34" rx="3" fill="#e2685f"></rect>
+            <text x="282" y="307" text-anchor="middle" fill="#2e0e0b">がっこうの</text>
+            <rect x="338" y="285" width="70" height="34" rx="3" fill="#e2685f"></rect>
+            <text x="373" y="307" text-anchor="middle" fill="#2e0e0b">ちかく</text>
+            <rect x="414" y="285" width="40" height="34" rx="3" fill="#f0c674"></rect>
+            <text x="434" y="307" text-anchor="middle" fill="#4a3211">に</text>
+            <rect x="460" y="285" width="90" height="34" rx="3" fill="#ffffff"></rect>
+            <text x="505" y="307" text-anchor="middle" fill="#201d54">あります</text>
+          </g>
+          <text x="320" y="333" text-anchor="middle" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Toshokan wa gakkou no chikaku ni arimasu. - "The library is near the school."</text>
+        </svg>
+      `,
+                            diagramCaption: '前/後ろ/右/左/隣/近く describe position relative to something else, like ねこ here — 上/下/中/外 anchor to a container instead (a table, a box), so they don’t need their own spot on this compass.'
                         },
                         {
                             title: "Movement words",
@@ -2886,6 +3051,8 @@
                 + "<div class='grammar-box__title'>" + sec.title + "</div>"
                 + "<p>" + sec.explain + "</p>"
                 + (sec.pattern ? "<div class='pattern-box'><span class='pattern-box__label'>Pattern:</span> " + sec.pattern + "</div>" : "")
+                + (sec.diagramSvg ? "<div class='grammar-box__diagram'>" + sec.diagramSvg + "</div>" : "")
+                + (sec.diagramCaption ? "<p class='grammar-box__diagram-caption'>" + sec.diagramCaption + "</p>" : "")
                 + (sec.culture ? "<p class='grammar-box__culture'>&#127760; " + sec.culture + "</p>" : "")
                 + "</div>";
         });
