@@ -5,7 +5,17 @@
    getTotalLength(), then stroke-dashoffset transitions to 0, so the
    line appears to draw itself in the browser's normal CSS transition
    engine. Strokes play back one at a time, in the stroke-order given by
-   kana-data.js, with a short pause between them. */
+   kana-data.js, with a short pause between them.
+
+   Each stroke also gets a small numbered dot — the same "①②③..."
+   marker every real stroke-order chart/video uses — placed at that
+   stroke's true starting point. The point comes from the path's own
+   getPointAtLength(0), not a hand-picked coordinate, so the dot can
+   never drift off the line it's marking. The dot lights up the instant
+   its stroke starts drawing, then settles to a faint, still-visible
+   mark once the stroke finishes, so by the end the whole numbered
+   sequence is readable at a glance — exactly like a printed stroke
+   diagram. */
 (function () {
     "use strict";
 
@@ -29,7 +39,7 @@
     }
 
     function initKanaWriter(opts) {
-        const chars = opts.chars;
+        let chars = opts.chars;
         const gridEl = opts.gridEl;
         const viewerEl = opts.viewerEl;
         const svgEl = opts.svgEl;
@@ -38,6 +48,7 @@
         const replayBtn = opts.replayBtn;
         const prevBtn = opts.prevBtn;
         const nextBtn = opts.nextBtn;
+        const strokeOrderStripEl = opts.strokeOrderStripEl;
 
         let currentIndex = -1;
         let playToken = 0;
@@ -77,6 +88,92 @@
             });
         }
 
+        function buildStartDot(path, number) {
+            /* Real start point of the actual path geometry — never a
+               hand-placed guess, so it always lands exactly on the line. */
+            const start = path.getPointAtLength(0);
+            const dot = document.createElementNS(SVG_NS, "g");
+            dot.setAttribute("class", "kana-writer__dot");
+            dot.setAttribute("transform", "translate(" + start.x + "," + start.y + ")");
+
+            const circle = document.createElementNS(SVG_NS, "circle");
+            circle.setAttribute("r", "4.6");
+            dot.appendChild(circle);
+
+            const label = document.createElementNS(SVG_NS, "text");
+            label.setAttribute("x", "0");
+            label.setAttribute("y", "0.5");
+            label.textContent = String(number);
+            dot.appendChild(label);
+
+            svgEl.appendChild(dot);
+            return dot;
+        }
+
+        function buildStrokeOrderFrame(strokes, upToIndex) {
+            /* One frame of the jisho.org-style "stroke order" strip: every
+               stroke before upToIndex drawn faint/gray (already-done), the
+               stroke AT upToIndex drawn solid black plus a red start dot
+               (the one being introduced this frame), and nothing beyond it
+               — exactly the progressive reveal jisho's own kanji/kana pages
+               use, which is itself rendered from this same KanjiVG data. */
+            const frame = document.createElement("div");
+            frame.className = "kana-stroke-order-frame";
+            const svg = document.createElementNS(SVG_NS, "svg");
+            svg.setAttribute("viewBox", "0 0 109 109");
+            svg.setAttribute("class", "kana-stroke-order-frame__svg");
+            frame.appendChild(svg);
+
+            for (let i = 0; i < upToIndex; i++) {
+                const p = document.createElementNS(SVG_NS, "path");
+                p.setAttribute("d", strokes[i]);
+                p.setAttribute("class", "kana-stroke-order-frame__stroke kana-stroke-order-frame__stroke--prior");
+                svg.appendChild(p);
+            }
+
+            const current = document.createElementNS(SVG_NS, "path");
+            current.setAttribute("d", strokes[upToIndex]);
+            current.setAttribute("class", "kana-stroke-order-frame__stroke kana-stroke-order-frame__stroke--current");
+            svg.appendChild(current);
+
+            const start = current.getPointAtLength(0);
+            const dot = document.createElementNS(SVG_NS, "circle");
+            dot.setAttribute("cx", start.x);
+            dot.setAttribute("cy", start.y);
+            dot.setAttribute("r", "4.5");
+            dot.setAttribute("class", "kana-stroke-order-frame__dot");
+            svg.appendChild(dot);
+
+            return frame;
+        }
+
+        function buildStrokeOrderComplete(strokes) {
+            /* The final, un-boxed "here's the finished character" thumbnail
+               jisho.org tacks onto the end of its stroke-order strip. */
+            const frame = document.createElement("div");
+            frame.className = "kana-stroke-order-frame kana-stroke-order-frame--complete";
+            const svg = document.createElementNS(SVG_NS, "svg");
+            svg.setAttribute("viewBox", "0 0 109 109");
+            svg.setAttribute("class", "kana-stroke-order-frame__svg");
+            frame.appendChild(svg);
+            strokes.forEach(function (d) {
+                const p = document.createElementNS(SVG_NS, "path");
+                p.setAttribute("d", d);
+                p.setAttribute("class", "kana-stroke-order-frame__stroke kana-stroke-order-frame__stroke--current");
+                svg.appendChild(p);
+            });
+            return frame;
+        }
+
+        function buildStrokeOrderStrip(strokes) {
+            if (!strokeOrderStripEl) return;
+            strokeOrderStripEl.innerHTML = "";
+            strokes.forEach(function (_, i) {
+                strokeOrderStripEl.appendChild(buildStrokeOrderFrame(strokes, i));
+            });
+            strokeOrderStripEl.appendChild(buildStrokeOrderComplete(strokes));
+        }
+
         function playStrokes(strokes) {
             const myToken = ++playToken;
             const paths = strokes.map(function (d) {
@@ -90,10 +187,20 @@
                 return p;
             });
 
+            /* Dots are built once up front (each anchored to its own
+               stroke's real start point) and simply toggled visible in
+               step with playback, rather than being created mid-sequence —
+               keeps playAt() a plain timer loop. */
+            const dots = paths.map(function (p, i) {
+                return buildStartDot(p, i + 1);
+            });
+
             function playAt(i) {
                 if (myToken !== playToken) return;
                 if (i >= paths.length) return;
                 const p = paths[i];
+                const dot = dots[i];
+                dot.classList.add("is-active");
                 /* A single forced reflow isn't enough here — the browser
                    can still coalesce the starting dashoffset and the
                    transitioned target into one paint, so the stroke pops
@@ -109,6 +216,10 @@
                         p.style.strokeDashoffset = "0";
                     });
                 });
+                setTimeout(function () {
+                    if (myToken !== playToken) return;
+                    dot.classList.add("is-done");
+                }, STROKE_MS);
                 setTimeout(function () { playAt(i + 1); }, STROKE_MS + GAP_MS);
             }
 
@@ -124,6 +235,7 @@
             strokeCountEl.textContent = c.strokes.length + (c.strokes.length === 1 ? " stroke" : " strokes");
             viewerEl.classList.add("is-visible");
             playStrokes(c.strokes);
+            buildStrokeOrderStrip(c.strokes);
 
             Array.prototype.forEach.call(gridEl.querySelectorAll(".kana-grid__tile"), function (btn, i) {
                 btn.classList.toggle("is-active", i === idx);
@@ -144,11 +256,23 @@
             openChar(next);
         }
 
+        function setChars(newChars) {
+            chars = newChars;
+            currentIndex = -1;
+            playToken++;
+            clearSvg();
+            viewerEl.classList.remove("is-visible");
+            if (strokeOrderStripEl) strokeOrderStripEl.innerHTML = "";
+            renderGrid();
+        }
+
         if (replayBtn) replayBtn.addEventListener("click", replay);
         if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
         if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
 
         renderGrid();
+
+        return { setChars: setChars };
     }
 
     window.KanaWriter = { init: initKanaWriter };

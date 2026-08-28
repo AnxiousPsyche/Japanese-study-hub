@@ -18,15 +18,19 @@
             <span class="study-header__dots" aria-hidden="true"><span></span><span></span><span></span></span>
             <a href="mission-hub.html" class="study-header__back">&larr; Mission Hub</a>
             <a href="../../index.html" class="study-header__back">&#127968; Home</a>
-            <h1 class="study-header__title">&#10024; Kana Dojo &mdash; Hiragana</h1>
+            <h1 class="study-header__title">&#10024; Kana Dojo</h1>
+            <div class="study-header__toggle">
+                <button type="button" class="study-header__toggle-seg study-header__toggle-seg--active" id="kanaHiraganaTab">Hiragana</button>
+                <button type="button" class="study-header__toggle-seg" id="kanaKatakanaTab">Katakana</button>
+            </div>
             <span class="xp-badge">&#9997; 46 characters</span>
         </header>
         <div class="kana-body">
-            <p class="kana-intro">Click any character to watch its strokes drawn in the correct order, then trace it yourself on paper. Use Replay to watch again, or Prev/Next to move through the row.</p>
+            <p class="kana-intro" id="kanaIntro">Click any character to watch its strokes drawn in the correct order, then trace it yourself on paper. Use Replay to watch again, or Prev/Next to move through the row.</p>
             <div class="kana-grid" id="kanaGrid"></div>
 
             <div class="kana-viewer" id="kanaViewer">
-                <svg class="kana-writer__svg" id="kanaSvg" viewBox="0 0 100 100"></svg>
+                <svg class="kana-writer__svg" id="kanaSvg" viewBox="0 0 109 109"></svg>
                 <div class="kana-viewer__label" id="kanaLabel"></div>
                 <div class="kana-viewer__count" id="kanaStrokeCount"></div>
                 <div class="kana-viewer__controls">
@@ -34,7 +38,12 @@
                     <button type="button" id="kanaReplayBtn">&#8635; Replay</button>
                     <button type="button" id="kanaNextBtn">Next &rarr;</button>
                 </div>
+                <div class="kana-viewer__stroke-order" id="kanaStrokeOrder">
+                    <h3 class="kana-viewer__stroke-order-title">Stroke order</h3>
+                    <div class="kana-stroke-order-strip" id="kanaStrokeOrderStrip"></div>
+                </div>
             </div>
+            <p class="kana-credit">Stroke data from <a href="https://kanjivg.tagaini.net" target="_blank" rel="noopener">KanjiVG</a>, licensed CC BY-SA 3.0.</p>
         </div>
     </div>
 
@@ -42,7 +51,7 @@
     <script src="../../assets/js/kana-writer.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
-        window.KanaWriter.init({
+        var writer = window.KanaWriter.init({
             chars: window.HIRAGANA_STROKES,
             gridEl: document.getElementById("kanaGrid"),
             viewerEl: document.getElementById("kanaViewer"),
@@ -51,7 +60,25 @@
             strokeCountEl: document.getElementById("kanaStrokeCount"),
             replayBtn: document.getElementById("kanaReplayBtn"),
             prevBtn: document.getElementById("kanaPrevBtn"),
-            nextBtn: document.getElementById("kanaNextBtn")
+            nextBtn: document.getElementById("kanaNextBtn"),
+            strokeOrderStripEl: document.getElementById("kanaStrokeOrderStrip")
+        });
+
+        var hiraTab = document.getElementById("kanaHiraganaTab");
+        var kataTab = document.getElementById("kanaKatakanaTab");
+        var intro = document.getElementById("kanaIntro");
+
+        hiraTab.addEventListener("click", function () {
+            hiraTab.classList.add("study-header__toggle-seg--active");
+            kataTab.classList.remove("study-header__toggle-seg--active");
+            intro.textContent = "Click any character to watch its strokes drawn in the correct order, then trace it yourself on paper. Use Replay to watch again, or Prev/Next to move through the row.";
+            writer.setChars(window.HIRAGANA_STROKES);
+        });
+        kataTab.addEventListener("click", function () {
+            kataTab.classList.add("study-header__toggle-seg--active");
+            hiraTab.classList.remove("study-header__toggle-seg--active");
+            intro.textContent = "Katakana is a sharper, more angular script than hiragana — same idea: watch the stroke order, then trace it yourself.";
+            writer.setChars(window.KATAKANA_STROKES);
         });
     });
     </script>

@@ -1567,6 +1567,35 @@
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+/* Numbered stroke-start dots — the "1, 2, 3..." markers every printed
+   stroke-order chart uses, placed at each stroke's real getPointAtLength(0)
+   (see kana-writer.js), not a hand-picked coordinate. Hidden until its
+   stroke starts (is-active), then settles to a faint but still-readable
+   mark once that stroke finishes drawing (is-done) so the full numbered
+   sequence stays visible at a glance once playback ends. */
+.kana-writer__dot {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+}
+.kana-writer__dot.is-active {
+    opacity: 1;
+}
+.kana-writer__dot.is-done {
+    opacity: 0.5;
+}
+.kana-writer__dot circle {
+    fill: var(--warning);
+    stroke: var(--text-main);
+    stroke-width: 0.6;
+}
+.kana-writer__dot text {
+    font-family: "VT323", monospace;
+    font-size: 6px;
+    fill: var(--text-main);
+    text-anchor: middle;
+    dominant-baseline: central;
+}
 .kana-viewer__label {
     font-family: "VT323", monospace;
     font-size: 26px;
@@ -1595,4 +1624,66 @@
 }
 .kana-viewer__controls button:active {
     box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
+}
+/* Stroke-order strip — the jisho.org-style progressive reference: one small
+   frame per stroke, each showing every earlier stroke faint/gray plus the
+   new stroke solid black with a red start dot, ending in one full-size
+   completed-character thumbnail. Static (no animation) since its whole job
+   is to sit there as a look-back reference while the learner traces. */
+.kana-viewer__stroke-order {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-dark);
+}
+.kana-viewer__stroke-order-title {
+    font-family: "Press Start 2P", monospace;
+    font-size: 9px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+    text-align: left;
+}
+.kana-stroke-order-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.kana-stroke-order-frame {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    background:
+        linear-gradient(to right, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        linear-gradient(to bottom, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        #fff;
+    border: 1px dashed var(--border-dark);
+}
+.kana-stroke-order-frame__svg {
+    width: 100%;
+    height: 100%;
+}
+.kana-stroke-order-frame__stroke {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.kana-stroke-order-frame__stroke--prior {
+    stroke: #b7b0a0;
+}
+.kana-stroke-order-frame__stroke--current {
+    stroke: var(--text-main);
+}
+.kana-stroke-order-frame__dot {
+    fill: var(--danger);
+}
+.kana-stroke-order-frame--complete {
+    background: none;
+    border: none;
+    width: 52px;
+    height: 52px;
+    margin-left: 4px;
 }

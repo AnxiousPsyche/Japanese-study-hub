@@ -2260,6 +2260,36 @@
         "31195"
       ],
       "port": 31195
+    },
+    {
+      "name": "jp-library-static-round13-kana-polish",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31306"
+      ],
+      "port": 31306
+    },
+    {
+      "name": "jp-library-static-round14-kana-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31417"
+      ],
+      "port": 31417
+    },
+    {
+      "name": "jp-library-static-round15-kana-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31528"
+      ],
+      "port": 31528
     }
   ],
   "autoVerify": true
