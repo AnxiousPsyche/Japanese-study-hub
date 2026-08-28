@@ -1,0 +1,229 @@
+/* KANJI CARDS — Museum Placard style + Book Spread interaction, the
+   confirmed directions from the design-mockup phase (Kanji ID Card Lab,
+   then Kanji Lesson Lab). Deliberately its own cream/brown palette rather
+   than the surrounding page's green terminal theme — framed as its own
+   "card catalog" panel so the contrast reads as intentional. */
+
+.kanji-cards {
+    padding: 4px 4px 20px;
+}
+
+.kanji-cards__search {
+    position: relative;
+    max-width: 320px;
+    margin: 0 0 16px;
+}
+.kanji-cards__search svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--term-label);
+    pointer-events: none;
+}
+.kanji-cards__search-input {
+    width: 100%;
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    color: var(--term-text);
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+    padding: 9px 12px 9px 32px;
+}
+.kanji-cards__search-input::placeholder { color: var(--term-text-dim); }
+.kanji-cards__search-input:focus {
+    outline: 2px solid var(--term-label);
+    outline-offset: 1px;
+}
+
+.kanji-cards__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+}
+.kanji-cards__empty {
+    grid-column: 1 / -1;
+    color: var(--term-text-dim);
+    font-size: 13px;
+    text-align: center;
+    padding: 30px 0;
+}
+
+/* ===== Card — front face, shared between the grid tile and the
+   enlarged modal card. Museum Placard: cream, brown border, inset
+   double-border look. ===== */
+.kanji-card,
+.kanji-card-modal {
+    background: #f3ead9;
+    border: 1px solid #8a7350;
+    border-radius: 2px;
+    box-shadow: inset 0 0 0 4px #f3ead9, inset 0 0 0 5px #a68f5f;
+}
+.kanji-card {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 5 / 7;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s ease;
+}
+.kanji-card:hover,
+.kanji-card:focus-visible { transform: translateY(-3px); outline: none; }
+.kanji-card.is-source-hidden { visibility: hidden; }
+.kanji-card__glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #2c2313;
+    line-height: 1;
+}
+
+/* ===== Modal card + Book Spread detail panel ===== */
+.kanji-card-overlay {
+    position: fixed; inset: 0; background: rgba(10, 8, 4, 0); z-index: 4000;
+    pointer-events: none; transition: background 0.35s ease;
+}
+.kanji-card-overlay.is-active { background: rgba(10, 8, 4, 0.75); pointer-events: auto; }
+
+.kanji-card-modal {
+    position: fixed; z-index: 4001; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 4px #f3ead9, inset 0 0 0 5px #a68f5f, 0 20px 60px rgba(0, 0, 0, 0.5);
+    transition: top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1),
+                width .42s cubic-bezier(.2,.85,.3,1), height .42s cubic-bezier(.2,.85,.3,1);
+}
+.kanji-card-modal .kanji-card__glyph { font-size: 92px; }
+
+.kanji-detail-panel {
+    position: fixed; z-index: 4001;
+    background: #f3ead9; border: 1px solid #8a7350; border-radius: 2px;
+    box-shadow: inset 8px 0 14px -10px rgba(0,0,0,.45), 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    opacity: 0; pointer-events: none;
+    transition: top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1),
+                width .42s cubic-bezier(.2,.85,.3,1), height .42s cubic-bezier(.2,.85,.3,1),
+                opacity .3s ease .08s;
+}
+.kanji-detail-panel.is-visible { opacity: 1; pointer-events: auto; }
+.kanji-detail-panel__inner {
+    height: 100%;
+    overflow-y: auto;
+    padding: 18px 20px;
+    font-family: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+    color: #2c2313;
+}
+
+.kanji-card__back-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #cbb896;
+}
+.kanji-card__back-glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 30px; font-weight: 700;
+}
+.kanji-card__back-meaning { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; opacity: .75; }
+.kanji-card__reading { margin-bottom: 10px; }
+.kanji-card__reading-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__reading-value {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 15px; font-weight: 500;
+}
+.kanji-card__words {
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896;
+    display: flex; flex-direction: column; gap: 7px;
+}
+.kanji-card__words-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__word { font-size: 12px; }
+.kanji-card__word-jp {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 14px; margin-right: 6px;
+}
+.kanji-card__word-reading { opacity: .65; margin-right: 6px; }
+.kanji-card__word-en { opacity: .8; }
+
+.kanji-card__stroke-block { margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896; }
+.kanji-card__stroke-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.kanji-card__stroke-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 8px; }
+.kanji-card__stroke-head .kanji-card__stroke-label { margin-bottom: 0; }
+.kanji-replay-btn {
+    all: unset; font-family: "Space Mono", monospace; font-size: 10px; cursor: pointer;
+    padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; opacity: .7; color: #2c2313;
+}
+.kanji-replay-btn:hover { opacity: 1; }
+
+/* Stroke-order strip — jisho.org-style progressive reference, identical
+   technique to Kana Dojo's .kana-stroke-order-strip (kana-writer.js). */
+.kanji-stroke-order-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.kanji-stroke-order-frame {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    background:
+        linear-gradient(to right, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        linear-gradient(to bottom, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        #fff;
+    border: 1px dashed #a68f5f;
+}
+.kanji-stroke-order-frame__svg { width: 100%; height: 100%; }
+.kanji-stroke-order-frame__stroke { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-order-frame__stroke--prior { stroke: #b7b0a0; }
+.kanji-stroke-order-frame__stroke--current { stroke: #2c2313; }
+.kanji-stroke-order-frame__dot { fill: #a23e34; }
+.kanji-stroke-order-frame--complete { background: none; border: none; width: 40px; height: 40px; margin-left: 4px; }
+
+/* Animated stroke player — dash-offset "line draws itself," same
+   technique as Kana Dojo's kana-writer.js. */
+.kanji-stroke-player__svg {
+    width: 100%;
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+}
+.kanji-stroke-player__guide { fill: none; stroke: rgba(44, 35, 19, 0.14); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-player__line { fill: none; stroke: #2c2313; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-player__dot { opacity: 0; transition: opacity 0.15s ease; }
+.kanji-stroke-player__dot.is-active { opacity: 1; }
+.kanji-stroke-player__dot.is-done { opacity: 0.55; }
+.kanji-stroke-player__dot circle { r: 4.4; fill: #a23e34; }
+.kanji-stroke-player__dot text { font-size: 6px; fill: #fff; text-anchor: middle; dominant-baseline: central; font-family: "Space Mono", monospace; }
+
+.kanji-modal-close {
+    all: unset;
+    position: fixed; z-index: 4002;
+    top: 0; left: 0; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff; color: #2c2313;
+    border-radius: 50%; cursor: pointer; font-size: 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    opacity: 0; transition: opacity 0.2s ease;
+}
+.kanji-modal-close.is-visible { opacity: 1; }
+
+.kanji-tap-hint {
+    position: fixed; z-index: 4002;
+    bottom: 8%; left: 50%; transform: translateX(-50%);
+    font-family: "Space Mono", monospace; font-size: 11px; color: #fff;
+    background: rgba(0, 0, 0, 0.55); padding: 6px 14px; border-radius: 999px;
+    opacity: 0; transition: opacity 0.3s ease; white-space: nowrap;
+}
+.kanji-tap-hint.is-visible { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    .kanji-card-modal, .kanji-detail-panel, .kanji-card-overlay { transition: none !important; }
+}
+
+@media (max-width: 700px) {
+    .kanji-detail-panel { display: none !important; } /* stacked mobile layout is a follow-up */
+}

@@ -2370,6 +2370,36 @@
         "32416"
       ],
       "port": 32416
+    },
+    {
+      "name": "jp-library-static-round24-kanji-cards-real",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32527"
+      ],
+      "port": 32527
+    },
+    {
+      "name": "jp-library-static-round25-rafraceverify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32638"
+      ],
+      "port": 32638
+    },
+    {
+      "name": "jp-library-static-round26-kanji103",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32749"
+      ],
+      "port": 32749
     }
   ],
   "autoVerify": true

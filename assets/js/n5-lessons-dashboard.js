@@ -1,6 +1,6 @@
-/* N5 Lessons Dashboard — renders the 17 shelf lesson cards, the segregated
-   N5 Kanji track's own cards, and the 10-question final quiz card, marking
-   completed lessons from the shared progress store. */
+/* N5 Lessons Dashboard — renders the 18 shelf lesson cards, the
+   segregated N5 Kanji lesson's own card, and the 10-question final quiz
+   card, marking completed lessons from the shared progress store. */
 (function () {
     "use strict";
 
@@ -26,13 +26,12 @@
     ];
 
     /* Segregated from LESSONS above on purpose — a distinct "kanji"
-       track, not shelf-numbered — see the matching k01-k04 factories
-       + kanjiGroup flag in assets/js/study-room.js. */
+       track, not shelf-numbered — see the matching k01 factory
+       + kanjiGroup flag in assets/js/study-room.js. One consolidated
+       lesson covering all 103 official N5 kanji as a searchable card
+       gallery, not a quiz. */
     const KANJI_LESSONS = [
-        { id: "k01", title: "N5 Kanji: Numbers" },
-        { id: "k02", title: "N5 Kanji: People & Family" },
-        { id: "k03", title: "N5 Kanji: Nature & Weather" },
-        { id: "k04", title: "N5 Kanji: Time & Calendar" }
+        { id: "k01", title: "N5 Kanji" }
     ];
 
     function makeCard(les, numLabel) {
