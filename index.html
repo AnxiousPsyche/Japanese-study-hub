@@ -16,6 +16,21 @@
 
     <title>JP Library OS</title>
 
+    <!-- Runs before anything paints, so a returning explorer never sees a
+         flash of the login screen before login.js's DOMContentLoaded
+         handler gets a chance to hide it — keeps "click Home" feeling
+         like a real jump straight to the desktop, not a login page that
+         happens to immediately swap itself out. -->
+    <script>
+    (function () {
+        try {
+            if (localStorage.getItem("jpExplorer")) {
+                document.documentElement.classList.add("has-saved-explorer");
+            }
+        } catch (err) { /* localStorage unavailable — fall back to the normal login screen */ }
+    })();
+    </script>
+
     <!-- =========================================
          GOOGLE FONTS
     ========================================== -->
@@ -85,12 +100,17 @@
     <link rel="stylesheet" href="assets/css/quiz.css">
     <link rel="stylesheet" href="assets/css/animations.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
-    <link rel="stylesheet" href="assets/css/boot.css">
     <link rel="stylesheet" href="assets/css/teleport.css">
 
     <link rel="stylesheet" href="assets/css/study-style.css">
+    <link rel="stylesheet" href="assets/css/companion-cat.css">
 
     <style>
+    /* Paired with the early has-saved-explorer script above — hides the
+       login screen and shows the desktop before first paint. */
+    html.has-saved-explorer #login-screen{display:none}
+    html.has-saved-explorer #desktop{display:block}
+
     /* Mode Toggle */
     .mode-toggle{display:flex;justify-content:center;gap:0;margin:12px auto 0;position:relative;z-index:10;width:fit-content;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--bg-window);box-shadow:var(--shadow-window)}
     .mode-toggle__btn{font-family:var(--title-font);font-size:9px;padding:10px 22px;border:none;background:transparent;color:var(--text-light);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
@@ -111,7 +131,18 @@
 
     <section id="login-screen">
 
+        <div class="login-window-wrap">
+
         <div class="login-glass">
+
+            <!-- =====================================
+             TITLE BAR — Windows 95-style chrome
+        ====================================== -->
+
+            <div class="login-titlebar">
+                <span>Neko Bunko OS</span>
+                <span class="login-titlebar__dots"><span></span><span></span><span></span></span>
+            </div>
 
             <!-- =====================================
              HEADER
@@ -119,18 +150,26 @@
 
             <div class="login-header">
 
-                <img src="assets/images/logo/JPLnewlogo.png" class="login-logo" alt="JP Library Logo">
+                <!-- Orange cat, playing/pouncing, standing in for the old
+                     logo image — orangeCatPlaying.png, the same sprite
+                     companion-cat.js uses for its "is-playing" ambient
+                     action, tightly cropped to its real content bounds (see
+                     login.css's .login-cat comment) so it sits snug against
+                     the title instead of leaving dead space above it.
+                     assets/js/login-cat.js periodically scrambles/resolves
+                     the title text in .scroll-title__text to sell the "cat
+                     batting at the letters" effect. -->
+                <div class="login-cat" aria-hidden="true"></div>
 
                 <h1 class="scroll-title">
 
-                    🌸 Welcome, Explorer! 🌸
+                    <span class="scroll-title__text">Welcome to Neko Bunko OS</span><span class="scroll-title__cursor"></span>
 
                 </h1>
 
                 <p class="scroll-description">
 
-                    Every great adventure begins with a single page.
-                    Open your journal and continue your Japanese journey.
+                    Sign in to continue your Japanese study session.
 
                 </p>
 
@@ -150,7 +189,7 @@
 
                     <h3 class="scroll-heading">
 
-                        Returning Explorer
+                        Sign In
 
                     </h3>
 
@@ -158,12 +197,12 @@
 
                         <label for="playerName">
 
-                            Explorer Name
+                            Username
 
                         </label>
 
                         <input type="text" id="playerName" autocomplete="username"
-                            placeholder="Enter your explorer name">
+                            placeholder="Enter your username">
 
                     </div>
 
@@ -171,17 +210,17 @@
 
                         <label for="playerPassword">
 
-                            Secret Passphrase
+                            Password
 
                         </label>
 
                         <div class="password-field">
 
                             <input type="password" id="playerPassword" autocomplete="current-password"
-                                placeholder="Enter your secret passphrase">
+                                placeholder="Enter your password">
 
                             <button type="button" class="toggle-password" data-target="playerPassword"
-                                aria-label="Show secret passphrase">
+                                aria-label="Show password">
 
                                 <i class="bi bi-eye"></i>
 
@@ -191,7 +230,7 @@
 
                         <button type="button" id="recallPassphrase" class="forgot-link">
 
-                            🔮 Passphrase Gone Amiss?
+                            Forgot your password?
 
                         </button>
 
@@ -203,7 +242,7 @@
 
                         <button id="continueButton" class="retro-btn" type="submit">
 
-                            ▶ Continue Your Adventure
+                            ▶ Log In
 
                         </button>
 
@@ -227,14 +266,14 @@
 
                     <h3 class="scroll-heading">
 
-                        New Explorer
+                        Create Account
 
                     </h3>
 
                     <p class="scroll-small">
 
-                        Haven't begun your adventure yet?
-                        Create your explorer and receive your first journal.
+                        Don't have an account yet?
+                        Create one to start tracking your progress.
 
                     </p>
 
@@ -242,11 +281,11 @@
 
                         <label for="newPlayerName">
 
-                            What shall we call you, Explorer?
+                            Choose a username
 
                         </label>
 
-                        <input type="text" id="newPlayerName" placeholder="Choose your explorer name">
+                        <input type="text" id="newPlayerName" placeholder="Pick a username">
 
                     </div>
 
@@ -254,16 +293,16 @@
 
                         <label for="newPlayerPassword">
 
-                            Create your Secret Passphrase
+                            Choose a password
 
                         </label>
 
                         <div class="password-field">
 
-                            <input type="password" id="newPlayerPassword" placeholder="Choose a secret passphrase">
+                            <input type="password" id="newPlayerPassword" placeholder="Pick a password">
 
                             <button type="button" class="toggle-password" data-target="newPlayerPassword"
-                                aria-label="Show secret passphrase">
+                                aria-label="Show password">
 
                                 <i class="bi bi-eye"></i>
 
@@ -277,7 +316,7 @@
 
                         <label class="avatar-label" for="avatarUpload">
 
-                            🎒 Hand us the portrait by which you wish to be known.
+                            Choose a profile picture (optional)
 
                         </label>
 
@@ -295,7 +334,7 @@
 
                         <button id="loginButton" class="retro-btn" type="submit">
 
-                            ▶ Begin Adventure
+                            ▶ Create Account
 
                         </button>
 
@@ -306,144 +345,6 @@
             </form>
 
         </div>
-
-    </section>
-
-    <!-- =========================================
-     BOOT SCREEN
-========================================== -->
-
-    <section id="boot-screen" class="boot-screen">
-
-        <div class="boot-window">
-
-            <div class="boot-title">
-
-                JP Library OS v1.0
-
-            </div>
-
-            <div class="boot-body">
-
-                <!-- Logo -->
-
-                <img src="assets/images/logo/JPLnewlogo.png" alt="JP Library Logo" class="boot-logo">
-
-                <h1>
-
-                    Starting System...
-
-                </h1>
-
-                <p class="boot-message">
-
-                    Initializing learning environment...
-
-                </p>
-
-                <!-- Loading Bars -->
-
-                <div class="loading-group">
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Grammar Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill grammar"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Vocabulary Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill vocabulary"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Kanji Database
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill kanji"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Quest Engine
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill quest"></div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="loading-item">
-
-                        <span>
-
-                            Audio System
-
-                        </span>
-
-                        <div class="loading-bar">
-
-                            <div class="loading-fill audio"></div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- Boot Status -->
-
-                <p id="boot-status-text">
-
-                    Preparing your adventure...
-
-                </p>
-
-                <!-- Boot Button -->
-
-                <button id="startBoot-btn" class="retro-btn" type="button" disabled>
-
-                    BOOTING...
-
-                </button>
-
-            </div>
 
         </div>
 
@@ -535,13 +436,27 @@ DESKTOP
 
             </button>
 
+            <!-- N5 Kanji shortcut -->
+
+            <button class="desktop-icon" onclick="window.location.href='pages/missions/study-room.html?lesson=k01'">
+
+                <img src="assets/images/icons/pixels/index-cards-Original.png" alt="Kanji">
+
+                <span>
+
+                    Kanji
+
+                </span>
+
+            </button>
+
         </div>
 
         <!--======================================================
     DESKTOP CONTENT
     ======================================================-->
 
-        <main class="desktop-container">
+        <main class="desktop-container is-forest-terminal">
 
             <!-- =========================================
      WELCOME WINDOW
@@ -689,7 +604,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>🔥</h3>
+                                <h3><img src="assets/images/icons/pixels/flame-icon-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerStreakText">0</strong>
 
@@ -699,7 +614,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>🏆</h3>
+                                <h3><img src="assets/images/icons/pixels/award-icon-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerBadgesText">0</strong>
 
@@ -709,7 +624,7 @@ DESKTOP
 
                             <div>
 
-                                <h3>📚</h3>
+                                <h3><img src="assets/images/icons/pixels/open-book-2-Original.png" alt="" class="player-stat-icon"></h3>
 
                                 <strong id="playerLessonsText">0</strong>
 
@@ -1093,7 +1008,7 @@ DESKTOP
 
                     <p>
 
-                        © 2026 JP Library OS • Built by AnxiousPsyche
+                        © 2026 JP Library OS • Built by AnxiousPsyche • <a href="pages/missions/credits.html" style="color:inherit;">Credits</a>
 
                     </p>
 
@@ -1129,7 +1044,7 @@ TASKBAR
 
                 <i class="bi bi-search"></i>
 
-                <input type="search" id="desktopSearch" placeholder="Search JP Library" autocomplete="off">
+                <input type="search" id="desktopSearch" placeholder="search_" autocomplete="off">
 
             </div>
 
@@ -1139,31 +1054,31 @@ TASKBAR
 
                 <button class="taskbar-app" data-window="greetingWindow" type="button">
 
-                    🌸 Greeting
+                    greeting
 
                 </button>
 
                 <button class="taskbar-app" data-window="playerWindow" type="button">
 
-                    👤 Player
+                    player
 
                 </button>
 
                 <button class="taskbar-app" data-window="discWindow" type="button">
 
-                    💿 Disc
+                    disc
 
                 </button>
 
                 <button class="taskbar-app" data-window="questWindow" type="button">
 
-                    📜 Quest
+                    quest
 
                 </button>
 
                 <button class="taskbar-app" data-window="journeyWindow" type="button">
 
-                    🗺 Journey
+                    journey
 
                 </button>
 
@@ -1178,6 +1093,14 @@ TASKBAR
                 <button id="languageButton" class="language-btn" type="button">
 
                     ENG
+
+                </button>
+
+                <!-- Theme (light/dark desktop backdrop) -->
+
+                <button id="themeToggleButton" class="system-btn" type="button" aria-label="Switch to dark mode">
+
+                    <i class="bi bi-moon-stars-fill"></i>
 
                 </button>
 
@@ -1597,8 +1520,6 @@ STUDY ROOM — Codecademy-style N5 learning
         </div>
     </div>
 
-    <script src="assets/js/boot.js"></script>
-
     <script src="assets/js/homepage.js"></script>
 
     <script src="assets/js/teleport.js"></script>
@@ -1606,6 +1527,10 @@ STUDY ROOM — Codecademy-style N5 learning
     <script src="assets/js/music-player.js"></script>
 
     <script src="assets/js/progress.js"></script>
+
+    <script src="assets/js/study-progress.js"></script>
+
+    <script src="assets/js/daily-quest.js"></script>
 
     <script src="assets/js/login.js"></script>
 
@@ -1646,6 +1571,10 @@ STUDY ROOM — Codecademy-style N5 learning
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="assets/js/companion-cat.js"></script>
+
+    <script src="assets/js/login-cat.js"></script>
 
 </body>
 

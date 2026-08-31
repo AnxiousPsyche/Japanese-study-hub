@@ -16,7 +16,7 @@
   // Each entry: { text, reading, romaji, meaning }.
   // Organised by part of speech so templates can pick from the right pool.
 
-  var BANK = {
+  const BANK = {
     names: [
       { text: 'たなかさん', reading: 'たなかさん', romaji: 'Tanaka-san', meaning: 'Mr./Ms. Tanaka' },
       { text: 'なかむらさん', reading: 'なかむらさん', romaji: 'Nakamura-san', meaning: 'Mr./Ms. Nakamura' },
@@ -38,13 +38,12 @@
       { text: 'あたらしい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'new' },
     ],
     verbs: [
-      { text: 'みる', reading: 'みる', romaji: 'miru', meaning: 'to see / watch' },
-      { text: 'よむ', reading: 'よむ', romaji: 'yomu', meaning: 'to read' },
-      { text: 'いく', reading: 'いく', romaji: 'iku', meaning: 'to go' },
-      { text: 'かう', reading: 'かう', romaji: 'kau', meaning: 'to buy' },
-      { text: 'たべる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat' },
-      { text: 'のむ', reading: 'のむ', romaji: 'nomu', meaning: 'to drink' },
-      { text: 'どきどきする', reading: 'どきどきする', romaji: 'dokidoki suru', meaning: 'to get nervous / excited' },
+      { text: 'みる', reading: 'みる', romaji: 'miru', meaning: 'to see / watch', stem: 'み' },
+      { text: 'よむ', reading: 'よむ', romaji: 'yomu', meaning: 'to read', stem: 'よみ' },
+      { text: 'いく', reading: 'いく', romaji: 'iku', meaning: 'to go', stem: 'いき' },
+      { text: 'かう', reading: 'かう', romaji: 'kau', meaning: 'to buy', stem: 'かい' },
+      { text: 'たべる', reading: 'たべる', romaji: 'taberu', meaning: 'to eat', stem: 'たべ' },
+      { text: 'のむ', reading: 'のむ', romaji: 'nomu', meaning: 'to drink', stem: 'のみ' },
     ],
     particles: [
       { text: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
@@ -72,10 +71,11 @@
       { text: 'みて', reading: 'みて', romaji: 'mite', meaning: 'て-form of みる (see/watch)' },
       { text: 'よんで', reading: 'よんで', romaji: 'yonde', meaning: 'て-form of よむ (read)' },
       { text: 'たべて', reading: 'たべて', romaji: 'tabete', meaning: 'て-form of たべる (eat)' },
-      { text: 'のみで', reading: 'のみで', romaji: 'nomide', meaning: 'て-form of のむ (drink)' },
+      { text: 'のんで', reading: 'のんで', romaji: 'nonde', meaning: 'て-form of のむ (drink)' },
       { text: 'いって', reading: 'いって', romaji: 'itte', meaning: 'て-form of いく (go) — irregular' },
       { text: 'かって', reading: 'かって', romaji: 'katte', meaning: 'て-form of かう (buy)' },
     ],
+    requestWord: { text: 'ください', reading: 'ください', romaji: 'kudasai', meaning: 'please (polite request)' },
   };
 
   // ── Helpers ──────────────────────────────────────────────────────────
@@ -85,10 +85,10 @@
   }
 
   function shuffle(arr) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    let a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let tmp = a[i]; a[i] = a[j]; a[j] = tmp;
     }
     return a;
   }
@@ -98,13 +98,13 @@
   // randomly-filled mission.  wordChips is always shuffled so the shelf
   // never presents words in sentence order.
 
-  var TEMPLATES = [
+  const TEMPLATES = [
     // ─── の Possession ────────────────────────────────────────────────
     function () {
-      var person = pick(BANK.names);
-      var noun   = pick(BANK.nouns);
-      var adj    = pick(BANK.adjectives);
-      var sentence = person.text + ' の ' + noun.text + ' は ' + adj.text + ' です';
+      let person = pick(BANK.names);
+      let noun   = pick(BANK.nouns);
+      let adj    = pick(BANK.adjectives);
+      let sentence = person.text + ' の ' + noun.text + ' は ' + adj.text + ' です';
       return {
         type: 'sentence-mission',
         grammarGoal: "Use の to show possession ('s / of).",
@@ -130,11 +130,11 @@
 
     // ─── 〜たい Desire ────────────────────────────────────────────────
     function () {
-      var person = pick(BANK.names);
-      var obj    = pick(BANK.nouns);
-      var verb   = pick(BANK.verbs);
-      var stem   = pick(BANK.verbStems);
-      var sentence = person.text + ' は ' + obj.text + ' を ' + stem.text + ' たいです';
+      let person = pick(BANK.names);
+      let obj    = pick(BANK.nouns);
+      let verb   = pick(BANK.verbs);
+      let stem   = verb.stem;
+      let sentence = person.text + ' は ' + obj.text + ' を ' + stem + 'たいです';
       return {
         type: 'sentence-mission',
         grammarGoal: "Say what a person wants to do using 〜たいです.",
@@ -145,24 +145,24 @@
           { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
           { kana: obj.text, reading: obj.reading, romaji: obj.romaji, meaning: obj.meaning, role: 'predicate' },
           { kana: 'を', reading: 'を', romaji: 'wo / o', meaning: 'object marker', role: 'particle' },
-          { kana: stem.text, reading: stem.reading, romaji: stem.romaji, meaning: stem.meaning, role: 'predicate' },
+          { kana: stem, reading: stem, romaji: verb.romaji.replace(/u$/, 'i'), meaning: 'stem of ' + verb.text + ' (' + verb.meaning.replace('to ', '') + ')', role: 'predicate' },
           { kana: 'たいです', reading: 'たいです', romaji: 'tai desu', meaning: 'want to (do)', role: 'copula' },
         ]),
         acceptedOrderings: [
-          [person.text, 'は', obj.text, 'を', stem.text, 'たいです'],
+          [person.text, 'は', obj.text, 'を', stem, 'たいです'],
         ],
-        expectedTokens: [person.text, 'は', obj.text, 'を', stem.text, 'たいです'],
+        expectedTokens: [person.text, 'は', obj.text, 'を', stem, 'たいです'],
         explainPattern: function (used) {
-          return "The verb stem (" + stem.text + " from " + verb.text + ") + たいです expresses desire — '" + stem.text + "たいです' means 'want to " + verb.meaning.replace('to ', '') + "'.";
+          return "The verb stem (" + stem + " from " + verb.text + ") + たいです expresses desire — '" + stem + "たいです' means 'want to " + verb.meaning.replace('to ', '') + "'.";
         },
       };
     },
 
     // ─── か Question ──────────────────────────────────────────────────
     function () {
-      var noun  = pick(BANK.nouns);
-      var adj   = pick(BANK.adjectives);
-      var sentence = noun.text + ' は ' + adj.text + ' ですか';
+      let noun  = pick(BANK.nouns);
+      let adj   = pick(BANK.adjectives);
+      let sentence = noun.text + ' は ' + adj.text + ' ですか';
       return {
         type: 'sentence-mission',
         grammarGoal: "Turn a statement into a yes/no question with か.",
@@ -185,29 +185,29 @@
       };
     },
 
-    // ─── て-form Request / Sequence ───────────────────────────────────
+    // ─── て-form + ください Request ──────────────────────────────────
     function () {
-      var person = pick(BANK.names);
-      var teVerb = pick(BANK.teForms);
-      var ending = pick(BANK.endings);
-      var sentence = person.text + ' は ' + teVerb.text + ' ' + ending.text;
+      let person = pick(BANK.names);
+      let teVerb = pick(BANK.teForms);
+      let kudasai = BANK.requestWord;
+      let verbEn = teVerb.meaning.replace('て-form of ', '').replace(/ \(.*\)/, '');
+      let sentence = person.text + '、' + teVerb.text + ' ください';
       return {
         type: 'sentence-mission',
-        grammarGoal: "Use the て-form to request or connect actions.",
+        grammarGoal: "Use the て-form + ください to make a polite request.",
         prompt: 'Arrange the words to say: "[Person], please [verb] (politely)."',
         sentence: sentence,
         wordChips: shuffle([
           { kana: person.text, reading: person.reading, romaji: person.romaji, meaning: person.meaning, role: 'subject' },
-          { kana: 'は', reading: 'は', romaji: 'wa', meaning: 'topic marker', role: 'particle' },
           { kana: teVerb.text, reading: teVerb.reading, romaji: teVerb.romaji, meaning: teVerb.meaning, role: 'predicate' },
-          { kana: ending.text, reading: ending.reading, romaji: ending.romaji, meaning: ending.meaning, role: 'copula' },
+          { kana: kudasai.text, reading: kudasai.reading, romaji: kudasai.romaji, meaning: kudasai.meaning, role: 'copula' },
         ]),
         acceptedOrderings: [
-          [person.text, 'は', teVerb.text, ending.text],
+          [person.text, teVerb.text, kudasai.text],
         ],
-        expectedTokens: [person.text, 'は', teVerb.text, ending.text],
+        expectedTokens: [person.text, teVerb.text, kudasai.text],
         explainPattern: function (used) {
-          return "The て-form + ます makes a polite request — '" + teVerb.text + " " + ending.text + "' means 'please " + teVerb.meaning.replace('て-form of ', '').replace(/ \(.*\)/, '') + " politely.'";
+          return "The て-form + ください makes a polite request — '" + teVerb.text + " ください' means 'please " + verbEn + ".'";
         },
       };
     },
@@ -216,7 +216,7 @@
   // ── Public API ──────────────────────────────────────────────────────
 
   function generate() {
-    var template = pick(TEMPLATES);
+    let template = pick(TEMPLATES);
     return template();
   }
 

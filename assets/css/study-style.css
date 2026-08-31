@@ -1,8 +1,40 @@
 /* ===========================================================
-   STUDY ROOM — Retro OS theme (matches existing site)
+   STUDY ROOM — CRT terminal theme
    =========================================================== */
 
-/* === Study Room Container === */
+/* Self-hosted display + body monospace faces (latin-only subsets, same
+   self-hosting rationale as lesson-box.css: Google-Fonts VT323 previously
+   fell back silently when the request was slow/blocked). Japanese glyphs
+   still come from DotGothic16, loaded via Google Fonts in study-room.html. */
+@font-face {
+    font-family: "VT323";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/VT323-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Bold.woff2") format("woff2");
+}
+
+/* === Study Room Container ===
+   NOTE: .study-room / .study-header / .xp-badge are a shared page-chrome
+   wrapper reused by levels-dashboard.html, n5-lessons.html, and n5-quiz.html
+   too — NOT exclusive to the actual lesson/practice screen. The CRT
+   terminal look must only apply where study-room.html adds the extra
+   `.is-terminal` modifier class, or it leaks the terminal palette onto the
+   pastel dashboard/lessons-list/quiz pages that share this stylesheet. */
 .study-room {
     display: none;
     position: fixed;
@@ -17,7 +49,7 @@
     display: flex;
 }
 
-/* === Study Header === */
+/* === Study Header (pastel default, shared across all Study Room pages) === */
 .study-header {
     display: flex;
     align-items: center;
@@ -64,6 +96,39 @@
     background: rgba(143,184,155,0.4);
     border-color: rgba(143,184,155,0.7);
 }
+
+/* Document / Adventure toggle pill (restyled nav — still a real page link,
+   not a stateful in-page toggle; see PRD decision log). */
+.study-header__toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius-pill, 999px);
+    padding: 3px;
+    gap: 2px;
+}
+.study-header__toggle-seg {
+    font-family: var(--title-font);
+    font-size: 9px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.study-header__toggle-seg:hover {
+    color: #fff;
+}
+.study-header__toggle-seg--active,
+.study-header__toggle-seg--active:hover {
+    background: var(--bg-card);
+    color: var(--text-main);
+}
 .study-header__level {
     font-size: 11px;
     color: rgba(255,255,255,0.7);
@@ -78,136 +143,1368 @@
     overflow: hidden;
 }
 
-/* === Sidebar === */
-.study-sidebar {
-    width: 220px;
-    background: var(--bg-window);
-    border-right: 2px solid var(--border);
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 16px 0;
-}
-.study-sidebar__heading {
+/* === Header lesson picker (replaces the old left sidebar; study-room.html
+   only — dashboards/quiz don't render this element) === */
+.study-header__lesson-picker {
     font-family: var(--title-font);
     font-size: 9px;
-    color: var(--title-bar-dark);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 0 16px 12px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 8px;
-}
-.study-lesson-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 16px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 13px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: inherit;
-}
-.study-lesson-btn:hover {
-    background: rgba(0,0,0,0.04);
-    color: var(--text-main);
-}
-.study-lesson-btn.is-active {
-    background: rgba(135,168,216,0.15);
-    color: var(--title-bar-dark);
-    border-right: 3px solid var(--title-bar);
-}
-.study-lesson-btn__num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "VT323", monospace;
-    font-size: 12px;
     color: #fff;
-    flex-shrink: 0;
+    background: rgba(0,0,0,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    max-width: 220px;
+    cursor: pointer;
 }
-.study-lesson-btn.is-active .study-lesson-btn__num {
-    background: var(--title-bar);
+.study-header__lesson-picker:hover {
+    background: rgba(0,0,0,0.25);
 }
-.study-lesson-btn__label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.study-lesson-btn__check {
-    margin-left: auto;
-    font-size: 11px;
-    color: var(--success);
-    display: none;
-}
-.study-lesson-btn.is-complete .study-lesson-btn__check {
-    display: inline;
+.study-header__lesson-picker option {
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text-main);
+    background: var(--bg-card);
 }
 
-/* === Main Content (Split Panel) === */
+/* ===========================================================
+   TERMINAL MODIFIER — only the actual lesson/practice screen
+   (study-room.html adds .is-terminal alongside .study-room). Redeclares
+   the palette/fonts/scanlines and every header sub-element above so the
+   CRT look never reaches the dashboards/lessons-list/quiz pages.
+   =========================================================== */
+
+/* Self-hosted display + body monospace faces (latin-only subsets, same
+   self-hosting rationale as lesson-box.css: Google-Fonts VT323 previously
+   fell back silently when the request was slow/blocked). Japanese glyphs
+   still come from DotGothic16, loaded via Google Fonts in study-room.html. */
+@font-face {
+    font-family: "VT323";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/VT323-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/SpaceMono-Bold.woff2") format("woff2");
+}
+
+.study-room.is-terminal {
+    --term-bg: #04342C;
+    --term-panel: #032821;
+    --term-border: #1D9E75;
+    --term-text: #E1F5EE;
+    --term-text-dim: #9FE1CB;
+    --term-label: #5DCAA5;
+    --term-amber: #FAC775;
+    --term-bad-border: #A32D2D;
+    --term-bad-text: #F09595;
+    --term-bad-accent: #F0997B;
+    --term-heading: #FFFFFF;
+    /* "New this lesson" word-bank chips (see .word-bank__chip--new below) —
+       a cool blue deliberately far from --term-amber (used by the
+       "coming up next lesson" preview chips) so the two exposure-only
+       sections never read as the same thing at a glance. */
+    --term-new: #6FB3E6;
+
+    background: var(--term-bg);
+    color: var(--term-text-dim);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+
+    scrollbar-color: var(--term-border) var(--term-panel);
+    scrollbar-width: thin;
+}
+
+/* CRT-themed scrollbar, scoped to the terminal screen only (matches the
+   custom-scrollbar precedent already set in n5-dashboard.css/reset.css/
+   os.css for their own themes) — never a bare/global rule, same modifier-
+   class discipline as the rest of this file. */
+.study-room.is-terminal ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+.study-room.is-terminal ::-webkit-scrollbar-track {
+    background: var(--term-panel);
+}
+.study-room.is-terminal ::-webkit-scrollbar-thumb {
+    background: var(--term-border);
+    border: 2px solid var(--term-panel);
+    border-radius: 6px;
+}
+.study-room.is-terminal ::-webkit-scrollbar-thumb:hover {
+    background: var(--term-label);
+}
+
+/* Subtle CRT scanlines over the terminal screen only, purely decorative */
+.study-room.is-terminal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.035) 0px,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+}
+
+.study-room.is-terminal .study-header {
+    background: var(--term-panel);
+    border-bottom: 1px solid var(--term-border);
+    border-bottom-width: 1px;
+}
+.study-header__dots {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.study-header__dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--term-label);
+    opacity: 0.55;
+}
+.study-room.is-terminal .study-header__back {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__back:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.study-room.is-terminal .study-header__title {
+    font-size: 18px;
+    color: var(--term-text);
+}
+.study-room.is-terminal .study-header__adventure-btn {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__adventure-btn:hover {
+    background: rgba(29, 158, 117, 0.2);
+    border-color: var(--term-border);
+}
+.study-room.is-terminal .study-header__toggle {
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__toggle-seg {
+    color: var(--term-label);
+}
+.study-room.is-terminal .study-header__toggle-seg:hover {
+    color: var(--term-text);
+}
+.study-room.is-terminal .study-header__toggle-seg--active,
+.study-room.is-terminal .study-header__toggle-seg--active:hover {
+    background: var(--term-border);
+    color: var(--term-bg);
+}
+.study-room.is-terminal .study-header__level {
+    color: var(--term-label);
+}
+.study-room.is-terminal .study-header__lesson-picker {
+    color: var(--term-text-dim);
+    background: transparent;
+    border: 1px solid var(--term-border);
+}
+.study-room.is-terminal .study-header__lesson-picker:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.study-room.is-terminal .study-header__lesson-picker option {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text);
+    background: var(--term-panel);
+}
+
+/* === Main Content (Split Panel: lesson left, practice right) === */
 .study-main {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     overflow: hidden;
 }
 
-/* === Instruction Panel (top) === */
+/* The N5 Kanji lesson's instruction panel is a thin reference column
+   next to the card gallery — study-room.js toggles this class on
+   .study-main only when the active lesson is the kanji track
+   (currentLesson.kanjiGroup), so the s01-s16 grammar shelves keep
+   their normal even split below. A fixed basis (not just a lopsided
+   ratio) is used because a ratio still grows with the window and read
+   as not meaningfully thinner on a wide desktop. */
+.study-main.is-kanji-lesson .study-instruction {
+    flex: 0 1 300px;
+}
+
+/* Same thin-left-column treatment for checkpoint quizzes (cq1/cq2/cq3) —
+   their instruction panel is just a short intro paragraph, so the 10-
+   question sheet on the right gets the extra room instead. */
+.study-main.is-checkpoint-lesson .study-instruction {
+    flex: 0 1 300px;
+}
+
+/* === Instruction Panel (left — lesson) === */
 .study-instruction {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     overflow-y: auto;
-    padding: 32px 40px;
-    border-bottom: 2px solid var(--border);
+    overflow-x: hidden;
+    padding: 24px 28px;
     line-height: 1.7;
-    background: var(--bg-card);
+    background: var(--term-bg);
 }
 .study-instruction h2 {
     font-family: "VT323", monospace;
-    font-size: 24px;
-    color: var(--title-bar-dark);
+    font-size: 26px;
+    color: var(--term-heading);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
     font-family: "VT323", monospace;
-    font-size: 18px;
-    color: var(--mint);
+    font-size: 19px;
+    color: var(--term-label);
     margin: 24px 0 8px;
 }
 .study-instruction p {
     margin: 0 0 12px;
-    color: var(--text-main);
+    color: var(--term-text-dim);
     font-size: 14px;
 }
+/* Highlight the actual word/phrase being discussed against the dimmer
+   description text around it — the description keeps --term-text-dim,
+   the word itself jumps to full white so it reads at a glance. */
+.study-instruction p strong {
+    color: var(--term-heading);
+    font-weight: 700;
+}
 .study-instruction .grammar-box {
-    background: var(--bg-window);
-    border: 2px solid var(--border);
-    border-left: 4px solid var(--title-bar);
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-left: 3px solid var(--term-border);
     border-radius: var(--radius);
     padding: 16px 20px;
     margin: 16px 0;
-    box-shadow: var(--shadow-window);
 }
 .study-instruction .grammar-box__title {
     font-family: "VT323", monospace;
-    font-size: 16px;
-    color: var(--title-bar-dark);
+    font-size: 23px;
+    color: var(--term-heading);
     margin-bottom: 8px;
 }
 .study-instruction .grammar-box code {
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 20px;
-    color: var(--yellow);
-    background: rgba(241,210,122,0.15);
+    color: var(--term-amber);
+    background: rgba(250, 199, 117, 0.12);
     padding: 2px 8px;
     border-radius: 4px;
+}
+
+/* Grammar-box visual aid (Adventure Room diagram parity — see
+   study-room.js's s03/s05/s08 buildInstruction() sections and
+   renderInstruction()'s sec.diagramSvg/sec.diagramCaption handling).
+   The wrapper just centers/caps whatever's inside (an inline SVG or, for
+   s05, a plain HTML grid) — most ported SVGs already carry their own
+   width:100%/height:auto/display:block, but the bare `svg` rule below is
+   a safety net for any that don't. */
+.grammar-box__diagram {
+    max-width: 100%;
+    margin: 12px auto;
+    text-align: center;
+}
+.grammar-box__diagram svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+/* Caption under a diagram — small/dim, same "readable font at caption
+   size" rule as everywhere else in this file (no VT323 here). */
+.grammar-box__diagram-caption {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--term-text-dim);
+    margin: 4px 0 0;
+}
+
+/* Two-party dialogue thread for buildInstruction()'s optional
+   `conversation` field (see renderConversation() in study-room.js) —
+   Study Room's own equivalent of the Adventure Room's LessonBox
+   'conversation' page, built with this file's own class names/DOM
+   rather than reusing lesson-box.css. Sensei turns sit left-aligned,
+   player turns flip to the right (row-reverse + right-aligned text)
+   so the two speakers read as visually distinct without needing
+   different bubble colors. */
+.study-conv-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 14px 0;
+}
+.study-conv-turn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.study-conv-turn.is-player {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+.study-conv-avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius, 8px);
+    background-color: var(--term-panel);
+}
+@keyframes studyConvSprite {
+    from { background-position: 0 0; }
+    to { background-position: 100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .study-conv-avatar { animation: none !important; }
+}
+.study-conv-bubble-wrap {
+    flex: 1;
+    min-width: 0;
+}
+.study-conv-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 3px;
+}
+.study-conv-turn.is-player .study-conv-name-row {
+    flex-direction: row-reverse;
+}
+.study-conv-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--term-label);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.study-conv-action-tag {
+    font-size: 11px;
+    color: var(--term-text-dim);
+    font-style: italic;
+}
+.study-conv-bubble {
+    display: inline-block;
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius, 8px);
+    padding: 8px 12px;
+    font-size: 17px;
+    line-height: 1.5;
+}
+.study-conv-meta {
+    font-size: 12px;
+    color: var(--term-text-dim);
+    margin-top: 4px;
+}
+
+/* Word-role highlight spans inside conversation text — same literal
+   hex values as lesson-box.css's own .role-subject/.role-particle/
+   .role-predicate/.role-copula (not var()-referenced, since those
+   custom properties are scoped to .lesson-box-overlay and unavailable
+   here — see streak-popup.css's fix comment for the same class of
+   bug), so a ported conversation highlights words identically in both
+   systems. */
+.conv-hl {
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+}
+.conv-hl--subject { background: #6fb3e6; color: #0b2438; }
+.conv-hl--particle { background: #f0c674; color: #201d54; }
+.conv-hl--predicate { background: #e2685f; color: #2e0e0b; }
+.conv-hl--copula { background: #ffffff; color: #201d54; }
+
+/* s05's demonstratives diagram (ported from n5-phaser-game.js's
+   buildDemonstrativesDiagram) — a plain 4-column grid: word / YOU /
+   LISTENER / FAR AWAY, with a small round cat-portrait "pip" and an item
+   icon sliding across a center track per row. */
+.grammar-box__demo-grid {
+    display: grid;
+    grid-template-columns: 64px repeat(3, 1fr);
+    row-gap: 14px;
+    column-gap: 0;
+    align-items: center;
+}
+.grammar-box__demo-head {
+    font-size: 12px;
+    text-align: center;
+    color: var(--term-text-dim);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--term-border);
+}
+.grammar-box__demo-head--word {
+    border-bottom: none;
+}
+.grammar-box__demo-row-word {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 30px;
+    text-align: center;
+}
+.grammar-box__demo-cell {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+}
+.grammar-box__demo-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: var(--term-border);
+    opacity: 0.4;
+}
+.grammar-box__demo-cat-pip {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: 300% 100%;
+    background-position: 0% 50%;
+    image-rendering: pixelated;
+    border: 2px solid var(--term-border);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+.grammar-box__demo-item-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+.grammar-box__demo-row-note {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--term-text-dim);
+    padding: 2px 0 6px 64px;
+}
+
+/* s08b's plain picture diagram for 中/外/上/下 — real backgroundless cat/box
+   cutouts (assets/images/lesson/transparent/), not colored placeholder
+   boxes. Deliberately no card border/frame around the images themselves —
+   the point was to show the actual art, not box it in. */
+.grammar-box__pic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 24px;
+    border: 1px dashed var(--term-border);
+    border-radius: var(--radius);
+    padding: 14px;
+}
+@media (max-width: 480px) {
+    .grammar-box__pic-grid { grid-template-columns: 1fr; }
+}
+.grammar-box__pic-cell {
+    border-bottom: 1px dashed var(--term-border);
+    padding-bottom: 10px;
+}
+.grammar-box__pic-cell:nth-last-child(-n+2) {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+@media (max-width: 480px) {
+    .grammar-box__pic-cell:nth-last-child(-n+2) { border-bottom: 1px dashed var(--term-border); padding-bottom: 10px; }
+    .grammar-box__pic-cell:last-child { border-bottom: none; padding-bottom: 0; }
+}
+.grammar-box__pic-cell {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: repeat(3, auto);
+    align-items: center;
+    column-gap: 12px;
+    padding: 6px 0;
+}
+.grammar-box__pic-scene {
+    grid-row: 1 / span 3;
+    grid-column: 1;
+    position: relative;
+    width: 119px;
+    height: 90px;
+    flex: none;
+}
+.grammar-box__pic-scene img {
+    position: absolute;
+    image-rendering: pixelated;
+}
+.grammar-box__pic-scene .pic-box { width: 56px; height: 56px; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 2; }
+.grammar-box__pic-scene .pic-combo { width: 67px; height: 67px; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 2; display: none; }
+.grammar-box__pic-scene .pic-cat { width: 42px; height: 42px; left: 50%; bottom: 6px; transform: translate(-50%, 0); z-index: 3; }
+.grammar-box__pic-scene.is-naka .pic-box { display: none; }
+.grammar-box__pic-scene.is-naka .pic-combo { display: block; }
+.grammar-box__pic-scene.is-naka .pic-cat { display: none; }
+.grammar-box__pic-scene.is-soto .pic-cat { transform: translate(43px, 0); }
+.grammar-box__pic-scene.is-ue .pic-cat { transform: translate(-50%, -48px); }
+.grammar-box__pic-scene.is-shita .pic-cat { bottom: -6px; transform: translate(-50%, 0); width: 34px; height: 34px; z-index: 1; opacity: .85; }
+/* 前・後ろ・右・左 — same box, same cat, four more spots */
+.grammar-box__pic-scene.is-mae .pic-cat { bottom: 2px; transform: translate(-50%, 0); width: 46px; height: 46px; z-index: 4; }
+/* Centered directly behind the box (not offset sideways) and sized close
+   to the front-facing cats, with its bottom anchored so exactly half its
+   height sits below the box's top edge (z-index 1, under the box's 2) --
+   that half is genuinely occluded, the other half pokes up above the box,
+   instead of the old tiny/off-center version that just read as floating
+   next to it. */
+.grammar-box__pic-scene.is-ushiro .pic-cat { bottom: 39px; left: 50%; transform: translate(-50%, 0); width: 46px; height: 46px; z-index: 1; }
+.grammar-box__pic-scene.is-migi .pic-cat { transform: translate(43px, 0); }
+.grammar-box__pic-scene.is-hidari .pic-cat { transform: translate(-43px, 0); }
+.grammar-box__pic-word {
+    grid-column: 2;
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 22px;
+    color: var(--term-heading);
+}
+.grammar-box__pic-kana {
+    grid-column: 2;
+    font-size: 11px;
+    color: var(--term-text-dim);
+}
+.grammar-box__pic-en {
+    grid-column: 2;
+    font-size: 12px;
+    color: var(--term-amber);
+    font-weight: 700;
+}
+
+/* となり・そば・近く distance comparison — same box, cat further away
+   each time, left to right so "closest to loosest" reads naturally. */
+.grammar-box__dist-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    border: 1px dashed var(--term-border);
+    border-radius: var(--radius);
+    padding: 14px;
+}
+@media (max-width: 480px) {
+    .grammar-box__dist-grid { grid-template-columns: 1fr; }
+}
+.grammar-box__dist-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    border-right: 1px dashed var(--term-border);
+    padding-right: 6px;
+}
+.grammar-box__dist-cell:last-child { border-right: none; padding-right: 0; }
+@media (max-width: 480px) {
+    .grammar-box__dist-cell { border-right: none; border-bottom: 1px dashed var(--term-border); padding: 0 0 10px; }
+    .grammar-box__dist-cell:last-child { border-bottom: none; padding-bottom: 0; }
+}
+.grammar-box__dist-scene {
+    position: relative;
+    width: 100%;
+    max-width: 140px;
+    height: 76px;
+}
+.grammar-box__dist-scene img {
+    position: absolute;
+    bottom: 4px;
+    image-rendering: pixelated;
+}
+.grammar-box__dist-scene .dist-box { left: 8px; width: 50px; height: 50px; z-index: 2; }
+.grammar-box__dist-scene .dist-cat { left: 66px; width: 38px; height: 38px; z-index: 3; transition: left .2s ease; }
+.grammar-box__dist-scene.is-tonari .dist-cat { left: 58px; }
+.grammar-box__dist-scene.is-soba .dist-cat { left: 82px; }
+.grammar-box__dist-scene.is-chikaku .dist-cat { left: 102px; opacity: .8; }
+
+/* となり／そば／近く — one scene, three genuinely different gaps, so the
+   distance reads at a glance instead of needing to compare three
+   separate mini-diagrams side by side.
+
+   Fixed once-broken layout: the three items used to mix a percentage
+   (p-chikaku at left:88%) with two fixed-px positions (p-tonari/
+   p-soba) inside a container with no defined width -- so depending on
+   how wide the instruction panel rendered, chikaku could land anywhere
+   from "a bit past soba" to "practically off-screen," producing a huge
+   dead gap between soba and chikaku while tonari/soba stayed bunched
+   together. Now the container has an explicit max-width and all three
+   items sit at fixed px offsets within it, so the three gaps scale
+   together as one coordinate space instead of two unrelated ones. Also
+   added: two dashed radial rings (the .dist2-threshold divs were
+   already in the markup but had no matching CSS at all, so they
+   rendered as nothing) centered on the box, marking the tonari/soba and
+   soba/chikaku boundaries as literal distance rings radiating outward --
+   overflow:hidden on the scene clips each ring to just the arc slice
+   that's actually inside the frame, giving a sonar-ping look centered
+   on the box rather than full circles. */
+.grammar-box__dist2-scene {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    height: 150px;
+    margin: 8px auto 4px;
+    overflow: hidden;
+}
+.grammar-box__dist2-scene .dist2-box {
+    position: absolute;
+    left: 16px;
+    bottom: 30px;
+    width: 60px;
+    height: 60px;
+    image-rendering: pixelated;
+    z-index: 2;
+}
+/* Rings centered on the box's own center point: box is left:16 bottom:30
+   width/height:60, so its center is at (46, 60) measured from the
+   scene's left/bottom edges. Each ring's left/bottom = center - radius,
+   size = radius * 2, so the ring is concentric on that center regardless
+   of radius. */
+.grammar-box__dist2-scene .dist2-threshold {
+    position: absolute;
+    border: 1px dashed var(--term-border, #1D9E75);
+    border-radius: 50%;
+    opacity: .45;
+    z-index: 1;
+    pointer-events: none;
+}
+.grammar-box__dist2-scene .dist2-threshold.t1 { left: -24px; bottom: -20px; width: 140px; height: 140px; }
+.grammar-box__dist2-scene .dist2-threshold.t2 { left: -104px; bottom: -100px; width: 300px; height: 300px; }
+.grammar-box__dist2-scene .dist2-item {
+    position: absolute;
+    bottom: 30px;
+    width: 90px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    z-index: 3;
+}
+.grammar-box__dist2-scene .dist2-item img {
+    width: 46px;
+    height: 46px;
+    image-rendering: pixelated;
+}
+.grammar-box__dist2-scene .dist2-label {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 17px;
+    color: var(--term-heading);
+    margin-top: 2px;
+}
+.grammar-box__dist2-scene .dist2-label span {
+    display: block;
+    font-size: 10px;
+    color: var(--term-amber);
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    white-space: normal;
+    line-height: 1.3;
+}
+.grammar-box__dist2-scene .p-tonari { left: 100px; }
+.grammar-box__dist2-scene .p-soba { left: 200px; }
+.grammar-box__dist2-scene .p-chikaku { left: 340px; }
+
+/* に/の spatial diagram — a real table with the "underneath" zone marked,
+   instead of a colored-token grammar breakdown. Was originally a tree
+   (木の下) but the tree sprite's foliage green was nearly invisible
+   against this page's dark green terminal background -- swapped the
+   whole reference noun to テーブル (table.png, a new pixel-art sprite
+   matching box.png/cat.png's style) per explicit feedback, since a
+   contrast fix alone wouldn't have helped a mid-green tree against a
+   dark-green background either way. */
+.grammar-box__no-diagram { display: flex; justify-content: center; padding: 6px 0; }
+.no-diagram-scene { position: relative; width: 220px; height: 190px; }
+.no-diagram-scene .no-table { position: absolute; left: 50%; top: 0; width: 150px; height: 150px; transform: translateX(-50%); image-rendering: pixelated; z-index: 1; }
+.no-diagram-scene .no-zone {
+    position: absolute; left: 50%; bottom: 8px; width: 150px; height: 54px; transform: translateX(-50%);
+    border: 2px dashed var(--term-amber); border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; padding-bottom: 4px;
+    font-family: "DotGothic16", "VT323", monospace; font-size: 15px; color: var(--term-amber);
+}
+.no-diagram-scene .no-zone span { font-size: 10px; color: var(--term-text-dim); font-family: "Space Mono", monospace; }
+.no-diagram-scene .no-cat { position: absolute; left: 50%; bottom: 14px; width: 40px; height: 40px; transform: translateX(-50%); image-rendering: pixelated; z-index: 2; }
+
+/* Plain-steps strip above the tree diagram: 木 + の + 下 = 木の下 */
+.grammar-box__no-diagram { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.no-diagram-steps { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.no-step {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+}
+.no-step .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 20px; color: var(--term-heading); }
+.no-step span:last-child { font-size: 10px; color: var(--term-text-dim); }
+.no-step--result { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.12); }
+.no-step--result .jp { color: var(--term-amber); }
+.no-plus, .no-eq { font-size: 16px; color: var(--term-text-dim); font-weight: 700; }
+
+/* Slash-through effect for adjective/verb conjugation diagrams (drop the
+   trailing kana before adding a new ending) -- a diagonal line animates
+   across the dropped character on lesson-open, then the new ending
+   fades in next to what's left. Shared by s10a (i-adjectives), s10c
+   (adverbs), s11a/s11b/s11c (verb masu-form) so every "drop X, add Y"
+   diagram in Study Room reads as one visual system. */
+.slash-char { position: relative; display: inline-block; }
+.slash-char::after {
+    content: "";
+    position: absolute;
+    left: -3px; right: -3px; top: 50%;
+    height: 2px;
+    background: var(--term-bad-border);
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left center;
+    animation: slashDraw 0.5s ease-out 0.35s forwards;
+}
+.add-char {
+    color: var(--term-amber);
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-3px);
+    animation: addFadeIn 0.45s ease-out 0.85s forwards;
+}
+@keyframes slashDraw { to { transform: translateY(-50%) scaleX(1); } }
+@keyframes addFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+/* な-adjective "gains a な" pop-in -- used wherever a diagram shows the
+   attributive (noun-modifying) shape picking up its な. */
+.add-na {
+    color: var(--term-amber);
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0.4);
+    animation: naPopIn 0.45s cubic-bezier(.34,1.56,.64,1) 0.5s forwards;
+}
+@keyframes naPopIn { to { opacity: 1; transform: scale(1); } }
+
+/* Bugfix: .slash-char/.add-char/.add-na are always authored as the LAST
+   element inside a `.jp` word (e.g. <span class="jp">食べ<span
+   class="add-char">ます</span></span>), which means the pre-existing
+   `.no-step span:last-child` caption-dimming rule above (0,0,2,1
+   specificity) was ALSO matching them and silently shrinking them to
+   10px dim text -- identical bug in every diagram that uses these
+   classes (adjectives, adverbs, and especially the multi-character verb
+   endings like ます/みます/くない, where it was most visible). This
+   re-asserts the full-size, full-color, full-weight kana styling with
+   higher specificity so these endings always render at the exact same
+   size as the stem/kanji beside them, never smaller. */
+.no-step .jp .slash-char,
+.no-step .jp .add-char,
+.no-step .jp .add-na {
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+.no-step .jp .add-char,
+.no-step .jp .add-na {
+    color: var(--term-amber);
+}
+
+/* Godan ending highlight -- marks the u-sound syllable that identifies a
+   verb as godan (s11b's "What makes a verb godan" section). */
+.godan-ending { color: var(--term-amber); font-weight: 700; border-bottom: 2px solid var(--term-amber); }
+
+/* Verb-conjugation step diagram (masu-form) -- a vertical 2-step chain
+   (dictionary form -> stem -> ます-form), same "steps + arrow" visual
+   family as .no-diagram-steps above, just stacked vertically since each
+   step here is a whole word rather than a short particle. */
+.masu-diagram { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 8px 0; }
+.masu-diagram .masu-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.masu-diagram .masu-row .no-step { min-width: 120px; }
+.masu-diagram .masu-arrow-down { font-size: 16px; color: var(--term-text-dim); font-weight: 700; line-height: 1; }
+
+/* Impostor-verb table (godan verbs shaped like ichidan る-verbs) */
+.impostor-table-wrap { overflow-x: auto; margin: 10px 0; }
+.impostor-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.impostor-table th { text-align: left; color: var(--term-label); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-bottom: 1px solid var(--term-border); }
+.impostor-table td { padding: 5px 8px; border-bottom: 1px dashed rgba(157,225,203,0.25); vertical-align: top; }
+.impostor-table__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 16px; color: var(--term-heading); white-space: nowrap; }
+.impostor-table__masu { color: var(--term-amber); white-space: nowrap; }
+.impostor-table__en { color: var(--term-text-dim); }
+
+/* Pronoun formality/slot diagram (s09b) -- shows the same sentence slot
+   filled by different pronouns, plus a casual<->polite ladder, so the
+   lesson shows HOW pronoun choice changes the sentence, not just a
+   vocab list of pronouns. */
+.pronoun-diagram { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 6px 0; }
+.pronoun-diagram__slot-row { display: flex; align-items: center; gap: 8px; font-family: "DotGothic16","VT323",monospace; font-size: 16px; color: var(--term-heading); flex-wrap: wrap; justify-content: center; }
+.pronoun-diagram__fixed { color: var(--term-text-dim); font-family: "Space Mono", monospace; font-size: 13px; }
+.pronoun-diagram__slot { border: 1px dashed var(--term-amber); border-radius: 6px; padding: 2px 8px; }
+.pronoun-diagram__ladder { display: flex; align-items: flex-end; gap: 14px; margin-top: 2px; flex-wrap: wrap; justify-content: center; }
+.pronoun-diagram__pill { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.pronoun-diagram__pill .jp { font-family: "DotGothic16","VT323",monospace; font-size: 16px; color: var(--term-heading); border: 1px solid var(--term-border); border-radius: 8px; padding: 4px 10px; background: rgba(29,158,117,0.12); }
+.pronoun-diagram__pill span:last-child { font-size: 10px; color: var(--term-text-dim); }
+.pronoun-diagram__axis { font-size: 10px; color: var(--term-text-dim); display: flex; justify-content: space-between; width: 100%; max-width: 340px; }
+
+
+/* s08c's compass — a plain cross (kita/minami/nishi/higashi at the four
+   ends of a "+", a small compass icon at the center where the lines
+   meet), not a photo with tags floating around its edge. */
+.grammar-box__compass-cross {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    height: 230px;
+    margin: 10px auto 4px;
+}
+.grammar-box__compass-cross .cross-line {
+    position: absolute;
+    background: var(--term-border);
+}
+.grammar-box__compass-cross .cross-line--v {
+    left: 50%;
+    top: 34px;
+    bottom: 34px;
+    width: 2px;
+    transform: translateX(-50%);
+}
+.grammar-box__compass-cross .cross-line--h {
+    top: 50%;
+    left: 6%;
+    right: 6%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+.grammar-box__compass-cross .cross-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 55px;
+    height: 55px;
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+    z-index: 2;
+}
+.grammar-box__compass-cross .cross-label {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.grammar-box__compass-cross .cross-label .jp {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 22px;
+    color: var(--term-heading);
+}
+.grammar-box__compass-cross .cross-label .romaji {
+    font-size: 11px;
+    color: var(--term-text-dim);
+    font-family: "Space Mono", monospace;
+}
+.grammar-box__compass-cross .cross-label.n { top: 0; left: 50%; transform: translateX(-50%); }
+.grammar-box__compass-cross .cross-label.s { bottom: 0; left: 50%; transform: translateX(-50%); }
+.grammar-box__compass-cross .cross-label.e { right: 0; top: 50%; transform: translateY(-50%); }
+.grammar-box__compass-cross .cross-label.w { left: 0; top: 50%; transform: translateY(-50%); }
+
+/* s08a's "Location" subsection — cat-in-box (いる) and basket-of-bread (ある)
+   as two full worked examples, given room to breathe (unlike a cramped
+   multi-cell grid, which was hard to read). */
+.grammar-box__location {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 14px;
+}
+.grammar-box__location-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 240px;
+}
+.grammar-box__location-scene {
+    width: 110px;
+    height: 110px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.grammar-box__location-scene img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.grammar-box__location-text .jp-lg {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 19px;
+    line-height: 1.3;
+}
+.grammar-box__location-text .kana-sm {
+    font-size: 11px;
+    color: var(--term-text-dim);
+    margin: 2px 0 4px;
+}
+.grammar-box__location-text .en-sm {
+    font-size: 12.5px;
+    color: var(--term-amber);
+}
+.grammar-box__location-examples {
+    border-top: 1px dashed var(--term-border);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 13.5px;
+}
+.grammar-box__location-examples span {
+    color: var(--term-text-dim);
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+/* s08a's "Places — common locations" — real photos where available
+   (assets/images/lesson/transparent/), plain labeled cards for the two
+   words with no matching photo yet (library, park). */
+.grammar-box__place-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+}
+.grammar-box__place-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 96px;
+}
+.grammar-box__place-cell img {
+    width: 89px;
+    height: 89px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.grammar-box__place-cell.no-photo {
+    justify-content: center;
+    height: 74px;
+    background: rgba(240, 198, 116, 0.08);
+    border: 1px dashed var(--term-border);
+    border-radius: var(--radius);
+}
+.grammar-box__place-jp {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 16px;
+    color: var(--term-heading);
+}
+.grammar-box__place-en {
+    font-size: 10.5px;
+    color: var(--term-text-dim);
+    text-align: center;
+}
+
+/* s08c's real, interactive route diagram — a multi-turn map with real
+   scenery (assets/images/lesson/transparent/), driven by window.NekoRoute
+   in study-room.js (state lives in data-step on .grammar-box__route2
+   itself, not in a JS variable — see that comment for why). */
+@keyframes gbRouteShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+.grammar-box__route2 { display: flex; flex-direction: column; gap: 12px; }
+.route2-prompt {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+}
+.route2-prompt .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 19px; }
+.route2-prompt .romaji { font-size: 11.5px; color: var(--term-text-dim); margin-top: 2px; }
+.route2-scene {
+    position: relative;
+    height: 340px;
+}
+.route2-scene svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.route2-scene img { position: absolute; image-rendering: pixelated; transform: translate(-50%, -50%); }
+.route2-bldg { width: 40px; height: 40px; opacity: .8; }
+.route2-house { width: 52px; height: 52px; z-index: 2; }
+.route2-station { width: 66px; height: 66px; z-index: 2; }
+/* Real directional walking sprite (same tailwagright/tailwagleft sheets
+   the conversation avatars use elsewhere) instead of a flat static image
+   -- a plain div with its background-image swapped by window.NekoRoute,
+   not an <img>, so it isn't affected by the .route2-scene img rule above. */
+@keyframes routeCatWalk {
+    from { background-position-x: 0%; }
+    to { background-position-x: 100%; }
+}
+.route2-cat {
+    position: absolute;
+    width: 40px; height: 40px; z-index: 5;
+    transform: translate(-50%, -50%);
+    background-repeat: no-repeat;
+    background-size: 500% 100%;
+    image-rendering: pixelated;
+    /* steps(4), not steps(5): a 5-frame sheet has 4 gaps between frames,
+       so with background-position-x going 0%->100% each true frame sits
+       at k/4*100%. steps(5) instead held values at k/5*100%, a non-frame
+       offset that shows a partial crop between two poses every tick --
+       that per-frame misalignment is what read as the cat "moving
+       sideways" while walking. Same bug class fixed in login.css. */
+    animation: routeCatWalk .7s steps(4) infinite;
+    transition: left .5s cubic-bezier(.34,1.2,.4,1), top .5s cubic-bezier(.34,1.2,.4,1), transform .2s ease;
+}
+/* No dedicated "walking away/up" sheet exists in the asset set, so a
+   north-facing step (see window.NekoRoute's press()) reuses the rightward
+   walk-cycle rotated -90deg (CCW) instead — whatever pointed east now
+   points north, so the cat visibly faces the road it's walking up. */
+.route2-cat.is-facing-n { transform: translate(-50%, -50%) rotate(-90deg); }
+.route2-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.route2-btn {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--term-text);
+    background: rgba(29, 158, 117, 0.1);
+    border: 1.5px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 9px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+.route2-btn span { font-size: 10.5px; color: var(--term-text-dim); font-weight: 400; }
+.route2-btn:hover { background: rgba(29, 158, 117, 0.2); }
+.route2-btn:active { transform: translateY(1px); }
+.route2-btn.is-wrong { animation: gbRouteShake .3s ease; border-color: var(--term-danger, #e2685f); }
+.route2-arrival {
+    display: none;
+    background: rgba(76, 195, 138, 0.12);
+    border: 1px solid #4CC38A;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+}
+.route2-arrival.show { display: block; }
+.route2-arrival .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 18px; color: #4CC38A; }
+.route2-arrival .romaji { font-size: 11.5px; color: var(--term-text-dim); margin-top: 2px; }
+
+/* s15's S-T-P-O-V sentence-order diagram + practice, driven by
+   window.NekoSTPOV in study-room.js. Two pieces share this block:
+   the "signal stack" explanation (5 clickable role lights, each with
+   its own always-visible particle stack underneath) and the "slot
+   builder" mini-activity below it (pick up a word chip, drop it in
+   the slot you think matches its role, 3 rounds). State for the
+   builder lives on .stpov-builder's own data-round/data-selected
+   attributes, same reasoning as .grammar-box__route2's data-step:
+   a lesson re-render always starts clean. */
+.stpov-stack {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 10px 0 6px;
+}
+.stpov-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 76px;
+}
+.stpov-light {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid var(--term-border);
+    background: rgba(29, 158, 117, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--term-text);
+    cursor: pointer;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.stpov-light:hover { transform: translateY(-2px); border-color: var(--term-amber); }
+.stpov-light.is-active {
+    background: var(--term-amber);
+    border-color: var(--term-amber);
+    color: var(--term-bg);
+    transform: translateY(-2px);
+}
+.stpov-col__label {
+    font-size: 10.5px;
+    color: var(--term-text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    text-align: center;
+}
+.stpov-col__connector {
+    width: 1px;
+    height: 10px;
+    background: var(--term-border);
+}
+.stpov-col__particles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+.stpov-chip-static {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 14px;
+    color: var(--term-heading);
+    background: rgba(250, 199, 117, 0.14);
+    border: 1px solid var(--term-border);
+    border-radius: 5px;
+    padding: 2px 9px;
+    min-width: 22px;
+    text-align: center;
+}
+.stpov-col__none {
+    font-size: 10px;
+    color: var(--term-text-dim);
+    font-style: italic;
+}
+.stpov-readout {
+    text-align: center;
+    font-size: 12px;
+    color: var(--term-text-dim);
+    min-height: 18px;
+    margin-top: 4px;
+}
+
+/* Slot-builder mini activity */
+.stpov-builder { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+.stpov-builder__head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+.stpov-builder__round { font-size: 10.5px; color: var(--term-text-dim); text-transform: uppercase; letter-spacing: .5px; }
+.stpov-builder__prompt {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--term-text);
+}
+.stpov-slots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.stpov-slot {
+    min-width: 84px;
+    min-height: 52px;
+    border: 2px dashed var(--term-border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+.stpov-slot__tag { font-size: 9.5px; color: var(--term-text-dim); letter-spacing: .5px; }
+.stpov-slot__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 15px; color: var(--term-text); min-height: 20px; }
+.stpov-slot:hover { border-color: var(--term-amber); }
+.stpov-slot.is-filled { border-style: solid; background: rgba(76, 195, 138, 0.12); border-color: #4CC38A; cursor: default; }
+.stpov-slot.is-wrong { animation: gbRouteShake .3s ease; border-color: var(--term-bad-border, #A32D2D); background: rgba(163, 45, 45, 0.12); }
+.stpov-chip-tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.stpov-chip {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 15px;
+    color: var(--term-text);
+    background: var(--term-panel, rgba(29,158,117,0.08));
+    border: 1px solid var(--term-border);
+    border-radius: 16px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+}
+.stpov-chip:hover { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.12); }
+.stpov-chip.is-selected { border-color: var(--term-amber); background: var(--term-amber); color: var(--term-bg); font-weight: 700; }
+.stpov-chip.is-used { opacity: .25; pointer-events: none; }
+.stpov-builder__feedback { text-align: center; font-size: 12px; min-height: 16px; color: var(--term-text-dim); }
+.stpov-builder__feedback.is-good { color: #4CC38A; }
+.stpov-builder__feedback.is-bad { color: var(--term-bad-text, #F09595); }
+.stpov-builder__next {
+    align-self: center;
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--term-bg);
+    background: var(--term-amber);
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 18px;
+    cursor: pointer;
+    font-weight: 700;
+    display: none;
+}
+.stpov-builder__next.show { display: inline-block; }
+
+/* s07b's bread-counting stack (つ counter) — each row ACCUMULATES: row 1
+   shows one bread, row 2 shows breads 1+2 together, ... row 10 shows all
+   ten — so the count is something you can literally count on screen, not
+   just read off a label. */
+.grammar-box__bread-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.grammar-box__bread-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px dashed var(--term-border);
+    padding: 6px 0;
+}
+.grammar-box__bread-row:last-child { border-bottom: none; }
+.grammar-box__bread-imgs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+.grammar-box__bread-imgs img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex: none;
+}
+.grammar-box__bread-label {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    min-width: 76px;
+}
+.grammar-box__bread-label .jp {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 16px;
+    color: var(--term-heading);
+}
+.grammar-box__bread-label .romaji {
+    font-size: 10px;
+    color: var(--term-text-dim);
+}
+
+/* Reusable counter-reading table (s07b people, s07d animals, s07e objects) */
+.grammar-box__counter-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 4px 0;
+}
+.grammar-box__counter-table td {
+    padding: 7px 10px;
+    border-bottom: 1px dashed var(--term-border);
+    color: var(--term-text);
+}
+.grammar-box__counter-table tr:last-child td { border-bottom: none; }
+.grammar-box__counter-table td.jp {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 16px;
+    color: var(--term-heading);
+    white-space: nowrap;
+}
+.grammar-box__counter-table td:nth-child(2) { color: var(--term-text-dim); font-size: 12px; }
+.grammar-box__counter-table td.counter-count { text-align: right; color: var(--term-amber); font-weight: 700; }
+.grammar-box__counter-table td.counter-desc { color: var(--term-text); }
+/* Real photo attached to its OWN row's trailing cell -- see the table-row
+   comments in study-room.js for why this replaced a shared photo strip
+   above the table (couldn't tell which photo matched which row). Narrow
+   fixed width keeps the column from stretching the row height; two
+   images (the 台 row keeps both car + tv) sit side by side. */
+.grammar-box__counter-table td.counter-photo {
+    width: 60px;
+    text-align: right;
+    white-space: nowrap;
+}
+.grammar-box__counter-table td.counter-photo img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+/* Real-photo examples shown above a counter table (s07b/s07d/s07e) */
+.grammar-box__counter-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+.counter-example {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+.counter-example img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+.counter-example span {
+    font-size: 10.5px;
+    color: var(--term-text-dim);
+    text-align: center;
+}
+
+/* Practice mission steps (bottom of lesson panel) */
+.practice-steps {
+    background: var(--bg-window);
+    border: 2px dashed var(--title-bar);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 24px 0 8px;
+    box-shadow: var(--shadow-window);
+}
+.practice-steps__title {
+    font-family: "VT323", monospace;
+    font-size: 18px;
+    color: var(--title-bar-dark);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+.practice-steps ol {
+    margin: 0 0 0 22px;
+    padding: 0;
+}
+.practice-steps li {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 6px 0;
+}
+.practice-steps li strong {
+    color: var(--title-bar-dark);
+}
+.practice-steps .word-bank {
+    margin: 8px 0 4px;
 }
 
 /* Word Bank */
@@ -222,84 +1519,281 @@
     font-size: 16px;
     padding: 6px 14px;
     border-radius: 20px;
-    border: 2px solid;
+    border: 1px solid;
     cursor: default;
     white-space: nowrap;
     transition: transform 0.15s;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
 }
 .word-bank__chip:hover {
     transform: scale(1.05);
 }
-.word-bank__chip[data-role="subject"] {
-    background: rgba(135,168,216,0.15);
-    border-color: var(--title-bar);
-    color: var(--title-bar-dark);
-}
-.word-bank__chip[data-role="particle"] {
-    background: rgba(241,210,122,0.2);
-    border-color: var(--yellow);
-    color: #b8941e;
-}
-.word-bank__chip[data-role="predicate"] {
-    background: rgba(143,184,155,0.2);
-    border-color: var(--mint);
-    color: #5a8a66;
-}
-.word-bank__chip[data-role="adjective"] {
-    background: rgba(199,184,221,0.2);
-    border-color: var(--lavender);
-    color: #7a6399;
-}
+.word-bank__chip[data-role="subject"],
+.word-bank__chip[data-role="predicate"],
+.word-bank__chip[data-role="adjective"],
 .word-bank__chip[data-role="object"] {
-    background: rgba(216,154,166,0.2);
-    border-color: var(--pink);
-    color: #a0616f;
+    background: rgba(29, 158, 117, 0.12);
+    border-color: var(--term-border);
+    color: var(--term-text);
 }
+.word-bank__chip[data-role="particle"],
 .word-bank__chip[data-role="auxiliary"] {
-    background: rgba(241,210,122,0.15);
-    border-color: var(--warning);
-    color: #9a7d2e;
+    background: rgba(250, 199, 117, 0.12);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .word-bank__hint {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     margin-top: 4px;
+}
+
+/* Reference-chip variant — non-clickable word-bank reminder shown above the
+   practice input (Study Room Word-Bank Sentence Builder, "hybrid" input). */
+.word-bank__chip--ref {
+    font-size: 13px;
+    padding: 4px 11px;
+    opacity: 0.85;
+    cursor: default;
+}
+.word-bank__chip--ref:hover {
+    transform: none;
+}
+
+/* Fixed word bank box (instruction panel) */
+.word-bank-box {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-left: 3px solid var(--term-amber);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 16px 0;
+}
+.word-bank-box__title {
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    color: var(--term-amber);
+    margin-bottom: 6px;
+}
+.word-bank-box__category {
+    font-size: 10px;
+    color: var(--term-label);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 10px 0 4px;
+}
+.word-bank-box__category:first-of-type {
+    margin-top: 0;
+}
+.word-bank-box__note {
+    font-size: 11px;
+    color: var(--term-label);
+    margin: 10px 0 0;
+    font-style: italic;
+}
+
+/* Next-lesson preview chips (Study Room word-bank, "coming up") */
+.word-bank-box__preview {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--term-border);
+}
+.word-bank-box__preview-label {
+    font-size: 11px;
+    color: var(--term-label);
+    font-style: italic;
+    margin-bottom: 6px;
+}
+.word-bank__chip--preview {
+    border-color: var(--term-amber);
+    background: rgba(250, 199, 117, 0.14);
+    color: var(--term-amber);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 5px 12px;
+}
+.word-bank__chip-tag {
+    font-family: var(--title-font);
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: var(--term-amber);
+}
+
+/* "New this lesson" chips (Study Room word-bank) — exposure-only, same
+   idea as the preview block above (never wired into grading) but for
+   THIS lesson's own 5 new nouns/adjectives instead of a sneak peek at the
+   next lesson. Uses --term-new (blue) instead of --term-amber (gold) so
+   it reads as its own distinct "notice me" section, not a variant of the
+   preview block right below it. */
+.word-bank-box__new {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--term-border);
+}
+.word-bank-box__new-label {
+    font-size: 11px;
+    color: var(--term-new);
+    font-style: italic;
+    margin-bottom: 6px;
+}
+.word-bank__chip--new {
+    border-color: var(--term-new);
+    background: rgba(111, 179, 230, 0.14);
+    color: var(--term-new);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 5px 12px;
+}
+.word-bank__chip-tag--new {
+    font-family: var(--title-font);
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: var(--term-new);
+}
+
+/* Culture-note paragraphs inside a grammar box */
+.grammar-box__culture {
+    font-size: 13px;
+    color: var(--term-text-dim);
+    background: var(--term-bg);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin: 10px 0 0;
+    font-style: italic;
+}
+
+/* Sources line under a lesson's content */
+.sources-line {
+    font-size: 11px;
+    color: var(--term-label);
+}
+
+/* "Download the full list" note under a trimmed Examples section --
+   plain readable text with a real blue link (deliberately not the
+   terminal's green/amber accent colors, so it reads as a hyperlink at
+   a glance the way the rest of the page's amber-on-dark text doesn't). */
+.examples-more {
+    font-size: 12.5px;
+    color: var(--term-text-dim, #7fa89c);
+    margin: 6px 0 0;
+}
+.examples-more__link {
+    color: #5AB4FF;
+    text-decoration: underline;
+}
+.examples-more__link:hover {
+    color: #8ecbff;
+}
+
+/* Full vocabulary table (content-fidelity pass) */
+.vocab-table-wrap {
+    overflow-x: auto;
+    margin: 8px 0 16px;
+}
+.vocab-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.vocab-table td {
+    padding: 5px 10px 5px 0;
+    border-bottom: 1px solid var(--term-border);
+    vertical-align: baseline;
+    white-space: nowrap;
+}
+.vocab-table__jp {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 17px;
+    color: var(--term-text);
+    line-height: 2.6;
+}
+
+/* Furigana — annotateFurigana() in study-room.js wraps kanji in these.
+   rt stays on the readable default font (Space Mono), not VT323 — same
+   "readable font for caption-sized text" rule LessonBox already follows,
+   since VT323 goes muddy at annotation size.
+   Bumped from 9px -> 13px sitewide per explicit feedback ("i can barely
+   read the furigana above much more the kanji since it's small") --
+   9px was too small to read next to kanji at this display size. Also
+   added a hover-to-enlarge affordance on the ruby element itself: hovering
+   any kanji temporarily pops its furigana up further and highlights it,
+   which reads clearer than a permanently bigger caption would (a caption
+   sized to read comfortably ALL the time would crowd the kanji line). */
+.vocab-table__jp rt,
+.example-sentence rt {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--term-label);
+    transition: transform 0.15s ease, color 0.15s ease;
+    transform-origin: bottom center;
+}
+.vocab-table__jp ruby,
+.example-sentence ruby {
+    cursor: help;
+}
+.vocab-table__jp ruby:hover rt,
+.example-sentence ruby:hover rt {
+    transform: scale(1.55);
+    color: var(--term-amber);
+}
+.vocab-table__romaji {
+    font-size: 11px;
+    color: var(--term-label);
+}
+.vocab-table__en {
+    color: var(--term-text-dim);
+    white-space: normal;
+}
+
+/* Reference-chip row above the practice input */
+.study-practice__wordbank-ref {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.study-practice__wordbank-ref:empty {
+    display: none;
+    margin-bottom: 0;
 }
 
 /* Pattern box */
 .pattern-box {
-    background: var(--bg-card);
-    border: 2px solid var(--border);
+    background: var(--term-bg);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
     padding: 14px 20px;
     margin: 12px 0;
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 20px;
-    color: var(--text-main);
+    color: var(--term-text);
     letter-spacing: 1px;
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    box-shadow: var(--shadow-window);
 }
 .pattern-box__label {
     font-size: 11px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-label);
+    font-family: "Space Mono", monospace;
     letter-spacing: 0;
     margin-right: 4px;
 }
 .pattern-box__slot {
     padding: 2px 8px;
-    background: rgba(135,168,216,0.12);
-    border: 2px dashed var(--title-bar);
+    background: rgba(29, 158, 117, 0.14);
+    border: 1px dashed var(--term-border);
     border-radius: 4px;
-    color: var(--title-bar-dark);
+    color: var(--term-text);
 }
 .pattern-box__fixed {
-    color: var(--pink);
+    color: var(--term-amber);
     font-weight: bold;
 }
 
@@ -307,44 +1801,62 @@
 .example-sentence {
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 4px;
     margin: 8px 0;
+    padding-top: 20px;
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 18px;
+    color: var(--term-text);
 }
 .example-sentence__romaji {
     font-size: 12px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-label);
+    font-family: "Space Mono", monospace;
     margin-left: 8px;
 }
 .example-sentence__english {
     font-size: 12px;
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    color: var(--term-text-dim);
+    font-family: "Space Mono", monospace;
     margin-left: 4px;
 }
 
-/* === Practice Panel (bottom) === */
-.study-practice {
-    height: 260px;
-    min-height: 200px;
-    background: var(--bg-window);
+/* === Practice Column (right — practice) === */
+.study-practice-col {
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 320px;
     display: flex;
     flex-direction: column;
-    padding: 20px 40px;
+    background: var(--term-bg);
+    border-left: 1px solid var(--term-border);
     overflow-y: auto;
-    border-top: 2px solid var(--border);
+}
+
+/* === Practice Panel === */
+.study-practice {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px;
+    overflow-y: auto;
+}
+.study-practice__reminder {
+    color: var(--term-label);
+    font-size: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--term-border);
 }
 .study-practice__prompt {
-    font-size: 13px;
-    color: var(--text-light);
+    color: var(--term-text);
     margin-bottom: 8px;
     font-family: "VT323", monospace;
-    font-size: 15px;
+    font-size: 17px;
 }
 .study-practice__prompt strong {
-    color: var(--title-bar-dark);
+    color: var(--term-amber);
 }
 .study-practice__input-row {
     display: flex;
@@ -357,29 +1869,70 @@
     font-family: "VT323", "DotGothic16", monospace;
     font-size: 22px;
     padding: 12px 18px;
-    background: var(--bg-card);
-    border: 2px solid var(--border);
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
-    color: var(--text-main);
+    color: var(--term-text);
     outline: none;
-    transition: border-color 0.2s;
-    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, background 0.2s;
 }
 .study-practice__input:focus {
-    border-color: var(--title-bar);
+    border-color: var(--term-text);
 }
 .study-practice__input:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 .study-practice__input.is-correct {
-    border-color: var(--success);
-    background: rgba(131,182,146,0.1);
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.14);
 }
 .study-practice__input.is-wrong {
-    border-color: var(--danger);
-    background: rgba(213,124,124,0.1);
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.14);
+    color: var(--term-bad-text);
     animation: shake 0.3s ease;
 }
+/* Multiple-choice "pick the correct word" exercises (vocab-only lessons:
+   s01, s02, s02b, s02c) — same green/red correct/wrong language as
+   .study-practice__input above, just applied to a set of choice buttons
+   instead of a text field. Only ever rendered on study-room.html
+   (.is-terminal), same as the rest of .study-practice*, so this uses
+   --term-* directly with no extra scoping, matching that convention. */
+.study-match-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 6px 0 14px;
+}
+.study-match-choice {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 15px;
+    text-align: left;
+    padding: 12px 16px;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--term-text);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.study-match-choice:hover:not(:disabled) {
+    background: rgba(29, 158, 117, 0.14);
+}
+.study-match-choice:disabled {
+    cursor: not-allowed;
+}
+.study-match-choice.is-correct {
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.22);
+    color: var(--term-text);
+}
+.study-match-choice.is-wrong {
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.22);
+    color: var(--term-bad-text);
+}
+
 @keyframes shake {
     0%,100% { transform: translateX(0); }
     25% { transform: translateX(-6px); }
@@ -389,53 +1942,55 @@
     font-family: var(--title-font);
     font-size: 9px;
     padding: 12px 24px;
-    border: 2px solid var(--border-dark);
+    border: 1px solid var(--term-border);
     border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
 }
 .study-practice__btn:active {
-    transform: translateY(2px);
-    box-shadow: none;
+    transform: translateY(1px);
 }
 .study-practice__btn--check {
-    background: var(--title-bar);
-    color: #fff;
-    border-color: var(--title-bar-dark);
+    background: var(--term-border);
+    color: var(--term-bg);
+    border-color: var(--term-border);
 }
 .study-practice__btn--check:hover {
-    background: var(--title-bar-dark);
+    background: var(--term-text-dim);
+    border-color: var(--term-text-dim);
 }
 .study-practice__btn--check:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 .study-practice__btn--hint {
-    background: var(--bg-card);
-    color: var(--text-light);
+    background: rgba(250, 199, 117, 0.1);
+    color: var(--term-amber);
+    border-color: var(--term-amber);
+    font-weight: 700;
 }
 .study-practice__btn--hint:hover {
-    background: var(--yellow);
-    color: var(--text-main);
+    background: rgba(250, 199, 117, 0.14);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .study-practice__btn--next {
-    background: var(--mint);
-    color: #fff;
-    border-color: #6a9a76;
+    background: var(--term-amber);
+    color: var(--term-bg);
+    border-color: var(--term-amber);
 }
 .study-practice__btn--next:hover {
-    background: #6a9a76;
+    background: #fdd78e;
 }
 .study-practice__btn--skip {
-    background: var(--bg-card);
-    color: var(--text-light);
-    border-color: var(--border);
+    background: transparent;
+    color: var(--term-label);
+    border-color: var(--term-label);
 }
 .study-practice__btn--skip:hover {
-    background: var(--border);
-    color: #fff;
+    background: rgba(93, 202, 165, 0.15);
+    color: var(--term-text);
 }
 
 /* Feedback */
@@ -446,31 +2001,30 @@
     font-size: 13px;
     line-height: 1.5;
     display: none;
-    border: 2px solid;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.08);
+    border: 1px solid;
 }
 .study-practice__feedback.is-visible {
     display: block;
 }
 .study-practice__feedback--correct {
-    background: rgba(131,182,146,0.15);
-    border-color: var(--success);
-    color: #4a7a56;
+    background: rgba(29, 158, 117, 0.14);
+    border-color: var(--term-border);
+    color: var(--term-text-dim);
 }
 .study-practice__feedback--wrong {
-    background: rgba(213,124,124,0.15);
-    border-color: var(--danger);
-    color: #a04040;
+    background: rgba(163, 45, 45, 0.14);
+    border-color: var(--term-bad-border);
+    color: var(--term-bad-text);
 }
 .study-practice__feedback--hint {
-    background: rgba(241,210,122,0.2);
-    border-color: var(--warning);
-    color: #8a6d1e;
+    background: rgba(250, 199, 117, 0.14);
+    border-color: var(--term-amber);
+    color: var(--term-amber);
 }
 .study-practice__feedback--reveal {
-    background: rgba(199,184,221,0.2);
-    border-color: var(--lavender);
-    color: #5a4377;
+    background: rgba(240, 153, 123, 0.14);
+    border-color: var(--term-bad-accent);
+    color: var(--term-bad-accent);
 }
 
 /* Progress bar */
@@ -483,20 +2037,21 @@
 .study-progress__bar {
     flex: 1;
     height: 6px;
-    background: var(--border);
+    background: var(--term-panel);
     border-radius: 3px;
     overflow: hidden;
 }
 .study-progress__fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--title-bar), var(--mint));
+    background: var(--term-border);
     border-radius: 3px;
     transition: width 0.4s ease;
 }
 .study-progress__text {
     font-size: 11px;
-    color: var(--text-light);
+    color: var(--term-label);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Completion overlay */
@@ -506,56 +2061,1305 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 14px;
     padding: 40px;
     text-align: center;
-    background: var(--bg-card);
+    background: var(--term-bg);
 }
 .study-complete.is-visible {
     display: flex;
 }
-.study-complete__icon {
-    font-size: 48px;
-}
-.study-complete__title {
+.study-complete__heading {
     font-family: "VT323", monospace;
-    font-size: 28px;
-    color: var(--mint);
+    font-size: 22px;
+    color: var(--term-amber);
+    margin: 0;
+    max-width: 420px;
 }
 .study-complete__msg {
-    color: var(--text-light);
+    color: var(--term-text-dim);
     font-size: 14px;
     max-width: 400px;
+    margin: 0;
 }
-.study-complete__score {
+.study-complete__tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+}
+.study-complete__tile {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 12px 8px;
+}
+.study-complete__tile-label {
+    font-size: 10px;
+    color: var(--term-label);
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+}
+.study-complete__tile-value {
     font-family: "VT323", monospace;
-    font-size: 20px;
-    color: var(--yellow);
+    font-size: 22px;
+    color: var(--term-text);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+.study-complete__note {
+    color: var(--term-label);
+    font-size: 12px;
+    font-style: italic;
+    margin: 0;
+}
+.study-complete__cta {
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+    color: var(--term-amber);
+    background: transparent;
+    border: 1px solid var(--term-amber);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.study-complete__cta:hover {
+    background: rgba(250, 199, 117, 0.14);
+}
+
+/* ===== CHECKPOINT QUIZZES (cq1/cq2/cq3) =====
+   Only ever rendered on study-room.html (.is-terminal) via
+   renderCheckpointQuiz() in study-room.js, so these use --term-* tokens
+   directly with no extra scoping — same convention as .study-practice__*
+   and .study-header__print-btn above, since this element only ever
+   renders on the terminal page. */
+#checkpointQuiz {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px;
+    overflow-y: auto;
+}
+.checkpoint-quiz__title {
+    font-family: "VT323", monospace;
+    font-size: 24px;
+    color: var(--term-heading);
+    margin-bottom: 4px;
+}
+.checkpoint-quiz__intro {
+    font-size: 13px;
+    color: var(--term-text-dim);
+    margin-bottom: 18px;
+}
+.checkpoint-quiz__sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.checkpoint-quiz__block {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+.checkpoint-quiz__prompt {
+    font-size: 15px;
+    color: var(--term-text);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.checkpoint-quiz__choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.checkpoint-quiz__choice {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 16px;
+    text-align: left;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--term-border);
+    background: transparent;
+    color: var(--term-text-dim);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.checkpoint-quiz__choice:hover:not(:disabled) {
+    border-color: var(--term-text);
+    color: var(--term-text);
+}
+.checkpoint-quiz__choice.is-selected {
+    background: rgba(29, 158, 117, 0.28);
+    border-color: var(--term-border);
+    color: var(--term-text);
+}
+.checkpoint-quiz__choice:disabled {
+    cursor: default;
+    opacity: 0.85;
+}
+.checkpoint-quiz__fill {
+    font-size: 16px;
+    color: var(--term-text);
+    line-height: 2.2;
+}
+.checkpoint-quiz__input {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 16px;
+    padding: 4px 8px;
+    margin: 0 4px;
+    border-radius: 4px;
+    border: 1px solid var(--term-border);
+    background: var(--term-bg);
+    color: var(--term-text);
+    min-width: 140px;
+}
+.checkpoint-quiz__input:disabled {
+    opacity: 0.85;
+}
+.checkpoint-quiz__submit {
+    align-self: flex-start;
+    margin-top: 18px;
+    font-family: "VT323", monospace;
+    font-size: 17px;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--term-border);
+    background: var(--term-border);
+    color: var(--term-bg);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.checkpoint-quiz__submit:hover:not(:disabled) {
+    background: var(--term-text-dim);
+    border-color: var(--term-text-dim);
+}
+.checkpoint-quiz__submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.checkpoint-quiz__result {
+    margin-top: 20px;
+}
+.checkpoint-quiz__score {
+    font-family: "VT323", monospace;
+    font-size: 28px;
+    color: var(--term-amber);
+}
+.checkpoint-quiz__xp {
+    font-size: 12px;
+    color: var(--term-label);
+    margin-bottom: 14px;
+}
+.checkpoint-quiz__result-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--term-border);
+}
+.checkpoint-quiz__result-mark {
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 18px;
+}
+.checkpoint-quiz__result-mark.is-correct { color: var(--term-border); }
+.checkpoint-quiz__result-mark.is-wrong { color: var(--term-bad-text); }
+.checkpoint-quiz__result-correct {
+    font-size: 13px;
+    color: var(--term-text);
+}
+.checkpoint-quiz__result-yours {
+    font-size: 12px;
+    color: var(--term-text-dim);
 }
 
 /* Responsive */
 @media (max-width: 800px) {
     .study-body { flex-direction: column; }
-    .study-sidebar {
-        width: 100%;
-        max-height: 120px;
-        border-right: none;
-        border-bottom: 2px solid var(--border);
-        display: flex;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding: 8px;
-        gap: 4px;
+    .study-header {
+        flex-wrap: wrap;
+        row-gap: 8px;
     }
-    .study-sidebar__heading { display: none; }
-    .study-lesson-btn {
-        flex-direction: column;
-        padding: 8px 12px;
-        font-size: 11px;
-        gap: 4px;
-        min-width: fit-content;
+    .study-header__title { flex: 1 1 auto; }
+    .study-header__lesson-picker { max-width: none; flex: 1 1 100%; order: 3; }
+    /* Stack lesson above practice again on small screens */
+    .study-main { flex-direction: column; overflow-y: auto; }
+    .study-instruction { padding: 20px; flex-shrink: 0; overflow: visible; }
+    .study-practice-col {
+        flex: 1 1 auto;
+        max-width: none;
+        min-width: 0;
+        border-left: none;
+        border-top: 2px solid var(--border-dark);
     }
-    .study-lesson-btn.is-active { border-right: none; border-bottom: 3px solid var(--title-bar); }
-    .study-instruction { padding: 20px; }
     .study-practice { padding: 16px 20px; height: auto; min-height: 180px; }
+}
+
+/* ===========================================================
+   LEVELS DASHBOARD + LESSON DASHBOARD + QUIZ (shared styles)
+   =========================================================== */
+
+/* XP badge (headers of study pages) */
+/* Printer icon (study-room.html only, .is-terminal) — opens the current
+   lesson's watermarked vocab PDF (assets/js/lesson-pdf.js). Same
+   --term-* direct-use convention as .study-practice__* above, since
+   this element only ever renders on the terminal page. */
+.study-header__print-btn {
+    background: transparent;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+.study-header__print-btn:hover {
+    background: rgba(29, 158, 117, 0.18);
+}
+.study-header__print-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.xp-badge {
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    color: var(--yellow);
+    background: rgba(241,210,122,0.12);
+    border: 2px solid var(--yellow);
+    border-radius: var(--radius);
+    padding: 5px 12px;
+    white-space: nowrap;
+}
+/* Terminal-scoped override — only the actual lesson/practice screen
+   (.study-room.is-terminal), not the pastel levels/lessons dashboards or
+   quiz page that share this class via plain .study-room. */
+.study-room.is-terminal .xp-badge {
+    color: var(--term-amber);
+    background: transparent;
+    border: 1px solid var(--term-amber);
+}
+
+/* ===========================================================
+   WIN95 MODIFIER — Windows 95 chrome for the level-picker page
+   only (levels-dashboard.html adds .is-win95 alongside .study-
+   room). Same pattern as .is-terminal above: redeclare colors/
+   fonts under the modifier so nothing leaks onto the other
+   .study-room pages (study-room.html, n5-lessons.html, n5-quiz.html)
+   that share this stylesheet.
+   =========================================================== */
+.study-room.is-win95 {
+    background-color: #017c7c;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #017c7c 0px,
+        #017c7c 3px,
+        #016969 3px,
+        #016969 6px
+    );
+    color: #222;
+    font-family: "Nunito", Tahoma, sans-serif;
+}
+.study-room.is-win95 .study-header {
+    background: linear-gradient(90deg,#000080,#1084d0);
+    border-bottom: 2px solid #6fa3ea;
+}
+.study-room.is-win95 .study-header__dots {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+.study-room.is-win95 .study-header__dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.study-room.is-win95 .study-header__dots span:nth-child(1) { background: #FF8F8F; }
+.study-room.is-win95 .study-header__dots span:nth-child(2) { background: #FFD966; }
+.study-room.is-win95 .study-header__dots span:nth-child(3) { background: #8FD19E; }
+.study-room.is-win95 .study-header__back {
+    color: #fff;
+    background: rgba(0,0,0,.15);
+    border: 1px solid rgba(255,255,255,.4);
+}
+.study-room.is-win95 .study-header__back:hover {
+    background: rgba(0,0,0,.28);
+}
+.study-room.is-win95 .study-header__title {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #fff;
+}
+.study-room.is-win95 .xp-badge {
+    color: #222;
+    background: #ECE9D8;
+    border: 1px solid #fff;
+    box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+}
+.study-room.is-win95 .quiz-body {
+    background: transparent;
+}
+.study-room.is-win95 .level-card {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+    color: #222;
+}
+.study-room.is-win95 .level-card:hover:not(.is-locked) {
+    transform: none;
+    background: #F4F1E4;
+    border-color: #fff;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+}
+.study-room.is-win95 .level-card__level {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: #123a8c;
+}
+.study-room.is-win95 .level-card__desc {
+    color: #444;
+}
+.study-room.is-win95 .level-card__meta {
+    font-family: "JetBrains Mono", monospace;
+    color: #666;
+}
+.study-room.is-win95 .level-card.is-locked .level-card__level {
+    color: #888;
+}
+
+/* n5-lessons.html */
+.study-room.is-win95 .lesson-card {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        3px 3px 0 rgba(0,0,0,.3);
+    color: #222;
+}
+.study-room.is-win95 .lesson-card:hover {
+    transform: none;
+    background: #F4F1E4;
+    border-color: #fff;
+}
+.study-room.is-win95 .lesson-card__num {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #123a8c;
+}
+.study-room.is-win95 .lesson-card__status {
+    font-family: "JetBrains Mono", monospace;
+    color: #666;
+}
+.study-room.is-win95 .lesson-card.is-complete {
+    border-color: #8FD19E;
+    background: #EAF3EA;
+}
+.study-room.is-win95 .lesson-card.is-complete .lesson-card__status {
+    color: #3a7a4a;
+}
+.study-room.is-win95 .lesson-card--quiz {
+    background: #FFF6DE;
+    border-color: #FFD966;
+}
+.study-room.is-win95 .lesson-card--quiz .lesson-card__num,
+.study-room.is-win95 .lesson-card--quiz .lesson-card__status {
+    color: #9a7d2e;
+}
+/* Checkpoint quiz cards (cq1/cq2/cq3, n5-lessons.html) — blue-tinted,
+   deliberately distinct from both the plain shelf cards and the final
+   quiz's yellow so all three card "families" (shelf/kanji, checkpoint,
+   final) read apart from each other at a glance. */
+.study-room.is-win95 .lesson-card--checkpoint {
+    background: #E4ECFB;
+    border-color: #7DA8E8;
+}
+.study-room.is-win95 .lesson-card--checkpoint .lesson-card__num,
+.study-room.is-win95 .lesson-card--checkpoint .lesson-card__status {
+    color: #2e5aa8;
+}
+
+/* n5-quiz.html */
+.study-room.is-win95 .quiz-panel {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    border-radius: 0;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0,0,0,.3);
+}
+.study-room.is-win95 .quiz-panel h2 {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    color: #123a8c;
+}
+.study-room.is-win95 .quiz-panel__sub {
+    color: #555;
+}
+.study-room.is-win95 .quiz-mc__btn {
+    font-family: "Nunito", Tahoma, sans-serif;
+    background: #fff;
+    border: 1px solid;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    color: #222;
+}
+.study-room.is-win95 .quiz-mc__btn:hover:not(.is-correct):not(.is-wrong) {
+    transform: none;
+    border-color: #000080;
+}
+.study-room.is-win95 .quiz-action-btn {
+    font-family: "Nunito", Tahoma, sans-serif;
+    background: #C0C0C0;
+    border: 1px solid;
+    border-color: #dfdfdf #404040 #404040 #dfdfdf;
+    border-radius: 0;
+    color: #000;
+}
+.study-room.is-win95 .quiz-action-btn:hover {
+    background: #d4d4d4;
+}
+.study-room.is-win95 .quiz-action-btn.is-back {
+    background: #ECE9D8;
+    color: #222;
+}
+.study-room.is-win95 .quiz-result__title,
+.study-room.is-win95 .quiz-panel h2 {
+    color: #123a8c;
+}
+.study-room.is-win95 .quiz-result__score {
+    color: #b8941e;
+}
+.study-room.is-win95 .quiz-result__verdict {
+    color: #222;
+}
+
+/* Level cards grid (levels dashboard) */
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+}
+.level-card {
+    display: block;
+    text-decoration: none;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    box-shadow: var(--shadow-window);
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.level-card:hover:not(.is-locked) {
+    transform: translateY(-4px);
+    border-color: var(--title-bar);
+    box-shadow: 4px 6px 0px rgba(0,0,0,0.18);
+}
+.level-card__level {
+    font-family: "VT323", monospace;
+    font-size: 30px;
+    color: var(--title-bar-dark);
+    margin-bottom: 4px;
+}
+.level-card__desc {
+    font-size: 13px;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+.level-card__meta {
+    font-family: "VT323", monospace;
+    font-size: 14px;
+    color: var(--text-light);
+}
+.level-card.is-locked {
+    opacity: 0.55;
+    filter: grayscale(0.6);
+    cursor: not-allowed;
+}
+.level-card.is-locked .level-card__level { color: var(--text-light); }
+
+/* Lesson cards grid (per-level lesson dashboard) */
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 1100px;
+}
+/* Segregates the N5 Kanji track visually from the shelf cards above it —
+   grid-column spans every column so it reads as a section break, not
+   another card. */
+.lesson-grid__section-title {
+    grid-column: 1 / -1;
+    font-family: "Press Start 2P", monospace;
+    font-size: 13px;
+    color: var(--text-main);
+    margin: 10px 0 -4px;
+    padding-top: 14px;
+    border-top: 2px dashed var(--border);
+}
+.lesson-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    color: var(--text-main);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.12);
+    transition: transform 0.15s, border-color 0.15s;
+}
+.lesson-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--title-bar);
+}
+.lesson-card__num {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--mint);
+    display: block;
+    margin-bottom: 4px;
+}
+.lesson-card__title {
+    font-size: 14px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+    line-height: 1.35;
+}
+.lesson-card__status {
+    font-family: "VT323", monospace;
+    font-size: 13px;
+    color: var(--text-light);
+}
+.lesson-card.is-complete {
+    border-color: var(--success);
+    background: rgba(131,182,146,0.08);
+}
+.lesson-card.is-complete .lesson-card__status { color: var(--success); }
+
+/* Quiz card on the lessons dashboard */
+.lesson-card--quiz {
+    background: rgba(241,210,122,0.08);
+    border-color: var(--warning);
+}
+.lesson-card--quiz .lesson-card__num { color: var(--yellow); }
+.lesson-card--quiz .lesson-card__status { color: #9a7d2e; }
+
+/* Checkpoint quiz cards (cq1/cq2/cq3) — blue-tinted via --title-bar so
+   they read as their own distinct card family, not a variant of the
+   plain shelf cards or the yellow final-quiz card. */
+.lesson-card--checkpoint {
+    background: rgba(135,168,216,0.10);
+    border-color: var(--title-bar);
+}
+.lesson-card--checkpoint .lesson-card__num { color: var(--title-bar-dark); }
+.lesson-card--checkpoint .lesson-card__status { color: var(--title-bar-dark); }
+
+/* Quiz page body */
+.quiz-body {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 20px;
+    overflow-y: auto;
+}
+.quiz-panel {
+    width: 100%;
+    max-width: 760px;
+    background: var(--bg-window);
+    border: 3px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-window);
+    padding: 28px 28px 24px;
+}
+.quiz-panel h2 {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--title-bar-dark);
+    margin: 0 0 4px;
+}
+.quiz-panel__sub {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+}
+
+/* Quiz page specific */
+.quiz-fill { transition: width 0.4s ease; }
+.quiz-text { white-space: nowrap; }
+.quiz-progress-bar { flex: 1; display: flex; align-items: center; gap: 12px; }
+
+/* MC buttons */
+.quiz-mc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+}
+.quiz-mc__btn {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 18px;
+    padding: 12px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text-main);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+.quiz-mc__btn:hover:not(.is-correct):not(.is-wrong) {
+    border-color: var(--title-bar);
+    transform: translateY(-2px);
+}
+.quiz-mc__btn.is-correct {
+    background: rgba(131,182,146,0.25);
+    border-color: var(--success);
+    color: #4a7a56;
+}
+.quiz-mc__btn.is-wrong {
+    background: rgba(213,124,124,0.2);
+    border-color: var(--danger);
+    color: #a04040;
+    animation: shake 0.3s ease;
+}
+
+/* Quiz action buttons */
+.quiz-action-btn {
+    font-family: var(--title-font);
+    font-size: 9px;
+    padding: 12px 24px;
+    border: 2px solid var(--border-dark);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+    background: var(--title-bar);
+    color: #fff;
+    border-color: var(--title-bar-dark);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 12px;
+}
+.quiz-action-btn:hover {
+    background: var(--title-bar-dark);
+}
+.quiz-action-btn.is-back {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border-color: var(--border-dark);
+}
+.quiz-action-btn.is-back:hover {
+    background: var(--border);
+}
+
+/* Fill-in input row inside quiz */
+.quiz-practice { margin-top: 12px; }
+.quiz-input { margin-bottom: 0; }
+
+/* Quiz feedback (reuse study-practice feedback styles) */
+.quiz-feedback {
+    margin-top: 12px;
+}
+
+/* Quiz result */
+.quiz-result {
+    text-align: center;
+    padding: 20px 0;
+}
+.quiz-result__icon { font-size: 48px; margin-bottom: 8px; }
+.quiz-result__title {
+    font-family: "VT323", monospace;
+    font-size: 28px;
+    color: var(--title-bar-dark);
+    margin-bottom: 8px;
+}
+.quiz-result__score {
+    font-family: "VT323", monospace;
+    font-size: 22px;
+    color: var(--yellow);
+    margin-bottom: 12px;
+}
+.quiz-result__verdict {
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+.quiz-xp-gained {
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    color: var(--mint);
+    margin-bottom: 16px;
+}
+.quiz-result__buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* ===========================================================
+   N5 FINAL QUIZ — extra question-kind chrome (level-quiz.js).
+   The five kinds (mc / kanji-reading / star / reading /
+   word-sentence) all render through the same .quiz-mc choice list;
+   these are just the per-kind "extra" blocks shown above the prompt. */
+.quiz-section-label {
+    font-family: "Space Mono", "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+
+.quiz-kanji-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 10px 0 16px;
+}
+.quiz-kanji-display__glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--title-bar-dark);
+}
+.quiz-kanji-display__meaning {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.quiz-star-sentence {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 10px 0 16px;
+}
+.quiz-star-fixed { }
+.quiz-star-blank {
+    display: inline-block;
+    min-width: 2.2em;
+    text-align: center;
+    opacity: .55;
+}
+.quiz-star-mark {
+    display: inline-block;
+    min-width: 1.4em;
+    text-align: center;
+    color: var(--danger, #c0392b);
+    font-weight: 700;
+}
+.quiz-star-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    color: #fff;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+.quiz-star-reveal {
+    margin-top: 6px;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 17px;
+    opacity: .85;
+}
+
+.quiz-passage {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--title-bar);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin: 10px 0 16px;
+}
+
+.quiz-word-prompt {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 16px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.quiz-word-prompt__word {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 26px;
+    color: var(--title-bar-dark);
+}
+.quiz-word-prompt__reading {
+    font-size: 13px;
+    color: var(--text-light);
+}
+.quiz-word-prompt__meaning {
+    font-size: 12px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.study-room.is-win95 .quiz-section-label { color: #555; }
+.study-room.is-win95 .quiz-kanji-display__glyph { color: #123a8c; }
+.study-room.is-win95 .quiz-star-sentence,
+.study-room.is-win95 .quiz-passage,
+.study-room.is-win95 .quiz-word-prompt {
+    background: #fff;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    border-radius: 0;
+}
+.study-room.is-win95 .quiz-passage { border-left: 3px solid #123a8c; }
+.study-room.is-win95 .quiz-word-prompt__word { color: #123a8c; }
+
+/* Exam sheet — every question in the current section, answered via
+   radio buttons and graded all at once on Submit. */
+.quiz-exam-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 12px 0;
+}
+.quiz-exam-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--border);
+}
+.quiz-exam-item:last-child { border-bottom: none; }
+.quiz-exam-item__num {
+    flex: 0 0 auto;
+    font-family: "VT323", monospace;
+    font-size: 18px;
+    color: var(--text-light);
+    min-width: 22px;
+}
+.quiz-exam-item__body { flex: 1; min-width: 0; }
+.quiz-exam-item__prompt {
+    font-size: 14px;
+    color: var(--text-main);
+    margin: 0 0 4px;
+}
+.quiz-exam-item .quiz-kanji-display,
+.quiz-exam-item .quiz-star-sentence,
+.quiz-exam-item .quiz-passage,
+.quiz-exam-item .quiz-word-prompt {
+    margin: 6px 0 10px;
+}
+
+.quiz-exam-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.quiz-exam-choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    font-size: 13px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+.quiz-exam-choice:hover { border-color: var(--title-bar); }
+.quiz-exam-choice input[type="radio"] { flex: 0 0 auto; accent-color: var(--title-bar); }
+.quiz-exam-choice input[type="radio"]:disabled { cursor: default; }
+/* Reviewed state: the correct choice underlines regardless of what the
+   player picked — this is the "correct answers show underlined" ask —
+   and the player's own wrong pick gets struck through in red so it's
+   clear what they answered vs. what was right. */
+.quiz-exam-choice.is-correct-answer {
+    text-decoration: underline;
+    text-decoration-color: var(--success);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    border-color: var(--success);
+    background: rgba(131,182,146,0.18);
+    color: #3a6b46;
+    font-weight: 600;
+}
+.quiz-exam-choice.is-user-wrong {
+    border-color: var(--danger);
+    background: rgba(213,124,124,0.15);
+    color: #a04040;
+    text-decoration: line-through;
+}
+.quiz-exam-item__reveal {
+    margin-top: 8px;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 16px;
+    color: var(--text-light);
+}
+.quiz-exam-item__reveal::before { content: "Full sentence: "; font-family: var(--body-font, inherit); font-size: 11px; }
+
+.quiz-exam-submit-bar {
+    position: sticky;
+    bottom: -1px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+    padding: 14px 0 2px;
+    background: var(--bg-window);
+    border-top: 1px solid var(--border);
+}
+.quiz-exam-submit-bar__status {
+    font-size: 12px;
+    color: var(--text-light);
+    flex: 1;
+}
+.quiz-exam-submit-bar .quiz-action-btn { margin-top: 0; }
+
+.study-room.is-win95 .quiz-exam-item { border-bottom-color: #b0b0b0; }
+.study-room.is-win95 .quiz-exam-choice {
+    background: #fff;
+    border-color: #404040 #dfdfdf #dfdfdf #404040;
+    border-radius: 0;
+}
+.study-room.is-win95 .quiz-exam-choice.is-correct-answer {
+    background: #e4f3e4;
+    border-color: #4a8f4a;
+}
+.study-room.is-win95 .quiz-exam-choice.is-user-wrong {
+    background: #f7e2e2;
+    border-color: #a04040;
+}
+.study-room.is-win95 .quiz-exam-submit-bar { background: #ECE9D8; }
+
+/* ===========================================================
+   KANA DOJO — hiragana stroke-order tracing (kana-dojo.html).
+   Reuses .study-room.is-win95 for the page chrome (header/back link/
+   background), so only the grid + trace-viewer need new rules here.
+   =========================================================== */
+.kana-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+}
+.kana-intro {
+    max-width: 640px;
+    margin: 0 auto 24px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 14px;
+}
+.kana-credit {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 11px;
+}
+.kana-credit a {
+    color: inherit;
+}
+/* Credits page (pages/missions/credits.html) — reuses .kana-body's centered
+   scroll column rather than inventing a new page shell. */
+.credits-page {
+    max-width: 640px;
+    margin: 0 auto;
+    color: var(--text-main);
+}
+.credits-page__intro {
+    color: var(--text-light);
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+.credits-page__section {
+    margin-bottom: 22px;
+}
+.credits-page__section h2 {
+    font-family: "Press Start 2P", monospace;
+    font-size: 12px;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+.credits-page__section p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+.credits-page__section a {
+    color: var(--title-bar-dark, #1084d0);
+}
+.credits-page__outro {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 28px;
+}
+/* Under the win95 skin, .kana-body/.credits-page sit directly on the
+   dark teal striped backdrop (.study-room.is-win95's own background)
+   with no white card underneath — unlike the level/lesson cards, which
+   get a cream #ECE9D8 panel first. --text-main/--text-light are dark
+   grays tuned for that light card background, so on the bare teal
+   backdrop they're barely legible. Both credits.html and kana-dojo.html
+   use is-win95 + these same classes, so this covers both. */
+.study-room.is-win95 .kana-intro,
+.study-room.is-win95 .kana-credit,
+.study-room.is-win95 .credits-page,
+.study-room.is-win95 .credits-page__intro,
+.study-room.is-win95 .credits-page__section p,
+.study-room.is-win95 .credits-page__outro {
+    color: #E4F5F1;
+}
+.study-room.is-win95 .credits-page__section h2 {
+    color: #FFD966;
+}
+.study-room.is-win95 .credits-page__section a,
+.study-room.is-win95 .kana-credit a {
+    color: #9FE0FF;
+}
+.kana-grid {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.kana-grid__row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.kana-grid__tile {
+    width: 84px;
+    background: var(--bg-card);
+    border: 2px solid #fff;
+    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff;
+    border-radius: 0;
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.kana-grid__tile:hover {
+    background: #F4F1E4;
+}
+.kana-grid__tile.is-active {
+    background: var(--title-bar);
+    box-shadow: inset 2px 2px 0 #808080, inset -2px -2px 0 #fff;
+}
+.kana-grid__tile.is-active .kana-grid__char,
+.kana-grid__tile.is-active .kana-grid__romaji {
+    color: #fff;
+}
+.kana-grid__char {
+    font-family: "DotGothic16", sans-serif;
+    font-size: 26px;
+    color: var(--text-main);
+}
+.kana-grid__romaji {
+    font-family: "Nunito", sans-serif;
+    font-size: 10px;
+    color: var(--text-light);
+    text-transform: lowercase;
+}
+
+.kana-viewer {
+    display: none;
+    max-width: 420px;
+    margin: 28px auto 0;
+    background: var(--bg-card);
+    border: 2px solid #fff;
+    box-shadow: inset -2px -2px 0 #808080, inset 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,.25);
+    padding: 20px;
+    text-align: center;
+}
+.kana-viewer.is-visible {
+    display: block;
+}
+.kana-writer__svg {
+    width: 220px;
+    height: 220px;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    margin: 0 auto 14px;
+}
+.kana-writer__guide {
+    fill: none;
+    stroke: #d8d2c2;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.kana-writer__stroke {
+    fill: none;
+    stroke: var(--title-bar-dark, #1084d0);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+/* Numbered stroke-start dots — the "1, 2, 3..." markers every printed
+   stroke-order chart uses, placed at each stroke's real getPointAtLength(0)
+   (see kana-writer.js), not a hand-picked coordinate. Hidden until its
+   stroke starts (is-active), then settles to a faint but still-readable
+   mark once that stroke finishes drawing (is-done) so the full numbered
+   sequence stays visible at a glance once playback ends. */
+.kana-writer__dot {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+}
+.kana-writer__dot.is-active {
+    opacity: 1;
+}
+.kana-writer__dot.is-done {
+    opacity: 0.5;
+}
+.kana-writer__dot circle {
+    fill: var(--warning);
+    stroke: var(--text-main);
+    stroke-width: 0.6;
+}
+.kana-writer__dot text {
+    font-family: "VT323", monospace;
+    font-size: 6px;
+    fill: var(--text-main);
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+.kana-viewer__label {
+    font-family: "VT323", monospace;
+    font-size: 26px;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+.kana-viewer__count {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 14px;
+}
+.kana-viewer__controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.kana-viewer__controls button {
+    font-family: "Press Start 2P", monospace;
+    font-size: 9px;
+    padding: 10px 14px;
+    background: var(--title-bar);
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #fff;
+    cursor: pointer;
+}
+.kana-viewer__controls button:active {
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
+}
+/* Stroke-order strip — the jisho.org-style progressive reference: one small
+   frame per stroke, each showing every earlier stroke faint/gray plus the
+   new stroke solid black with a red start dot, ending in one full-size
+   completed-character thumbnail. Static (no animation) since its whole job
+   is to sit there as a look-back reference while the learner traces. */
+.kana-viewer__stroke-order {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-dark);
+}
+.kana-viewer__stroke-order-title {
+    font-family: "Press Start 2P", monospace;
+    font-size: 9px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+    text-align: left;
+}
+.kana-stroke-order-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.kana-stroke-order-frame {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    background:
+        linear-gradient(to right, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        linear-gradient(to bottom, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        #fff;
+    border: 1px dashed var(--border-dark);
+}
+.kana-stroke-order-frame__svg {
+    width: 100%;
+    height: 100%;
+}
+.kana-stroke-order-frame__stroke {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.kana-stroke-order-frame__stroke--prior {
+    stroke: #b7b0a0;
+}
+.kana-stroke-order-frame__stroke--current {
+    stroke: var(--text-main);
+}
+.kana-stroke-order-frame__dot {
+    fill: var(--danger);
+}
+.kana-stroke-order-frame--complete {
+    background: none;
+    border: none;
+    width: 52px;
+    height: 52px;
+    margin-left: 4px;
 }

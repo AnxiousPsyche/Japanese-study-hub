@@ -1,0 +1,124 @@
+/* STREAK POPUP — assets/js/streak-popup.js. Themed with the same
+   --term-* tokens as the rest of the Study Room's terminal skin
+   (.study-room.is-terminal). The overlay is appended straight to
+   <body> (see streak-popup.js), which sits OUTSIDE the .study-room
+   element in the DOM — CSS custom properties only inherit down the
+   tree, so a bare var(--term-panel) etc. resolves to nothing there
+   and the popup rendered invisible/unreadable. Every var() below
+   carries an explicit fallback matching .study-room.is-terminal's
+   values so this widget is self-contained regardless of where it's
+   mounted. */
+
+.streak-popup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 24, 20, 0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background 0.3s ease;
+}
+.streak-popup-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(4, 24, 20, 0.72);
+}
+
+.streak-popup {
+    background: var(--term-panel, #032821);
+    border: 1px solid var(--term-border, #1D9E75);
+    border-radius: var(--radius, 8px);
+    padding: 28px 32px 24px;
+    width: min(320px, 88vw);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    transform: translateY(14px) scale(0.96);
+    transition: transform 0.3s cubic-bezier(.2, .85, .3, 1);
+}
+.streak-popup-overlay.is-visible .streak-popup {
+    transform: translateY(0) scale(1);
+}
+
+.streak-popup__flame {
+    font-size: 34px;
+    margin-bottom: 4px;
+}
+.streak-popup__count {
+    font-family: "VT323", monospace;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--term-amber, #FAC775);
+}
+.streak-popup__label {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--term-label, #5DCAA5);
+    margin-bottom: 18px;
+}
+
+.streak-popup__week {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.streak-popup__day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 30px;
+}
+.streak-popup__day-flame {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--term-bg, #04342C);
+    border: 1px solid var(--term-border, #1D9E75);
+    font-size: 12px;
+}
+.streak-popup__day.is-lit .streak-popup__day-flame {
+    background: rgba(250, 199, 117, 0.18);
+    border-color: var(--term-amber, #FAC775);
+}
+.streak-popup__day-label {
+    font-family: "Space Mono", monospace;
+    font-size: 9px;
+    color: var(--term-text-dim, #9FE1CB);
+    text-transform: uppercase;
+}
+.streak-popup__day.is-today .streak-popup__day-label {
+    color: var(--term-text, #E1F5EE);
+    font-weight: 700;
+}
+
+.streak-popup__msg {
+    color: var(--term-text-dim, #9FE1CB);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+.streak-popup__btn {
+    font-family: var(--title-font, "Press Start 2P", monospace);
+    font-size: 10px;
+    padding: 12px 22px;
+    border: 1px solid var(--term-border, #1D9E75);
+    border-radius: var(--radius, 8px);
+    background: var(--term-border, #1D9E75);
+    color: var(--term-bg, #04342C);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.streak-popup__btn:hover { background: var(--term-text-dim, #9FE1CB); }
+
+@media (prefers-reduced-motion: reduce) {
+    .streak-popup-overlay, .streak-popup { transition: none !important; }
+}

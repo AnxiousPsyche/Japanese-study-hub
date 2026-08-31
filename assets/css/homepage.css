@@ -26,10 +26,43 @@ DESKTOP
 
     overflow-x:hidden;
 
-    background:url("../images/backgrounds/desktop-wallpaper.png")
-    center center/cover no-repeat;
+    background-color:#DCE6D6;
+
+    background-image:repeating-linear-gradient(0deg, rgba(42,74,48,.035) 0 1px, transparent 1px 3px);
 
     font-family:var(--title-font);
+
+}
+
+/* Dark mode: no toggle switch on this site, just the system preference —
+   swaps to the same hatched-teal-style backdrop the login screen already
+   uses (in forest green instead of teal), so both screens read as one
+   family. The windows themselves stay the same light cream/green cards
+   in both modes — same pattern the login dialog already uses (light
+   Windows-95 card on a dark hatch), so only the empty screen changes. */
+@media (prefers-color-scheme:dark){
+
+    /* :not([data-theme="light"]) so an explicit light choice from the
+       taskbar toggle (os.js applyTheme()) beats the system's dark
+       setting instead of being silently overridden by it. */
+    #desktop:not([data-theme="light"]){
+
+        background-color:#0F3324;
+
+        background-image:repeating-linear-gradient(45deg, #0F3324 0px, #0F3324 3px, #0C2A1D 3px, #0C2A1D 6px);
+
+    }
+
+}
+
+/* Explicit dark choice from the taskbar toggle — applies regardless of
+   the system's own light/dark setting, so the toggle also wins on a
+   system that's set to light. */
+#desktop[data-theme="dark"]{
+
+    background-color:#0F3324;
+
+    background-image:repeating-linear-gradient(45deg, #0F3324 0px, #0F3324 3px, #0C2A1D 3px, #0C2A1D 6px);
 
 }
 
@@ -43,7 +76,7 @@ DESKTOP CONTAINER
 
     width:100%;
 
-    min-height:calc(100vh - 56px);
+    min-height:calc(100vh - 46px);
 
     padding:25px 30px 80px;
 
@@ -85,32 +118,50 @@ DASHBOARD ROW
 
     width:100%;
 
+    /* Same grid/flex-item "min-width:auto" content-blowout gotcha as the
+       fix below on #playerWindow/#discWindow/#questWindow, one level up:
+       .dashboard-grid is itself a grid item of .desktop-container (display:
+       grid), so without this it refused to shrink narrower than its
+       children's own max-width (560px), clipping past the viewport edge
+       on any window under ~590px wide. */
+    min-width:0;
+
     height:700px;
 
 }
 
+/* Positioned relative to the disc's own center (calc(50% ...)) instead
+   of a fixed left:155px pinned near the desktop-icons column — at wide
+   viewports a fixed left/right pairing left this card and #questWindow
+   stranded near the screen edges with the disc floating alone in the
+   middle ("disarray"). Tying all three to 50% keeps the whole cluster
+   visually grouped regardless of viewport width. Gap between cards is
+   24px; disc half-width is 227.5px (455px / 2), rounded to 228 below. */
 #playerWindow{
 
     position:absolute;
 
     width:220px;
 
-    left:0;
+    left:calc(50% - 472px);
 
-    top:25px;
+    top:170px;
 
 }
 
+/* Bumped ~30% from 350px to 455px per request (bigger, dominant element
+   on the desktop) and shifted down from top:70 to clear the greeting
+   window with more room now that it's taller. Left recalculated to stay
+   centered at the new width. */
 #discWindow{
 
     position:absolute;
 
-    width:520px;
+    width:455px;
 
-    left:calc(50% - 260px);
+    left:calc(50% - 227px);
 
-    top:150px;
-
+    top:214px;
 
 }
 
@@ -120,9 +171,9 @@ DASHBOARD ROW
 
     width:220px;
 
-   right:30px;
+    left:calc(50% + 252px);
 
-    top:160px;
+    top:170px;
 
 }
 
@@ -170,11 +221,23 @@ WELCOME WINDOW
 
     position:absolute;
 
-    width:720px;
+    width:612px;
 
-    left:calc(50% - 360px);
+    left:calc(50% - 306px);
 
     top:20px;
+}
+
+.desktop-header h1{
+
+    font-size:1.7rem;
+
+}
+
+.desktop-header .window-content{
+
+    padding:20px;
+
 }
 
 .desktop-header-content{
@@ -260,6 +323,19 @@ PLAYER WINDOW
 
 }
 
+/* container-type here is what makes the sizes below respond to the
+   PLAYER-CARD WINDOW's own resized width (drag-resized via its corner/edge
+   handles, independent of the viewport) rather than only the page's
+   viewport width — a plain vw/rem unit can't see that the window itself
+   got smaller, only cqw (container query width) can. */
+.player-card{
+
+    container-type:inline-size;
+
+    container-name:player-card;
+
+}
+
 .player-card .window-content{
 
     display:flex;
@@ -270,7 +346,7 @@ PLAYER WINDOW
 
     justify-content:flex-start;
 
-    gap:clamp(8px,1vw,16px);
+    gap:clamp(8px,4cqw,16px);
 
     width:100%;
 
@@ -284,19 +360,19 @@ PLAYER WINDOW
 
 .player-card .window-content h2{
 
-    font-size:.85rem;
+    font-size:clamp(.6rem,7cqw,.85rem);
 
 }
 
 .player-card .window-content > h3{
 
-    font-size:.7rem;
+    font-size:clamp(.5rem,6cqw,.7rem);
 
 }
 
 .player-card .window-content > p{
 
-    font-size:.6rem;
+    font-size:clamp(.45rem,5cqw,.6rem);
 
     line-height:1.7;
 
@@ -308,19 +384,34 @@ PLAYER WINDOW
 
     grid-template-columns:repeat(3,1fr);
 
-    gap:10px;
+    gap:clamp(4px,3cqw,10px);
 
     width:100%;
 
     justify-content:space-around;
 
-    margin-top:20px;
+    margin-top:clamp(8px,5cqw,20px);
 
     align-items:stretch;
 
     flex:0 1 auto;
 
-    font-size:clamp(.55rem,.75vw,.75rem);
+    font-size:clamp(.5rem,4.5cqw,.75rem);
+
+}
+
+/* Below this the 3-column grid has too little room per stat — collapse to
+   a single centered column instead of letting labels clip ("Lessons"
+   truncating to "Les" was this exact symptom). */
+@container player-card (max-width:190px){
+
+    .player-stats{
+
+        grid-template-columns:1fr;
+
+        justify-items:center;
+
+    }
 
 }
 
@@ -340,9 +431,23 @@ PLAYER WINDOW
 
 .player-stats h3{
 
-    font-size:1.4rem;
+    font-size:clamp(.85rem,9cqw,1.4rem);
 
     line-height:1;
+
+}
+
+.player-stat-icon{
+
+    width:1.4em;
+
+    height:1.4em;
+
+    object-fit:contain;
+
+    image-rendering:pixelated;
+
+    vertical-align:middle;
 
 }
 
@@ -350,7 +455,7 @@ PLAYER WINDOW
 
     color:#5B77A8;
 
-    font-size:clamp(.7rem,1.5vw,.9rem);
+    font-size:clamp(.6rem,5.5cqw,.9rem);
 }
 
 /*======================================================
@@ -365,15 +470,19 @@ CURRENT DISC
 
 .disc-slide h2{
 
-    font-size:1.05rem;
+    font-size:clamp(1.25rem, 1.6vw, 1.5rem);
 
     line-height:1.3;
+
+    white-space:nowrap;
 
 }
 
 .disc-slide p{
 
-    font-size:.7rem;
+    font-size:.85rem;
+
+    white-space:nowrap;
 
 }
 
@@ -405,7 +514,7 @@ DISC CAROUSEL
 
     align-items:center;
 
-    gap:10px;
+    gap:6px;
 
 }
 
@@ -459,9 +568,9 @@ DISC CAROUSEL
 
     flex:0 0 auto;
 
-    width:44px;
+    width:34px;
 
-    height:44px;
+    height:34px;
 
     border-radius:50%;
 
@@ -597,15 +706,39 @@ QUEST WINDOW
 JOURNEY
 ======================================================*/
 
+/* position:fixed (not absolute) — bottom:Npx on an absolutely-positioned
+   element is relative to the CONTAINER's bottom edge, and #desktop/
+   .desktop-container are routinely taller than the viewport (all the
+   absolutely-positioned content stacks up real scroll height), so
+   "bottom:100px" was landing well above the visible bottom of the screen
+   depending on that total height — never reliably "the middle-bottom of
+   what's on screen". Fixed positioning is relative to the viewport
+   itself, the same reason footer-window below already uses it. */
+/* position:absolute + a measured top (not bottom) — bottom-anchored fixed
+   positioning rendered inconsistently for this element specifically in
+   testing (a grid-descendant + fixed-position interaction that didn't
+   respond to the bottom offset at all), where every other window on this
+   desktop uses position:absolute + top reliably. top:571px is measured
+   live (getBoundingClientRect, not guessed) against #discWindow's actual
+   rendered bottom edge at its current 350px width, plus clearance — the
+   previous top:610px was measured against the disc at its old, smaller
+   260px size and stopped clearing it once the disc grew. If the disc's
+   size changes again, re-measure #discWindow's rendered bottom edge live
+   rather than adjusting this number by feel. top:890px is that
+   re-measurement for the disc's current 455px-wide/top:214px size. */
 .journey-window{
 
     position:absolute;
 
-    left:50%;
+    left:0;
 
-    transform:translateX(-50%);
+    right:0;
 
-    bottom:100px;
+    margin-left:auto;
+
+    margin-right:auto;
+
+    top:940px;
 
     width:min(230px,52%);
 
@@ -691,13 +824,15 @@ making the footer appear un-centered and fully opaque.
 
     position:fixed;
 
-    left:50%;
+    right:20px;
 
-    bottom:70px;
+    bottom:32px;
+
+    left:auto;
 
     width:220px;
 
-    transform:translateX(-50%);
+    transform:none;
 
     z-index:50;
 
@@ -974,21 +1109,33 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 — renamed to match so the icon column actually renders.
 ======================================================*/
 
+/* position:absolute (was position:relative, in normal flow) — as a
+   flex column this block is ~580px tall (5 stacked icons), and being a
+   normal-flow sibling of .desktop-container pushed the ENTIRE desktop
+   (greeting/disc/quest/journey windows) down by that same ~580px,
+   leaving them stranded in the lower half of the page instead of
+   vertically centered. Taking it out of flow (anchored to #desktop,
+   which is position:relative) overlays it in the top-left corner
+   without affecting where anything else on the desktop sits. */
 .desktop-icons{
 
-    position:relative;
+    position:absolute;
+
+    top:51px;
+
+    left:0;
 
     display:flex;
 
-    flex-direction:row;
+    flex-direction:column;
 
     flex-wrap:wrap;
 
-    justify-content:center;
+    justify-content:flex-start;
 
     gap:24px;
 
-    padding:20px 0 10px;
+    padding:20px 0 10px 24px;
 
     z-index:1;
 
@@ -1052,9 +1199,15 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 
 }
 
+/* Was plain white with a dark drop-shadow — tuned for the old photo
+   wallpaper, which had enough dark area for that to read. Against the
+   new flat light backdrop it was nearly invisible, so this now follows
+   the same theme system as #desktop's own background: dark ink by
+   default (light backdrop), light text once the backdrop actually is
+   dark (system dark mode, or the taskbar toggle's explicit override). */
 .desktop-icon span{
 
-    color:white;
+    color:#2A4A30;
 
     font-family:var(--readable-font);
 
@@ -1065,6 +1218,26 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
     text-align:center;
 
     line-height:1.4;
+
+    text-shadow:0 1px 2px rgba(255,255,255,.55);
+
+}
+
+@media (prefers-color-scheme:dark){
+
+    #desktop:not([data-theme="light"]) .desktop-icon span{
+
+        color:#EDEAE2;
+
+        text-shadow:2px 2px 3px rgba(0,0,0,.65);
+
+    }
+
+}
+
+#desktop[data-theme="dark"] .desktop-icon span{
+
+    color:#EDEAE2;
 
     text-shadow:2px 2px 3px rgba(0,0,0,.65);
 
@@ -1084,13 +1257,15 @@ FIX: was .desktop-icons but HTML uses .desktop-shortcuts
 RESPONSIVE
 ======================================================*/
 
-@media(max-width:1200px){
-
-    #discWindow{ width:420px; }
-
-}
-
-@media(max-width:992px){
+/* #playerWindow/#discWindow/#questWindow are absolutely positioned with
+   fixed pixel widths+offsets (220px, up to 520px, 220px) — that only has
+   room between roughly 992-1300px wide, a narrow band that turned out
+   unreliable to fine-tune (a partial-shrink rule here for #discWindow
+   alone still left things clipping/overlapping in testing). Simpler and
+   more robust: widen the single breakpoint below so the tested stacked
+   layout kicks in for the whole fragile range instead of trying to make
+   the absolute-positioned 3-column layout hold together down to 992px. */
+@media(max-width:1300px){
 
     .dashboard-grid{
 
@@ -1113,6 +1288,14 @@ RESPONSIVE
         position:relative;
 
         width:100%;
+
+        /* Flex items default to min-width:auto, which lets a child's
+           intrinsic content (the disc carousel's images/track here) hold
+           the box at its content width and defeat this 100% — the classic
+           flexbox "min-width:auto" content-overflow gotcha. Without this,
+           #discWindow stayed pinned near 520px regardless of the width
+           rule above, clipping against the viewport edges as it narrowed. */
+        min-width:0;
 
         left:auto;
 
@@ -1190,6 +1373,10 @@ RESPONSIVE
 
         left:auto;
 
+        right:auto;
+
+        top:auto;
+
         bottom:auto;
 
         transform:none;
@@ -1221,5 +1408,218 @@ RESPONSIVE
 @media(max-width:576px){
 
     .desktop-clock{ font-size:1rem; }
+
+}
+
+/*======================================================
+FOREST TERMINAL GREEN — homepage re-skin
+
+Scoped modifier class on .desktop-container (see the
+"Retro OS re-theming" pattern in CLAUDE.md) so this
+palette stays off every other page that shares
+.retro-window/.window-title/.retro-btn with the homepage.
+Chrome/color/type pass only — no window is repositioned
+or resized here, and VT323 is reserved for genuinely
+header-sized text (small chrome like window titles and
+captions keep Space Mono, per the LessonBox readability
+rule: VT323 goes muddy at caption sizes). Both fonts are
+already self-hosted via study-style.css's @font-face
+(already linked on this page), so no extra font request.
+======================================================*/
+
+.desktop-container.is-forest-terminal{
+
+    --ft-bg:#F0F2EC;
+    --ft-border:#B9C4B0;
+    --ft-title-bg:#E4E9DD;
+    --ft-ink:#2A4A30;
+    --ft-ink-dim:#6E8F5E;
+    --ft-accent:#1D9E75;
+    --ft-track:#DCE6D6;
+
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .retro-window{
+
+    background:var(--ft-bg);
+    border-color:var(--ft-border);
+    box-shadow:
+        0 10px 26px rgba(42,74,48,.14),
+        inset 0 1px 0 rgba(255,255,255,.5);
+
+}
+
+.desktop-container.is-forest-terminal .window-title{
+
+    background:var(--ft-title-bg);
+    color:var(--ft-ink);
+    border-bottom:1px solid var(--ft-border);
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+    font-weight:700;
+
+}
+
+.desktop-container.is-forest-terminal .window-buttons span:first-child{ background:#C97575; }
+.desktop-container.is-forest-terminal .window-buttons span:nth-child(2){ background:#D9B15C; }
+.desktop-container.is-forest-terminal .window-buttons span:last-child{  background:var(--ft-accent); }
+
+.desktop-container.is-forest-terminal .window-content{
+
+    color:var(--ft-ink);
+    /* faint scanline texture, confined to the content box so it can't
+       interfere with the title bar's drag handle or the resize handles
+       that live on the .retro-window root */
+    background:
+        repeating-linear-gradient(0deg, rgba(42,74,48,.035) 0 1px, transparent 1px 3px),
+        var(--ft-bg);
+
+    scrollbar-width:thin;
+    scrollbar-color:var(--ft-accent) var(--ft-bg);
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar-track{
+
+    background:var(--ft-bg);
+
+}
+
+.desktop-container.is-forest-terminal .window-content::-webkit-scrollbar-thumb{
+
+    background:var(--ft-accent);
+    border-radius:4px;
+    border:2px solid var(--ft-bg);
+
+}
+
+/* header/display-sized text -> VT323; everything else stays on the
+   base Space Mono set above */
+.desktop-container.is-forest-terminal .desktop-header h1,
+.desktop-container.is-forest-terminal .desktop-clock,
+.desktop-container.is-forest-terminal .player-stats h3,
+.desktop-container.is-forest-terminal .disc-slide h2,
+.desktop-container.is-forest-terminal .quest-card h2{
+
+    font-family:"VT323", monospace;
+    letter-spacing:.5px;
+
+}
+
+.desktop-container.is-forest-terminal .desktop-clock{
+
+    color:var(--ft-accent);
+    font-size:1.05rem;
+
+}
+
+.desktop-container.is-forest-terminal #englishGreeting,
+.desktop-container.is-forest-terminal #greetingMessage{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal #englishGreeting.typing-cursor::after,
+.desktop-container.is-forest-terminal #greetingMessage.typing-cursor::after{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .player-stats strong{
+
+    color:var(--ft-accent);
+
+}
+
+.desktop-container.is-forest-terminal .xp-bar{
+
+    background:var(--ft-track);
+
+}
+
+.desktop-container.is-forest-terminal .xp-fill{
+
+    background:var(--ft-accent);
+
+}
+
+.desktop-container.is-forest-terminal .retro-btn{
+
+    background:var(--ft-accent);
+    border-color:#17805F;
+    color:#F0F2EC;
+    box-shadow:2px 2px 0 rgba(23,128,95,.35);
+
+}
+
+.desktop-container.is-forest-terminal .retro-btn:hover{
+
+    background:#189270;
+
+}
+
+.desktop-container.is-forest-terminal .disc-arrow{
+
+    border-color:var(--ft-border);
+    background:var(--ft-bg);
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .disc-arrow:hover{
+
+    background:var(--ft-track);
+
+}
+
+.desktop-container.is-forest-terminal .disc-dot{ background:var(--ft-track); }
+.desktop-container.is-forest-terminal .disc-dot.active{ background:var(--ft-accent); }
+
+.desktop-container.is-forest-terminal .disc-slide[data-locked="true"] h2{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .journey-list .status.current{
+
+    background:var(--ft-accent);
+    color:#F0F2EC;
+
+}
+
+.desktop-container.is-forest-terminal .journey-list .status.locked{
+
+    background:var(--ft-track);
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal .quest-reward{
+
+    background:var(--ft-track);
+    color:var(--ft-ink);
+
+}
+
+.desktop-container.is-forest-terminal .footer-window .window-content p{
+
+    color:var(--ft-ink-dim);
+
+}
+
+.desktop-container.is-forest-terminal a{
+
+    color:var(--ft-accent);
 
 }

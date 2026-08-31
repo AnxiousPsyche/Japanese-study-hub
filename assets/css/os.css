@@ -3,6 +3,15 @@ JP LIBRARY OS
 TASKBAR
 ======================================================*/
 
+/* Classic CRT Status Bar re-theme. Deliberately NOT tied to #desktop's
+   own light/dark data-theme — this bar reads the same dark glowing-green
+   terminal in both, same as the mockup that was approved for it; only the
+   desktop backdrop behind it changes with theme. Bumped back up to 46px
+   (from the original re-theme's 34px, itself down from the pre-rethink
+   56px) and lightened from #0F241B to #1B4636 — at 34px/near-black it
+   blended into the equally-dark desktop backdrop behind it and was hard
+   to make out as a distinct bar; the taller, lighter strip plus a
+   brighter 2px top border reads clearly as its own UI chrome now. */
 .taskbar{
 
     position:fixed;
@@ -13,29 +22,27 @@ TASKBAR
 
     width:100%;
 
-    height:56px;
+    height:46px;
 
     display:flex;
 
     align-items:center;
 
-    gap:12px;
+    gap:0;
 
-    padding:0 12px;
+    padding:0 14px;
 
-    background:linear-gradient(
+    background:#1B4636;
 
-        #7EA2D7,
+    border-top:2px solid #2EDBA0;
 
-        #5E7DBB
+    box-shadow:none;
 
-    );
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
-    border-top:2px solid #D7E7FF;
+    font-size:11px;
 
-    box-shadow:
-
-        0 -4px 15px rgba(0,0,0,.18);
+    color:#7FE3B8;
 
     z-index:9999;
 
@@ -51,47 +58,63 @@ START BUTTON
 
     align-items:center;
 
-    gap:10px;
+    gap:0;
 
-    height:42px;
+    height:100%;
 
-    padding:0 18px;
+    padding:0 12px 0 0;
 
     border:none;
 
-    border-radius:12px;
+    background:transparent;
 
-    background:linear-gradient(
+    color:#EAFBF3;
 
-        #67B85A,
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
-        #4F9946
+    font-size:11px;
 
-    );
+    font-weight:700;
 
-    color:white;
-
-    font-family:'Press Start 2P';
-
-    font-size:.62rem;
+    letter-spacing:1px;
 
     cursor:pointer;
 
-    transition:.25s;
+    transition:color .2s;
 
 }
 
 .start-btn:hover{
 
-    transform:translateY(-2px);
-
-    filter:brightness(1.05);
+    color:#3FC998;
 
 }
 
 .start-btn img{
 
-    width:22px;
+    display:none;
+
+}
+
+.start-btn span::after{
+
+    content:"_";
+
+    margin-left:2px;
+
+    animation:startCursorBlink 1s steps(1) infinite;
+
+}
+
+@keyframes startCursorBlink{
+
+    50%{ opacity:0; }
+
+}
+
+@media (prefers-reduced-motion:reduce){
+
+    .start-btn span::after{ animation:none; }
 
 }
 
@@ -105,17 +128,21 @@ SEARCH
 
     align-items:center;
 
-    gap:10px;
+    gap:0;
 
-    width:300px;
+    width:150px;
 
-    height:40px;
+    height:100%;
 
-    padding:0 15px;
+    padding:0 12px;
 
-    background:white;
+    background:transparent;
 
-    border-radius:999px;
+    border-radius:0;
+
+    border-left:1px solid rgba(29,158,117,.5);
+
+    border-right:1px solid rgba(29,158,117,.5);
 
 }
 
@@ -129,13 +156,40 @@ SEARCH
 
     background:transparent;
 
-    font-size:.95rem;
+    color:#7FE3B8;
+
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+
+    font-size:11px;
 
 }
 
-.search-box img{
+.search-box input::placeholder{
 
-    width:18px;
+    color:#3E6F5A;
+
+}
+
+.search-box i{
+
+    display:none;
+
+}
+
+/* Brief shake when Enter/search-icon finds no matching window or page */
+.search-box input.search-no-match{
+
+    animation:searchNoMatch .3s ease;
+
+}
+
+@keyframes searchNoMatch{
+
+    0%,100%{ transform:translateX(0); }
+
+    25%{ transform:translateX(-5px); }
+
+    75%{ transform:translateX(5px); }
 
 }
 
@@ -149,7 +203,7 @@ OPEN APPS
 
     align-items:center;
 
-    gap:6px;
+    gap:4px;
 
     flex:1;
 
@@ -157,17 +211,25 @@ OPEN APPS
 
     overflow-x:auto;
 
+    padding-left:12px;
+
 }
 
+/* Bracketed text tags instead of icon+label pills — the emoji that used
+   to prefix each label (per data-window's own button text) is hidden via
+   font-size:0/::before below rather than edited out of the HTML, so the
+   underlying label text (used nowhere else) stays intact. */
 .taskbar-app{
 
     min-width:0;
 
-    height:36px;
+    height:100%;
 
-    padding:0 10px;
+    padding:0 6px;
 
-    border-radius:8px;
+    border-radius:0;
+
+    border:1px solid transparent;
 
     display:flex;
 
@@ -177,21 +239,31 @@ OPEN APPS
 
     white-space:nowrap;
 
-    background:rgba(255,255,255,.18);
+    background:none;
 
-    color:white;
+    color:#5FBF95;
 
     cursor:pointer;
 
-    transition:.25s;
+    transition:color .2s, border-color .2s;
 
-    font-size:.55rem;
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
+
+    font-size:10px;
 
 }
 
+.taskbar-app::before{ content:"["; color:#1D9E75; margin-right:3px; }
+
+.taskbar-app::after{ content:"]"; color:#1D9E75; margin-left:3px; }
+
 .taskbar-app:hover{
 
-    background:rgba(255,255,255,.28);
+    color:#EAFBF3;
+
+    border-color:#1D9E75;
+
+    background:rgba(63,201,152,.1);
 
 }
 
@@ -205,9 +277,9 @@ START MENU
 
     left:12px;
 
-    bottom:68px;
+    bottom:54px;
 
-    width:310px;
+    width:260px;
 
     display:none;
 
@@ -215,15 +287,15 @@ START MENU
 
     overflow-x:hidden;
 
-    border-radius:18px;
+    border-radius:0;
 
-    border:3px solid #89A8D8;
+    border:1px solid #1D9E75;
 
-    background:#FFFDF8;
+    background:#0B1F17;
 
     box-shadow:
 
-        0 18px 40px rgba(0,0,0,.28);
+        0 14px 32px rgba(0,0,0,.4);
 
     z-index:99999;
 
@@ -267,31 +339,27 @@ PROFILE
 
     align-items:center;
 
-    gap:16px;
+    gap:12px;
 
-    padding:18px;
+    padding:14px;
 
-    background:linear-gradient(
+    background:none;
 
-        #A9C5EC,
+    border-bottom:1px dashed #1D9E75;
 
-        #89A8D8
-
-    );
-
-    color:white;
+    color:#EAFBF3;
 
 }
 
 .start-profile img{
 
-    width:62px;
+    width:40px;
 
-    height:62px;
+    height:40px;
 
-    border-radius:50%;
+    border-radius:0;
 
-    border:3px solid white;
+    border:1px solid #1D9E75;
 
     object-fit:cover;
 
@@ -301,17 +369,25 @@ PROFILE
 
     margin:0;
 
-    font-size:.75rem;
+    font-family:"VT323", monospace;
+
+    font-size:18px;
+
+    letter-spacing:.5px;
 
 }
 
 .start-profile p{
 
-    margin-top:6px;
+    margin-top:4px;
 
-    font-size:.62rem;
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
-    opacity:.9;
+    font-size:10px;
+
+    color:#5FBF95;
+
+    opacity:1;
 
 }
 
@@ -339,39 +415,55 @@ MENU BUTTON
 
     align-items:center;
 
-    gap:15px;
+    gap:8px;
 
-    padding:14px;
+    padding:8px 14px;
 
-    border-radius:12px;
+    border-radius:0;
 
     cursor:pointer;
 
-    transition:.20s;
+    transition:color .15s, background .15s;
+
+}
+
+.start-item::before{
+
+    content:"▸";
+
+    color:#1D9E75;
 
 }
 
 .start-item:hover{
 
-    background:#EEF5FF;
+    background:rgba(63,201,152,.12);
 
 }
 
-.start-item img{
+.start-item img,
 
-    width:26px;
+.start-item i{
 
-    height:26px;
+    display:none;
 
 }
 
 .start-item span{
 
-    font-weight:700;
+    font-weight:400;
 
-    font-size:.62rem;
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
-    color:#444;
+    font-size:11px;
+
+    color:#7FE3B8;
+
+}
+
+.start-item:hover span{
+
+    color:#EAFBF3;
 
 }
 
@@ -381,11 +473,13 @@ DIVIDER
 
 .start-divider{
 
-    height:2px;
+    height:0;
 
-    margin:10px 0;
+    margin:8px 14px;
 
-    background:#E4E4E4;
+    border-top:1px dashed #1D9E75;
+
+    background:none;
 
 }
 
@@ -395,11 +489,11 @@ BOTTOM
 
 .start-bottom{
 
-    padding:10px;
+    padding:6px 0;
 
-    background:#F7F7F7;
+    background:none;
 
-    border-top:2px solid #E6E6E6;
+    border-top:1px dashed #1D9E75;
 
 }
 
@@ -413,21 +507,11 @@ BOTTOM
 SPECIAL COLORS
 ======================================================*/
 
-.start-item.settings:hover{
-
-    background:#EEF8FF;
-
-}
-
-.start-item.save:hover{
-
-    background:#F7FFF1;
-
-}
-
+.start-item.settings:hover,
+.start-item.save:hover,
 .start-item.exit:hover{
 
-    background:#FFF2F2;
+    background:rgba(63,201,152,.12);
 
 }
 
@@ -449,11 +533,17 @@ SCROLL
 
 }
 
+.start-body::-webkit-scrollbar-track{
+
+    background:#0B1F17;
+
+}
+
 .start-body::-webkit-scrollbar-thumb{
 
-    background:#C9D7F0;
+    background:#1D9E75;
 
-    border-radius:999px;
+    border-radius:4px;
 
 }
 
@@ -469,17 +559,19 @@ SYSTEM TRAY
 
     align-items:center;
 
-    gap:14px;
+    gap:6px;
 
-    height:42px;
+    height:100%;
 
-    padding:0 12px;
+    padding:0 0 0 12px;
 
-    border-radius:12px;
+    border-radius:0;
 
-    background:rgba(255,255,255,.12);
+    border-left:1px solid rgba(29,158,117,.5);
 
-    backdrop-filter:blur(10px);
+    background:none;
+
+    backdrop-filter:none;
 
 }
 
@@ -489,31 +581,37 @@ LANGUAGE
 
 .language-btn{
 
-    width:52px;
+    width:auto;
 
-    height:36px;
+    height:100%;
+
+    padding:0 8px;
 
     border:none;
 
-    border-radius:10px;
+    border-radius:0;
 
     background:transparent;
 
-    color:white;
+    color:#7FE3B8;
 
-    font-family:'Press Start 2P';
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
-    font-size:.60rem;
+    font-size:11px;
+
+    font-weight:700;
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:color .2s;
 
 }
 
 .language-btn:hover{
 
-    background:rgba(255,255,255,.18);
+    background:none;
+
+    color:#EAFBF3;
 
 }
 
@@ -523,9 +621,9 @@ SYSTEM BUTTONS
 
 .system-btn{
 
-    width:36px;
+    width:28px;
 
-    height:36px;
+    height:100%;
 
     display:flex;
 
@@ -535,21 +633,25 @@ SYSTEM BUTTONS
 
     border:none;
 
-    border-radius:10px;
+    border-radius:0;
 
     background:transparent;
 
-    color:white;
+    color:#7FE3B8;
+
+    font-size:13px;
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:color .2s;
 
 }
 
 .system-btn:hover{
 
-    background:rgba(255,255,255,.18);
+    background:none;
+
+    color:#EAFBF3;
 
 }
 
@@ -558,6 +660,8 @@ SYSTEM BUTTONS
     width:18px;
 
     height:18px;
+
+    filter:brightness(1.6) saturate(.4);
 
 }
 
@@ -569,25 +673,27 @@ CLOCK
 
     display:flex;
 
-    flex-direction:column;
+    flex-direction:row;
 
-    justify-content:center;
+    align-items:baseline;
 
-    align-items:flex-end;
+    gap:6px;
 
     padding-left:10px;
 
-    border-left:1px solid rgba(255,255,255,.25);
+    border-left:1px solid rgba(29,158,117,.5);
 
-    color:white;
+    color:#EAFBF3;
 
-    line-height:1.15;
+    line-height:1;
+
+    font-family:"Space Mono", ui-monospace, Consolas, monospace;
 
 }
 
 #taskbarClock{
 
-    font-size:.58rem;
+    font-size:11px;
 
     font-weight:bold;
 
@@ -595,9 +701,11 @@ CLOCK
 
 #taskbarDate{
 
-    font-size:.5rem;
+    font-size:10px;
 
-    opacity:.9;
+    color:#5FBF95;
+
+    opacity:1;
 
 }
 
@@ -611,7 +719,7 @@ VOLUME PANEL
 
     right:12px;
 
-    bottom:68px;
+    bottom:80px;
 
     width:310px;
 

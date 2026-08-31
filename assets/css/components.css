@@ -282,9 +282,16 @@
 
 }
 
+/* Flush with the window's own border edge (bottom:0/right:0, not a
+   negative offset) — the old -5px/-5px offset pushed this handle's
+   18x18 square bounding box outside .retro-window's own 18px corner
+   curve, so it visibly poked a hard-edged square out past the rounded
+   border instead of blending into it. border-radius here (15px) is the
+   window's own outer radius (18px) minus its border width (3px), so
+   the grip's corner now continues the same curve as the window itself. */
 .resize-handle.se{
 
-    bottom:-5px; right:-5px; width:18px; height:18px;
+    bottom:0; right:0; width:18px; height:18px;
 
     cursor:se-resize;
 
@@ -298,7 +305,7 @@
 
     );
 
-    border-radius:0 0 14px 0;
+    border-radius:0 0 15px 0;
 
     opacity:1 !important;
 

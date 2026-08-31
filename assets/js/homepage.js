@@ -327,12 +327,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //======================================================
 // PLAYER NAME
-// Swap this out for wherever the player's actual name
-// is stored once you have profiles/login. Hardcoded for
-// now to match the rest of the homepage.
+// Reads the real saved profile name (same "jpExplorer" key
+// login.js writes) instead of a hardcoded placeholder — this used
+// to be hardcoded to "Rei" while login.js's updateDesktop() wrote
+// the *actual* saved name into the same element separately, and
+// the two writers racing each other is what produced the garbled
+// spliced-together greeting text. Falls back to "Explorer" before
+// any profile is saved.
 //======================================================
 
-const PLAYER_NAME = "Rei";
+function getPlayerName(){
+
+    try{
+
+        const raw = localStorage.getItem("jpExplorer");
+
+        if(!raw) return "Explorer";
+
+        const explorer = JSON.parse(raw);
+
+        return (explorer && explorer.name) ? explorer.name : "Explorer";
+
+    } catch(err){
+
+        return "Explorer";
+
+    }
+
+}
 
 
 //======================================================
@@ -340,6 +362,8 @@ const PLAYER_NAME = "Rei";
 //======================================================
 
 function getGreetingForHour(hour){
+
+    const PLAYER_NAME = getPlayerName();
 
     // Late night / very early morning
 
@@ -463,7 +487,22 @@ function initializeGreeting(){
 // onDone    -> optional callback once finished
 //======================================================
 
+let typeTextCallId = 0;
+
 function typeText(el, text, speed, onDone){
+
+    // initializeGreeting() can now legitimately be called more than once
+    // on the same elements (once from homepage.js's own DOMContentLoaded,
+    // again from login.js's updateDesktop() once the real profile loads).
+    // Without this guard, two overlapping typeNextChar loops both append
+    // to the same el.textContent, producing doubled characters. Stamping
+    // each call with its own id and having the loop bail out the moment
+    // a newer call takes over lets the latest call always win cleanly.
+    typeTextCallId++;
+
+    const myCallId = typeTextCallId;
+
+    el.dataset.typeCallId = myCallId;
 
     el.textContent = "";
 
@@ -472,6 +511,8 @@ function typeText(el, text, speed, onDone){
     let index = 0;
 
     function typeNextChar(){
+
+        if(Number(el.dataset.typeCallId) !== myCallId) return;
 
         if(index < text.length){
 
@@ -537,6 +578,84 @@ function updateHeaderClock(clockEl){
             second: "2-digit"
 
         });
+
+}
+
+//======================================================
+// DESKTOP SEARCH — the taskbar search box had no handler
+// at all before this; matches typed text against known
+// desktop windows/pages and jumps to the best hit, the same
+// way restoreWindow() already brings a window to front when
+// its desktop icon or taskbar button is clicked.
+//======================================================
+
+const DESKTOP_SEARCH_INDEX = [
+    { keywords: ["greeting", "welcome", "home", "desktop"], run: () => restoreWindow("greetingWindow") },
+    { keywords: ["player", "status", "profile", "level", "xp", "streak", "badge"], run: () => restoreWindow("playerWindow") },
+    { keywords: ["disc", "start mission", "current disc"], run: () => restoreWindow("discWindow") },
+    { keywords: ["quest", "today"], run: () => restoreWindow("questWindow") },
+    { keywords: ["journey", "progress"], run: () => restoreWindow("journeyWindow") },
+    { keywords: ["study", "study room", "lesson", "grammar"], run: () => { window.location.href = "pages/missions/levels-dashboard.html"; } },
+    { keywords: ["adventure", "phaser", "library", "n5", "mission"], run: () => { window.location.href = "pages/N5/n5-dashboard.html"; } }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initializeDesktopSearch();
+
+});
+
+function initializeDesktopSearch(){
+
+    const input = document.getElementById("desktopSearch");
+
+    if(!input) return;
+
+    const icon = document.querySelector(".search-box .bi-search");
+
+    function runSearch(){
+
+        const query = input.value.trim().toLowerCase();
+
+        if(!query) return;
+
+        const match = DESKTOP_SEARCH_INDEX.find((entry) =>
+
+            entry.keywords.some((kw) => kw.includes(query) || query.includes(kw))
+
+        );
+
+        if(match){
+
+            match.run();
+
+            input.value = "";
+
+            input.blur();
+
+        } else {
+
+            input.classList.add("search-no-match");
+
+            setTimeout(() => input.classList.remove("search-no-match"), 400);
+
+        }
+
+    }
+
+    input.addEventListener("keydown", (e) => {
+
+        if(e.key === "Enter") runSearch();
+
+    });
+
+    if(icon){
+
+        icon.style.cursor = "pointer";
+
+        icon.addEventListener("click", runSearch);
+
+    }
 
 }
 

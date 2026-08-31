@@ -1,0 +1,189 @@
+/* LEVELS DASHBOARD — "Building Directory" concept (one of six mockups,
+   this one picked by the user). Replaces the old .levels-grid card grid
+   on levels-dashboard.html with a lobby directory board: one floor per
+   JLPT level, N5 at 1F (ground floor, unlocked) rising to N1 at 5F
+   (top floor, hardest, locked) — mirrors the Adventure Room's own
+   "library floors" framing (Ground Floor / Mezzanine / Reading Room)
+   instead of inventing new spatial language. Kept in its own file
+   rather than added to study-style.css, same reasoning as
+   n5-lessons-directory.css — this page's dashboard shouldn't need to
+   touch that large shared file for a page-specific layout.
+
+   Explicit user feedback after the first pass: both this board and the
+   n5-lessons.html directory looked "little and on top of the page" —
+   capped at a narrow max-width and top-anchored by .quiz-body's
+   align-items:flex-start, leaving a lot of dead space. Fixed here (and
+   in n5-lessons-directory.css) by widening the content block
+   substantially (no small max-width cap) and sizing rows/type up so
+   the board reads as a full page, not a small floating card.
+
+   That first fix used align-items:stretch to make .lvldir-board match
+   .quiz-body's full flex-grown height — which over-corrected for this
+   page specifically: with only 5 floor rows (vs n5-lessons.html's much
+   longer folder list), stretching left a large empty cream rectangle
+   below the last row, reported as "cut the rest below, it's empty."
+   Back to flex-start (board sizes to its own content) fixes that; the
+   width-based fix above still keeps it reading as a full page. */
+
+.lvldir-body {
+    align-items: flex-start;
+    padding: 28px 32px !important;
+}
+
+.lvldir-board {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        4px 4px 0 rgba(0, 0, 0, .3);
+}
+
+.lvldir-board__header {
+    padding: 18px 26px;
+    border-bottom: 2px solid #c8c4b0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.lvldir-board__title {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #123a8c;
+}
+.lvldir-board__sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Elevator call-panel look: each floor is its own raised, beveled
+   button block (not a continuous table row) with the floor number
+   sitting in a small backlit "indicator" chip, per explicit user
+   request ("make it so that it looks like a retro button like the
+   levels that you have to push, kinda like in the directory building
+   kinda feels elevator"). Locked floors read as unlit/disabled buttons
+   (dim indicator, flat panel, no hover/press response); the one open
+   floor (N5) reads as a real pressable button — lifts on hover, sinks
+   in on :active via a swapped bevel direction, same 3D-button technique
+   the rest of this win95 chrome already uses elsewhere on the site. */
+.lvldir-rows {
+    padding: 4px 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lvldir-row {
+    display: grid;
+    grid-template-columns: 74px 140px 1fr 220px;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 22px;
+    background: #ECE9D8;
+    border: 2px solid;
+    border-color: #fff #6e6b5e #6e6b5e #fff;
+    box-shadow:
+        inset 1px 1px 0 #fff,
+        3px 3px 0 rgba(0, 0, 0, .22);
+    text-decoration: none;
+    color: inherit;
+    transition: transform .08s ease, box-shadow .08s ease;
+}
+
+.lvldir-row__floor {
+    font-family: "VT323", "JetBrains Mono", monospace;
+    font-size: 28px;
+    color: #eee;
+    text-align: center;
+    background: #2b2f2b;
+    border-radius: 5px;
+    padding: 6px 4px;
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, .7);
+}
+.lvldir-row__level {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    font-size: 21px;
+    color: #123a8c;
+}
+.lvldir-row__desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+}
+.lvldir-row__status {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    color: #666;
+    text-align: right;
+}
+
+/* Locked floors — unlit button: dim indicator, flat (no bevel lift),
+   not interactive. */
+.lvldir-row.is-locked {
+    border-color: #d8d4c4 #c8c4b0 #c8c4b0 #d8d4c4;
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.5);
+    opacity: .82;
+}
+.lvldir-row.is-locked .lvldir-row__floor {
+    color: #5a5f5a;
+    background: #38392f;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);
+}
+.lvldir-row.is-locked .lvldir-row__level {
+    color: #888;
+}
+.lvldir-row.is-locked .lvldir-row__desc {
+    color: #777;
+}
+
+/* The open floor (N5) — a real elevator button: lit green indicator,
+   lifts on hover, presses inward (bevel flips, shadow collapses) on
+   :active so clicking it genuinely feels like pushing a button. */
+.lvldir-row.is-open {
+    background: #F4F1E4;
+    cursor: pointer;
+}
+.lvldir-row.is-open .lvldir-row__floor {
+    color: #baffd8;
+    background: #0c2b1f;
+    box-shadow:
+        inset 0 0 8px rgba(0, 0, 0, .6),
+        0 0 8px rgba(29, 158, 117, .65);
+}
+.lvldir-row.is-open:hover {
+    background: #FFFCF0;
+    transform: translateY(-2px);
+    box-shadow:
+        inset 1px 1px 0 #fff,
+        5px 6px 0 rgba(0, 0, 0, .28);
+}
+.lvldir-row.is-open:active {
+    transform: translateY(1px);
+    border-color: #6e6b5e #fff #fff #6e6b5e;
+    box-shadow: inset -1px -1px 0 #fff, 1px 1px 0 rgba(0, 0, 0, .3);
+}
+.lvldir-row.is-open .lvldir-row__status {
+    color: #123a8c;
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .lvldir-row {
+        grid-template-columns: 50px 1fr;
+        grid-template-areas:
+            "floor level"
+            "desc  desc"
+            "status status";
+    }
+    .lvldir-row__floor { grid-area: floor; font-size: 20px; }
+    .lvldir-row__level { grid-area: level; }
+    .lvldir-row__desc { grid-area: desc; }
+    .lvldir-row__status { grid-area: status; text-align: left; margin-top: 4px; }
+}

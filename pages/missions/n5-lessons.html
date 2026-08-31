@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Neko Bunko N5 Lessons Dashboard">
+    <title>N5 Lessons - Neko Bunko Study Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/study-style.css">
+    <link rel="stylesheet" href="../../assets/css/n5-lessons-directory.css">
+    <link rel="stylesheet" href="../../assets/css/companion-cat.css">
+</head>
+<body>
+    <div class="study-room is-win95 is-active">
+        <header class="study-header">
+            <span class="study-header__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            <a href="levels-dashboard.html" class="study-header__back">&larr; Levels</a>
+            <a href="../../index.html" class="study-header__back">&#127968; Home</a>
+            <h1 class="study-header__title">JLPT N5 &mdash; Lessons</h1>
+            <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
+        </header>
+        <div class="quiz-body n5dir-body">
+            <div class="lesson-grid" id="lessonGrid"></div>
+        </div>
+    </div>
+    <script src="../../assets/js/study-progress.js"></script>
+    <script src="../../assets/js/n5-lessons-dashboard.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.N5LessonsDashboard) window.N5LessonsDashboard.init();
+        if (window.StudyProgress) window.StudyProgress.renderXpBadges();
+    });
+    </script>
+    <script src="../../assets/js/companion-cat.js"></script>
+</body>
+</html>

@@ -12,6 +12,26 @@
       "port": 8080
     },
     {
+      "name": "jp-library-static-s08-pics",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "44210"
+      ],
+      "port": 44210
+    },
+    {
+      "name": "jp-library-static-round4-catflip",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "51733"
+      ],
+      "port": 51733
+    },
+    {
       "name": "jp-library-static-fresh",
       "runtimeExecutable": "python",
       "runtimeArgs": [
@@ -2020,6 +2040,626 @@
         "28530"
       ],
       "port": 28530
+    },
+    {
+      "name": "jp-library-static-wordbank-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28641"
+      ],
+      "port": 28641
+    },
+    {
+      "name": "jp-library-static-dropdown-content-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28752"
+      ],
+      "port": 28752
+    },
+    {
+      "name": "jp-library-static-s01-formatting-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28863"
+      ],
+      "port": 28863
+    },
+    {
+      "name": "jp-library-static-terminal-reskin",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "28974"
+      ],
+      "port": 28974
+    },
+    {
+      "name": "jp-library-static-scoping-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29085"
+      ],
+      "port": 29085
+    },
+    {
+      "name": "jp-library-static-layout-titles-bg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29196"
+      ],
+      "port": 29196
+    },
+    {
+      "name": "jp-library-static-boot-nav-resize",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29307"
+      ],
+      "port": 29307
+    },
+    {
+      "name": "jp-library-static-dashboard-resize-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29418"
+      ],
+      "port": 29418
+    },
+    {
+      "name": "jp-library-static-autologin-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29529"
+      ],
+      "port": 29529
+    },
+    {
+      "name": "jp-library-static-icons-antiflash",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29640"
+      ],
+      "port": 29640
+    },
+    {
+      "name": "jp-library-static-search-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29751"
+      ],
+      "port": 29751
+    },
+    {
+      "name": "jp-library-static-login-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29862"
+      ],
+      "port": 29862
+    },
+    {
+      "name": "jp-library-static-hub-levels-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "29973"
+      ],
+      "port": 29973
+    },
+    {
+      "name": "jp-library-static-desktop-layout-v2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30084"
+      ],
+      "port": 30084
+    },
+    {
+      "name": "jp-library-static-lessons-quiz-win95",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30195"
+      ],
+      "port": 30195
+    },
+    {
+      "name": "jp-library-static-daily-quest",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30306"
+      ],
+      "port": 30306
+    },
+    {
+      "name": "jp-library-static-round9-desktop-fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30417"
+      ],
+      "port": 30417
+    },
+    {
+      "name": "jp-library-static-round9-studyroom-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30528"
+      ],
+      "port": 30528
+    },
+    {
+      "name": "jp-library-static-round9-pdf-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30639"
+      ],
+      "port": 30639
+    },
+    {
+      "name": "jp-library-static-round9-recenter-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30751"
+      ],
+      "port": 30751
+    },
+    {
+      "name": "jp-library-static-round10-complete-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30862"
+      ],
+      "port": 30862
+    },
+    {
+      "name": "jp-library-static-round11-kana-dojo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "30973"
+      ],
+      "port": 30973
+    },
+    {
+      "name": "jp-library-static-round11-kana-anim-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31084"
+      ],
+      "port": 31084
+    },
+    {
+      "name": "jp-library-static-round12-kana-realdata",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31195"
+      ],
+      "port": 31195
+    },
+    {
+      "name": "jp-library-static-round13-kana-polish",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31306"
+      ],
+      "port": 31306
+    },
+    {
+      "name": "jp-library-static-round14-kana-v3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31417"
+      ],
+      "port": 31417
+    },
+    {
+      "name": "jp-library-static-round15-kana-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31528"
+      ],
+      "port": 31528
+    },
+    {
+      "name": "jp-library-static-round16-kanjivg",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31639"
+      ],
+      "port": 31639
+    },
+    {
+      "name": "jp-library-static-round17-hud-credits",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31750"
+      ],
+      "port": 31750
+    },
+    {
+      "name": "jp-library-static-round18-kanji-lesson",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31861"
+      ],
+      "port": 31861
+    },
+    {
+      "name": "jp-library-static-round19-companion-cat",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "31972"
+      ],
+      "port": 31972
+    },
+    {
+      "name": "jp-library-static-round20-tailwag-sprite",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32083"
+      ],
+      "port": 32083
+    },
+    {
+      "name": "jp-library-static-round21-kanji-groups",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32194"
+      ],
+      "port": 32194
+    },
+    {
+      "name": "jp-library-static-round22-cat-measure",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32305"
+      ],
+      "port": 32305
+    },
+    {
+      "name": "jp-library-static-round23-cat-bigger",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32416"
+      ],
+      "port": 32416
+    },
+    {
+      "name": "jp-library-static-round24-kanji-cards-real",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32527"
+      ],
+      "port": 32527
+    },
+    {
+      "name": "jp-library-static-round25-rafraceverify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32638"
+      ],
+      "port": 32638
+    },
+    {
+      "name": "jp-library-static-round26-kanji103",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32749"
+      ],
+      "port": 32749
+    },
+    {
+      "name": "jp-library-static-round27-kanji-ux-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32860"
+      ],
+      "port": 32860
+    },
+    {
+      "name": "jp-library-static-round27-verify2",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "32971"
+      ],
+      "port": 32971
+    },
+    {
+      "name": "jp-library-static-round28-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33082"
+      ],
+      "port": 33082
+    },
+    {
+      "name": "jp-library-static-round28-imefix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33193"
+      ],
+      "port": 33193
+    },
+    {
+      "name": "jp-library-static-round29-spread-zoom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33304"
+      ],
+      "port": 33304
+    },
+    {
+      "name": "jp-library-static-round30-textzoom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33415"
+      ],
+      "port": 33415
+    },
+    {
+      "name": "jp-library-static-round31-refinements",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33526"
+      ],
+      "port": 33526
+    },
+    {
+      "name": "jp-library-static-round32-finalquiz",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33637"
+      ],
+      "port": 33637
+    },
+    {
+      "name": "jp-library-static-round33-examsheet",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33748"
+      ],
+      "port": 33748
+    },
+    {
+      "name": "jp-library-static-round34-homepage",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33859"
+      ],
+      "port": 33859
+    },
+    {
+      "name": "jp-library-static-round35-forest-terminal",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "33970"
+      ],
+      "port": 33970
+    },
+    {
+      "name": "jp-library-static-round36-login-terminal",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34081"
+      ],
+      "port": 34081
+    },
+    {
+      "name": "jp-library-static-round37-desktop-layout",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34192"
+      ],
+      "port": 34192
+    },
+    {
+      "name": "jp-library-static-round38-layout-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34303"
+      ],
+      "port": 34303
+    },
+    {
+      "name": "jp-library-static-round39-journey-fix",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34414"
+      ],
+      "port": 34414
+    },
+    {
+      "name": "jp-library-static-round40-cluster-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34525"
+      ],
+      "port": 34525
+    },
+    {
+      "name": "jp-library-static-round41-final-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34636"
+      ],
+      "port": 34636
+    },
+    {
+      "name": "jp-library-static-round42-studyroom-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34747"
+      ],
+      "port": 34747
+    },
+    {
+      "name": "jp-library-static-round43-theme-toggle",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34858"
+      ],
+      "port": 34858
+    },
+    {
+      "name": "jp-library-static-round44-login-cat",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "34969"
+      ],
+      "port": 34969
+    },
+    {
+      "name": "jp-library-static-round45-crt-taskbar",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35080"
+      ],
+      "port": 35080
+    },
+    {
+      "name": "jp-library-static-round46-todaysession",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35191"
+      ],
+      "port": 35191
+    },
+    {
+      "name": "jp-library-static-round47-8fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35302"
+      ],
+      "port": 35302
+    },
+    {
+      "name": "jp-library-static-round48-dropdown-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35413"
+      ],
+      "port": 35413
     }
   ],
   "autoVerify": true

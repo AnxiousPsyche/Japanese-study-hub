@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeStartMenu();
     initializeVolumePanel();
+    initializeThemeToggle();
     initializeClock();
     initializeWindowManager();
 
@@ -19,12 +20,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // ELEMENTS
 //======================================================
 
-const startButton  = document.getElementById("startButton");
-const startMenu    = document.getElementById("startMenu");
-const volumeButton = document.getElementById("volumeButton");
-const volumePanel  = document.getElementById("volumePanel");
-const taskbarClock = document.getElementById("taskbarClock");
-const taskbarDate  = document.getElementById("taskbarDate");
+const startButton      = document.getElementById("startButton");
+const startMenu        = document.getElementById("startMenu");
+const volumeButton     = document.getElementById("volumeButton");
+const volumePanel      = document.getElementById("volumePanel");
+const taskbarClock     = document.getElementById("taskbarClock");
+const taskbarDate      = document.getElementById("taskbarDate");
+const themeToggleButton = document.getElementById("themeToggleButton");
 
 
 //======================================================
@@ -68,6 +70,69 @@ function initializeVolumePanel(){
         if(!volumePanel.contains(e.target) && !volumeButton.contains(e.target)){
             volumePanel.classList.remove("show");
         }
+    });
+
+}
+
+
+//======================================================
+// THEME TOGGLE
+//
+// The desktop backdrop (see homepage.css #desktop) already follows the
+// system's light/dark setting automatically via prefers-color-scheme —
+// this button lets the user override that per-device instead of only
+// ever following the OS. "nekoBunko.theme" holds "light"/"dark" once the
+// user has explicitly chosen; with nothing saved, #desktop keeps
+// following the system preference (data-theme is left unset).
+//======================================================
+
+const THEME_STORAGE_KEY = "nekoBunko.theme";
+
+function applyTheme(theme){
+
+    const desktop = document.getElementById("desktop");
+    if(desktop){
+        if(theme === "light" || theme === "dark"){
+            desktop.setAttribute("data-theme", theme);
+        } else {
+            desktop.removeAttribute("data-theme");
+        }
+    }
+
+    if(!themeToggleButton) return;
+    let isDark = theme === "dark";
+    if(theme !== "light" && theme !== "dark"){
+        isDark = window.matchMedia("(prefers-color-scheme:dark)").matches;
+    }
+    const icon = themeToggleButton.querySelector("i");
+    if(icon) icon.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+    themeToggleButton.setAttribute(
+        "aria-label",
+        isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+
+}
+
+function initializeThemeToggle(){
+
+    if(!themeToggleButton) return;
+
+    let saved = null;
+    try{ saved = localStorage.getItem(THEME_STORAGE_KEY); }catch(e){}
+    applyTheme(saved);
+
+    themeToggleButton.addEventListener("click", () => {
+
+        const desktop = document.getElementById("desktop");
+        const current = desktop ? desktop.getAttribute("data-theme") : null;
+        const currentlyDark = current
+            ? current === "dark"
+            : window.matchMedia("(prefers-color-scheme:dark)").matches;
+        const next = currentlyDark ? "light" : "dark";
+
+        try{ localStorage.setItem(THEME_STORAGE_KEY, next); }catch(e){}
+        applyTheme(next);
+
     });
 
 }
@@ -364,9 +429,14 @@ function initializeWindowButtons(){
         const buttons = buttonGroup.querySelectorAll("span");
         if(buttons.length < 3) return;
 
-        // Red — close (noop for now)
+        // Red — close (immediate, no slide animation — that's minimize's
+        // job below). Reopen the same way any closed window comes back:
+        // its taskbar button (if still shown — see hideTaskbarApp below),
+        // desktop shortcut, or the search box.
         buttons[0].addEventListener("click", (e) => {
             e.stopPropagation();
+            windowEl.style.display = "none";
+            hideTaskbarApp(windowEl.id);
         });
 
         // Yellow — minimize
@@ -388,7 +458,31 @@ function initializeWindowButtons(){
 
 
 //======================================================
-// RESTORE WINDOW (called by taskbar buttons)
+// TASKBAR ENTRY VISIBILITY
+//
+// Closing a window (the red button) removes its taskbar entry, same as
+// a real OS taskbar — only restoreWindow() brings it back, whether
+// that's triggered by a desktop shortcut's onclick or a search-box hit,
+// not just the taskbar button itself (which would otherwise already be
+// gone once its window is closed). Minimizing does NOT hide the entry —
+// a minimized window still has a taskbar button to click back open.
+//======================================================
+
+function hideTaskbarApp(id){
+    if(!id) return;
+    const app = document.querySelector('.taskbar-app[data-window="' + id + '"]');
+    if(app) app.style.display = "none";
+}
+
+function showTaskbarApp(id){
+    if(!id) return;
+    const app = document.querySelector('.taskbar-app[data-window="' + id + '"]');
+    if(app) app.style.display = "";
+}
+
+
+//======================================================
+// RESTORE WINDOW (called by taskbar buttons, desktop shortcuts, and search)
 //======================================================
 
 function restoreWindow(id){
@@ -401,6 +495,7 @@ function restoreWindow(id){
     windowEl.style.zIndex = highestZ;
     windowEl.classList.remove("window-minimizing");
     windowEl.classList.add("window-restoring");
+    showTaskbarApp(id);
 
     setTimeout(() => {
         windowEl.classList.remove("window-restoring");

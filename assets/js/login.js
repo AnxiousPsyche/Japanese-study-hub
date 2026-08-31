@@ -17,13 +17,98 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loginForm.addEventListener("submit", loginExplorer);
 
+    // Enter-key fix: both "Sign In" and "Create Account" are type="submit"
+    // buttons inside this ONE shared <form>. A form's implicit submitter
+    // for a keyboard-triggered submit (pressing Enter in a text field) is
+    // always the FIRST submit button in the form regardless of which field
+    // has focus -- so Enter inside the Create Account fields was silently
+    // submitting as "Log In" (continueButton), using the empty sign-in
+    // fields. Fix: on Enter in any text input, explicitly submit with that
+    // input's OWN section's button as the submitter, so loginExplorer()'s
+    // event.submitter check resolves correctly either way.
+    loginForm.addEventListener("keydown", (event) => {
+
+        // keyCode/which fallback alongside .key -- some environments (seen
+        // in this project's own browser-automation preview tooling) fire a
+        // synthetic Enter keydown with an empty .key but a correct keyCode.
+        let isEnter = event.key === "Enter" || event.keyCode === 13 || event.which === 13;
+
+        if(!isEnter) return;
+
+        const target = event.target;
+
+        if(target.tagName !== "INPUT" || target.type === "file") return;
+
+        const section = target.closest(".login-section");
+
+        const button = section && section.querySelector("button[type='submit']");
+
+        if(!button) return;
+
+        event.preventDefault();
+
+        loginForm.requestSubmit(button);
+
+    });
+
     loadExplorer();
 
     initPasswordToggles();
 
     initRecallPassphrase();
 
+    initLogout();
+
+    // Auto-continue for a returning explorer — a "Home" link elsewhere in
+    // the app (Study Room, Adventure Room, mission hub, ...) should land
+    // back on the desktop directly, not force the login form again, since
+    // jpExplorer already identifies who's playing. No fade here (unlike
+    // finishLogin) since this isn't a "just logged in" moment.
+    const explorer = getSavedExplorer();
+
+    if(explorer){
+
+        const loginScreen = document.getElementById("login-screen");
+
+        const desktop = document.getElementById("desktop");
+
+        updateDesktop(explorer);
+
+        loginScreen.style.display = "none";
+
+        desktop.style.display = "block";
+
+    }
+
 });
+
+//======================================================
+// LOG OUT / SWITCH PROFILE — clears the saved explorer so the login
+// screen's "New Explorer" section becomes reachable again. Without this,
+// the auto-continue above would make the login form a dead end forever
+// once a profile exists (both buttons existed in the markup already but
+// had no handler at all).
+//======================================================
+
+function initLogout(){
+
+    document
+
+        .querySelectorAll(".start-item.logout, .start-item.exit")
+
+        .forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                localStorage.removeItem("jpExplorer");
+
+                window.location.reload();
+
+            });
+
+        });
+
+}
 
 //======================================================
 // SAFE READ — self-heals corrupted/legacy save data
@@ -90,7 +175,7 @@ function initPasswordToggles(){
 
                 button.setAttribute(
                     "aria-label",
-                    isHidden ? "Hide secret passphrase" : "Show secret passphrase"
+                    isHidden ? "Hide password" : "Show password"
                 );
 
             });
@@ -122,7 +207,7 @@ function initRecallPassphrase(){
             if(message){
 
                 message.textContent =
-                    "📜 No journal has been recorded in this realm yet. Begin your adventure below.";
+                    "No saved account found on this device. Create one below.";
 
             }
 
@@ -153,7 +238,7 @@ function initRecallPassphrase(){
 
             toggleButton.setAttribute(
                 "aria-label",
-                "Hide secret passphrase"
+                "Hide password"
             );
 
         }
@@ -161,9 +246,9 @@ function initRecallPassphrase(){
         if(message){
 
             message.textContent =
-                "🔮 A raven has delivered your secret passphrase, " +
+                "Password recovered for " +
                 explorer.name +
-                ". It now lies revealed below.";
+                ". It's now visible below.";
 
         }
 
@@ -321,7 +406,7 @@ function loginExplorer(event){
 
         alert(
 
-            "Explorer name or Secret Passphrase is incorrect."
+            "Username or password is incorrect."
 
         );
 
@@ -393,26 +478,19 @@ function finishLogin(explorer){
 function updateDesktop(explorer){
 
     //--------------------------------------------------
-    // Greeting
+    // Greeting — re-run homepage.js's own greeting logic now that
+    // the real player name is known, instead of writing #englishGreeting
+    // directly here. There used to be two independent writers on that
+    // element (this one, plus homepage.js's initializeGreeting() typing
+    // a time-of-day greeting on its own DOMContentLoaded) that raced each
+    // other mid-animation — whichever fired second clobbered whatever the
+    // other had typed so far, splicing the two strings together. Routing
+    // through the single shared function removes the race entirely.
     //--------------------------------------------------
 
-    const greeting =
+    if(typeof initializeGreeting === "function"){
 
-        document.getElementById(
-
-            "englishGreeting"
-
-        );
-
-    if(greeting){
-
-        greeting.textContent =
-
-            "Welcome back, " +
-
-            explorer.name +
-
-            ".";
+        initializeGreeting();
 
     }
 

@@ -1,0 +1,424 @@
+/* KANJI CARDS — Museum Placard style + Book Spread interaction, the
+   confirmed directions from the design-mockup phase (Kanji ID Card Lab,
+   then Kanji Lesson Lab). Deliberately its own cream/brown palette rather
+   than the surrounding page's green terminal theme — framed as its own
+   "card catalog" panel so the contrast reads as intentional. */
+
+.kanji-cards {
+    padding: 4px 4px 20px;
+}
+
+/* Gallery (search + card grid) on the left, the reading-quiz bar pinned
+   to the right — the quiz stays in view while the gallery scrolls. */
+.kanji-cards__layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    align-items: start;
+    gap: 20px;
+}
+.kanji-cards__quiz {
+    position: sticky;
+    top: 4px;
+}
+
+.kanji-cards__search {
+    position: relative;
+    max-width: 320px;
+    margin: 0 0 16px;
+}
+.kanji-cards__search svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--term-label);
+    pointer-events: none;
+}
+.kanji-cards__search-input {
+    width: 100%;
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    color: var(--term-text);
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+    padding: 9px 12px 9px 32px;
+}
+.kanji-cards__search-input::placeholder { color: var(--term-text-dim); }
+.kanji-cards__search-input:focus {
+    outline: 2px solid var(--term-label);
+    outline-offset: 1px;
+}
+
+.kanji-cards__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+}
+.kanji-cards__empty {
+    grid-column: 1 / -1;
+    color: var(--term-text-dim);
+    font-size: 13px;
+    text-align: center;
+    padding: 30px 0;
+}
+
+/* ===== Card — front face, shared between the grid tile and the
+   enlarged modal card. Museum Placard: cream, brown border, inset
+   double-border look.
+   `.kanji-card`'s button-reset (`all: unset`) MUST come before the
+   shared background/border rule below — same selector specificity
+   means source order decides the winner, and `all: unset` wipes
+   background/border/box-shadow along with everything else, so if it
+   came last it would silently erase the museum-card look (confirmed:
+   cards rendered as bare unstyled glyphs with this order reversed). */
+.kanji-card {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 5 / 7;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s ease;
+}
+.kanji-card,
+.kanji-card-modal {
+    background: #f3ead9;
+    border: 1px solid #8a7350;
+    border-radius: 2px;
+    box-shadow: inset 0 0 0 4px #f3ead9, inset 0 0 0 5px #a68f5f;
+}
+.kanji-card:hover,
+.kanji-card:focus-visible { transform: translateY(-3px); outline: none; }
+.kanji-card.is-source-hidden { visibility: hidden; }
+.kanji-card__glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #2c2313;
+    line-height: 1;
+}
+
+/* ===== Modal card + Book Spread detail panel ===== */
+.kanji-card-overlay {
+    position: fixed; inset: 0; background: rgba(10, 8, 4, 0); z-index: 4000;
+    pointer-events: none; transition: background 0.35s ease;
+}
+.kanji-card-overlay.is-active { background: rgba(10, 8, 4, 0.75); pointer-events: auto; }
+
+.kanji-card-modal {
+    position: fixed; z-index: 4001; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 4px #f3ead9, inset 0 0 0 5px #a68f5f, 0 20px 60px rgba(0, 0, 0, 0.5);
+    transition: top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1),
+                width .42s cubic-bezier(.2,.85,.3,1), height .42s cubic-bezier(.2,.85,.3,1);
+}
+/* --zoom is set inline by kanji-cards.js (card.style.setProperty /
+   panel.style.setProperty) from the player's chosen Book Spread size.
+   Growing .kanji-card-modal/.kanji-detail-panel's own box via top/left/
+   width/height (see soloCenteredRect() in the JS) only makes the
+   *container* bigger — every font-size below used to be a fixed px
+   value, so the actual glyph/reading/gloss text never got any easier
+   to read no matter how far the box grew. Anchoring every text size
+   here to em (relative to the calc(16px * var(--zoom)) base set on the
+   two zoom roots) means the whole write-up's text scales with it. */
+.kanji-card-modal { font-size: calc(16px * var(--zoom, 1)); }
+.kanji-card-modal .kanji-card__glyph { font-size: 5.75em; }
+
+.kanji-detail-panel {
+    position: fixed; z-index: 4001;
+    background: #f3ead9; border: 1px solid #8a7350; border-radius: 2px;
+    box-shadow: inset 8px 0 14px -10px rgba(0,0,0,.45), 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    opacity: 0; pointer-events: none;
+    transition: top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1),
+                width .42s cubic-bezier(.2,.85,.3,1), height .42s cubic-bezier(.2,.85,.3,1),
+                opacity .3s ease .08s;
+}
+.kanji-detail-panel.is-visible { opacity: 1; pointer-events: auto; }
+.kanji-detail-panel__inner {
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.125em 1.25em;
+    font-family: "Shippori Mincho", "Hiragino Mincho ProN", serif;
+    font-size: calc(16px * var(--zoom, 1));
+    color: #2c2313;
+    /* Firefox: track a shade of the card's own cream, thumb its own
+       brown border color — the default gray scrollbar clashed with the
+       museum-card palette everywhere else in this panel. */
+    scrollbar-width: thin;
+    scrollbar-color: #a68f5f #e7dabf;
+}
+.kanji-detail-panel__inner::-webkit-scrollbar { width: 10px; }
+.kanji-detail-panel__inner::-webkit-scrollbar-track { background: #e7dabf; }
+.kanji-detail-panel__inner::-webkit-scrollbar-thumb {
+    background: #a68f5f;
+    border: 2px solid #e7dabf;
+    border-radius: 6px;
+}
+.kanji-detail-panel__inner::-webkit-scrollbar-thumb:hover { background: #8a7350; }
+
+.kanji-card__back-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #cbb896;
+}
+.kanji-card__back-glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 1.875em; font-weight: 700;
+}
+.kanji-card__back-meaning { font-size: 0.75em; text-transform: uppercase; letter-spacing: .05em; opacity: .75; }
+.kanji-card__reading { margin-bottom: 10px; }
+.kanji-card__reading-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__reading-value {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 0.9375em; font-weight: 500;
+}
+.kanji-card__words {
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896;
+    display: flex; flex-direction: column; gap: 7px;
+}
+.kanji-card__words-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
+.kanji-card__word { font-size: 0.75em; }
+.kanji-card__word-jp {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 0.875em; margin-right: 6px;
+}
+.kanji-card__word-reading { opacity: .65; margin-right: 6px; }
+.kanji-card__word-en { opacity: .8; }
+
+.kanji-card__stroke-block { margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbb896; }
+.kanji-card__stroke-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.kanji-card__stroke-label { font-size: 0.594em; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 8px; }
+.kanji-card__stroke-head .kanji-card__stroke-label { margin-bottom: 0; }
+.kanji-replay-btn {
+    all: unset; font-family: "Space Mono", monospace; font-size: 0.625em; cursor: pointer;
+    padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; opacity: .7; color: #2c2313;
+}
+.kanji-replay-btn:hover { opacity: 1; }
+
+/* Stroke-order strip — jisho.org-style progressive reference, identical
+   technique to Kana Dojo's .kana-stroke-order-strip (kana-writer.js).
+   Sized in em too (rather than just the text) so the whole reference
+   strip grows in step with the rest of the zoomed write-up. */
+.kanji-stroke-order-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.kanji-stroke-order-frame {
+    flex: 0 0 auto;
+    width: 2.125em;
+    height: 2.125em;
+    background:
+        linear-gradient(to right, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        linear-gradient(to bottom, transparent 49%, #ddd6c4 49%, #ddd6c4 51%, transparent 51%),
+        #fff;
+    border: 1px dashed #a68f5f;
+}
+.kanji-stroke-order-frame__svg { width: 100%; height: 100%; }
+.kanji-stroke-order-frame__stroke { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-order-frame__stroke--prior { stroke: #b7b0a0; }
+.kanji-stroke-order-frame__stroke--current { stroke: #2c2313; }
+.kanji-stroke-order-frame__dot { fill: #a23e34; }
+.kanji-stroke-order-frame--complete { background: none; border: none; width: 2.5em; height: 2.5em; margin-left: 4px; }
+
+/* Animated stroke player — dash-offset "line draws itself," same
+   technique as Kana Dojo's kana-writer.js. Deliberately pinned to a
+   fixed size (NOT em/percentage-based like everything else in this
+   panel) so it stays put as the player resizes the Book Spread bigger
+   for readability — the animation's value isn't in being bigger, and
+   letting it balloon along with the panel just wastes space that could
+   go to the readings/words text instead. margin:auto keeps it centered
+   as the panel grows wider around it. */
+.kanji-stroke-player-mount {
+    max-width: 240px;
+    margin: 0 auto;
+}
+.kanji-stroke-player__svg {
+    width: 100%;
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+}
+.kanji-stroke-player__guide { fill: none; stroke: rgba(44, 35, 19, 0.14); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-player__line { fill: none; stroke: #2c2313; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.kanji-stroke-player__dot { opacity: 0; transition: opacity 0.15s ease; }
+.kanji-stroke-player__dot.is-active { opacity: 1; }
+.kanji-stroke-player__dot.is-done { opacity: 0.55; }
+.kanji-stroke-player__dot circle { r: 4.4; fill: #a23e34; }
+.kanji-stroke-player__dot text { font-size: 0.375em; fill: #fff; text-anchor: middle; dominant-baseline: central; font-family: "Space Mono", monospace; }
+
+.kanji-modal-close {
+    all: unset;
+    position: fixed; z-index: 4002;
+    top: 0; left: 0; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff; color: #2c2313;
+    border-radius: 50%; cursor: pointer; font-size: 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    opacity: 0; transition: opacity 0.2s ease;
+}
+.kanji-modal-close.is-visible { opacity: 1; }
+
+/* Zoom control — pinned to the card's opposite (top-left) corner from
+   the close button, same fixed-fade-in treatment. */
+.kanji-modal-zoom {
+    position: fixed; z-index: 4002;
+    display: flex; align-items: center; gap: 2px;
+    height: 30px; padding: 0 6px;
+    background: #fff; color: #2c2313;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    opacity: 0; transition: opacity 0.2s ease, top .42s cubic-bezier(.2,.85,.3,1), left .42s cubic-bezier(.2,.85,.3,1);
+}
+.kanji-modal-zoom.is-visible { opacity: 1; }
+.kanji-modal-zoom__btn {
+    all: unset;
+    box-sizing: border-box;
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px; line-height: 1;
+    background: rgba(44, 35, 19, 0.08);
+}
+.kanji-modal-zoom__btn:hover { background: rgba(44, 35, 19, 0.18); }
+.kanji-modal-zoom__pct {
+    min-width: 32px;
+    text-align: center;
+    font-family: "Space Mono", monospace;
+    font-size: 10px;
+    opacity: .7;
+}
+
+.kanji-tap-hint {
+    position: fixed; z-index: 4002;
+    bottom: 8%; left: 50%; transform: translateX(-50%);
+    font-family: "Space Mono", monospace; font-size: 11px; color: #fff;
+    background: rgba(0, 0, 0, 0.55); padding: 6px 14px; border-radius: 999px;
+    opacity: 0; transition: opacity 0.3s ease; white-space: nowrap;
+}
+
+/* ===== Reading-quiz bar — the right-hand widget, kept in the page's
+   own green terminal palette (var(--term-*)) rather than the museum
+   cream, since it's a functional exercise, not a placard. ===== */
+.kanji-quiz {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    text-align: center;
+}
+.kanji-quiz__label {
+    font-family: "Space Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--term-label);
+    margin-bottom: 12px;
+}
+.kanji-quiz__glyph {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--term-heading);
+    margin-bottom: 6px;
+}
+.kanji-quiz__meaning {
+    font-size: 12px;
+    color: var(--term-text-dim);
+    margin-bottom: 16px;
+}
+.kanji-quiz__input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 20px;
+    padding: 10px 12px;
+    background: var(--term-bg);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    color: var(--term-text);
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+}
+.kanji-quiz__input:focus { border-color: var(--term-text); }
+.kanji-quiz__input.is-correct {
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.14);
+}
+.kanji-quiz__input.is-wrong {
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.14);
+    color: var(--term-bad-text);
+}
+.kanji-quiz__feedback {
+    font-size: 12px;
+    color: var(--term-text-dim);
+    min-height: 32px;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+.kanji-quiz__feedback.is-correct { color: var(--term-text); }
+.kanji-quiz__feedback .kanji-quiz__answer {
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: var(--term-amber);
+}
+.kanji-quiz__feedback .kanji-quiz__note {
+    display: block;
+    font-size: 11px;
+    opacity: .75;
+    margin-top: 2px;
+}
+.kanji-quiz__row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+.kanji-quiz__btn {
+    font-family: var(--title-font);
+    font-size: 8.5px;
+    padding: 10px 14px;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: transparent;
+    color: var(--term-text);
+    transition: background 0.15s;
+}
+.kanji-quiz__btn:hover { background: rgba(29, 158, 117, 0.14); }
+.kanji-quiz__btn--check {
+    background: var(--term-border);
+    color: var(--term-bg);
+}
+.kanji-quiz__btn--check:hover { background: var(--term-text-dim); }
+.kanji-quiz__score {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--term-border);
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    color: var(--term-text-dim);
+}
+
+@media (max-width: 900px) {
+    .kanji-cards__layout { grid-template-columns: 1fr; }
+    .kanji-cards__quiz { position: static; }
+}
+.kanji-tap-hint.is-visible { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    .kanji-card-modal, .kanji-detail-panel, .kanji-card-overlay { transition: none !important; }
+}
+
+@media (max-width: 700px) {
+    .kanji-detail-panel { display: none !important; } /* stacked mobile layout is a follow-up */
+}

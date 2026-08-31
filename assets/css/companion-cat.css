@@ -1,0 +1,226 @@
+/* COMPANION CAT — sitewide ambient idle-sprite widget (assets/js/companion-cat.js).
+   Uses the {color}CatTailWagging.png sheets in assets/images/avatars/ — a
+   sitting/tail-wag loop, not the walk-cycle CatIdle.png sheets used
+   elsewhere (those read as "mid-stride," wrong for a cat that's supposed
+   to be sitting still in a corner). Confirmed by decoding the raw PNG
+   pixel data (no Aseprite JSON export exists alongside these) that all
+   three colors share one clean 5-frame, 64px-pitch grid (frame starts at
+   x=0/64/128/192/256) — a real uniform sheet, not a trimmed export, so a
+   plain steps(5) animation plays it back with no jitter. */
+
+/* Bottom-right, at 2x the original size (sized via width/height/
+   background-size directly, NOT `transform: scale()` — a transform on
+   this element would also visually scale .companion-cat__bubble, since
+   it's a child in the same transformed subtree, blowing up the tip text
+   right along with the cat). Native cell is 64x66px; 2x is 128x132px,
+   background-size 640x132px, same steps(5)/keyframe math just doubled. */
+.companion-cat {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    width: 128px;
+    height: 132px;
+    z-index: 9000;
+    cursor: pointer;
+    image-rendering: pixelated;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+    transition: transform 0.15s ease;
+}
+.companion-cat:hover,
+.companion-cat:focus-visible {
+    transform: translateY(-4px);
+    outline: none;
+}
+
+/* index.html only: homepage.css's own .footer-window (right:20px,
+   bottom:32px, ~117px tall measured) and os.css's full-width 46px
+   .taskbar both live in exactly this corner — measured their rendered
+   rects directly rather than guessing, and 172px clears the taller
+   footer-window (bottom 32 to ~149px) with margin to spare. Every other
+   page has neither element, so they keep the plain bottom:18px above. */
+body:has(#desktop) .companion-cat {
+    bottom: 172px;
+}
+
+.companion-cat--orange {
+    background-image: url("../images/avatars/orangeCatTailWagging.png");
+    background-size: 640px 132px;
+    animation: companionTailWag 1.4s steps(5) infinite;
+}
+.companion-cat--white {
+    background-image: url("../images/avatars/whiteCatTailWagging.png");
+    background-size: 640px 132px;
+    animation: companionTailWag 1.4s steps(5) infinite;
+}
+.companion-cat--black {
+    background-image: url("../images/avatars/blackCatTailWagging.png");
+    background-size: 640px 132px;
+    animation: companionTailWag 1.4s steps(5) infinite;
+}
+
+@keyframes companionTailWag { from { background-position: 0 0; } to { background-position: -640px 0; } }
+
+/* PLAYING / SCRATCHING — ambient extra actions triggered occasionally by
+   companion-cat.js (see its scheduleNextAction()) so the cat isn't just
+   sitting there the whole time. Percentage-based background-position
+   (0% -> 100%) instead of a literal -Npx end value, so one keyframe per
+   action works for every color's sheet regardless of its exact pixel
+   size — background-size below is set in % of the container too, so
+   "100%" always lands exactly on the last frame no matter the sheet's
+   real width. Container width stays ~128px (2x the shared 64px grid
+   pitch every sheet in this set uses) across every state so the widget
+   doesn't jump sideways when an action starts; only its height grows
+   for the taller scratching/playing poses, anchored from the bottom via
+   the fixed-position `bottom` offset already set on .companion-cat.
+
+   Frame layout confirmed by scanning each PNG's raw pixel data (both a
+   per-column AND a per-row opaque-content scan — the column-only pass
+   alone was misleading here, see below): orange/white's scratching
+   sheets (512x130 / 513x129) are NOT tall single-row poses like
+   Playing's — they're real 8-column x 2-row GRIDS at the same 64px
+   cell pitch idle/TailWagging already uses, confirmed by two distinct
+   32px-tall row-runs 64px apart. A first pass only scanned columns and
+   miscounted this as "8 frames" (true for the column count, but the
+   naive single-row percentage trick then squashed both rows into one
+   container height, showing two overlapping cats at once). Fixed by
+   pinning background-position-y to the top row (0%) and doubling
+   background-size's height (200%, i.e. one row = 100% of the
+   container) so only row 1's 8 real frames ever show — row 2 is
+   currently unused (packing padding or a redundant duplicate row,
+   unconfirmed either way, but row 1 alone is already a complete,
+   correctly-cropped 8-frame loop). Container height matches idle's own
+   64px-cell-at-2x math (128px), not a "tall pose" height.
+
+   blackCatScratching.png is genuinely different from the above — it's
+   a byte-identical duplicate of blackCatTailWagging.png (single-row,
+   5-frame, 321x67), a real asset gap (no scratching pose was ever
+   exported for the black cat), not a bug in this code. It's still
+   wired up here (and scheduled in companion-cat.js) for parity with
+   the other two colors — a black cat's scratching burst will just
+   silently replay its own idle frames until a real sheet exists. */
+@keyframes companionAction { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+
+.companion-cat--orange.is-scratching {
+    background-image: url("../images/avatars/orangeCatScratching.png");
+    width: 128px;
+    height: 128px;
+    background-size: 800% 200%;
+    animation: companionAction 1s steps(8) 2 both;
+}
+.companion-cat--white.is-scratching {
+    background-image: url("../images/avatars/whiteCatScratching.png");
+    width: 128px;
+    height: 128px;
+    background-size: 800% 200%;
+    animation: companionAction 1s steps(8) 2 both;
+}
+.companion-cat--black.is-scratching {
+    background-image: url("../images/avatars/blackCatScratching.png");
+    width: 128px;
+    height: 132px;
+    background-size: 500% 100%;
+    animation: companionAction 1s steps(5) 2 both;
+}
+
+.companion-cat--orange.is-playing {
+    background-image: url("../images/avatars/orangeCatPlaying.png");
+    width: 128px;
+    height: 232px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+.companion-cat--black.is-playing {
+    background-image: url("../images/avatars/blackCatPlaying.png");
+    width: 128px;
+    height: 258px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+.companion-cat--white.is-playing {
+    background-image: url("../images/avatars/whiteCatPlaying.png");
+    width: 128px;
+    height: 262px;
+    background-size: 1100% 100%;
+    animation: companionAction 1.3s steps(11) 2 both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .companion-cat { animation: none !important; }
+    .companion-cat.is-scratching,
+    .companion-cat.is-playing { animation: none !important; }
+}
+
+.companion-cat__bubble {
+    position: absolute;
+    right: 0;
+    bottom: 142px;
+    width: max-content;
+    max-width: 220px;
+    background: var(--bg-card, #FFF9F0);
+    border: 2px solid var(--border-dark, #8A8177);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-main, #3D3D3D);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.companion-cat__bubble::after {
+    content: "";
+    position: absolute;
+    right: 22px;
+    bottom: -8px;
+    width: 12px;
+    height: 12px;
+    background: var(--bg-card, #FFF9F0);
+    border-right: 2px solid var(--border-dark, #8A8177);
+    border-bottom: 2px solid var(--border-dark, #8A8177);
+    transform: rotate(45deg);
+}
+.companion-cat__bubble.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    /* 1.5x native (96x99px) — smaller than the 2x desktop size since
+       screen space is tighter, but still comfortably bigger than the
+       original 1x. Resized via width/height/background-size directly,
+       same reason as the desktop rule: a transform here would also
+       blow up the bubble. */
+    .companion-cat {
+        right: 12px;
+        bottom: 12px;
+        width: 96px;
+        height: 99px;
+    }
+    body:has(#desktop) .companion-cat {
+        bottom: 142px;
+    }
+    .companion-cat--orange,
+    .companion-cat--white,
+    .companion-cat--black {
+        background-size: 480px 99px;
+    }
+    @keyframes companionTailWag { from { background-position: 0 0; } to { background-position: -480px 0; } }
+
+    /* Same 1.5x scale-down applied to the extra-action states — width
+       stays the shared ~96px, only height changes per sheet/action. */
+    .companion-cat--orange.is-scratching { width: 96px; height: 96px; }
+    .companion-cat--white.is-scratching { width: 96px; height: 96px; }
+    .companion-cat--black.is-scratching { width: 96px; height: 99px; }
+    .companion-cat--orange.is-playing { width: 96px; height: 174px; }
+    .companion-cat--black.is-playing { width: 96px; height: 194px; }
+    .companion-cat--white.is-playing { width: 96px; height: 197px; }
+    .companion-cat__bubble {
+        bottom: 109px;
+        max-width: 170px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,258 @@
+/* N5 LESSONS DIRECTORY — collapsible file-drawer of folders, each
+   holding a plain directory-listing table, replacing the old flat
+   .lesson-card grid on n5-lessons.html (assets/js/n5-lessons-dashboard.js
+   builds the DOM this styles). Kept in its own file rather than added to
+   study-style.css so it can't collide with other in-flight edits to that
+   shared file — it's only ever loaded by n5-lessons.html anyway.
+
+   This page runs the win95 chrome (.study-room.is-win95 — see CLAUDE.md's
+   "Retro OS re-theming" section), NOT the dark CRT terminal skin the
+   original 10-concept mockup used — that mockup was a pitch deck in its
+   own visual language; this is the real page, so it reuses the SAME
+   cream/beige win95 palette study-style.css's existing
+   .study-room.is-win95 .lesson-card* rules already use (#ECE9D8 card
+   fill, navy #123a8c numbers, checkpoint blue #7DA8E8/#2e5aa8, done
+   green #8FD19E/#3a7a4a) rather than introducing a second, clashing
+   color language. */
+
+/* #lessonGrid keeps its base .lesson-grid class (n5-lessons-dashboard.js
+   also adds "n5dir" alongside it) — but .lesson-grid in study-style.css
+   is `display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr))`,
+   sized for the old flat card layout. Left as-is, that turns .n5dir-root
+   and .n5dir-finale (appended as its two direct children) into two
+   ~200px GRID ITEMS side by side instead of a full-width stacked
+   layout — exactly the "leaning top-left, overlapping the finale card"
+   bug this rule fixes by resetting the container back to a plain block
+   for this page specifically. */
+.lesson-grid.n5dir {
+    display: block;
+    max-width: none;
+    width: 100%;
+}
+
+/* Explicit user feedback: the directory "feels off when it's little and
+   on top of the page" — .quiz-body's shared align-items:flex-start
+   (used by every Study Room dashboard page) top-anchors short content
+   instead of letting it use the page, and the old 720px cap left large
+   empty side margins on any normal-width screen. `stretch` lets
+   .lesson-grid (and this file's own 1300px cap below) actually use the
+   available width; the page still won't force-fill unused vertical
+   space below a short folder list, since stretching height would just
+   put dead air inside the drawer instead of below it — width is what
+   was actually reading as "small". */
+.n5dir-body {
+    align-items: stretch !important;
+    padding: 28px 32px !important;
+}
+
+.n5dir-root {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ---------- folder ---------- */
+.n5dir-folder {
+    background: #ECE9D8;
+    border: 2px solid #fff;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        3px 3px 0 rgba(0, 0, 0, .3);
+}
+.n5dir-folder__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #222;
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-size: 17px;
+    text-align: left;
+    padding: 16px 22px;
+    cursor: pointer;
+}
+.n5dir-folder__head:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+.n5dir-folder__chevron {
+    color: #123a8c;
+    font-size: 13px;
+    width: 12px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+.n5dir-folder.is-open .n5dir-folder__chevron {
+    transform: rotate(90deg);
+}
+.n5dir-folder__icon {
+    flex-shrink: 0;
+    font-size: 20px;
+}
+.n5dir-folder__name {
+    flex: 1;
+    font-weight: 800;
+}
+.n5dir-folder__meta {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* ---------- directory listing rows ---------- */
+.n5dir-listing {
+    display: none;
+    border-top: 1px solid #c8c4b0;
+    padding: 4px 0 6px;
+}
+.n5dir-folder.is-open .n5dir-listing {
+    display: block;
+}
+.n5dir-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 160px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 22px 12px 44px;
+    text-decoration: none;
+    color: inherit;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+}
+.n5dir-row:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+/* Three real indent levels per folder now, not a flat list with an arrow:
+   folder title (.n5dir-folder__head) > shelf-group header
+   (.n5dir-row--group-head, e.g. "07  Numbers & Counters") > lettered
+   lesson rows (.n5dir-row--sub, e.g. "07a  Basic Numbers") nested under
+   it. See groupFolderIds()/makeGroupHeader() in n5-lessons-dashboard.js. */
+.n5dir-row--group-head {
+    padding-left: 44px;
+    background: rgba(18, 58, 140, 0.05);
+    border-top: 1px solid #c8c4b0;
+}
+.n5dir-row--group-head .n5dir-row__name {
+    font-weight: 800;
+}
+.n5dir-row--group-head-synthetic {
+    cursor: default;
+    color: inherit;
+}
+.n5dir-row--group-head-synthetic:hover {
+    background: rgba(18, 58, 140, 0.05);
+}
+.n5dir-row--sub {
+    padding-left: 88px;
+    position: relative;
+}
+.n5dir-row--sub::before {
+    content: "\21B3";
+    position: absolute;
+    left: 68px;
+    color: #888;
+    font-size: 12px;
+}
+.n5dir-row__id {
+    color: #123a8c;
+    font-weight: 700;
+}
+.n5dir-row__name {
+    color: #222;
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-size: 15px;
+}
+.n5dir-row__status {
+    text-align: right;
+    color: #666;
+    white-space: nowrap;
+}
+.n5dir-row.is-done .n5dir-row__status {
+    color: #3a7a4a;
+    font-weight: 700;
+}
+.n5dir-row.is-done {
+    background: #EAF3EA;
+}
+
+.n5dir-row--quiz {
+    border-top: 1px dashed #b8c4e0;
+    background: #E4ECFB;
+}
+.n5dir-row--quiz .n5dir-row__id {
+    color: #2e5aa8;
+}
+.n5dir-row--quiz.is-done {
+    background: #DCEEDC;
+}
+
+/* ---------- finale bar (N5 Final Quiz) ---------- */
+.n5dir-finale {
+    max-width: 1300px;
+    margin: 4px auto 0;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #FFF6DE;
+    border: 2px solid #fff;
+    box-shadow:
+        inset -2px -2px 0 #808080,
+        inset 2px 2px 0 #fff,
+        3px 3px 0 rgba(0, 0, 0, .3);
+    padding: 20px 26px;
+    text-decoration: none;
+    color: inherit;
+}
+.n5dir-finale:hover {
+    background: #FFFAEC;
+}
+.n5dir-finale.is-done {
+    background: #EAF3EA;
+    border-color: #fff;
+}
+.n5dir-finale__icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+.n5dir-finale__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.n5dir-finale__title {
+    font-family: "Nunito", Tahoma, sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #9a7d2e;
+}
+.n5dir-finale.is-done .n5dir-finale__title {
+    color: #3a7a4a;
+}
+.n5dir-finale__sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #7a6a3e;
+    margin-top: 2px;
+}
+.n5dir-finale__count {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #666;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .n5dir-row {
+        grid-template-columns: 34px 1fr;
+        grid-template-areas: "id name" ". status";
+    }
+    .n5dir-row__id { grid-area: id; }
+    .n5dir-row__name { grid-area: name; }
+    .n5dir-row__status { grid-area: status; text-align: left; }
+    .n5dir-finale { flex-wrap: wrap; }
+}

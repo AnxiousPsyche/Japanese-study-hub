@@ -874,7 +874,7 @@
       //   acceptedOrderings: [[token, ...], ...] — any match = correct
       //   sentence: the model sentence for reveal after attempts
       //   explainPattern: function(used) returning an explanation string
-      var chipsHtml = (page.wordChips || []).map(function (ch, i) {
+      let chipsHtml = (page.wordChips || []).map(function (ch, i) {
         return '<div class="lesson-box__sm-chip" data-idx="' + i + '" data-kana="' + ch.kana + '"'
           + ' data-reading="' + ch.reading + '" data-romaji="' + ch.romaji + '"'
           + ' data-meaning="' + ch.meaning + '" data-role="' + (ch.role || 'neutral') + '">'
@@ -1167,13 +1167,13 @@
       // place into the sentence line, click placed chips to return them,
       // clear to reset all, check to validate against accepted orderings.
       // Gates advance() via state.tryItSatisfied until correct.
-      var shelf = els.content.querySelector('.lesson-box__sm-shelf');
-      var sentLine = els.content.querySelector('.lesson-box__sm-sentence');
-      var feedback = els.content.querySelector('.lesson-box__sm-feedback');
-      var clearBtn = els.content.querySelector('.lesson-box__sm-clear');
-      var checkBtn = els.content.querySelector('.lesson-box__sm-check');
-      var sentTokens = [];
-      var attemptCount = 0;
+      let shelf = els.content.querySelector('.lesson-box__sm-shelf');
+      let sentLine = els.content.querySelector('.lesson-box__sm-sentence');
+      let feedback = els.content.querySelector('.lesson-box__sm-feedback');
+      let clearBtn = els.content.querySelector('.lesson-box__sm-clear');
+      let checkBtn = els.content.querySelector('.lesson-box__sm-check');
+      let sentTokens = [];
+      let attemptCount = 0;
       state.tryItSatisfied = false;
       els.continue.classList.add('lesson-box__continue--locked');
 
@@ -1191,7 +1191,7 @@
 
       // Click a shelf chip → append to sentence, hide from shelf.
       shelf.addEventListener('click', function (e) {
-        var chip = e.target.closest('.lesson-box__sm-chip');
+        let chip = e.target.closest('.lesson-box__sm-chip');
         if (!chip || chip.classList.contains('is-placed')) return;
         e.stopPropagation();
         chip.classList.add('is-placed');
@@ -1208,13 +1208,13 @@
 
       // Click a placed chip → remove from sentence, restore to shelf.
       sentLine.addEventListener('click', function (e) {
-        var placed = e.target.closest('.lesson-box__sm-placed');
+        let placed = e.target.closest('.lesson-box__sm-placed');
         if (!placed) return;
         e.stopPropagation();
-        var pos = Number(placed.dataset.pos);
-        var removed = sentTokens.splice(pos, 1)[0];
+        let pos = Number(placed.dataset.pos);
+        let removed = sentTokens.splice(pos, 1)[0];
         if (removed != null) {
-          var shelfChip = shelf.querySelector('.lesson-box__sm-chip[data-idx="' + removed.shelfIdx + '"]');
+          let shelfChip = shelf.querySelector('.lesson-box__sm-chip[data-idx="' + removed.shelfIdx + '"]');
           if (shelfChip) shelfChip.classList.remove('is-placed');
         }
         syncSentenceLine();
@@ -1236,8 +1236,8 @@
       // Check button → validate against accepted orderings, give feedback.
       checkBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        var playerSequence = sentTokens.map(function (t) { return t.kana; });
-        var isCorrect = page.acceptedOrderings.some(function (ordering) {
+        let playerSequence = sentTokens.map(function (t) { return t.kana; });
+        let isCorrect = page.acceptedOrderings.some(function (ordering) {
           if (ordering.length !== playerSequence.length) return false;
           return ordering.every(function (tok, i) { return tok === playerSequence[i]; });
         });
@@ -1253,7 +1253,7 @@
           checkBtn.disabled = true;
           clearBtn.disabled = true;
         } else {
-          var msg;
+          let msg;
           if (playerSequence.length < page.expectedTokens.length) {
             msg = 'Keep going — you have ' + (page.expectedTokens.length - playerSequence.length) + ' more word' + (page.expectedTokens.length - playerSequence.length > 1 ? 's' : '') + ' to place.';
           } else {

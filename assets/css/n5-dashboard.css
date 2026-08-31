@@ -12,11 +12,22 @@ ROOT
 
     --hud-height:90px;
 
-    /* Round 1 feedback B7: exact retro-pastel treatment (#C9BFA5 border
-       on #F6F2EA background), not the earlier gold/cream approximation. */
-    --hud-bg:#F6F2EA;
+    /* Retheme: matches the Study Room LESSON screen's green CRT terminal
+       look (.study-room.is-terminal .study-header in study-style.css)
+       exactly — same --term-panel/--term-border values, not an
+       approximation — so the Adventure Room's HUD reads as the same
+       "terminal" chrome as the rest of the dark retro palette behind it
+       (Choose Your Cat, the library map), instead of the win95 navy/blue
+       bar this used to be.  */
+    --hud-bg:#032821;
 
-    --hud-border:#C9BFA5;
+    --hud-border:#1D9E75;
+
+    --hud-text:#E1F5EE;
+
+    --hud-text-dim:#9FE1CB;
+
+    --hud-label:#5DCAA5;
 
     --hud-shadow:var(--shadow-window);
 
@@ -53,17 +64,21 @@ body{
 
     font-family:var(--body-font);
 
-    background-color:var(--bg-main);
+    /* Same dark-teal terminal palette as the Study Room (assets/css/
+       study-style.css's .study-room.is-terminal) — background only, so the
+       letterboxing around #mapFrame matches instead of showing the old
+       pastel checker. Nothing inside the Phaser canvas is touched. */
+    background-color:#04342C;
 
     background-image:
 
-        linear-gradient(45deg, var(--bg-window) 25%, transparent 25%),
+        linear-gradient(45deg, #032821 25%, transparent 25%),
 
-        linear-gradient(-45deg, var(--bg-window) 25%, transparent 25%),
+        linear-gradient(-45deg, #032821 25%, transparent 25%),
 
-        linear-gradient(45deg, transparent 75%, var(--bg-window) 75%),
+        linear-gradient(45deg, transparent 75%, #032821 75%),
 
-        linear-gradient(-45deg, transparent 75%, var(--bg-window) 75%);
+        linear-gradient(-45deg, transparent 75%, #032821 75%);
 
     background-size:32px 32px;
 
@@ -100,7 +115,7 @@ HUD
 
     background:var(--hud-bg);
 
-    border-bottom:3px solid var(--hud-border);
+    border-bottom:2px solid var(--hud-border);
 
     box-shadow:var(--hud-shadow);
 
@@ -160,20 +175,19 @@ HUD BUTTONS
 
 .hud-btn{
 
-    border:2px solid var(--hud-border);
+    border:1px solid var(--hud-border);
 
     border-radius:var(--radius);
 
     padding:12px 22px;
 
-    /* Scoped override of --title-bar (#87A8D8): that value is only
-       2.44:1 contrast against white text, failing WCAG AA (4.5:1) -
-       confirmed site-wide since --title-bar is shared across
-       components.css/mission.css/reset.css, so darkened locally here
-       rather than touching the global variable. */
-    background:#4E74A8;
+    /* Same transparent/outlined pill the terminal Study Room lesson
+       screen uses for its own nav links (.study-header__back with
+       .is-terminal in study-style.css) — border-only on the dark green
+       panel, not a filled shape. */
+    background:transparent;
 
-    color:white;
+    color:var(--hud-text-dim);
 
     font-family:var(--title-font);
 
@@ -183,7 +197,7 @@ HUD BUTTONS
 
     cursor:pointer;
 
-    box-shadow:var(--shadow-window);
+    box-shadow:none;
 
     transition:var(--transition);
 
@@ -193,7 +207,9 @@ HUD BUTTONS
 
     transform:translateY(-3px);
 
-    background:#44689C;
+    background:rgba(29,158,117,.2);
+
+    color:var(--hud-text);
 
 }
 
@@ -228,7 +244,7 @@ PLAYER
 
     border-radius:50%;
 
-    border:3px solid white;
+    border:2px solid var(--hud-border);
 
     object-fit:cover;
 
@@ -247,13 +263,15 @@ PLAYER NAME
 
     margin-bottom:4px;
 
+    color:var(--hud-text);
+
 }
 
 #playerRank{
 
     font-size:.8rem;
 
-    opacity:.75;
+    color:rgba(255,255,255,.75);
 
 }
 
@@ -262,6 +280,8 @@ PLAYER NAME
 HUD ITEMS
 ======================================================*/
 
+/* Beveled win95 pill — matches .study-room.is-win95 .xp-badge in
+   study-style.css (#ECE9D8 with an inset light/dark bevel) exactly. */
 .hud-item{
 
     display:flex;
@@ -272,7 +292,51 @@ HUD ITEMS
 
     font-weight:700;
 
-    font-size:.95rem;
+    font-size:.85rem;
+
+    color:var(--hud-text);
+
+    background:rgba(0,0,0,.2);
+
+    border:1px solid var(--hud-border);
+
+    box-shadow:none;
+
+    border-radius:var(--radius);
+
+    padding:6px 12px;
+
+}
+
+/* Three dots, same sizing/opacity as the Study Room lesson screen's own
+   .study-header__dots — a single green tone there (only the win95 pages
+   get red/yellow/green traffic lights), so this terminal-matched HUD
+   follows suit rather than keeping the old traffic-light coloring. */
+.hud-dots{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    margin-right:4px;
+
+}
+
+.hud-dots span{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+    background:var(--hud-label);
+
+    opacity:.55;
 
 }
 
