@@ -76,7 +76,7 @@ DESKTOP CONTAINER
 
     width:100%;
 
-    min-height:calc(100vh - 56px);
+    min-height:calc(100vh - 46px);
 
     padding:25px 30px 80px;
 
@@ -826,7 +826,7 @@ making the footer appear un-centered and fully opaque.
 
     right:20px;
 
-    bottom:20px;
+    bottom:32px;
 
     left:auto;
 

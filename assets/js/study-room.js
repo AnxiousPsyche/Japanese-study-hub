@@ -4,6 +4,253 @@
    closed set of words (wordBank) and 1-2 exercises that pick randomly
    *within* that set (never outside it) to build a sentence the learner
    then types in hiragana. */
+/* Interactive route diagram for shelf 08c's "Movement & giving directions"
+   section (see s08c's buildInstruction() below). diagramSvg is just a
+   static HTML string dumped via innerHTML, so a <script> tag inside it
+   would never execute — instead the buttons carry inline onclick
+   attributes that call this one global handler. State lives on the
+   diagram's own root element (data-step), not in a JS variable, so a
+   lesson re-render (switching lessons and back) always starts fresh.
+
+   MAP GEOMETRY — ported from a hand-drawn reference map (Home -> House ->
+   Hospital/Library corner -> School -> Kouen -> Eki), kept here as a single
+   NODES table (in `left%/top%` of .route2-scene) so the road layout, the
+   route, and the building placements all read off ONE source of truth
+   instead of scattered magic numbers. Edit NODES to reshape the map; edit
+   `steps` to reshape the route (each step is one Japanese instruction the
+   player must press, in order). */
+window.NekoRoute = {
+    NODES: {
+        home: [8, 92], houseIntersection: [32, 92], kouenBottom: [58, 92],
+        kouenTop: [58, 62], schoolJunction: [32, 62], hospitalJunction: [32, 32],
+        buildingCrossing: [62, 32], eki: [94, 32],
+        /* Scenery buildings — kept close/adjacent to the road segment they
+           sit next to, not floating off in open space. */
+        house: [32, 78], hospital: [18, 45], library: [38, 20], building: [62, 18],
+        restaurant: [76, 23], school: [45, 70], kouen: [64, 80]
+    },
+    /* Each step is one instruction: `action` is which of the three buttons
+       is correct (right = migi, left = hidari, straight = massugu);
+       `facing` is the cat's resulting compass heading after the step
+       (e = east/right, w = west/left, n = north/up — see press() for how
+       `n` is rendered given there's no dedicated "walking away" sprite);
+       `move` (optional, [left%, top%]) is where the cat animates to —
+       omitted on a step that's a pure in-place turn (the cat only travels
+       on the *next* step). */
+    steps: [
+        { action: "right", facing: "e", move: [32, 92] },      // Home -> house intersection (turn to face the road, walk to it)
+        { action: "straight", facing: "e", move: [58, 92] },   // straight past that intersection, don't turn, to the Kouen corner
+        { action: "left", facing: "n", move: [58, 62] },       // turn north up the Kouen road
+        { action: "left", facing: "w", move: [32, 62] },       // dead end north — turn west along the School row
+        { action: "right", facing: "n", move: [32, 32] },      // turn north up to the top row
+        { action: "right", facing: "e" },                      // turn east to face the final stretch (no move yet)
+        { action: "straight", facing: "e", move: [94, 32] }    // straight all the way to Eki
+    ],
+    prompts: {
+        right: { jp: "右に曲がってください。", romaji: "migi ni magatte kudasai — turn right" },
+        straight: { jp: "まっすぐ行ってください。", romaji: "massugu itte kudasai — go straight" },
+        left: { jp: "左に曲がってください。", romaji: "hidari ni magatte kudasai — turn left" }
+    },
+    press: function (btn, action) {
+        var scene = btn.closest(".grammar-box__route2");
+        if (!scene) return;
+        var idx = parseInt(scene.dataset.step || "0", 10);
+        var step = this.steps[idx];
+        if (!step || step.action !== action) {
+            btn.classList.remove("is-wrong");
+            void btn.offsetWidth;
+            btn.classList.add("is-wrong");
+            return;
+        }
+        var cat = scene.querySelector('[data-role="cat"]');
+        /* Swap the actual sitewide directional walking sprite (same
+           tailwagright/tailwagleft sheets the conversation avatars use)
+           instead of mirroring a flat static image — a real orange cat
+           genuinely walking each way, not a CSS flip trick. There's no
+           dedicated "walking away/up" sheet in the asset set, so a
+           north-facing step reuses the rightward walk-cycle and rotates
+           the whole sprite -90deg (CCW) via the .is-facing-n class —
+           whatever was pointing east now points north — rather than
+           leaving a sideways-facing sprite showing while the cat visibly
+           moves up the map. */
+        if (step.facing === "e") { cat.style.backgroundImage = "url(\"../../assets/images/avatars/tailwagright-orange-64x64.png\")"; cat.classList.remove("is-facing-n"); }
+        if (step.facing === "w") { cat.style.backgroundImage = "url(\"../../assets/images/avatars/tailwagleft-orange-64x64.png\")"; cat.classList.remove("is-facing-n"); }
+        if (step.facing === "n") { cat.style.backgroundImage = "url(\"../../assets/images/avatars/tailwagright-orange-64x64.png\")"; cat.classList.add("is-facing-n"); }
+        if (step.move) {
+            cat.style.left = step.move[0] + "%";
+            cat.style.top = step.move[1] + "%";
+        }
+        idx++;
+        scene.dataset.step = String(idx);
+        var promptJp = scene.querySelector('[data-role="promptJp"]');
+        var promptRomaji = scene.querySelector('[data-role="promptRomaji"]');
+        if (idx < this.steps.length) {
+            var next = this.prompts[this.steps[idx].action];
+            promptJp.textContent = next.jp;
+            promptRomaji.textContent = next.romaji;
+        } else {
+            promptJp.textContent = "駅に着きました！";
+            promptRomaji.textContent = "Eki ni tsukimashita — arrived!";
+            var arrival = scene.querySelector('[data-role="arrival"]');
+            if (arrival) arrival.classList.add("show");
+        }
+    }
+};
+
+/* s15's S-T-P-O-V sentence-order diagram + 3-round slot-builder practice.
+   Two independently-clickable widgets share this namespace: the "signal
+   stack" (5 always-visible role lights, each with its actual particle(s)
+   stacked underneath it, per explicit feedback correcting the acronym to
+   Subject/Time/Place/Object/Verb -- not the "Particle" guess an earlier
+   pass used) and the slot-builder underneath it (pick up a word chip,
+   then click the slot you think its grammatical role belongs in -- gets
+   it wrong on a mismatch rather than silently auto-sorting, so it's a
+   real recognition test, not just a sorting toy). Round state lives on
+   .stpov-builder's own data-round attribute, same reasoning as
+   .grammar-box__route2's data-step above: a lesson re-render always
+   starts clean, no separate JS variable to go stale. */
+window.NekoSTPOV = {
+    ROLES: [
+        { key: "S", label: "Subject", particles: ["は", "が", "も"] },
+        { key: "T", label: "Time", particles: ["に"] },
+        { key: "P", label: "Place", particles: ["で", "に"] },
+        { key: "O", label: "Object", particles: ["を"] },
+        { key: "V", label: "Verb", particles: [] }
+    ],
+    ROLE_DETAIL: {
+        S: "who or what the sentence is about -- は for the topic, が to single one thing out, も for \"also.\"",
+        T: "when it happens -- に for a specific point in time (三時に, \"at 3 o'clock\"). Relative day words like あした (tomorrow) or きょう (today) usually skip に entirely.",
+        P: "where it happens -- で for where an ACTION takes place (図書館で読みます, \"read AT the library\"), に for where something exists or a destination.",
+        O: "the thing the verb acts on -- always marked with を.",
+        V: "the action itself, always last -- ます／ません／ました and friends attach here. Nothing ever comes after the verb."
+    },
+    ROUNDS: [
+        {
+            en: "I will read a book at the library at 3 o'clock.",
+            chips: [
+                { tag: "S", jp: "私は" }, { tag: "T", jp: "三時に" }, { tag: "P", jp: "図書館で" },
+                { tag: "O", jp: "本を" }, { tag: "V", jp: "読みます" }
+            ]
+        },
+        {
+            en: "My friend will play soccer at the park tomorrow.",
+            chips: [
+                { tag: "S", jp: "友達は" }, { tag: "T", jp: "あした" }, { tag: "P", jp: "公園で" },
+                { tag: "O", jp: "サッカーを" }, { tag: "V", jp: "します" }
+            ]
+        },
+        {
+            en: "The cat eats food in the kitchen in the morning.",
+            chips: [
+                { tag: "S", jp: "猫は" }, { tag: "T", jp: "朝に" }, { tag: "P", jp: "台所で" },
+                { tag: "O", jp: "ごはんを" }, { tag: "V", jp: "たべます" }
+            ]
+        }
+    ],
+    buildSignalStackHTML: function () {
+        var cols = this.ROLES.map(function (r) {
+            var particlesHTML = r.particles.length
+                ? r.particles.map(function (p) { return '<span class="stpov-chip-static">' + p + "</span>"; }).join("")
+                : '<span class="stpov-col__none">end of sentence</span>';
+            return '<div class="stpov-col">'
+                + '<div class="stpov-light" onclick="window.NekoSTPOV.selectRole(this,\'' + r.key + '\')">' + r.key + "</div>"
+                + '<div class="stpov-col__label">' + r.label + "</div>"
+                + '<div class="stpov-col__connector"></div>'
+                + '<div class="stpov-col__particles">' + particlesHTML + "</div>"
+                + "</div>";
+        }).join("");
+        return '<div class="stpov-diagram-wrap"><div class="stpov-stack">' + cols + '</div>'
+            + '<div class="stpov-readout" data-role="stpovReadout">Click a letter above for what it marks.</div></div>';
+    },
+    selectRole: function (el, key) {
+        var wrap = el.closest(".stpov-diagram-wrap");
+        wrap.querySelectorAll(".stpov-light").forEach(function (l) { l.classList.remove("is-active"); });
+        el.classList.add("is-active");
+        var role = this.ROLES.find(function (r) { return r.key === key; });
+        var readout = wrap.querySelector('[data-role="stpovReadout"]');
+        readout.textContent = key + " = " + role.label + ": " + this.ROLE_DETAIL[key];
+    },
+    renderRoundData: function (idx) {
+        var round = this.ROUNDS[idx];
+        var slots = this.ROLES.map(function (r) {
+            return '<div class="stpov-slot" data-tag="' + r.key + '" onclick="window.NekoSTPOV.dropOnSlot(this)">'
+                + '<span class="stpov-slot__tag">' + r.key + "</span>"
+                + '<span class="stpov-slot__jp"></span></div>';
+        }).join("");
+        var shuffled = round.chips.slice().sort(function () { return Math.random() - 0.5; });
+        var chips = shuffled.map(function (c) {
+            return '<div class="stpov-chip" data-tag="' + c.tag + '" data-jp="' + c.jp + '" onclick="window.NekoSTPOV.pickChip(this)">' + c.jp + "</div>";
+        }).join("");
+        return { slots: slots, chips: chips, prompt: round.en, total: this.ROUNDS.length };
+    },
+    buildBuilderHTML: function () {
+        var r0 = this.renderRoundData(0);
+        return '<div class="stpov-builder" data-round="0">'
+            + '<div class="stpov-builder__head"><span class="stpov-builder__round" data-role="roundLabel">Round 1 of ' + r0.total + "</span></div>"
+            + '<div class="stpov-builder__prompt" data-role="prompt">Build: <strong>' + r0.prompt + "</strong></div>"
+            + '<div class="stpov-slots" data-role="slots">' + r0.slots + "</div>"
+            + '<div class="stpov-chip-tray" data-role="chips">' + r0.chips + "</div>"
+            + '<div class="stpov-builder__feedback" data-role="feedback"></div>'
+            + '<button type="button" class="stpov-builder__next" data-role="nextBtn" onclick="window.NekoSTPOV.nextRound(this)">Next round &rarr;</button>'
+            + "</div>";
+    },
+    pickChip: function (el) {
+        if (el.classList.contains("is-used")) return;
+        var tray = el.closest(".stpov-chip-tray");
+        tray.querySelectorAll(".stpov-chip").forEach(function (c) { c.classList.remove("is-selected"); });
+        el.classList.add("is-selected");
+    },
+    dropOnSlot: function (slotEl) {
+        if (slotEl.classList.contains("is-filled")) return;
+        var wrapper = slotEl.closest(".stpov-builder");
+        var chip = wrapper.querySelector(".stpov-chip.is-selected");
+        var feedback = wrapper.querySelector('[data-role="feedback"]');
+        if (!chip) {
+            feedback.textContent = "Pick a word chip first, then click the slot you think it belongs in.";
+            feedback.className = "stpov-builder__feedback";
+            return;
+        }
+        if (chip.dataset.tag === slotEl.dataset.tag) {
+            slotEl.classList.add("is-filled");
+            slotEl.querySelector(".stpov-slot__jp").textContent = chip.dataset.jp;
+            chip.classList.remove("is-selected");
+            chip.classList.add("is-used");
+            var allFilled = Array.prototype.every.call(wrapper.querySelectorAll(".stpov-slot"), function (s) { return s.classList.contains("is-filled"); });
+            if (allFilled) {
+                var round = parseInt(wrapper.dataset.round, 10);
+                var isLast = round >= this.ROUNDS.length - 1;
+                feedback.textContent = isLast ? "All 3 rounds complete! Nice work." : "Round complete!";
+                var nextBtn = wrapper.querySelector('[data-role="nextBtn"]');
+                if (!isLast) { nextBtn.classList.add("show"); } else { nextBtn.classList.remove("show"); }
+            } else {
+                feedback.textContent = "Correct!";
+            }
+            feedback.className = "stpov-builder__feedback is-good";
+        } else {
+            slotEl.classList.remove("is-wrong");
+            void slotEl.offsetWidth;
+            slotEl.classList.add("is-wrong");
+            feedback.textContent = "Not quite -- try a different slot.";
+            feedback.className = "stpov-builder__feedback is-bad";
+        }
+    },
+    nextRound: function (btn) {
+        var wrapper = btn.closest(".stpov-builder");
+        var round = parseInt(wrapper.dataset.round, 10) + 1;
+        if (round >= this.ROUNDS.length) return;
+        wrapper.dataset.round = String(round);
+        var r = this.renderRoundData(round);
+        wrapper.querySelector('[data-role="roundLabel"]').textContent = "Round " + (round + 1) + " of " + r.total;
+        wrapper.querySelector('[data-role="prompt"]').innerHTML = "Build: <strong>" + r.prompt + "</strong>";
+        wrapper.querySelector('[data-role="slots"]').innerHTML = r.slots;
+        wrapper.querySelector('[data-role="chips"]').innerHTML = r.chips;
+        var feedback = wrapper.querySelector('[data-role="feedback"]');
+        feedback.textContent = "";
+        feedback.className = "stpov-builder__feedback";
+        btn.classList.remove("show");
+    }
+};
+
 (function () {
     "use strict";
 
@@ -19,6 +266,28 @@
         { jp: "いしい", en: "Ishii" },
         { jp: "ふじい", en: "Fuji" }
     ];
+
+    /* Sprite sheets for 'conversation' turns (see buildInstruction()'s
+       optional `conversation` field + renderConversation() below) — the
+       same per-color action sheets n5-phaser-game.js's ACTION_SPRITE_PATHS
+       uses, but with a fixed color pairing baked in instead of resolved
+       from the player's chosen cat color: Study Room has no color-select
+       flow at all, so every conversation always casts the sensei as
+       black and the player as orange (explicit choice, not a default —
+       matches the Adventure Room's own sensei-color fallback when a
+       player picks orange). Each sheet is a clean, untrimmed 64px-pitch
+       grid (confirmed by direct pixel scan, unlike the trimmed
+       Playing/StandingUp sheets companion-cat.css had to special-case),
+       so a plain percentage-based steps() loop (see .conv-avatar in
+       study-style.css) needs only the frame count — no per-sheet crop
+       math required. */
+    const CONV_ACTION_SPRITES = {
+        meow: { frames: 3, black: "../../assets/images/avatars/talk-black-64x64.png", orange: "../../assets/images/avatars/talk-orange-64x64.png" },
+        scratch: { frames: 8, black: "../../assets/images/avatars/scratch-black-64x64.png", orange: "../../assets/images/avatars/scratch-orange-64x64.png" },
+        tailwagFront: { frames: 5, black: "../../assets/images/avatars/tailwag-black-64x64.png", orange: "../../assets/images/avatars/tailwag-orange-64x64.png" },
+        tailwagLeft: { frames: 5, black: "../../assets/images/avatars/tailwagleft-black-64x64.png", orange: "../../assets/images/avatars/tailwagleft-orange-64x64.png" },
+        tailwagRight: { frames: 5, black: "../../assets/images/avatars/tailwagright-black-64x64.png", orange: "../../assets/images/avatars/tailwagright-orange-64x64.png" }
+    };
 
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     function shuffle(a) {
@@ -133,9 +402,9 @@
     }
 
     function buildLessons() {
-        return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07(),s08(),
-                s09(),s10(),s11(),s12(),s13(),s14(),s15(),s16(),
-                k01()];
+        return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07a(),s07b(),s07c(),s07d(),s07e(),s08a(),s08b(),s08c(),s08d(),
+                s09a(),s09b(),s10a(),s10b(),s10c(),s11a(),s11b(),s11c(),s14(),s12(),s13(),s15(),s16(),
+                k01(), cq1(), cq2(), cq3()];
     }
 
     /* SHELF 01: Basic Greetings (phrase-only lesson) */
@@ -153,6 +422,10 @@
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
+                newWords: [
+                    { jp: "ねこ", en: "cat" }, { jp: "みず", en: "water" }, { jp: "がっこう", en: "school" },
+                    { jp: "おおきい", en: "big" }, { jp: "ちいさい", en: "small" }
+                ],
                 preview: [{ jp: "お元気ですか", en: "How are you?", note: "Coming up in shelf 02 — everyday expressions" }]
             },
             buildInstruction: function () {
@@ -173,6 +446,32 @@
                                 + "<br><br><strong>すみません</strong> (sumimasen) — very versatile: apologizing, getting someone's attention, or even saying thanks when someone went out of their way for you."
                         }
                     ],
+                    /* Ported verbatim from the Adventure Room's shelf-01
+                       LESSON_CONTENT (the closing 'conversation' page, two
+                       NPC cats using only this shelf's own vocab), fixed
+                       sensei=black/player=orange casting per Study Room's
+                       own convention. No role-* highlight spans in the
+                       original and no name variable in scope for this
+                       vocab-only lesson, so nothing else to convert. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "こんにちは！",
+                                romaji: "Konnichiwa! — \"Hello!\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "こんにちは！ありがとうございます。",
+                                romaji: "Konnichiwa! Arigatou gozaimasu. — \"Hello! Thank you.\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "さようなら！",
+                                romaji: "Sayounara! — \"Goodbye!\""
+                            }
+                        ]
+                    },
                     examples: [
                         { jp: "こんにちは！", en: "Hello!" },
                         { jp: "こんにちは！ありがとうございます。", en: "Hello! Thank you." },
@@ -225,6 +524,10 @@
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
+                newWords: [
+                    { jp: "でんわ", en: "telephone" }, { jp: "くるま", en: "car" }, { jp: "ほん", en: "book" },
+                    { jp: "たのしい", en: "fun" }, { jp: "いそがしい", en: "busy" }
+                ],
                 preview: [{ jp: "いってきます", en: "I'm heading out", note: "Coming up next — At Home & At the Table" }]
             },
             buildInstruction: function () {
@@ -249,6 +552,33 @@
                                 + "<br><br><strong>どうぞ</strong> (douzo) runs the other direction — it's what YOU say when offering something or letting someone go ahead."
                         }
                     ],
+                    /* Ported verbatim from the Adventure Room's shelf-02
+                       LESSON_CONTENT (the closing 'conversation' page, two
+                       NPC cats using this shelf's お元気ですか/元気です/じゃあね
+                       plus one already-known shelf-01 phrase), fixed
+                       sensei=black/player=orange casting per Study Room's
+                       own convention. No role-* spans in the original and
+                       no name variable in scope for this vocab-only
+                       lesson, so nothing else to convert. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "お元気ですか？",
+                                romaji: "Ogenki desu ka? — \"How are you?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "元気です！ありがとうございます。",
+                                romaji: "Genki desu! Arigatou gozaimasu. — \"I'm doing well! Thank you.\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "じゃあね！",
+                                romaji: "Jaa ne! — \"See you!\""
+                            }
+                        ]
+                    },
                     examples: [
                         { jp: "はじめまして。よろしくお願いします。", en: "How do you do. Please treat me well." },
                         { jp: "お元気ですか？", en: "How are you?" },
@@ -297,6 +627,10 @@
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
+                newWords: [
+                    { jp: "たべもの", en: "food" }, { jp: "おちゃ", en: "tea" }, { jp: "いえ", en: "house" },
+                    { jp: "おいしい", en: "delicious" }, { jp: "あつい", en: "hot" }
+                ],
                 preview: [{ jp: "なるほど", en: "I see / that makes sense", note: "Coming up next — Filler Words & Reactions" }]
             },
             buildInstruction: function () {
@@ -371,6 +705,10 @@
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
+                newWords: [
+                    { jp: "はなし", en: "talk / story" }, { jp: "きもち", en: "feeling" }, { jp: "おもしろい", en: "interesting" },
+                    { jp: "うれしい", en: "happy" }, { jp: "へん", en: "strange / odd" }
+                ],
                 preview: [{ jp: "がくせい", en: "student", note: "Coming up in shelf 03 — the A は B です pattern" }]
             },
             buildInstruction: function () {
@@ -456,6 +794,10 @@
                 thingSubjects: [{ jp: "これ", en: "this" }],
                 peoplePredicates: [{ jp: "がくせい", en: "student" }, { jp: "せんせい", en: "teacher" }],
                 thingPredicates: [{ jp: "ほん", en: "book" }, { jp: "ペン", en: "pen" }],
+                newWords: [
+                    { jp: "いす", en: "chair" }, { jp: "つくえ", en: "desk" }, { jp: "かさ", en: "umbrella" },
+                    { jp: "たかい", en: "expensive" }, { jp: "やすい", en: "cheap" }
+                ],
                 preview: [{ jp: "はじめまして", en: "how do you do (first meeting only)", note: "Coming up in shelf 04 — self-introductions" }]
             },
             buildInstruction: function () {
@@ -495,10 +837,11 @@
             <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
           </g>
           <text x="131" y="30" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
-          <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
-          <text x="70" y="118" text-anchor="middle" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
-          <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
-          <text x="270" y="118" text-anchor="middle" font-size="10" fill="#ffffff" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
+          <circle cx="131" cy="72" r="3" fill="#c9a66b"></circle>
+          <path d="M131,72 C 131,102 131,128 131,155" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
+          <text x="142" y="112" text-anchor="start" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
+          <path d="M131,72 C 190,96 260,122 315,155" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
+          <text x="225" y="102" text-anchor="middle" font-size="10" fill="#ffffff" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
           <text x="10" y="148" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
           <g font-family="VT323, DotGothic16, monospace" font-size="16">
             <rect x="10" y="160" width="90" height="34" rx="3" fill="#6fb3e6"></rect>
@@ -522,6 +865,80 @@
       `,
                         diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',
                         culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\""
+                    }, {
+                        title: "Sentence construction — the box breakdown",
+                        explain: "Here's the same pattern with every piece labeled by its job, not just its meaning: a Topic slot, the は particle that marks it, a Predicate slot (whatever the topic IS), and です sitting fixed at the very end. これ works exactly like わたし here — 'this' is just a topic like any other, so it slots into the same first box.",
+                        diagramSvg: `
+        <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <text x="20" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">A は B です - BOX BY BOX</text>
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+            <rect x="20" y="38" width="100" height="34" rx="3" fill="#6fb3e6"></rect>
+            <text x="70" y="60" text-anchor="middle" fill="#0b2438">わたし</text>
+            <rect x="126" y="38" width="46" height="34" rx="3" fill="#f0c674"></rect>
+            <text x="149" y="60" text-anchor="middle" fill="#4a3211">は</text>
+            <rect x="178" y="38" width="110" height="34" rx="3" fill="#e2685f"></rect>
+            <text x="233" y="60" text-anchor="middle" fill="#2e0e0b">がくせい</text>
+            <rect x="294" y="38" width="70" height="34" rx="3" fill="#ffffff"></rect>
+            <text x="329" y="60" text-anchor="middle" fill="#201d54">です</text>
+          </g>
+          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="#c9a66b">
+            <text x="70" y="86" text-anchor="middle">topic</text>
+            <text x="149" y="86" text-anchor="middle">は - marks it</text>
+            <text x="233" y="86" text-anchor="middle">predicate</text>
+            <text x="329" y="86" text-anchor="middle">です - copula</text>
+          </g>
+          <text x="20" y="108" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Watashi wa gakusei desu. - "I am a student."</text>
+
+          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+            <rect x="20" y="128" width="80" height="34" rx="3" fill="#6fb3e6"></rect>
+            <text x="60" y="150" text-anchor="middle" fill="#0b2438">これ</text>
+            <rect x="106" y="128" width="46" height="34" rx="3" fill="#f0c674"></rect>
+            <text x="129" y="150" text-anchor="middle" fill="#4a3211">は</text>
+            <rect x="158" y="128" width="80" height="34" rx="3" fill="#e2685f"></rect>
+            <text x="198" y="150" text-anchor="middle" fill="#2e0e0b">ほん</text>
+            <rect x="244" y="128" width="70" height="34" rx="3" fill="#ffffff"></rect>
+            <text x="279" y="150" text-anchor="middle" fill="#201d54">です</text>
+          </g>
+          <text x="20" y="180" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Kore wa hon desu. - "This is a book." (same 4 boxes, different topic + predicate)</text>
+        </svg>
+      `,
+                        diagramCaption: "Same four boxes, every time — only what goes IN the topic and predicate boxes ever changes. は and です never move."
+                    }, {
+                        title: "Swap the cards — any topic, any predicate",
+                        explain: "は and です never move — they're fixed. Everything else is a deck of interchangeable cards: pull any topic card, pull any predicate card, drop them into the same two slots. That's exactly why the exercise below accepts any word from the word bank instead of one baked-in answer.",
+                        diagramSvg: `
+        <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
+          <text x="10" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">SWAP THE CARDS - TOPIC AND PREDICATE ARE INTERCHANGEABLE</text>
+
+          <g font-family="VT323, DotGothic16, monospace" font-size="15">
+            <rect x="34" y="58" width="96" height="38" rx="4" fill="#6fb3e6" opacity=".3"></rect>
+            <rect x="26" y="64" width="96" height="38" rx="4" fill="#6fb3e6" opacity=".6"></rect>
+            <rect x="18" y="70" width="96" height="38" rx="4" fill="#6fb3e6"></rect>
+            <text x="66" y="94" text-anchor="middle" fill="#0b2438">わたし</text>
+          </g>
+          <text x="66" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">any topic card</text>
+
+          <rect x="150" y="70" width="46" height="38" rx="4" fill="#f0c674"></rect>
+          <text x="173" y="94" text-anchor="middle" font-size="15" fill="#4a3211" font-family="VT323, DotGothic16, monospace">は</text>
+          <text x="173" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">always は</text>
+
+          <g font-family="VT323, DotGothic16, monospace" font-size="15">
+            <rect x="230" y="58" width="112" height="38" rx="4" fill="#e2685f" opacity=".3"></rect>
+            <rect x="222" y="64" width="112" height="38" rx="4" fill="#e2685f" opacity=".6"></rect>
+            <rect x="214" y="70" width="112" height="38" rx="4" fill="#e2685f"></rect>
+            <text x="270" y="94" text-anchor="middle" fill="#2e0e0b">がくせい</text>
+          </g>
+          <text x="270" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">any predicate card</text>
+
+          <rect x="360" y="70" width="60" height="38" rx="4" fill="#ffffff"></rect>
+          <text x="390" y="94" text-anchor="middle" font-size="15" fill="#201d54" font-family="VT323, DotGothic16, monospace">です</text>
+          <text x="390" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">always です</text>
+
+          <text x="10" y="160" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">わたしはがくせいです ・ これはほんです ・ たなかさんはせんせいです</text>
+          <text x="10" y="178" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">— every one of these is the SAME sentence with different cards in the same two slots.</text>
+        </svg>
+      `,
+                        diagramCaption: "The word bank below is exactly this deck — pick any topic card and any predicate card, and the sentence is correct."
                     }],
                     examples: [
                         { jp: "わたしはがくせいです", romaji: "Watashi wa gakusei desu.", en: "I am a student." },
@@ -587,6 +1004,10 @@
             id: "s04", title: "Self Introduction", subtitle: "Shelf 04",
             wordBank: {
                 names: uPick(NAMES, 2),
+                newWords: [
+                    { jp: "いしゃ", en: "doctor" }, { jp: "かいしゃいん", en: "office worker" }, { jp: "しゅふ", en: "homemaker" },
+                    { jp: "わかい", en: "young" }, { jp: "やさしい", en: "kind / gentle" }
+                ],
                 preview: [{ jp: "それ", en: "that (near you)", note: "Coming up in shelf 05 — demonstratives" }]
             },
             buildInstruction: function () {
@@ -598,6 +1019,36 @@
                         pattern: '<span class="pattern-box__fixed">はじめまして</span> → <span class="pattern-box__slot">わたしは [name] です</span> → <span class="pattern-box__fixed">よろしくお願いします</span>',
                         culture: "Jikoshoukai isn't just small talk — it's treated like a small ritual, given standing up (often with a slight bow) on a first day at school/work, or when meeting someone through a mutual connection. よろしくお願いします doesn't really translate into English — it's closer to \"please treat me well going forward,\" and saying it at the end of a self-introduction is basically mandatory, not optional politeness."
                     }],
+                    /* Ported verbatim from the Adventure Room's shelf-04
+                       LESSON_CONTENT (the same self-intro exchange,
+                       'conversation' page type) — text/romaji unchanged,
+                       just with the fixed sensei=black/player=orange
+                       casting per Study Room's own convention (see
+                       CONV_ACTION_SPRITES) instead of the Adventure
+                       Room's dynamic per-player color resolution, and the
+                       hardcoded name "レイヤ" swapped for this lesson's own
+                       randomly-picked `nm` (already used by the examples
+                       below) so the dialogue matches whichever name the
+                       player is seeing everywhere else on this page. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "はじめまして。<span class=\"conv-hl conv-hl--subject\">お名前</span><span class=\"conv-hl conv-hl--particle\">は</span><span class=\"conv-hl conv-hl--predicate\">何</span><span class=\"conv-hl conv-hl--copula\">です</span><span class=\"conv-hl conv-hl--particle\">か</span>。",
+                                romaji: "Hajimemashite. O-namae wa nan desu ka. — \"How do you do. What is your name?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "わたしは" + nm.jp + "です。",
+                                romaji: "Watashi wa " + nm.jp + " desu. — \"I am " + nm.en + ".\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: nm.jp + "さん、よろしくお願いします！",
+                                romaji: nm.jp + "-san, yoroshiku onegaishimasu! — \"Nice to meet you, " + nm.en + "!\""
+                            }
+                        ]
+                    },
                     examples: [
                         { jp: "はじめまして。お名前は何ですか。", romaji: "Hajimemashite. O-namae wa nan desu ka.", en: "How do you do. What is your name?" },
                         { jp: "わたしは" + nm.jp + "です。", romaji: "Watashi wa " + nm.jp + " desu.", en: "I am " + nm.en + "." },
@@ -668,6 +1119,10 @@
                 demonstratives: [{ jp: "これ", en: "this" }, { jp: "それ", en: "that (near you)" }, { jp: "あれ", en: "that (over there)" }],
                 nouns: [{ jp: "ほん", en: "book" }, { jp: "ペン", en: "pen" }],
                 creatures: [{ jp: "ねこ", en: "cat" }],
+                newWords: [
+                    { jp: "とけい", en: "clock / watch" }, { jp: "かばん", en: "bag" }, { jp: "さいふ", en: "wallet" },
+                    { jp: "あかい", en: "red" }, { jp: "あおい", en: "blue" }
+                ],
                 preview: [{ jp: "だれ", en: "who", note: "Coming up in shelf 06 — question words + か" }]
             },
             buildInstruction: function () {
@@ -729,6 +1184,32 @@
                             explain: "The polite versions of これ/それ/あれ/どれ — same distance rules, softer tone. Common on signs, in shops, and when politely introducing someone ('こちらは〜です' = 'this is ~')."
                         }
                     ],
+                    /* Ported verbatim from the Adventure Room's shelf-05
+                       LESSON_CONTENT (the それ/これ 'conversation' page),
+                       fixed sensei=black/player=orange casting per Study
+                       Room's own convention, role-subject spans converted
+                       to conv-hl--subject. No name variable in scope for
+                       this lesson (the original didn't reference one
+                       either), so nothing to substitute. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "<span class=\"conv-hl conv-hl--subject\">それ</span>はなんですか？",
+                                romaji: "Sore wa nan desu ka? — \"What is that (by you)?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "<span class=\"conv-hl conv-hl--subject\">これ</span>はほんです。",
+                                romaji: "Kore wa hon desu. — \"This is a book.\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "ありがとう！",
+                                romaji: "Arigatou! — \"Thanks!\""
+                            }
+                        ]
+                    },
                     examples: [
                         { jp: "これはほんです", romaji: "Kore wa hon desu.", en: "This is a book. (near you)" },
                         { jp: "それはペンです", romaji: "Sore wa pen desu.", en: "That is a pen. (near the listener)" },
@@ -805,15 +1286,74 @@
             wordBank: {
                 topics: [{ jp: "せんせい", en: "the teacher" }, { jp: "これ", en: "this" }, { jp: "たんじょうび", en: "your birthday" }],
                 questionWords: [{ jp: "だれ", en: "who" }, { jp: "いくら", en: "how much" }, { jp: "いつ", en: "when" }],
+                newWords: [
+                    { jp: "なまえ", en: "name" }, { jp: "じゅうしょ", en: "address" }, { jp: "しごと", en: "job" },
+                    { jp: "むずかしい", en: "difficult" }, { jp: "かんたん", en: "easy / simple" }
+                ],
                 preview: [{ jp: "ひとつ", en: "one (thing)", note: "Coming up in shelf 07 — numbers & counters" }]
             },
             buildInstruction: function () {
                 return {
-                    sections: [{
-                        title: "Statement + か？",
-                        explain: "One tiny particle turns any calm statement into a question — nothing else moves, like the sound of a question mark. Two ways to use it: tack it onto a plain yes/no statement (これはほんです → これはほんですか, 'Is this a book?'), or tack it onto a sentence that already has a question word in it (せんせいはどこです → …どこですか, 'Where is the teacher?'). Either way, word order never changes — か always goes at the very end.",
-                        pattern: '<span class="pattern-box__slot">Statement</span> <span class="pattern-box__fixed">か</span>'
-                    }],
+                    sections: [
+                        {
+                            title: "Statement + か？",
+                            explain: "One tiny particle turns any calm statement into a question — nothing else moves, like the sound of a question mark. Two ways to use it: tack it onto a plain yes/no statement (これはほんです → これはほんですか, 'Is this a book?'), or tack it onto a sentence that already has a question word in it (せんせいはどこです → …どこですか, 'Where is the teacher?'). Either way, word order never changes — か always goes at the very end.",
+                            pattern: '<span class="pattern-box__slot">Statement</span> <span class="pattern-box__fixed">か</span>',
+                            /* Ported from n5-phaser-game.js's buildQuestionParticleDiagram
+                               (a plain-HTML statement-vs-question comparison, not SVG) —
+                               reuses the already-existing .conv-hl role spans (see study-
+                               style.css) instead of the original's lesson-box-only
+                               .lesson-box__qdiagram-tile/role-* classes, since conv-hl
+                               already carries the identical N5-theme role colors. The
+                               original's per-player cat portraits are decorative only
+                               (same reasoning as s05's diagram) and dropped here rather
+                               than hardcoding a color choice. */
+                            diagramSvg: '<div style="display:flex;flex-direction:column;gap:10px;font-size:18px;">'
+                                + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                                + '<span style="min-width:82px;color:var(--term-text-dim,#c9a66b);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Statement</span>'
+                                + '<span class="conv-hl conv-hl--subject">これ</span><span class="conv-hl conv-hl--particle">は</span><span class="conv-hl conv-hl--predicate">ほん</span><span class="conv-hl conv-hl--copula">です</span>'
+                                + '</div>'
+                                + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                                + '<span style="min-width:82px;color:var(--term-text-dim,#c9a66b);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Question</span>'
+                                + '<span class="conv-hl conv-hl--subject">これ</span><span class="conv-hl conv-hl--particle">は</span><span class="conv-hl conv-hl--predicate">ほん</span><span class="conv-hl conv-hl--copula">です</span><span class="conv-hl conv-hl--particle">か</span>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Same words, same order — か tacked onto the very end is the only difference between a statement and a question."
+                        },
+                        {
+                            title: "Answering yes or no",
+                            explain: "<strong>はい、そうです</strong> (hai, sou desu — 'yes, that's right') and <strong>いいえ、ちがいます</strong> (iie, chigaimasu — 'no, that's wrong') are the standard reply pair to any これ/それ/あれ-style yes/no question. ちがいます doesn't mean the other person lied — it just means the guess was off, so a correction (ほんです, 'it's a book') usually follows right after."
+                        },
+                        {
+                            title: "Six more question words",
+                            explain: "だれ (who) and いつ (when) attach exactly like どこ did in shelf 5 — swap it in, everything else stays put. どうして and なぜ both mean 'why,' but aren't interchangeable registers: どうして is what you'd actually say out loud to a friend, while なぜ leans formal/written — a news report or an essay reaches for なぜ, a conversation reaches for どうして. いくつ and いくら split the same way: いくつ counts small countable things ('how many apples?'), いくら asks a price ('how much is this?') — never mix the two up just because English uses 'how' for both."
+                        }
+                    ],
+                    /* Ported verbatim from the Adventure Room's shelf-06
+                       LESSON_CONTENT (the closing 'conversation' page),
+                       fixed sensei=black/player=orange casting per Study
+                       Room's own convention. No role-* spans in the
+                       original and no name variable in scope for this
+                       lesson, so nothing else to convert. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "player", name: "You", action: "tailwagRight", actionLabel: "*tail wags*",
+                                text: "すみません、これはなんですか？",
+                                romaji: "Sumimasen, kore wa nan desu ka? — \"Excuse me, what is this?\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "それはほんです。",
+                                romaji: "Sore wa hon desu. — \"That is a book.\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "そうですか！ありがとうございます。",
+                                romaji: "Sou desu ka! Arigatou gozaimasu. — \"Oh, I see! Thank you.\""
+                            }
+                        ]
+                    },
                     examples: [
                         { jp: "これはほんですか", romaji: "Kore wa hon desu ka?", en: "Is this a book?" },
                         { jp: "はい、そうです。", romaji: "Hai, sou desu.", en: "Yes, that's right." },
@@ -862,60 +1402,149 @@
         };
     }
 
-    /* SHELF 07: Numbers & Counters */
-    function s07() {
+    /* SHELF 07 SPLIT — the original single "Numbers & Counters" lesson
+       covered a lot of genuinely distinct number systems (plain counting,
+       the つ series, the 匹 series, hours, minutes) in one page. Per
+       explicit feedback ("there are a lot of types of numbers... properly
+       section them out"), it's now three separate lessons — 07a/07b/07c —
+       instead of one long one, mirroring how s02 already splits into
+       s02/s02b/s02c. Each keeps its own wordBank/exercises/XP, chained
+       together with the same preview-the-next-lesson pattern every other
+       shelf uses. */
+
+    /* SHELF 07a: Basic Numbers (1–100) */
+    function s07a() {
         return {
-            id: "s07", title: "Numbers & Counters", subtitle: "Shelf 07",
+            id: "s07a", title: "Basic Numbers", subtitle: "Shelf 07a",
             wordBank: {
-                nouns: [{ jp: "りんご", en: "apple" }, { jp: "ねこ", en: "cat" }, { jp: "いま", en: "it (now)" }],
-                counters: [{ jp: "ひとつ", en: "one" }, { jp: "さんびき", en: "three" }, { jp: "よじ", en: "4 o'clock" }],
-                preview: [{ jp: "あります", en: "there is (things)", note: "Coming up in shelf 08 — places & directions" }]
+                /* Curated rather than formula-generated — a live
+                   tens+ones generator would need to pick a reading for
+                   4/7/9 (よん/し, なな/しち, きゅう/く) with no context to
+                   decide from; a fixed, pre-verified list sidesteps that
+                   ambiguity entirely. */
+                numbers: [
+                    { n: "13", jp: "じゅうさん" }, { n: "20", jp: "にじゅう" }, { n: "35", jp: "さんじゅうご" },
+                    { n: "47", jp: "よんじゅうなな" }, { n: "58", jp: "ごじゅうはち" }, { n: "100", jp: "ひゃく" }
+                ],
+                newWords: [{ jp: "おおい", en: "many" }, { jp: "すくない", en: "few" }],
+                preview: [{ jp: "ひとつ", en: "one (general objects)", note: "Coming up in shelf 07b — つ & 匹 counters" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
-                            title: "Counting Things, Animals & Time",
-                            explain: "Japanese numbers are built like Lego blocks — learn 1 through 10, and you can build every number up to 100 just by combining them. にじゅう (20) is just に (2) + じゅう (10) stuck together — 'two tens.' A few numbers have two readings depending on context (4, 7, 9), and counter words shift sounds a little.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + Counter</span> <span class="pattern-box__fixed">です</span>'
+                            title: "Basic Numbers — いち〜ひゃく",
+                            explain: "Japanese numbers are built like Lego blocks — learn 1 through 10, and you can build every number up to 100 just by combining them. にじゅう (20) is just に (2) + じゅう (10) stuck together — 'two tens.' さんじゅうご (35) is さん (3) + じゅう (10) + ご (5) — 'three tens, five.' ひゃく (100) caps this set off. A few numbers have two readings depending on context — 4 is よん or し, 7 is なな or しち, 9 is きゅう or く — which reading wins depends on what comes next, covered in the next two lessons.",
+                            pattern: '<span class="pattern-box__slot">Tens digit</span> <span class="pattern-box__fixed">じゅう</span> <span class="pattern-box__slot">Ones digit</span>'
                         },
+                        {
+                            title: "Counters — why the numbers change shape",
+                            explain: "This is the part that trips people up next: いち・に・さん by themselves only work for pure counting ('1, 2, 3...') — the moment you're counting something specific, a counter word glues onto the number, and often changes its sound. English does a mild version of this too ('a slice of bread,' 'a herd of cattle') but Japanese counters are mandatory, not optional. The three you'll use constantly at N5 — つ (everyday objects), 匹 (small animals), and 時/分 (time) — each get their own lesson next, since they don't follow one shared rule.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + Counter</span> <span class="pattern-box__fixed">です</span>'
+                        }
+                    ],
+                    examples: [
+                        { jp: "にじゅうです", romaji: "Nijuu desu.", en: "It's 20." },
+                        { jp: "さんじゅうごです", romaji: "Sanjuu go desu.", en: "It's 35." },
+                        { jp: "ひゃくです", romaji: "Hyaku desu.", en: "It's 100." }
+                    ],
+                    vocab: [
+                        { jp: "いち〜じゅう", romaji: "ichi–juu", en: "1–10" },
+                        { jp: "にじゅう〜きゅうじゅう", romaji: "nijuu–kyuujuu", en: "20–90 (tens)" },
+                        { jp: "ひゃく", romaji: "hyaku", en: "100" }
+                    ],
+                    sources: ["Tofugu numbers/counters guide", "Jisho.org"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let n = pick(this.wordBank.numbers);
+                return [
+                    {
+                        prompt: "Write the number: <strong>" + n.n + "</strong>",
+                        accepted: [[n.jp]],
+                        hint: n.jp,
+                        refWords: [{ jp: n.jp, role: "neutral" }]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 07b: つ & 匹 Counters */
+    function s07b() {
+        return {
+            id: "s07b", title: "つ & 人 Counters", subtitle: "Shelf 07b",
+            wordBank: {
+                nouns: [{ jp: "りんご", en: "apple" }, { jp: "がくせい", en: "student" }],
+                counters: [{ jp: "ひとつ", en: "one" }, { jp: "さんにん", en: "three" }],
+                newWords: [{ jp: "たまご", en: "egg" }, { jp: "さかな", en: "fish" }],
+                preview: [{ jp: "よじ", en: "4 o'clock", note: "Coming up in shelf 07c — telling time" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
                         {
                             title: "つ counter — everyday objects",
-                            explain: "When you count everyday objects — apples, boxes, cups, anything without its own special counter — Japanese uses an entirely different, older set of number words ending in つ. This 'つ series' only goes up to 10 — for 11 and higher, people just switch back to the plain numbers. ひとつ, ふたつ, みっつ... these don't look like いち, に, さん at all — they're their own set to memorize."
+                            explain: "When you count everyday objects — apples, boxes, cups, anything without its own special counter — Japanese uses an entirely different, older set of number words ending in つ. This 'つ series' only goes up to 10 — for 11 and higher, people just switch back to the plain numbers. ひとつ, ふたつ, みっつ... these don't look like いち, に, さん at all — they're their own set to memorize. パン (bread) is exactly this kind of plain object, so it takes the same つ series as りんご below — never いち, に, さん directly; いち is a pure counting number, not a counter for objects on its own.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + つ</span> <span class="pattern-box__fixed">です</span>',
+                            diagramSvg: (function () {
+                                var counts = [
+                                    "ひとつ|hitotsu", "ふたつ|futatsu", "みっつ|mittsu", "よっつ|yottsu", "いつつ|itsutsu",
+                                    "むっつ|muttsu", "ななつ|nanatsu", "やっつ|yattsu", "ここのつ|kokonotsu", "とお|too"
+                                ];
+                                var rows = counts.map(function (entry, i) {
+                                    var n = i + 1;
+                                    var parts = entry.split("|");
+                                    var imgs = "";
+                                    for (var k = 1; k <= n; k++) {
+                                        imgs += '<img src="../../assets/images/lesson/transparent/bread' + k + '.png" alt="bread">';
+                                    }
+                                    return '<div class="grammar-box__bread-row">'
+                                        + '<div class="grammar-box__bread-imgs">' + imgs + '</div>'
+                                        + '<div class="grammar-box__bread-label"><span class="jp">' + parts[0] + '</span><span class="romaji">' + parts[1] + ' — ' + n + '</span></div>'
+                                        + '</div>';
+                                }).join('');
+                                return '<div class="grammar-box__bread-stack">' + rows + '</div>';
+                            })(),
+                            diagramCaption: "パンが ひとつ あります。 (Pan ga hitotsu arimasu. — \"There is one piece of bread.\") Each row below adds one more — count them and read the label."
                         },
                         {
-                            title: "匹 counter — small animals",
-                            explain: "Small animals — cats, dogs, fish, bugs — get their own counter, 匹 (hiki), attached directly after the number. 匹's sound shifts and reads ひき, びき, or ぴき — the same way English 'a' becomes 'an' before a vowel. One cat is いっぴき, not いちひき — the sound genuinely changes, so learn each one by ear."
-                        },
-                        {
-                            title: "時 (hour) and 分 (minute)",
-                            explain: "To say 'o'clock,' attach 時 (じ) directly after the number. Most hours use the plain number readings — but 4, 7, and 9 o'clock swap to special readings: よじ (not よんじ), しちじ (not ななじ), くじ (not きゅうじ). Minutes attach the same way — but 分's sound shifts around even more, reading ふん or ぷん. 'What minute?' is 何分 (なんぷん)."
+                            title: "人 counter — counting people",
+                            explain: "People get their own counter too, and it starts out irregular: 1 and 2 people are their own special words — ひとり, ふたり — that don't even contain a number you'd recognize. From 3 people on, it settles into a normal pattern, [number]+にん: さんにん, よにん (not よんにん!), ごにん... 7 people can be しちにん or ななにん, both fine.",
+                            pattern: '<span class="pattern-box__slot">Group</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 人</span> <span class="pattern-box__fixed">です</span>',
+                            // person.png now sits inside the ひとり row itself instead of a
+                            // separate strip above the table, per feedback to keep every
+                            // counter-example photo attached to its own row.
+                            diagramSvg: '<table class="grammar-box__counter-table"><tbody>'
+                                + '<tr><td class="jp">ひとり</td><td>hitori</td><td class="counter-count">1</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/person.png" alt="person"></td></tr>'
+                                + '<tr><td class="jp">ふたり</td><td>futari</td><td class="counter-count">2</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">さんにん</td><td>sannin</td><td class="counter-count">3</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">よにん</td><td>yonin</td><td class="counter-count">4</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">ごにん</td><td>gonin</td><td class="counter-count">5</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">ろくにん</td><td>rokunin</td><td class="counter-count">6</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">しちにん・ななにん</td><td>shichinin / nananin</td><td class="counter-count">7</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">はちにん</td><td>hachinin</td><td class="counter-count">8</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">きゅうにん</td><td>kyuunin</td><td class="counter-count">9</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">じゅうにん</td><td>juunin</td><td class="counter-count">10</td><td class="counter-photo"></td></tr>'
+                                + '</tbody></table>',
+                            diagramCaption: "がくせいは さんにんです。 (Gakusei wa sannin desu. — \"There are three students.\") Only 1 and 2 people break the pattern — everything from 3 up is just [number]+にん."
                         }
                     ],
                     examples: [
                         { jp: "りんごはひとつです", romaji: "Ringo wa hitotsu desu.", en: "There is one apple." },
                         { jp: "りんごはみっつです", romaji: "Ringo wa mittsu desu.", en: "There are three apples." },
-                        { jp: "ねこはいっぴきです", romaji: "Neko wa ippiki desu.", en: "There is one cat." },
-                        { jp: "ねこはさんびきです", romaji: "Neko wa sanbiki desu.", en: "There are three cats." },
-                        { jp: "いまはよじです", romaji: "Ima wa yoji desu.", en: "It's 4 o'clock now." },
-                        { jp: "いまはくじです", romaji: "Ima wa kuji desu.", en: "It's 9 o'clock now." },
-                        { jp: "いまはさんじじゅっぷんです", romaji: "Ima wa sanji juppun desu.", en: "It's 3:10 now." }
+                        { jp: "がくせいはひとりです", romaji: "Gakusei wa hitori desu.", en: "There is one student." },
+                        { jp: "がくせいはさんにんです", romaji: "Gakusei wa sannin desu.", en: "There are three students." }
                     ],
                     vocab: [
-                        { jp: "いち〜じゅう", romaji: "ichi–juu", en: "1–10" }, { jp: "にじゅう〜きゅうじゅう", romaji: "nijuu–kyuujuu", en: "20–90 (tens)" },
-                        { jp: "ひゃく", romaji: "hyaku", en: "100" },
                         { jp: "ひとつ〜とお", romaji: "hitotsu–too", en: "1–10 (general-things つ counter)" },
-                        { jp: "いっぴき〜じゅっぴき", romaji: "ippiki–juppiki", en: "1–10 (small-animal 匹 counter)" },
-                        { jp: "いちじ〜じゅうにじ", romaji: "ichiji–juuniji", en: "1:00–12:00 (hours)" },
-                        { jp: "いっぷん〜じゅっぷん、なんぷん", romaji: "ippun–juppun, nanpun", en: "minutes, and 'what minute?'" }
+                        { jp: "ひとり・ふたり・さんにん〜じゅうにん", romaji: "hitori, futari, sannin–juunin", en: "1–10 (people 人 counter)" }
                     ],
                     sources: ["Tofugu numbers/counters guide", "Jisho.org"]
                 };
             },
-            /* No bonus exercise: shelf 08's あります/います needs its own
-               location grammar — preview stays exposure-only.
-               Noun i is paired with counter i — the noun/counter pairing is fixed,
-               only which pair gets asked is random. */
+            /* Noun i is paired with counter i — the noun/counter pairing is
+               fixed, only which pair gets asked is random. */
             buildWordBankExercises: function () {
                 let wb = this.wordBank;
                 let i = Math.floor(Math.random() * wb.nouns.length);
@@ -936,16 +1565,289 @@
         };
     }
 
-    /* SHELF 08: Places and Directions */
-    function s08() {
+    /* SHELF 07c: Telling Time */
+    function s07c() {
         return {
-            id: "s08", title: "Places & Directions", subtitle: "Shelf 08",
+            id: "s07c", title: "Telling Time", subtitle: "Shelf 07c",
             wordBank: {
-                subjects: [{ jp: "としょかん", en: "the library" }, { jp: "ねこ", en: "the cat" }, { jp: "レストラン", en: "the restaurant" }],
-                places: [{ jp: "がっこう", en: "the school" }, { jp: "き", en: "the tree" }, { jp: "こうえん", en: "the park" }],
-                directions: [{ jp: "ちかく", en: "near" }, { jp: "した", en: "under" }, { jp: "となり", en: "next to" }],
-                verbs: [{ jp: "あります", en: "arimasu (things)" }, { jp: "います", en: "imasu (living things)" }],
-                preview: [{ jp: "あなた", en: "you", note: "Coming up in shelf 09 — nouns & pronouns" }]
+                nouns: [{ jp: "いま", en: "it (now)" }],
+                times: [
+                    { jp: "よじ", en: "4 o'clock" }, { jp: "くじ", en: "9 o'clock" }, { jp: "さんじじゅっぷん", en: "3:10" }
+                ],
+                newWords: [{ jp: "くるま", en: "car" }, { jp: "あさ", en: "morning" }, { jp: "よる", en: "night" }],
+                preview: [{ jp: "あります", en: "there is (things)", note: "Coming up in shelf 08a — there is/are & places" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "時 (hour) — telling time, part 1",
+                            explain: "To say 'o'clock,' attach 時 (じ) directly after the number. Most hours use the plain number readings — but 4, 7, and 9 o'clock swap to special readings: よじ (not よんじ), しちじ (not ななじ), くじ (not きゅうじ). These three exceptions are worth memorizing on their own — they show up constantly.",
+                            pattern: '<span class="pattern-box__slot">Number</span> <span class="pattern-box__fixed">時</span>'
+                        },
+                        {
+                            title: "分 (minute) — telling time, part 2",
+                            explain: "Minutes attach the same way as hours — but 分's sound shifts around even more than 匹's did, reading ふん or ぷん depending on the number before it (いっぷん, にふん, さんぷん...). 'What minute?' is 何分 (なんぷん). Put both halves together and you can tell any time: さんじじゅっぷん — '3:10.'",
+                            pattern: '<span class="pattern-box__slot">Hour</span> <span class="pattern-box__fixed">時</span> <span class="pattern-box__slot">Minute</span> <span class="pattern-box__fixed">分</span>'
+                        }
+                    ],
+                    /* Ported verbatim from the Adventure Room's shelf-07
+                       LESSON_CONTENT conversation, trimmed to just its
+                       time-question half — the original's second half
+                       (なんびき, counting cats) now belongs to shelf 07b
+                       instead, so it's not repeated here. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "player", name: "You", action: "tailwagRight", actionLabel: "*tail wags*",
+                                text: "すみません、いまなんじですか？",
+                                romaji: "Sumimasen, ima nanji desu ka? — \"Excuse me, what time is it now?\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "いまさんじじゅっぷんです。",
+                                romaji: "Ima sanji juppun desu. — \"It's 3:10 now.\""
+                            }
+                        ]
+                    },
+                    examples: [
+                        { jp: "いまはよじです", romaji: "Ima wa yoji desu.", en: "It's 4 o'clock now." },
+                        { jp: "いまはくじです", romaji: "Ima wa kuji desu.", en: "It's 9 o'clock now." },
+                        { jp: "いまはさんじじゅっぷんです", romaji: "Ima wa sanji juppun desu.", en: "It's 3:10 now." }
+                    ],
+                    vocab: [
+                        { jp: "いちじ〜じゅうにじ", romaji: "ichiji–juuniji", en: "1:00–12:00 (hours)" },
+                        { jp: "いっぷん〜じゅっぷん、なんぷん", romaji: "ippun–juppun, nanpun", en: "minutes, and 'what minute?'" }
+                    ],
+                    sources: ["Tofugu numbers/counters guide", "Jisho.org"]
+                };
+            },
+            /* No bonus exercise: shelf 08a's あります/います needs its own
+               location grammar — preview stays exposure-only. */
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let noun = wb.nouns[0];
+                let time = pick(wb.times);
+                return [
+                    {
+                        prompt: "Write: <strong>It's now — " + time.en + "</strong>",
+                        accepted: [[noun.jp, "は", time.jp, "です"]],
+                        hint: noun.jp + "は" + time.jp + "です",
+                        refWords: [
+                            { jp: noun.jp, role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: time.jp, role: "counter" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 07d: Counters for Animals — split out of 07b per explicit
+       feedback ("counter for animals needs to be properly explained and
+       sectioned out, put it on a different page") — 匹 alone doesn't tell
+       the whole story (it's specifically SMALL animals), so this covers
+       all three animal-size counters together instead of just one. */
+    function s07d() {
+        return {
+            id: "s07d", title: "Counters for Animals", subtitle: "Shelf 07d",
+            wordBank: {
+                small: [{ jp: "ねこ", en: "cat" }, { jp: "いぬ", en: "dog" }, { jp: "さかな", en: "fish" }],
+                large: [{ jp: "うし", en: "cow" }, { jp: "うま", en: "horse" }, { jp: "ぞう", en: "elephant" }],
+                birds: [{ jp: "とり", en: "bird" }, { jp: "うさぎ", en: "rabbit" }],
+                newWords: [{ jp: "どうぶつ", en: "animal" }, { jp: "どうぶつえん", en: "zoo" }],
+                preview: [{ jp: "冊", en: "counter for books", note: "Coming up in shelf 07e — counters for things" }]
+            },
+            buildInstruction: function () {
+                // r[3], when present, is a transparent/ image name shown inline in that
+                // row's own trailing photo cell -- keeps the example photo attached to
+                // the exact row it illustrates instead of a separate strip above the
+                // table (per feedback: a shared photo strip made it hard to tell which
+                // picture belonged to which row).
+                function table(rows) {
+                    return '<table class="grammar-box__counter-table"><tbody>' + rows.map(function (r) {
+                        var photo = r[3] ? '<img src="../../assets/images/lesson/transparent/' + r[3] + '.png" alt="' + r[3] + '">' : '';
+                        return '<tr><td class="jp">' + r[0] + '</td><td>' + r[1] + '</td><td class="counter-count">' + r[2] + '</td><td class="counter-photo">' + photo + '</td></tr>';
+                    }).join('') + '</tbody></table>';
+                }
+                return {
+                    sections: [
+                        {
+                            title: "匹 — small animals",
+                            explain: "匹 (hiki) covers small animals: cats, dogs, fish, insects, mice — basically anything that comfortably fits in your arms or smaller. Its sound shifts constantly, the same way 匹 already did back in shelf 07b's brief mention — ひき, びき, or ぴき depending on the number before it.",
+                            pattern: '<span class="pattern-box__slot">Small animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 匹</span> <span class="pattern-box__fixed">です</span>',
+                            diagramSvg: table([
+                                ["いっぴき", "ippiki", "1", "cat"], ["にひき", "nihiki", "2"], ["さんびき", "sanbiki", "3"], ["よんひき", "yonhiki", "4"], ["ごひき", "gohiki", "5"],
+                                ["ろっぴき", "roppiki", "6"], ["ななひき", "nanahiki", "7"], ["はっぴき", "happiki", "8"], ["きゅうひき", "kyuuhiki", "9"], ["じゅっぴき", "juppiki", "10"]
+                            ]),
+                            diagramCaption: "ねこは さんびきです。 (Neko wa sanbiki desu. — \"There are three cats.\")"
+                        },
+                        {
+                            title: "頭 — large animals",
+                            explain: "頭 (tou) takes over once an animal is too big to comfortably pick up: cows, horses, elephants, whales. Its readings are much more regular than 匹's — mostly just [number]+とう, with the usual small-つ doubling on 1, 8, and 10.",
+                            pattern: '<span class="pattern-box__slot">Large animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 頭</span> <span class="pattern-box__fixed">です</span>',
+                            diagramSvg: table([
+                                ["いっとう", "ittou", "1", "elephant"], ["にとう", "nitou", "2"], ["さんとう", "santou", "3"], ["よんとう", "yontou", "4"], ["ごとう", "gotou", "5"],
+                                ["ろくとう", "rokutou", "6"], ["ななとう", "nanatou", "7"], ["はっとう", "hattou", "8"], ["きゅうとう", "kyuutou", "9"], ["じゅっとう", "juttou", "10"]
+                            ]),
+                            diagramCaption: "うしは にとうです。 (Ushi wa nitou desu. — \"There are two cows.\")"
+                        },
+                        {
+                            title: "羽 — birds (and, oddly, rabbits)",
+                            explain: "羽 (wa) counts birds — but Japanese has historically counted rabbits with 羽 too, not 匹. Nobody's fully sure why (one common explanation: rabbits were counted this way to sidestep old religious restrictions on eating four-legged animals), but it's a real, current N5-relevant fact: うさぎ takes 羽, not 匹.",
+                            pattern: '<span class="pattern-box__slot">Bird (or rabbit!)</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 羽</span> <span class="pattern-box__fixed">です</span>',
+                            diagramSvg: table([
+                                ["いちわ", "ichiwa", "1", "bird"], ["にわ", "niwa", "2"], ["さんわ", "sanwa", "3"], ["よんわ", "yonwa", "4"], ["ごわ", "gowa", "5"],
+                                ["ろくわ", "rokuwa", "6"], ["ななわ", "nanawa", "7"], ["はちわ", "hachiwa", "8"], ["きゅうわ", "kyuuwa", "9"], ["じゅうわ", "juuwa", "10"]
+                            ]),
+                            diagramCaption: "うさぎは いちわです。 (Usagi wa ichiwa desu. — \"There is one rabbit.\") Yes — 羽, the bird counter, not 匹."
+                        }
+                    ],
+                    examples: [
+                        { jp: "ねこはいっぴきです", romaji: "Neko wa ippiki desu.", en: "There is one cat." },
+                        { jp: "うまはさんとうです", romaji: "Uma wa santou desu.", en: "There are three horses." },
+                        { jp: "とりはにわです", romaji: "Tori wa niwa desu.", en: "There are two birds." },
+                        { jp: "うさぎはよんわです", romaji: "Usagi wa yonwa desu.", en: "There are four rabbits." }
+                    ],
+                    vocab: [
+                        { jp: "匹", romaji: "hiki/biki/piki", en: "counter — small animals" },
+                        { jp: "頭", romaji: "tou", en: "counter — large animals" },
+                        { jp: "羽", romaji: "wa", en: "counter — birds (and rabbits)" },
+                        { jp: "うし", romaji: "ushi", en: "cow" }, { jp: "うま", romaji: "uma", en: "horse" },
+                        { jp: "ぞう", romaji: "zou", en: "elephant" }, { jp: "とり", romaji: "tori", en: "bird" },
+                        { jp: "うさぎ", romaji: "usagi", en: "rabbit" }
+                    ],
+                    sources: ["Tofugu numbers/counters guide", "Jisho.org"]
+                };
+            },
+            buildWordBankExercises: function () {
+                var wb = this.wordBank;
+                var groups = [
+                    { list: wb.small, counter: "匹", readings: ["いっぴき", "にひき", "さんびき"] },
+                    { list: wb.large, counter: "頭", readings: ["いっとう", "にとう", "さんとう"] },
+                    { list: wb.birds, counter: "羽", readings: ["いちわ", "にわ", "さんわ"] }
+                ];
+                var group = groups[Math.floor(Math.random() * groups.length)];
+                var animal = pick(group.list);
+                var reading = pick(group.readings);
+                return [
+                    {
+                        prompt: "Write: <strong>" + animal.en.charAt(0).toUpperCase() + animal.en.slice(1) + " — " + reading + "</strong>",
+                        accepted: [[animal.jp, "は", reading, "です"]],
+                        hint: animal.jp + "は" + reading + "です",
+                        refWords: [
+                            { jp: animal.jp, role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: reading, role: "counter" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 07e: Counters for Things — split out of 07a/07b per explicit
+       feedback ("counter for things a different page again"). N5/N4-level
+       object counters, one per shape/category. */
+    function s07e() {
+        return {
+            id: "s07e", title: "Counters for Things", subtitle: "Shelf 07e",
+            wordBank: {
+                items: [
+                    { jp: "ほん", en: "book", counter: "冊", reading: "いっさつ" },
+                    { jp: "りんご", en: "apple", counter: "個", reading: "いっこ" },
+                    { jp: "ペン", en: "pen", counter: "本", reading: "いっぽん" },
+                    { jp: "かみ", en: "paper", counter: "枚", reading: "いちまい" },
+                    { jp: "くるま", en: "car", counter: "台", reading: "いちだい" },
+                    { jp: "くつ", en: "shoes (a pair)", counter: "足", reading: "いっそく" },
+                    { jp: "コーヒー", en: "cup of coffee", counter: "杯", reading: "いっぱい" }
+                ],
+                newWords: [{ jp: "かみ", en: "paper" }, { jp: "くつ", en: "shoes" }],
+                preview: [{ jp: "回", en: "counter for times/occurrences", note: "Coming up later — verb frequency" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "One counter per shape",
+                            explain: "Objects get sorted into counters by SHAPE or CATEGORY, not by what they're made of — a rolled-up poster and a pencil use the same counter (本) because they're both long and thin, even though they have nothing else in common. Learn the shape, not the object.",
+                            pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + counter</span> <span class="pattern-box__fixed">です</span>',
+                            // Each real photo now sits inside its OWN row's trailing cell
+                            // instead of one bunched row above the table -- per explicit
+                            // feedback that a shared photo strip made it hard to tell which
+                            // picture belonged to which counter. blender.png dropped (too
+                            // visually similar to tv.png for the same 台 row); car + tv both
+                            // stay, shown side by side in that one row's photo cell.
+                            diagramSvg: '<table class="grammar-box__counter-table"><tbody>'
+                                + '<tr><td class="jp">冊</td><td>satsu</td><td class="counter-desc">bound things — books, magazines, notebooks</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/book.png" alt="book"></td></tr>'
+                                + '<tr><td class="jp">個</td><td>ko</td><td class="counter-desc">small round/general objects — apples, boxes, candy</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">本</td><td>hon/bon/pon</td><td class="counter-desc">long, thin things — pens, bottles, umbrellas</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/pencil.png" alt="pencil"></td></tr>'
+                                + '<tr><td class="jp">枚</td><td>mai</td><td class="counter-desc">flat, thin things — paper, tickets, plates, shirts</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">台</td><td>dai</td><td class="counter-desc">machines &amp; vehicles — cars, computers, TVs</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/car.png" alt="car"><img src="../../assets/images/lesson/transparent/tv.png" alt="TV"></td></tr>'
+                                + '<tr><td class="jp">足</td><td>soku</td><td class="counter-desc">pairs of footwear — shoes, socks</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/shoes.png" alt="shoes"></td></tr>'
+                                + '<tr><td class="jp">杯</td><td>hai/bai/pai</td><td class="counter-desc">cup/glass/bowlfuls of something</td><td class="counter-photo"></td></tr>'
+                                + '<tr><td class="jp">回</td><td>kai</td><td class="counter-desc">times / occurrences something happens</td><td class="counter-photo"></td></tr>'
+                                + '</tbody></table>',
+                            diagramCaption: "本は いっさつです。 (Hon wa issatsu desu. — \"There is one book.\") Same [Thing]は[Number+counter]です pattern every time — only the counter changes."
+                        },
+                        {
+                            title: "Sound changes to watch for",
+                            explain: "本, 杯, and 匹 all shift sound the same three ways depending on the number before them — 1, 6, 8, 10 usually trigger a small-つ doubling (いっぽん, ろっぽん, はっぽん, じゅっぽん), while 3 often voices the counter (さんぼん, さんばい). 個, 枚, and 台 stay simple and regular the whole way through — いっこ, にこ, さんこ..."
+                        }
+                    ],
+                    examples: [
+                        { jp: "ほんはいっさつです", romaji: "Hon wa issatsu desu.", en: "There is one book." },
+                        { jp: "ペンはにほんです", romaji: "Pen wa nihon desu.", en: "There are two pens." },
+                        { jp: "かみはさんまいです", romaji: "Kami wa sanmai desu.", en: "There are three sheets of paper." },
+                        { jp: "くるまはいちだいです", romaji: "Kuruma wa ichidai desu.", en: "There is one car." }
+                    ],
+                    vocab: [
+                        { jp: "冊", romaji: "satsu", en: "counter — bound things" }, { jp: "個", romaji: "ko", en: "counter — small objects" },
+                        { jp: "本", romaji: "hon", en: "counter — long thin things" }, { jp: "枚", romaji: "mai", en: "counter — flat thin things" },
+                        { jp: "台", romaji: "dai", en: "counter — machines/vehicles" }, { jp: "足", romaji: "soku", en: "counter — pairs of footwear" },
+                        { jp: "杯", romaji: "hai", en: "counter — cups/glasses" }, { jp: "回", romaji: "kai", en: "counter — times/occurrences" }
+                    ],
+                    sources: ["Tofugu numbers/counters guide", "Jisho.org"]
+                };
+            },
+            buildWordBankExercises: function () {
+                var item = pick(this.wordBank.items);
+                return [
+                    {
+                        prompt: "Write: <strong>" + item.en.charAt(0).toUpperCase() + item.en.slice(1) + " — one</strong>",
+                        accepted: [[item.jp, "は", item.reading, "です"]],
+                        hint: item.jp + "は" + item.reading + "です",
+                        refWords: [
+                            { jp: item.jp, role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: item.reading, role: "counter" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 08 SPLIT — same reasoning as shelf 07's split above: "Places &
+       Directions" bundled a lot of genuinely distinct content (existence,
+       place vocab, relative-position words, grammar mechanics, movement,
+       the compass) into one long lesson. Per explicit feedback ("same
+       with places and directions... place another subsection"), it's now
+       three separate lessons — 08a/08b/08c. */
+
+    /* SHELF 08a: There Is/Are & Places */
+    function s08a() {
+        return {
+            id: "s08a", title: "There Is/Are", subtitle: "Shelf 08a",
+            wordBank: {
+                subjects: [
+                    { jp: "ねこ", en: "the cat", verb: "います" },
+                    { jp: "ほん", en: "the book", verb: "あります" },
+                    { jp: "せんせい", en: "the teacher", verb: "います" }
+                ],
+                places: [{ jp: "こうえん", en: "the park" }, { jp: "としょかん", en: "the library" }, { jp: "がっこう", en: "school" }],
+                newWords: [
+                    { jp: "ゆうびんきょく", en: "post office" }, { jp: "えいがかん", en: "movie theater" }, { jp: "にぎやか", en: "lively / bustling" }
+                ],
+                preview: [{ jp: "前", en: "in front of", note: "Coming up in shelf 08b — direction words" }]
             },
             buildInstruction: function () {
                 return {
@@ -956,120 +1858,238 @@
                             pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Place</span> <span class="pattern-box__fixed">に あります/います</span>'
                         },
                         {
-                            title: "Direction words",
-                            explain: "These describe where something is relative to something else: [Thing]は [something]の [direction]に あります — 前 (front), 後ろ (behind), 右 (right), 左 (left), 隣 (next to), 近く (near), 上 (above), 下 (below). 中/外 ('inside'/'outside') only make sense next to a container.",
-                            /* n5-phaser-game.js's shelf-08 diagrams (buildDirectionsDiagram,
-                               buildPlacesMapDiagram, buildMovementDiagram, buildRouteDiagram)
-                               are all click-driven DOM widgets — each pairs a diagramSvg
-                               builder with its own wireXDiagram(container) function that
-                               attaches button click handlers after the markup is inserted
-                               (see lesson-box.js's render() hook). Study Room's
-                               renderInstruction() has no equivalent wiring hook and adding
-                               one is out of scope here (this pass only touches study-room.js's
-                               s03/s04/s05/s08 content + renderInstruction's own read-only
-                               template string), so porting any of those four as-is would ship
-                               dead buttons. Instead this is a new static SVG — inline SVG
-                               needs no click wiring to render correctly — that keeps the
-                               source diagrams' actual content: buildDirectionsDiagram's
-                               "around the cat" compass (mae/ushiro/migi/hidari/tonari/chikaku
-                               all shown at once instead of one-at-a-time via button clicks)
-                               plus a worked example sentence using this lesson's own
-                               としょかん/がっこう/ちかく vocab, styled with the same
-                               subject/particle/predicate/copula role colors and literal
-                               N5-theme hex values as shelf-03's ported diagram above (see
-                               that section's comment for the var(--lb-role-*)/var(--jr-text-
-                               dim) -> hex mapping this reuses). */
-                            diagramSvg: `
-        <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-          <text x="20" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">AROUND ねこ (THE CAT) - DIRECTION WORDS</text>
-
-          <rect x="265" y="30" width="110" height="42" rx="4" fill="#e2685f"></rect>
-          <text x="320" y="50" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">前</text>
-          <text x="320" y="65" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">mae - in front</text>
-
-          <rect x="440" y="65" width="110" height="42" rx="4" fill="#e2685f"></rect>
-          <text x="495" y="85" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">隣</text>
-          <text x="495" y="100" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">tonari - next to</text>
-          <path d="M365,135 C 400,120 420,110 440,95" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4"></path>
-
-          <rect x="60" y="126" width="110" height="42" rx="4" fill="#e2685f"></rect>
-          <text x="115" y="146" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">左</text>
-          <text x="115" y="161" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">hidari - left of</text>
-
-          <rect x="470" y="126" width="110" height="42" rx="4" fill="#e2685f"></rect>
-          <text x="525" y="146" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">右</text>
-          <text x="525" y="161" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">migi - right of</text>
-
-          <ellipse cx="320" cy="150" rx="72" ry="52" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="5 4"></ellipse>
-          <text x="320" y="213" text-anchor="middle" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">近く - chikaku (near)</text>
-
-          <rect x="275" y="126" width="90" height="48" rx="4" fill="#6fb3e6"></rect>
-          <text x="320" y="155" text-anchor="middle" font-size="20" fill="#0b2438" font-family="VT323, DotGothic16, monospace">ねこ</text>
-
-          <rect x="265" y="228" width="110" height="42" rx="4" fill="#e2685f"></rect>
-          <text x="320" y="248" text-anchor="middle" font-size="17" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">後ろ</text>
-          <text x="320" y="263" text-anchor="middle" font-size="9" fill="#2e0e0b" font-family="VT323, DotGothic16, monospace">ushiro - behind</text>
-
-          <g font-family="VT323, DotGothic16, monospace" font-size="15">
-            <rect x="90" y="285" width="90" height="34" rx="3" fill="#6fb3e6"></rect>
-            <text x="135" y="307" text-anchor="middle" fill="#0b2438">としょかん</text>
-            <rect x="186" y="285" width="40" height="34" rx="3" fill="#f0c674"></rect>
-            <text x="206" y="307" text-anchor="middle" fill="#4a3211">は</text>
-            <rect x="232" y="285" width="100" height="34" rx="3" fill="#e2685f"></rect>
-            <text x="282" y="307" text-anchor="middle" fill="#2e0e0b">がっこうの</text>
-            <rect x="338" y="285" width="70" height="34" rx="3" fill="#e2685f"></rect>
-            <text x="373" y="307" text-anchor="middle" fill="#2e0e0b">ちかく</text>
-            <rect x="414" y="285" width="40" height="34" rx="3" fill="#f0c674"></rect>
-            <text x="434" y="307" text-anchor="middle" fill="#4a3211">に</text>
-            <rect x="460" y="285" width="90" height="34" rx="3" fill="#ffffff"></rect>
-            <text x="505" y="307" text-anchor="middle" fill="#201d54">あります</text>
-          </g>
-          <text x="320" y="333" text-anchor="middle" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Toshokan wa gakkou no chikaku ni arimasu. - "The library is near the school."</text>
-        </svg>
-      `,
-                            diagramCaption: '前/後ろ/右/左/隣/近く describe position relative to something else, like ねこ here — 上/下/中/外 anchor to a container instead (a table, a box), so they don’t need their own spot on this compass.'
-                        },
-                        {
-                            title: "Movement words",
-                            explain: "Actually walking somewhere needs a different kind of word — not 'where something is,' but 'which way to go.' あっち・こっち・どっち are the everyday/casual counterparts of shelf 05's こちら・そちら・あちら・どちら."
+                            title: "Location — where exactly is it?",
+                            explain: "Two full worked examples of the pattern above, one for each verb: a cat (alive, いる) inside a box, and bread (an object, ある) inside a basket. Same grammar, different verb — the picture is the fastest way to see why.",
+                            diagramSvg: '<div class="grammar-box__location">'
+                                + '<div class="grammar-box__location-item">'
+                                + '<div class="grammar-box__location-scene"><img src="../../assets/images/lesson/transparent/cat-in-box.png" alt="cat inside the box"></div>'
+                                + '<div class="grammar-box__location-text">'
+                                + '<div class="jp-lg">ねこは はこの 中に います。</div>'
+                                + '<div class="kana-sm">neko wa hako no naka ni imasu</div>'
+                                + '<div class="en-sm">"The cat is inside the box." — います, because ねこ is alive and could walk away.</div>'
+                                + '</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__location-item">'
+                                + '<div class="grammar-box__location-scene"><img src="../../assets/images/lesson/transparent/basket.png" alt="bread inside a basket"></div>'
+                                + '<div class="grammar-box__location-text">'
+                                + '<div class="jp-lg">かごの 中に パンが あります。</div>'
+                                + '<div class="kana-sm">kago no naka ni pan ga arimasu</div>'
+                                + '<div class="en-sm">"There is bread inside the basket." — あります, because bread can\'t get up and walk away.</div>'
+                                + '</div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Same pattern either way: [thing] は/が [place/container] に あります／います — only the verb changes, and only based on whether the thing itself could get up and move."
                         }
                     ],
                     examples: [
+                        { jp: "ねこはこうえんにいます", romaji: "Neko wa kouen ni imasu.", en: "The cat is at the park." },
+                        { jp: "ほんはとしょかんにあります", romaji: "Hon wa toshokan ni arimasu.", en: "The book is at the library." },
+                        { jp: "せんせいはがっこうにいます", romaji: "Sensei wa gakkou ni imasu.", en: "The teacher is at school." }
+                    ],
+                    vocab: [
+                        { jp: "はこ", romaji: "hako", en: "box" }, { jp: "かご", romaji: "kago", en: "basket" }, { jp: "パン", romaji: "pan", en: "bread" },
+                        { jp: "こうえん", romaji: "kouen", en: "park" }, { jp: "としょかん", romaji: "toshokan", en: "library" }, { jp: "がっこう", romaji: "gakkou", en: "school" },
+                        { jp: "あります", romaji: "arimasu", en: "there is (things, places)" }, { jp: "います", romaji: "imasu", en: "there is (people, animals)" }
+                    ],
+                    sources: ["Tae Kim's Guide (あります／います, location particles)", "Genki I — Lesson 5"]
+                };
+            },
+            /* subject i pairs with its own required verb (います for living
+               things, あります for objects) and place i — index tied so
+               the sentence is always grammatically valid. */
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let i = Math.floor(Math.random() * wb.subjects.length);
+                let subj = wb.subjects[i];
+                let place = wb.places[i];
+                return [
+                    {
+                        prompt: "Write: <strong>" + subj.en.charAt(0).toUpperCase() + subj.en.slice(1) + " is at " + place.en + "</strong>",
+                        accepted: [[subj.jp, "は", place.jp, "に", subj.verb]],
+                        hint: subj.jp + "は" + place.jp + "に" + subj.verb,
+                        refWords: [
+                            { jp: subj.jp, role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: place.jp, role: "object" }, { jp: "に", role: "particle" }, { jp: subj.verb, role: "predicate" }
+                        ]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 08b: Direction Words */
+    function s08b() {
+        return {
+            id: "s08b", title: "Direction Words", subtitle: "Shelf 08b",
+            wordBank: {
+                subjects: [{ jp: "としょかん", en: "the library" }, { jp: "ねこ", en: "the cat" }, { jp: "レストラン", en: "the restaurant" }],
+                places: [{ jp: "がっこう", en: "the school" }, { jp: "テーブル", en: "the table" }, { jp: "こうえん", en: "the park" }],
+                directions: [{ jp: "ちかく", en: "near" }, { jp: "した", en: "under" }, { jp: "となり", en: "next to" }],
+                verbs: [{ jp: "あります", en: "arimasu (things)" }, { jp: "います", en: "imasu (living things)" }],
+                newWords: [
+                    { jp: "ひろい", en: "spacious / wide" }, { jp: "せまい", en: "narrow / cramped" }
+                ],
+                preview: [{ jp: "まっすぐ", en: "straight ahead", note: "Coming up in shelf 08c — movement & the compass" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "前・後ろ・右・左 — in pictures",
+                            explain: "These describe where something is relative to something else: [Thing]は [something]の [direction]に あります. Same real cat, same real box, four more spots.",
+                            diagramSvg: '<div class="grammar-box__pic-grid">'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-mae"><img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box"><img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat"></div>'
+                                + '<div class="grammar-box__pic-word">前</div><div class="grammar-box__pic-kana">mae</div><div class="grammar-box__pic-en">in front of</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-ushiro"><img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box"><img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat"></div>'
+                                + '<div class="grammar-box__pic-word">後ろ</div><div class="grammar-box__pic-kana">ushiro</div><div class="grammar-box__pic-en">behind</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-migi"><img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box"><img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat"></div>'
+                                + '<div class="grammar-box__pic-word">右</div><div class="grammar-box__pic-kana">migi</div><div class="grammar-box__pic-en">right of</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-hidari"><img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box"><img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat"></div>'
+                                + '<div class="grammar-box__pic-word">左</div><div class="grammar-box__pic-kana">hidari</div><div class="grammar-box__pic-en">left of</div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "ねこを はこの前に おきました — same four-piece sentence pattern as 中・外・上・下, just a different direction word each time."
+                        },
+                        {
+                            title: "How close? となり・そば・近く",
+                            explain: "Three ways to say something is nearby, and the ONLY thing that changes between them is distance — same cat, same box, all in one picture below so you can compare them directly. となり means touching, zero gap. そば means a small step away, still clearly beside it. 近く means way over on the other side of the room — still \"near\" in a loose sense, but nothing like となり's zero gap.",
+                            diagramSvg: '<div class="grammar-box__dist2-scene">'
+                                + '<img class="dist2-box" src="../../assets/images/lesson/transparent/box.png" alt="box">'
+                                + '<div class="dist2-threshold t1"></div>'
+                                + '<div class="dist2-threshold t2"></div>'
+                                + '<div class="dist2-item p-tonari"><img src="../../assets/images/lesson/transparent/cat.png" alt="cat"><div class="dist2-label">となり<span>touching -- zero gap</span></div></div>'
+                                + '<div class="dist2-item p-soba"><img src="../../assets/images/lesson/transparent/cat.png" alt="cat"><div class="dist2-label">そば<span>a small step away</span></div></div>'
+                                + '<div class="dist2-item p-chikaku"><img src="../../assets/images/lesson/transparent/cat.png" alt="cat"><div class="dist2-label">近く<span>way across the room</span></div></div>'
+                                + '</div>',
+                            diagramCaption: "としょかんはがっこうのちかくにあります -- \"The library is near the school.\" Swap ちかく for となり or そば and the sentence still works, just with a tighter or looser sense of \"near\" -- exactly like the gaps above."
+                        },
+                        {
+                            title: "中・外・上・下 — in pictures",
+                            explain: "These four anchor to a container instead of rotating around a person, so a plain picture says it faster than another diagram: the same cat and box, actually placed in each spot.",
+                            diagramSvg: '<div class="grammar-box__pic-grid">'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-naka">'
+                                + '<img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box">'
+                                + '<img class="pic-combo" src="../../assets/images/lesson/transparent/cat-in-box.png" alt="cat inside the box">'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-word">中</div>'
+                                + '<div class="grammar-box__pic-kana">naka</div>'
+                                + '<div class="grammar-box__pic-en">inside</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-soto">'
+                                + '<img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box">'
+                                + '<img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat">'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-word">外</div>'
+                                + '<div class="grammar-box__pic-kana">soto</div>'
+                                + '<div class="grammar-box__pic-en">outside</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-ue">'
+                                + '<img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box">'
+                                + '<img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat">'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-word">上</div>'
+                                + '<div class="grammar-box__pic-kana">ue</div>'
+                                + '<div class="grammar-box__pic-en">above</div>'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-cell">'
+                                + '<div class="grammar-box__pic-scene is-shita">'
+                                + '<img class="pic-box" src="../../assets/images/lesson/transparent/box.png" alt="box">'
+                                + '<img class="pic-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat">'
+                                + '</div>'
+                                + '<div class="grammar-box__pic-word">下</div>'
+                                + '<div class="grammar-box__pic-kana">shita</div>'
+                                + '<div class="grammar-box__pic-en">below</div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "中 and 外 need something to be inside or outside OF — that's what the box is for. 上 and 下 work the same way with anything, not just boxes: 木の上 (up in the tree), いすの下 (under the chair)."
+                        },
+                        {
+                            title: "に and の, spelled out",
+                            explain: "Break it into three plain steps: (1) テーブル means \"table.\" (2) の does the exact same job as English's possessive 's — it glues two nouns together, so テーブルの = \"the table's.\" (3) 下 means \"underneath,\" so テーブルの下 = \"the table's underneath\" — an awkward literal translation, but it's just a roundabout way of saying \"under the table.\" に then marks that whole thing as WHERE something is — the exact same に you've already used all lesson (こうえんに, がっこうに...). Put it together: テーブルの下にいます = \"[it] is under the table.\"",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">テーブル</span><span>table</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">の</span><span>\'s</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">下</span><span>underneath</span></div>'
+                                + '<div class="no-eq">=</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">テーブルの下</span><span>"the table\'s underneath"</span></div>'
+                                + '</div>'
+                                + '<div class="no-diagram-scene">'
+                                + '<img class="no-table" src="../../assets/images/lesson/transparent/table.png" alt="table">'
+                                + '<div class="no-zone">テーブルの下<span>the table\'s "underneath"</span></div>'
+                                + '<img class="no-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat">'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "テーブルの下に います。 (Teeburu no shita ni imasu.) — \"[The cat] is under the table.\" Swap テーブルの下 for any [reference]の[direction] pair and the rest of the sentence never changes."
+                        }
+                    ],
+                    /* Ported verbatim from the Adventure Room's shelf-08
+                       LESSON_CONTENT (the closing 'conversation' page,
+                       reusing shelf-05's どこ to ask where something is,
+                       answered with this shelf's own ちかく pattern), fixed
+                       sensei=black/player=orange casting per Study Room's
+                       own convention. No role-* spans in the original and
+                       no name variable in scope for this lesson, so
+                       nothing else to convert. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "すみません、としょかんはどこですか？",
+                                romaji: "Sumimasen, toshokan wa doko desu ka? — \"Excuse me, where is the library?\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "としょかんはえきのちかくにあります。",
+                                romaji: "Toshokan wa eki no chikaku ni arimasu. — \"The library is near the station.\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "ありがとうございます！",
+                                romaji: "Arigatou gozaimasu! — \"Thank you!\""
+                            }
+                        ]
+                    },
+                    examples: [
                         { jp: "としょかんはがっこうのちかくにあります", romaji: "Toshokan wa gakkou no chikaku ni arimasu.", en: "The library is near the school." },
-                        { jp: "ねこはきのしたにいます", romaji: "Neko wa ki no shita ni imasu.", en: "The cat is under the tree." },
+                        { jp: "ねこはテーブルのしたにいます", romaji: "Neko wa teeburu no shita ni imasu.", en: "The cat is under the table." },
                         { jp: "ほんはねこの隣にあります", romaji: "Hon wa neko no tonari ni arimasu.", en: "The book is next to the cat." },
                         { jp: "ほんははこの中にあります", romaji: "Hon wa hako no naka ni arimasu.", en: "The book is inside the box." },
                         { jp: "レストランはこうえんの隣にあります", romaji: "Resutoran wa kouen no tonari ni arimasu.", en: "The restaurant is next to the park." }
                     ],
                     vocab: [
-                        { jp: "がっこう", romaji: "gakkou", en: "school" }, { jp: "えき", romaji: "eki", en: "station" },
-                        { jp: "としょかん", romaji: "toshokan", en: "library" }, { jp: "びょういん", romaji: "byouin", en: "hospital" },
-                        { jp: "レストラン", romaji: "resutoran", en: "restaurant" }, { jp: "こうえん", romaji: "kouen", en: "park" },
-                        { jp: "ほんや", romaji: "honya", en: "bookstore" }, { jp: "ぎんこう", romaji: "ginkou", en: "bank" },
-                        { jp: "うち", romaji: "uchi", en: "home" }, { jp: "はこ", romaji: "hako", en: "box" },
-                        { jp: "あります", romaji: "arimasu", en: "there is (things, places)" }, { jp: "います", romaji: "imasu", en: "there is (people, animals)" },
                         { jp: "前", romaji: "mae", en: "in front of" }, { jp: "後ろ", romaji: "ushiro", en: "behind" },
                         { jp: "右", romaji: "migi", en: "right of" }, { jp: "左", romaji: "hidari", en: "left of" },
-                        { jp: "隣", romaji: "tonari", en: "next to" }, { jp: "近く", romaji: "chikaku", en: "near" },
+                        { jp: "隣", romaji: "tonari", en: "next to" }, { jp: "そば", romaji: "soba", en: "by its side" }, { jp: "近く", romaji: "chikaku", en: "near" },
                         { jp: "上", romaji: "ue", en: "above" }, { jp: "下", romaji: "shita", en: "below" },
                         { jp: "中", romaji: "naka", en: "inside" }, { jp: "外", romaji: "soto", en: "outside" },
-                        { jp: "まっすぐ", romaji: "massugu", en: "straight ahead" }, { jp: "曲がります", romaji: "magarimasu", en: "to turn" },
-                        { jp: "行きます", romaji: "ikimasu", en: "to go" }, { jp: "あっち", romaji: "acchi", en: "that way (casual)" },
-                        { jp: "こっち", romaji: "kocchi", en: "this way (casual)" }, { jp: "どっち", romaji: "docchi", en: "which way (casual)" },
-                        { jp: "北", romaji: "kita", en: "north" }, { jp: "南", romaji: "minami", en: "south" },
-                        { jp: "東", romaji: "higashi", en: "east" }, { jp: "西", romaji: "nishi", en: "west" },
-                        { jp: "木", romaji: "ki", en: "tree" }
+                        { jp: "テーブル", romaji: "teeburu", en: "table" }, { jp: "はこ", romaji: "hako", en: "box" }
                     ],
                     sources: ["Tae Kim's Guide (あります／います, location particles)", "Genki I — Lesson 5"]
                 };
             },
             /* Index i ties subject/place/direction/verb into one sensible sentence
-               (a library "near" the school, a cat "under" a tree, a restaurant "next to" a park). */
+               (a library "near" the school, a cat "under" a tree, a restaurant "next to" a park).
+               No bonus exercise: shelf 08c's まっすぐ/曲がります don't fit this
+               lesson's location-description sentence pattern — preview stays
+               exposure-only. */
             buildWordBankExercises: function () {
                 let wb = this.wordBank;
                 let i = Math.floor(Math.random() * wb.subjects.length);
                 let subj = wb.subjects[i], place = wb.places[i], dir = wb.directions[i], verb = wb.verbs[i === 1 ? 1 : 0];
-                let exercises = [
+                return [
                     {
                         prompt: "Write: <strong>" + subj.en.charAt(0).toUpperCase() + subj.en.slice(1) + " is " + dir.en + " " + place.en + "</strong>",
                         accepted: [[subj.jp, "は", place.jp, "の", dir.jp, "に", verb.jp]],
@@ -1082,13 +2102,150 @@
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 09's あなた, slotted in as the subject
-                   of an います (person) sentence — clean fit with this lesson's own pattern. */
+            }
+        };
+    }
+
+    /* SHELF 08c: Movement & The Compass */
+    function s08c() {
+        return {
+            id: "s08c", title: "Movement & The Compass", subtitle: "Shelf 08c",
+            wordBank: {
+                places: [{ jp: "としょかん", en: "the library" }, { jp: "がっこう", en: "school" }, { jp: "こうえん", en: "the park" }],
+                newWords: [{ jp: "にぎやか", en: "lively / bustling" }],
+                preview: [{ jp: "あなた", en: "you", note: "Coming up in shelf 09b — pronouns" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Movement & giving directions",
+                            explain: "Actually walking somewhere needs a different kind of word — not 'where something is,' but 'which way to go.' あっち・こっち・どっち are the everyday, casual versions of shelf 05's こちら・そちら・あちら・どちら — same 'which way' meaning, softer tone. まっすぐ (straight ahead), 曲がります (to turn), and 行きます (to go) round out actually giving someone directions. This is a real map with a real route on it — press the buttons in order and the cat actually walks it, turn by turn.",
+                            diagramSvg: '<div class="grammar-box__route2" data-step="0">'
+                                + '<div class="route2-prompt"><div class="jp" data-role="promptJp">右に曲がってください。</div><div class="romaji" data-role="promptRomaji">migi ni magatte kudasai — turn right</div></div>'
+                                + '<div class="route2-scene">'
+                                + '<svg viewBox="0 0 1000 600" preserveAspectRatio="none">'
+                                /* Decorative (non-route) roads. Both of these deliberately cross
+                                   ALL THE WAY THROUGH the highlighted route — extending past it on
+                                   BOTH sides, not just stopping at a T — so the two pass-through
+                                   points on the route (the house intersection on the first
+                                   massugu, the Building crossing on the last) read as real 4-way
+                                   crossroads: there genuinely was a road going the other way at
+                                   each one, and "massugu" means the player is choosing to ignore
+                                   it and keep going straight, not just following the only path. */
+                                + '<path d="M320,372 L320,600" fill="none" stroke="#0a2e26" stroke-width="40" stroke-linecap="round" opacity="0.55"></path>'
+                                + '<path d="M620,95 L620,240" fill="none" stroke="#0a2e26" stroke-width="34" stroke-linecap="round" opacity="0.55"></path>'
+                                /* The route itself: Home -> house intersection -> Kouen corner ->
+                                   up -> School row -> up -> top row -> Eki. Triple-stroke same as
+                                   before: dark outline, translucent green fill, gold dashed
+                                   centerline showing direction of travel. */
+                                + '<path d="M80,552 L320,552 L580,552 L580,372 L320,372 L320,192 L620,192 L940,192" fill="none" stroke="#0a2e26" stroke-width="56" stroke-linejoin="round" stroke-linecap="round"></path>'
+                                + '<path d="M80,552 L320,552 L580,552 L580,372 L320,372 L320,192 L620,192 L940,192" fill="none" stroke="#1D9E75" stroke-width="46" opacity="0.35" stroke-linejoin="round" stroke-linecap="round"></path>'
+                                + '<path d="M80,552 L320,552 L580,552 L580,372 L320,372 L320,192 L620,192 L940,192" fill="none" stroke="#f0c674" stroke-width="4" stroke-dasharray="16 12" opacity="0.9"></path>'
+                                + '</svg>'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/house.png" alt="house" style="left:32%;top:78%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/hospital.png" alt="hospital" style="left:18%;top:45%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/library.png" alt="library" style="left:38%;top:20%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/tall-apartment.png" alt="building" style="left:62%;top:18%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/restaurant.png" alt="restaurant" style="left:76%;top:23%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/school.png" alt="school" style="left:45%;top:70%">'
+                                + '<img class="route2-bldg" src="../../assets/images/lesson/transparent/park.png" alt="kouen — park" style="left:64%;top:80%">'
+                                + '<img class="route2-house" src="../../assets/images/lesson/transparent/house.png" alt="home — start" style="left:8%;top:92%">'
+                                + '<img class="route2-station" src="../../assets/images/lesson/transparent/station.png" alt="eki — destination" style="left:94%;top:32%">'
+                                + '<div class="route2-cat" data-role="cat" style="left:8%;top:92%;background-image:url(&quot;../../assets/images/avatars/tailwagright-orange-64x64.png&quot;)"></div>'
+                                + '</div>'
+                                + '<div class="route2-controls">'
+                                + '<button class="route2-btn" type="button" onclick="window.NekoRoute.press(this,\'right\')">右に曲がる<span>migi ni magaru</span></button>'
+                                + '<button class="route2-btn" type="button" onclick="window.NekoRoute.press(this,\'straight\')">まっすぐ<span>massugu</span></button>'
+                                + '<button class="route2-btn" type="button" onclick="window.NekoRoute.press(this,\'left\')">左に曲がる<span>hidari ni magaru</span></button>'
+                                + '</div>'
+                                + '<div class="route2-arrival" data-role="arrival"><div class="jp">駅に着きました！</div><div class="romaji">Eki ni tsukimashita — "Arrived at the station!"</div></div>'
+                                + '</div>',
+                            diagramCaption: "うち (home) is the start, 駅 is the destination — 家・病院・図書館・ビル・レストラン・学校・公園 are just scenery the road passes on the way, same as real street landmarks. Press 右に曲がる／まっすぐ／左に曲がる in the right order and the cat walks the whole highlighted route, turn by turn."
+                        },
+                        {
+                            title: "へ vs に — same 'to', two flavors",
+                            explain: "Both へ and に can mark 'the place you're heading toward' after a movement verb like 行きます. に points at the exact destination — the specific spot you're arriving at (it's the same に used for 'is located at,' just applied to motion instead). へ points in a direction — it emphasizes which way you're heading, without pinning down the endpoint quite as precisely (へ is literally the character used for 'direction' itself, 方向 — hougou). In practice, for a plain 'I'm going to [place]' sentence, they're interchangeable — native speakers use either, and this course accepts both. This swap only works for motion toward a place (行きます／来ます／帰ります); に still does other jobs (marking where something IS, marking time) that へ can't take over.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">がっこう</span><span>school</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">に</span><span>exact destination</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">行きます</span><span>go</span></div>'
+                                + '<div class="no-eq">=</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">がっこうに行きます</span><span>"I go to school"</span></div>'
+                                + '</div>'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">がっこう</span><span>school</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">へ</span><span>general direction</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">行きます</span><span>go</span></div>'
+                                + '<div class="no-eq">=</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">がっこうへ行きます</span><span>same meaning, both correct</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "がっこうに行きます and がっこうへ行きます both mean \"I go to school.\" Either particle is accepted anywhere this course asks you to build a 'going to [place]' sentence."
+                        },
+                        {
+                            title: "The compass",
+                            explain: "北 (kita, north), 南 (minami, south), 東 (higashi, east), and 西 (nishi, west) are a fixed reference grid — unlike 前/後ろ/右/左, they don't rotate depending on which way anyone is facing, so they show up constantly on maps, signs, and addresses.",
+                            diagramSvg: '<div class="grammar-box__compass-cross">'
+                                + '<div class="cross-line cross-line--v"></div>'
+                                + '<div class="cross-line cross-line--h"></div>'
+                                + '<img class="cross-icon" src="../../assets/images/lesson/transparent/compass-oga.png" alt="compass">'
+                                + '<div class="cross-label n"><span class="jp">北</span><span class="romaji">kita</span></div>'
+                                + '<div class="cross-label s"><span class="jp">南</span><span class="romaji">minami</span></div>'
+                                + '<div class="cross-label e"><span class="jp">東</span><span class="romaji">higashi</span></div>'
+                                + '<div class="cross-label w"><span class="jp">西</span><span class="romaji">nishi</span></div>'
+                                + '</div>',
+                            diagramCaption: "Unlike 前/後ろ/右/左 (which rotate with whoever is speaking), 北・南・東・西 always point the same way — the same compass works on every map."
+                        }
+                    ],
+                    examples: [
+                        { jp: "わたしはがっこうに行きます", romaji: "Watashi wa gakkou ni ikimasu.", en: "I go to school." },
+                        { jp: "まっすぐ行きます", romaji: "Massugu ikimasu.", en: "Go straight ahead." },
+                        { jp: "右に曲がります", romaji: "Migi ni magarimasu.", en: "Turn right." },
+                        { jp: "としょかんはえきのきたにあります", romaji: "Toshokan wa eki no kita ni arimasu.", en: "The library is north of the station." }
+                    ],
+                    vocab: [
+                        { jp: "まっすぐ", romaji: "massugu", en: "straight ahead" }, { jp: "曲がります", romaji: "magarimasu", en: "to turn" },
+                        { jp: "行きます", romaji: "ikimasu", en: "to go" }, { jp: "あっち", romaji: "acchi", en: "that way (casual)" },
+                        { jp: "こっち", romaji: "kocchi", en: "this way (casual)" }, { jp: "どっち", romaji: "docchi", en: "which way (casual)" },
+                        { jp: "北", romaji: "kita", en: "north" }, { jp: "南", romaji: "minami", en: "south" },
+                        { jp: "東", romaji: "higashi", en: "east" }, { jp: "西", romaji: "nishi", en: "west" }
+                    ],
+                    sources: ["Genki I — Lesson 5"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let place = pick(wb.places);
+                let exercises = [
+                    {
+                        prompt: "Write: <strong>I go to " + place.en + "</strong>",
+                        // へ accepted alongside に -- both mean "toward [place]" for a
+                        // plain going-there sentence, see the "へ vs に" section above.
+                        accepted: [
+                            ["わたし", "は", place.jp, "に", "行きます"],
+                            ["わたし", "は", place.jp, "へ", "行きます"]
+                        ],
+                        hint: "わたしは" + place.jp + "に行きます",
+                        refWords: [
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: place.jp, role: "object" }, { jp: "に", role: "particle" }, { jp: "行きます", role: "predicate" }
+                        ]
+                    }
+                ];
+                /* Bonus: sneak peek at shelf 09b's あなた, slotted in as the subject
+                   of an います (person) sentence — reuses the います pattern
+                   already taught back in shelf 08a. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
-                    let place2 = pick([wb.places[0], wb.places[2]]);
+                    let place2 = pick(wb.places);
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 09) Write: <strong>You are at " + place2.en + "</strong>",
+                        prompt: "(bonus — sneak peek: shelf 09b) Write: <strong>You are at " + place2.en + "</strong>",
                         accepted: [[preview.jp, "は", place2.jp, "に", "います"]],
                         hint: preview.jp + "は" + place2.jp + "にいます",
                         refWords: [
@@ -1102,68 +2259,140 @@
         };
     }
 
-    /* SHELF 09: Nouns & Pronouns — PILOT LESSON for the header-dropdown /
-       full-content / next-lesson-preview pass. Content ported verbatim from
-       LESSON_CONTENT['shelf-09'] in n5-phaser-game.js. */
-    function s09() {
+    /* SHELF 08d: Places — Common Locations. Split out of 08a per explicit
+       feedback — 08a was covering the あります/います grammar AND a full
+       place-vocab reference diagram at once, which made one lesson feel
+       like two. 08a keeps the grammar; this is just the place words. */
+    function s08d() {
         return {
-            id: "s09", title: "Nouns & Pronouns", subtitle: "Shelf 09",
+            id: "s08d", title: "Places — Common Locations", subtitle: "Shelf 08d",
             wordBank: {
-                people: uPick(NAMES, 2),
-                things: [{ jp: "ともだち", en: "friend" }, { jp: "ほん", en: "book" }, { jp: "ねこ", en: "cat" }],
-                /* Next-lesson preview (shelf 10, い-adjectives) — shown for exposure
-                   and usable in this lesson's bonus exercise below. */
-                preview: [{ jp: "おおきい", en: "big", note: "Coming up in shelf 10 — い-adjectives" }]
+                places: [
+                    { jp: "うち", en: "home" }, { jp: "がっこう", en: "school" }, { jp: "えき", en: "station" },
+                    { jp: "びょういん", en: "hospital" }, { jp: "レストラン", en: "restaurant" }, { jp: "教会", en: "church" },
+                    { jp: "としょかん", en: "library" }, { jp: "こうえん", en: "park" },
+                    { jp: "ほんや", en: "bookstore" }, { jp: "ぎんこう", en: "bank" }
+                ]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
-                            title: "Nouns & Pronouns",
-                            explain: "A noun (めいし) names a person, place, or thing: 本 (hon, book), 友達 (tomodachi, friend). A pronoun stands in for a noun, like 私 (watashi, I) instead of your own name.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">description</span> <span class="pattern-box__fixed">です</span> &mdash; any noun or pronoun can be the subject of this pattern.'
-                        },
-                        {
-                            title: "Casual pronouns",
-                            explain: "僕 and 君 are casual, everyday versions of 私 and あなた — used with friends and family, not in polite/formal speech."
-                        },
-                        {
-                            title: "“What kind of...?” — こんな / そんな / あんな / どんな",
-                            explain: "These words also attach directly before a noun, but ask about KIND instead of pointing at a specific thing — こんな本 ('this kind of book') vs. この本 ('this [specific] book')."
-                        },
-                        {
-                            title: "自分 — pointing back at the subject",
-                            explain: "自分 can point back to whoever the sentence is already about — '自分の家族' means 'my own family' if you're speaking, or 'their own family' if the sentence is about someone else."
+                            title: "Places — common locations",
+                            explain: "A solid set of place nouns to plug into [Place]は…にあります (covered in shelf 08a) without any special handling — every single one now has its own real photo.",
+                            diagramSvg: '<div class="grammar-box__place-grid">'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/house.png" alt="house"><div class="grammar-box__place-jp">うち</div><div class="grammar-box__place-en">uchi &middot; home</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/college.png" alt="school"><div class="grammar-box__place-jp">がっこう</div><div class="grammar-box__place-en">gakkou &middot; school</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/station.png" alt="station"><div class="grammar-box__place-jp">えき</div><div class="grammar-box__place-en">eki &middot; station</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/hospital.png" alt="hospital"><div class="grammar-box__place-jp">びょういん</div><div class="grammar-box__place-en">byouin &middot; hospital</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/restaurant.png" alt="restaurant"><div class="grammar-box__place-jp">レストラン</div><div class="grammar-box__place-en">resutoran &middot; restaurant</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/cathedral.png" alt="church"><div class="grammar-box__place-jp">教会</div><div class="grammar-box__place-en">kyoukai &middot; church</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/library.png" alt="library"><div class="grammar-box__place-jp">としょかん</div><div class="grammar-box__place-en">toshokan &middot; library</div></div>'
+                                + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/park.png" alt="park"><div class="grammar-box__place-jp">こうえん</div><div class="grammar-box__place-en">kouen &middot; park</div></div>'
+                                + '</div>',
+                            diagramCaption: "Every one of these is a plain noun — no counter, no special grammar. The ONLY thing that changes sentence to sentence is which direction word (shelf 08b) sits between the place and に あります."
                         }
                     ],
                     examples: [
-                        { jp: "みなさん、おはようございます", romaji: "Mina-san, ohayou gozaimasu.", en: "Everyone, good morning." },
-                        { jp: "あなたはせんせいですか？", romaji: "Anata wa sensei desu ka?", en: "Are you a teacher?" },
-                        { jp: "あの人は私の友達です", romaji: "Ano hito wa watashi no tomodachi desu.", en: "That person is my friend." },
-                        { jp: "この子供は私の家族です", romaji: "Kono kodomo wa watashi no kazoku desu.", en: "This child is my family." },
-                        { jp: "これは私の本です", romaji: "Kore wa watashi no hon desu.", en: "This is my book." },
-                        { jp: "そのかばんは彼のじゃないです", romaji: "Sono kaban wa kare no ja nai desu.", en: "That bag is not his." },
-                        { jp: "僕はせんせいです", romaji: "Boku wa sensei desu.", en: "I am a teacher. (casual, male speaker)" },
-                        { jp: "君の家族は元気ですか", romaji: "Kimi no kazoku wa genki desu ka.", en: "Is your family doing well?" },
-                        { jp: "彼らは友達です", romaji: "Karera wa tomodachi desu.", en: "They are friends." },
-                        { jp: "こんな本です", romaji: "Konna hon desu.", en: "It's this kind of book." },
-                        { jp: "どんな人ですか", romaji: "Donna hito desu ka.", en: "What kind of person is it?" }
+                        { jp: "ねこはこうえんにいます", romaji: "Neko wa kouen ni imasu.", en: "The cat is at the park." },
+                        { jp: "ほんはとしょかんにあります", romaji: "Hon wa toshokan ni arimasu.", en: "The book is at the library." },
+                        { jp: "せんせいはがっこうにいます", romaji: "Sensei wa gakkou ni imasu.", en: "The teacher is at school." }
                     ],
                     vocab: [
-                        { jp: "あなた", romaji: "anata", en: "you" }, { jp: "彼", romaji: "kare", en: "he/him" },
-                        { jp: "彼女", romaji: "kanojo", en: "she/her" }, { jp: "私たち", romaji: "watashitachi", en: "we/us" },
-                        { jp: "みなさん", romaji: "mina-san", en: "everyone" }, { jp: "人", romaji: "hito", en: "person" },
-                        { jp: "子供", romaji: "kodomo", en: "child" }, { jp: "友達", romaji: "tomodachi", en: "friend" },
-                        { jp: "家族", romaji: "kazoku", en: "family" }, { jp: "本", romaji: "hon", en: "book" },
-                        { jp: "かばん", romaji: "kaban", en: "bag" }, { jp: "時計", romaji: "tokei", en: "clock/watch" },
-                        { jp: "僕", romaji: "boku", en: "I/me (casual, male)" }, { jp: "君", romaji: "kimi", en: "you (casual)" },
-                        { jp: "彼ら", romaji: "karera", en: "they/them" }, { jp: "こんな", romaji: "konna", en: "this kind of..." },
-                        { jp: "そんな", romaji: "sonna", en: "that kind of..." }, { jp: "あんな", romaji: "anna", en: "that kind of... (over there)" },
-                        { jp: "どんな", romaji: "donna", en: "what kind of...?" }, { jp: "色んな", romaji: "ironna", en: "various" },
-                        { jp: "誰か", romaji: "dareka", en: "someone/somebody" }, { jp: "自分", romaji: "jibun", en: "myself/yourself/oneself" },
-                        { jp: "こう", romaji: "kou", en: "this way (doing something)" }
+                        { jp: "がっこう", romaji: "gakkou", en: "school" }, { jp: "えき", romaji: "eki", en: "station" },
+                        { jp: "としょかん", romaji: "toshokan", en: "library" }, { jp: "びょういん", romaji: "byouin", en: "hospital" },
+                        { jp: "レストラン", romaji: "resutoran", en: "restaurant" }, { jp: "こうえん", romaji: "kouen", en: "park" },
+                        { jp: "ほんや", romaji: "honya", en: "bookstore" }, { jp: "ぎんこう", romaji: "ginkou", en: "bank" },
+                        { jp: "うち", romaji: "uchi", en: "home" }, { jp: "教会", romaji: "kyoukai", en: "church" }
                     ],
-                    sources: ["Tae Kim's Guide to Japanese Grammar (pronouns)", "Wasabi Japanese pronouns guide"]
+                    sources: ["Tae Kim's Guide (あります／います, location particles)", "Genki I — Lesson 5"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let place = pick(this.wordBank.places);
+                return [
+                    {
+                        prompt: "Write the place: <strong>" + place.en.charAt(0).toUpperCase() + place.en.slice(1) + "</strong>",
+                        accepted: [[place.jp]],
+                        hint: place.jp,
+                        refWords: [{ jp: place.jp, role: "neutral" }]
+                    }
+                ];
+            }
+        };
+    }
+
+    /* SHELF 09a/09b: Nouns & Pronouns, split into their own pages per
+       explicit feedback (nouns and pronouns are different word classes
+       with different jobs — の-possessive and noun categories belong with
+       nouns, casual/plural pronouns and the こんな family belong with
+       pronouns). Same split shape as the 07a-e / 08a-d shelf-groups:
+       lettered ids, no bare "s09" lesson of its own. Content ported
+       originally from LESSON_CONTENT['shelf-09'] in n5-phaser-game.js,
+       then divided and each half given room to stand on its own. */
+    function s09a() {
+        return {
+            id: "s09a", title: "Nouns", subtitle: "Shelf 09a",
+            wordBank: {
+                people: uPick(NAMES, 2),
+                things: [{ jp: "ともだち", en: "friend" }, { jp: "ほん", en: "book" }, { jp: "ねこ", en: "cat" }],
+                newWords: [
+                    { jp: "せんぱい", en: "senior (upperclassman)" }, { jp: "こうはい", en: "junior (underclassman)" },
+                    { jp: "どうりょう", en: "colleague" }, { jp: "しんせき", en: "relative" }
+                ],
+                /* Next-lesson preview (shelf 09b, pronouns) — shown for exposure
+                   and usable in this lesson's bonus exercise below. */
+                preview: [{ jp: "あなた", en: "you", note: "Coming up in shelf 09b — pronouns" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Nouns (名詞 / めいし)",
+                            explain: "A noun names a person, place, or thing — 本 (hon, \"book\"), 友達 (tomodachi, \"friend\"), 学校 (gakkou, \"school\"). Japanese nouns don't change form for singular/plural or gender the way English ones sometimes do — 本 can mean \"book\" or \"books\" from context alone, no -s ending to add. Any noun slots straight into the [Noun]は[description]です pattern you've already been using since shelf 03.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">description</span> <span class="pattern-box__fixed">です</span>'
+                        },
+                        {
+                            title: "の — connecting two nouns",
+                            explain: "の links two nouns together the same way English's possessive 's does, just in the opposite order: [Noun A]の[Noun B] means \"A's B.\" The second noun is always the real thing the sentence is about — の just says who or what it belongs to.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">私</span><span>I / me</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">の</span><span>\'s</span></div>'
+                                + '<div class="no-plus">+</div>'
+                                + '<div class="no-step"><span class="jp">本</span><span>book</span></div>'
+                                + '<div class="no-eq">=</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">私の本</span><span>"my book"</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "私の本 (watashi no hon) — \"my book.\" Swap either noun freely: 彼の家族 (\"his family\"), 先生の名前 (\"the teacher's name\") — の always means \"[first noun]'s [second noun].\""
+                        },
+                        {
+                            title: "People & relationships",
+                            explain: "A cluster of N5 nouns exists just to name the people around you: 友達 (friend), 家族 (family), 先生 (teacher), 学生 (student) — plus a workplace/school-hierarchy set: せんぱい (senior/upperclassman) and こうはい (junior/underclassman) mark relative seniority, not age; どうりょう (colleague) and しんせき (relative) round out the everyday relationship vocabulary you'll reach for constantly once you start describing your own life in Japanese."
+                        }
+                    ],
+                    examples: [
+                        { jp: "あの人は私の友達です", romaji: "Ano hito wa watashi no tomodachi desu.", en: "That person is my friend." },
+                        { jp: "これは先生の本です", romaji: "Kore wa sensei no hon desu.", en: "This is the teacher's book." },
+                        { jp: "彼は私のせんぱいです", romaji: "Kare wa watashi no senpai desu.", en: "He is my senior/upperclassman." }
+                    ],
+                    examplesMore: [
+                        { label: "nouns", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS (NOUNS).pdf") }
+                    ],
+                    vocab: [
+                        { jp: "人", romaji: "hito", en: "person" }, { jp: "子供", romaji: "kodomo", en: "child" },
+                        { jp: "友達", romaji: "tomodachi", en: "friend" }, { jp: "家族", romaji: "kazoku", en: "family" },
+                        { jp: "先生", romaji: "sensei", en: "teacher" }, { jp: "学生", romaji: "gakusei", en: "student" },
+                        { jp: "本", romaji: "hon", en: "book" }, { jp: "かばん", romaji: "kaban", en: "bag" },
+                        { jp: "時計", romaji: "tokei", en: "clock/watch" },
+                        { jp: "せんぱい", romaji: "senpai", en: "senior (upperclassman)" },
+                        { jp: "こうはい", romaji: "kouhai", en: "junior (underclassman)" },
+                        { jp: "どうりょう", romaji: "douryou", en: "colleague" },
+                        { jp: "しんせき", romaji: "shinseki", en: "relative" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar (nouns)", "Wasabi Japanese nouns guide"]
                 };
             },
             buildWordBankExercises: function () {
@@ -1192,21 +2421,17 @@
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 10's い-adjective, slotted into this
-                   lesson's own の-possessive pattern (adjective directly modifies
-                   the noun — grammatically valid without needing shelf 10's rules). */
+                /* Bonus: sneak peek at shelf 09b's あなた, dropped into this
+                   lesson's own [Noun]は[description]です pattern. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
-                    let name2 = pick(wb.people);
-                    let thing2 = pick(wb.things);
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 10) Write: <strong>This is " + name2.en + "'s " + preview.en + " " + thing2.en + "</strong>",
-                        accepted: [["これ", "は", name2.jp, "の", preview.jp, thing2.jp, "です"]],
-                        hint: "これは" + name2.jp + "の" + preview.jp + thing2.jp + "です",
+                        prompt: "(bonus — sneak peek: shelf 09b) Write: <strong>You are a teacher</strong>",
+                        accepted: [[preview.jp, "は", "せんせい", "です"]],
+                        hint: preview.jp + "はせんせいです",
                         refWords: [
-                            { jp: "これ", role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: name2.jp, role: "name" }, { jp: "の", role: "particle" },
-                            { jp: preview.jp, role: "adjective" }, { jp: thing2.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }
+                            { jp: preview.jp, role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: "せんせい", role: "predicate" }, { jp: "です", role: "auxiliary" }
                         ]
                     });
                 }
@@ -1215,68 +2440,190 @@
         };
     }
 
-    /* SHELF 10: Adjectives */
-    function s10() {
+    function s09b() {
         return {
-            id: "s10", title: "Adjectives", subtitle: "Shelf 10",
+            id: "s09b", title: "Pronouns", subtitle: "Shelf 09b",
+            wordBank: {
+                casual: [{ jp: "僕", en: "I / me (casual, male)" }, { jp: "君", en: "you (casual)" }],
+                demonstratives: [{ jp: "どんな", en: "what kind of" }],
+                nouns: [{ jp: "ひと", en: "person" }, { jp: "ほん", en: "book" }, { jp: "ねこ", en: "cat" }],
+                newWords: [{ jp: "色んな", en: "various" }],
+                /* Next-lesson preview (shelf 10a, い-adjectives) — shown for
+                   exposure and usable in this lesson's bonus exercise below. */
+                preview: [{ jp: "おおきい", en: "big", note: "Coming up in shelf 10a — い-adjectives" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Pronouns (代名詞 / だいめいし)",
+                            explain: "A pronoun stands in for a noun instead of repeating it — 私 (watashi, \"I/me\") instead of saying your own name every time, あなた (anata, \"you\") instead of the listener's name, 彼 (kare, \"he\") / 彼女 (kanojo, \"she\") once it's already clear who you mean. Grammatically, a pronoun is just a noun — it slots into は, の, を, and every other particle exactly the same way 本 or 友達 would."
+                        },
+                        {
+                            title: "Casual pronouns — 僕 (boku) & 君 (kimi)",
+                            explain: "僕 (boku) and 君 (kimi) are casual, everyday versions of 私 (watashi) and あなた (anata) — used with friends and family, not in polite/formal speech. Swapping one pronoun for another doesn't change anything else in the sentence — only how formal or masculine/neutral it sounds (see the diagram below)."
+                        },
+                        {
+                            title: "Same sentence, different pronoun — how the choice changes the tone",
+                            explain: "The pronoun slot in [Pronoun]は[description]です can be filled by any of these words, and the rest of the sentence never has to change — only the register (how casual, formal, or gendered it sounds) shifts with it.",
+                            diagramSvg: '<div class="pronoun-diagram">'
+                                + '<div class="pronoun-diagram__slot-row">'
+                                + '<span class="pronoun-diagram__slot">私 / 僕 / あなた / 君</span>'
+                                + '<span class="pronoun-diagram__fixed">は</span>'
+                                + '<span>せんせい</span>'
+                                + '<span class="pronoun-diagram__fixed">です</span>'
+                                + '</div>'
+                                + '<div class="pronoun-diagram__ladder">'
+                                + '<div class="pronoun-diagram__pill"><span class="jp">私</span><span>watashi — neutral, safe anywhere</span></div>'
+                                + '<div class="pronoun-diagram__pill"><span class="jp">僕</span><span>boku — casual, male-leaning</span></div>'
+                                + '<div class="pronoun-diagram__pill"><span class="jp">あなた</span><span>anata — direct, can sound blunt</span></div>'
+                                + '<div class="pronoun-diagram__pill"><span class="jp">君</span><span>kimi — casual, said to a peer/junior</span></div>'
+                                + '</div>'
+                                + '<div class="pronoun-diagram__axis"><span>&larr; more casual</span><span>more formal &rarr;</span></div>'
+                                + '</div>',
+                            diagramCaption: "One sentence, four valid pronouns — the grammar (は...です) never moves, only who's speaking and how casually they sound does. This is also why Japanese speakers often drop the pronoun entirely once it's already clear from context — the sentence still works without it."
+                        },
+                        {
+                            title: "Plural pronouns — 私たち, 彼ら, みなさん",
+                            explain: "Add たち or ら to make a pronoun plural: 私たち (watashitachi, \"we/us\"), 彼ら (karera, \"they/them\" — masculine-leaning in origin, but used generically; 彼女たち kanojotachi exists too for an all-female \"they\"). みなさん (mina-san, \"everyone\") is its own word rather than a pluralized pronoun, and it carries a note of politeness — it's what a teacher says to a whole class, not just a flat, neutral \"everyone.\""
+                        },
+                        {
+                            title: "“What kind of...?” — こんな / そんな / あんな / どんな",
+                            explain: "These attach directly before a noun, but ask about KIND instead of pointing at a specific thing — こんな本 ('this kind of book') vs. この本 ('this [specific] book')."
+                        },
+                        {
+                            title: "自分 (jibun) — pointing back at the subject",
+                            explain: "自分 (jibun) can point back to whoever the sentence is already about — '自分の家族 (jibun no kazoku)' means 'my own family' if you're speaking, or 'their own family' if the sentence is about someone else."
+                        }
+                    ],
+                    examples: [
+                        { jp: "あなたはせんせいですか？", romaji: "Anata wa sensei desu ka?", en: "Are you a teacher?" },
+                        { jp: "そのかばんは彼のじゃないです", romaji: "Sono kaban wa kare no ja nai desu.", en: "That bag is not his." },
+                        { jp: "僕はせんせいです", romaji: "Boku wa sensei desu.", en: "I am a teacher. (casual, male speaker)" },
+                        { jp: "どんな人ですか", romaji: "Donna hito desu ka.", en: "What kind of person is it?" }
+                    ],
+                    examplesMore: [
+                        { label: "pronouns", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS (PRONOUNS).pdf") }
+                    ],
+                    vocab: [
+                        { jp: "あなた", romaji: "anata", en: "you" }, { jp: "彼", romaji: "kare", en: "he/him" },
+                        { jp: "彼女", romaji: "kanojo", en: "she/her" }, { jp: "私たち", romaji: "watashitachi", en: "we/us" },
+                        { jp: "みなさん", romaji: "mina-san", en: "everyone" },
+                        { jp: "僕", romaji: "boku", en: "I/me (casual, male)" }, { jp: "君", romaji: "kimi", en: "you (casual)" },
+                        { jp: "彼ら", romaji: "karera", en: "they/them" }, { jp: "こんな", romaji: "konna", en: "this kind of..." },
+                        { jp: "そんな", romaji: "sonna", en: "that kind of..." }, { jp: "あんな", romaji: "anna", en: "that kind of... (over there)" },
+                        { jp: "どんな", romaji: "donna", en: "what kind of...?" }, { jp: "色んな", romaji: "ironna", en: "various" },
+                        { jp: "誰か", romaji: "dareka", en: "someone/somebody" }, { jp: "自分", romaji: "jibun", en: "myself/yourself/oneself" },
+                        { jp: "こう", romaji: "kou", en: "this way (doing something)" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar (pronouns)", "Wasabi Japanese pronouns guide"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let noun = pick(wb.nouns);
+                let exercises = [
+                    {
+                        prompt: "Write (casual): <strong>I am a teacher</strong>",
+                        accepted: [["ぼく", "は", "せんせい", "です"]],
+                        hint: "ぼくはせんせいです",
+                        refWords: [
+                            { jp: "ぼく", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: "せんせい", role: "predicate" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    },
+                    {
+                        prompt: "Write: <strong>What kind of " + noun.en + " is it?</strong>",
+                        accepted: [["どんな", noun.jp, "です", "か"]],
+                        hint: "どんな" + noun.jp + "ですか",
+                        refWords: [
+                            { jp: "どんな", role: "adjective" }, { jp: noun.jp, role: "object" },
+                            { jp: "です", role: "auxiliary" }, { jp: "か", role: "particle" }
+                        ]
+                    }
+                ];
+                /* Bonus: sneak peek at shelf 10a's い-adjective, modifying a
+                   noun directly (grammatically valid without shelf 10a's rules). */
+                let preview = wb.preview && wb.preview[0];
+                if (preview) {
+                    exercises.push({
+                        prompt: "(bonus — sneak peek: shelf 10a) Write: <strong>I am a big person</strong>",
+                        accepted: [["わたし", "は", preview.jp, "ひと", "です"]],
+                        hint: "わたしは" + preview.jp + "ひとです",
+                        refWords: [
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: preview.jp, role: "adjective" }, { jp: "ひと", role: "object" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    });
+                }
+                return exercises;
+            }
+        };
+    }
+
+    /* SHELF 10a/10b/10c: Adjectives, split into their own pages per
+       explicit feedback (い-adjectives, な-adjectives, and adverbs are
+       three genuinely different conjugation systems that were previously
+       crammed into one shelf) — each page expanded with real depth rather
+       than just relocated, since cramming them together was exactly what
+       kept any one of them from getting room to breathe. */
+    function s10a() {
+        return {
+            id: "s10a", title: "い-Adjectives", subtitle: "Shelf 10a",
             wordBank: {
                 iAdjectives: [
                     { jp: "おおきい", en: "big" }, { jp: "ちいさい", en: "small" },
                     { jp: "あたらしい", en: "new" }, { jp: "ふるい", en: "old" },
                     { jp: "たかい", en: "expensive" }, { jp: "たのしい", en: "fun" }
                 ],
-                naAdjectives: [
-                    { jp: "しずか", en: "quiet" }, { jp: "きれい", en: "beautiful" }, { jp: "ゆうめい", en: "famous" }
+                newWords: [
+                    { jp: "さむい", en: "cold" }, { jp: "あつい", en: "hot" },
+                    { jp: "おもい", en: "heavy" }, { jp: "かるい", en: "light (weight)" }
                 ],
-                preview: [{ jp: "読みます", en: "read", note: "Coming up in shelf 11 — verbs" }]
+                preview: [{ jp: "しずか", en: "quiet", note: "Coming up in shelf 10b — な-adjectives" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
-                            title: "い-adjectives vs な-adjectives",
-                            explain: "い-adjective: ends in い (大きい, 赤い) — conjugates on its own, です is just politeness. な-adjective: doesn't end in い (静か, 好き) — behaves like a noun, needs です to attach. Both still slot into the same [Noun]は[adjective]です pattern — the difference only shows up when you negate them.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Adjective</span> <span class="pattern-box__fixed">です</span>'
+                            title: "い-Adjectives — what makes them different",
+                            explain: "An い-adjective always ends in い in its dictionary form — 大きい (big), 新しい (new), 高い (expensive/tall). Unlike English adjectives, い-adjectives conjugate on their own, the same way a verb does — です after one is just politeness, not doing any grammatical work. That's the single biggest thing to internalize about this whole family: the adjective itself carries tense and negation, not です.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">い-Adjective</span> <span class="pattern-box__fixed">です</span>'
                         },
                         {
-                            title: "い-adjective negation",
-                            explain: "Drop the final い and add くないです — 小さい becomes 小さくないです ('is not small'). 良い is the one exception: it conjugates from its older form よい, so 'not good' is よくないです, never いくないです."
+                            title: "Negative — drop い, add くない",
+                            explain: "Drop the final い and add くないです: 小さい → 小さくないです ('is not small'). 良い is the one true exception — it conjugates from its older reading よい, so 'not good' is よくないです, never いくないです. Memorize 良い as an irregular from day one rather than trying to force the regular rule onto it.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">大き<span class="slash-char">い</span></span><span>dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">大き<span class="add-char">くない</span></span><span>drop い, add くない</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "い-adjectives conjugate on their own — the ending itself changes, です never has to. Watch the last い get slashed away, then くない fade in — that's the whole rule in one picture."
+                        },
+                        {
+                            title: "Past tense — drop い, add かった / くなかった",
+                            explain: "です/でした never attach directly to an い-adjective — the tense always lives INSIDE the adjective. Past affirmative: drop い, add かった → 大きかったです ('it was big'). Past negative: drop い, add くなかった → 大きくなかったです ('it was not big'). Every tense/polarity combination follows this same drop-い pattern — there's no separate rule to learn for past vs. present."
+                        },
+                        {
+                            title: "い-adjectives modifying a noun directly",
+                            explain: "An い-adjective can also sit directly in front of the noun it describes, no です or particle needed — 大きい本 ('a/the big book'), 新しい時計 ('a new watch'). It's the exact same word you'd use in [Noun]は[い-adjective]です — い-adjectives never change shape to do this, they just relocate in front of the noun."
                         },
                         {
                             title: "Watch out — fake い-adjectives",
-                            explain: "A few words end in い by coincidence, not because they're い-adjectives: きれい, きらい, 有名(ゆうめい) — they're actually な-adjectives: negate with じゃないです, never くない. When in doubt, checking a な-adjective vocab list beats guessing from spelling."
-                        },
-                        {
-                            title: "な-adjective negation and the two sentence shapes",
-                            explain: "な-adjectives negate exactly like nouns do — just attach じゃないです (or the more formal ではありません). Two shapes: attributive (静かな図書館, 'a quiet library' — な glues straight onto the noun, no です) vs. predicate (図書館は静かです, 'the library is quiet' — です does the 'is' job, な disappears entirely). な belongs to the noun that follows it, not to です."
-                        },
-                        {
-                            title: "Adverbs",
-                            explain: "An adverb sits right before the word it describes. い-adjective → adverb: drop い, add く (大きい → 大きく, 'big' → 'greatly'; よい is irregular — always from よ, never いい). な-adjective → adverb: just add に (静か → 静かに, 'quiet' → 'quietly')."
-                        },
-                        {
-                            title: "い-adjective past tense",
-                            explain: "です/でした never attach directly to an い-adjective — the tense always lives INSIDE the adjective itself. Past affirmative: drop い, add かった (大きかったです, 'it was big'). Past negative: drop い, add くなかった (大きくなかったです, 'it was not big')."
-                        },
-                        {
-                            title: "な-adjectives (and nouns) have a 4-way copula family",
-                            explain: "Unlike い-adjectives, な-adjectives and nouns lean entirely on です/でした/じゃ for tense and negation — you already know 静かです and 静かじゃないです; じゃありません is the same negative, just more neutral/formal than じゃないです (both correct, じゃないです leans slightly casual). でした and じゃありませんでした fill in the two past forms: 静かでした ('was quiet'), 静かじゃなかったです / 静かじゃありませんでした ('was not quiet')."
-                        },
-                        {
-                            title: "The plain (casual) register: だ instead of です",
-                            explain: "Drop です down to plain speech and it becomes だ — everything else contracts the same way: 静かだ ('is quiet,' plain), 静かだった ('was quiet,' plain), 静かじゃない / 静かではない ('is not quiet,' plain), 静かじゃなかった / 静かではなかった ('was not quiet,' plain). じゃ isn't its own separate word here — it only ever shows up glued to ない, so the negative conjugates as じゃなかった, built the same drop-then-add way an い-adjective would."
+                            explain: "A couple of words end in い by coincidence, not because they're real い-adjectives: きれい (pretty/clean), きらい (dislike/hate). They're actually な-adjectives — negate with じゃないです, never くない. That trap, and the rest of な-adjective conjugation, gets its own lesson next."
                         }
                     ],
                     examples: [
                         { jp: "本は大きいです", romaji: "Hon wa ookii desu.", en: "The book is big." },
                         { jp: "これは新しい時計です", romaji: "Kore wa atarashii tokei desu.", en: "This clock is new." },
                         { jp: "この本は小さくないです", romaji: "Kono hon wa chiisakunai desu.", en: "This book is not small." },
-                        { jp: "図書館は静かです", romaji: "Toshokan wa shizuka desu.", en: "The library is quiet." },
-                        { jp: "これは便利じゃないです", romaji: "Kore wa benri ja nai desu.", en: "This isn't convenient." },
-                        { jp: "あの先生は有名じゃないです", romaji: "Ano sensei wa yuumei ja nai desu.", en: "That teacher isn't famous." },
                         { jp: "この本はとても大きいです", romaji: "Kono hon wa totemo ookii desu.", en: "This book is very big." },
-                        { jp: "図書館は静かでした", romaji: "Toshokan wa shizuka deshita.", en: "The library was quiet. (past)" },
-                        { jp: "静かだ", romaji: "Shizuka da.", en: "It's quiet. (plain/casual register)" }
+                        { jp: "大きい本です", romaji: "Ookii hon desu.", en: "It's a big book. (adjective directly modifying the noun)" }
+                    ],
+                    examplesMore: [
+                        { label: "い-adjective", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS I-Adj.pdf") }
                     ],
                     vocab: [
                         { jp: "大きい", romaji: "ookii", en: "big" }, { jp: "小さい", romaji: "chiisai", en: "small" },
@@ -1284,26 +2631,20 @@
                         { jp: "新しい", romaji: "atarashii", en: "new" }, { jp: "古い", romaji: "furui", en: "old" },
                         { jp: "高い", romaji: "takai", en: "expensive/tall" }, { jp: "安い", romaji: "yasui", en: "cheap" },
                         { jp: "楽しい", romaji: "tanoshii", en: "fun/enjoyable" }, { jp: "良い", romaji: "ii", en: "good" },
-                        { jp: "静か", romaji: "shizuka", en: "quiet" }, { jp: "好き", romaji: "suki", en: "like" },
-                        { jp: "元気", romaji: "genki", en: "energetic" }, { jp: "便利", romaji: "benri", en: "convenient" },
-                        { jp: "有名", romaji: "yuumei", en: "famous" }, { jp: "大切", romaji: "taisetsu", en: "important" },
-                        { jp: "きれい", romaji: "kirei", en: "pretty/clean" }, { jp: "きらい", romaji: "kirai", en: "dislike/hate" },
-                        { jp: "大変", romaji: "taihen", en: "tough/serious" }, { jp: "よく", romaji: "yoku", en: "often/well" },
-                        { jp: "いつも", romaji: "itsumo", en: "always" }, { jp: "ときどき", romaji: "tokidoki", en: "sometimes" },
-                        { jp: "あまり", romaji: "amari", en: "not much (+negative)" }, { jp: "すぐに", romaji: "sugu ni", en: "right away" },
-                        { jp: "まだ", romaji: "mada", en: "still/not yet" }, { jp: "もう", romaji: "mou", en: "already" },
-                        { jp: "とても", romaji: "totemo", en: "very" },
-                        { jp: "静かです→静かでした", romaji: "shizuka deshita", en: "was quiet (な-adj/noun past)" },
-                        { jp: "静かじゃないです→静かじゃなかったです", romaji: "shizuka ja nakatta desu", en: "was not quiet (past negative)" },
-                        { jp: "静かです→静かだ", romaji: "shizuka da", en: "is quiet (plain/casual register)" },
-                        { jp: "静かじゃないです→静かじゃない", romaji: "shizuka ja nai", en: "is not quiet (plain/casual)" }
+                        { jp: "さむい", romaji: "samui", en: "cold" }, { jp: "あつい", romaji: "atsui", en: "hot" },
+                        { jp: "おもい", romaji: "omoi", en: "heavy" }, { jp: "かるい", romaji: "karui", en: "light (weight)" },
+                        { jp: "とても", romaji: "totemo", en: "very" }
                     ],
-                    sources: ["Tae Kim's Guide (い-adjectives, な-adjectives)", "Wasabi Japanese adjectives guide"]
+                    sources: ["Tae Kim's Guide (い-adjectives)", "Wasabi Japanese adjectives guide"]
                 };
             },
             buildWordBankExercises: function () {
-                let iAdj = pick(this.wordBank.iAdjectives);
-                let naAdj = pick(this.wordBank.naAdjectives);
+                let wb = this.wordBank;
+                let iAdj = pick(wb.iAdjectives);
+                /* No よい in this lesson's word bank, so the drop-い/add-くない
+                   rule applies with no exception to work around. */
+                let negAdj = wb.iAdjectives[Math.floor(Math.random() * wb.iAdjectives.length)];
+                let negForm = negAdj.jp.slice(0, -1) + "くない";
                 let exercises = [
                     {
                         prompt: "Write: <strong>The book is " + iAdj.en + "</strong>",
@@ -1315,28 +2656,25 @@
                         ]
                     },
                     {
-                        prompt: "Write: <strong>The library is " + naAdj.en + "</strong>",
-                        accepted: [["としょかん", "は", naAdj.jp, "です"]],
-                        hint: "としょかんは" + naAdj.jp + "です",
+                        prompt: "Write: <strong>The book is not " + negAdj.en + "</strong>",
+                        accepted: [["ほん", "は", negForm, "です"]],
+                        hint: "ほんは" + negForm + "です",
                         refWords: [
-                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: naAdj.jp, role: "adjective" }, { jp: "です", role: "auxiliary" }
+                            { jp: "ほん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: negForm, role: "adjective" }, { jp: "です", role: "auxiliary" }
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 11's verb+を, combined with an
-                   い-adjective modifying the object noun directly. */
-                let preview = this.wordBank.preview && this.wordBank.preview[0];
+                /* Bonus: sneak peek at shelf 10b's な-adjective. */
+                let preview = wb.preview && wb.preview[0];
                 if (preview) {
-                    let adj = pick(this.wordBank.iAdjectives);
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 11) Write: <strong>I " + preview.en + " a " + adj.en + " book</strong>",
-                        accepted: [["わたし", "は", adj.jp, "ほん", "を", preview.jp]],
-                        hint: "わたしは" + adj.jp + "ほんを" + preview.jp,
+                        prompt: "(bonus — sneak peek: shelf 10b) Write: <strong>The library is quiet</strong>",
+                        accepted: [["としょかん", "は", preview.jp, "です"]],
+                        hint: "としょかんは" + preview.jp + "です",
                         refWords: [
-                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: adj.jp, role: "adjective" }, { jp: "ほん", role: "object" },
-                            { jp: "を", role: "particle" }, { jp: preview.jp, role: "predicate" }
+                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: preview.jp, role: "adjective" }, { jp: "です", role: "auxiliary" }
                         ]
                     });
                 }
@@ -1345,60 +2683,429 @@
         };
     }
 
-    /* SHELF 11: Verbs */
-    function s11() {
+    function s10b() {
         return {
-            id: "s11", title: "Verbs", subtitle: "Shelf 11",
+            id: "s10b", title: "な-Adjectives", subtitle: "Shelf 10b",
             wordBank: {
-                objects: [{ jp: "本", en: "a book" }, { jp: "かばん", en: "a bag" }],
-                places: [{ jp: "学校", en: "school" }],
-                verbs: [{ jp: "読みます", en: "read" }, { jp: "買います", en: "buy" }, { jp: "行きます", en: "go" }],
-                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 12 — invitations" }]
+                naAdjectives: [
+                    { jp: "しずか", en: "quiet" }, { jp: "きれい", en: "beautiful" }, { jp: "ゆうめい", en: "famous" }
+                ],
+                newWords: [{ jp: "大変", en: "tough/serious" }],
+                preview: [{ jp: "よく", en: "often/well", note: "Coming up in shelf 10c — adverbs" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
-                            title: "Verb groups & ます (Polite Form)",
-                            explain: "A verb's dictionary form always ends in an u-sound (る, く, す, む, ぶ, つ, う...) — but which group it belongs to decides how it changes for polite speech: three groups total — ichidan (る-verbs), godan (everything else), and する-verbs.",
-                            pattern: '<span class="pattern-box__slot">Object</span> <span class="pattern-box__fixed">を</span> <span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ます</span>'
+                            title: "な-Adjectives — what makes them different",
+                            explain: "A な-adjective does NOT end in い in its dictionary form — 静か (quiet), 好き (like), 有名 (famous). Grammatically, a な-adjective behaves exactly like a noun: it can't conjugate on its own the way an い-adjective can, so it leans entirely on です (and its relatives でした/じゃない/だ) to carry tense and negation. The name \"な-adjective\" comes from the な that appears when one directly modifies a noun (see below) — that な never shows up in the [Noun]は[な-adjective]です sentence shape itself.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">な-Adjective</span> <span class="pattern-box__fixed">です</span>'
                         },
                         {
-                            title: "Ichidan (る-verbs)",
-                            explain: "Most verbs ending in る where the sound right before it is an い or え row sound are ichidan — just drop る and add ます. 起きる(おきる) becomes 起き(おき)ます."
+                            title: "Negation — just add じゃないです",
+                            explain: "な-adjectives negate exactly like nouns do: attach じゃないです (or the more formal ではありません) — never くない, that's an い-adjective-only conjugation. 静か → 静かじゃないです ('is not quiet')."
                         },
                         {
-                            title: "Godan (everything else)",
-                            explain: "Every other verb is godan — swap the final u-sound for its matching i-sound, then add ます. 行く(いく, 'go') becomes 行き(いき)ます; 話す(はなす, 'speak') becomes 話し(はなし)ます."
+                            title: "The two sentence shapes — attributive vs. predicate",
+                            explain: "Attributive (modifying a noun directly): 静かな図書館 ('a quiet library') — な glues the adjective onto the noun, no です needed. Predicate (the sentence's main description): 図書館は静かです ('the library is quiet') — です does the 'is' job here, and な disappears entirely. な belongs to the noun that follows it, never to です — that one rule explains both shapes at once.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">静か</span><span>dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">静かじゃない</span><span>just add じゃない</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "な-adjectives lean on じゃない the same way a plain noun would — the adjective's own ending never changes."
                         },
                         {
-                            title: "Watch out — 帰る looks ichidan",
-                            explain: "帰る(かえる, 'to go home') ends in える, just like 起きる — but it's godan, not ichidan. Drop る the ichidan way and you'd get 帰ます, which is wrong. The real form is 帰り(かえり)ます — treat り as part of the stem, godan-style."
+                            title: "The 4-way copula family — です / でした / じゃない / じゃなかった",
+                            explain: "な-adjectives (and nouns) lean entirely on です/でした/じゃ for tense and negation: 静かです ('is quiet'), 静かでした ('was quiet'), 静かじゃないです ('is not quiet'), 静かじゃなかったです ('was not quiet'). じゃありません is the same negative as じゃないです, just more neutral/formal — both correct, じゃないです leans slightly casual."
                         },
                         {
-                            title: "する-verbs and を (the object marker)",
-                            explain: "する-verbs are a noun plus する ('to do') — swap する for します and every one conjugates the same way: 勉強する(べんきょうする) → 勉強(べんきょう)します. を marks the thing a verb acts on — it never means anything on its own, it just points at what comes right before it."
+                            title: "The plain (casual) register: だ instead of です",
+                            explain: "Drop です down to plain speech and it becomes だ — everything else contracts the same way: 静かだ ('is quiet,' plain), 静かだった ('was quiet,' plain), 静かじゃない / 静かではない ('is not quiet,' plain), 静かじゃなかった / 静かではなかった ('was not quiet,' plain). じゃ isn't its own separate word here — it only ever shows up glued to ない, so the negative conjugates as じゃなかった, built the same drop-then-add way an い-adjective would."
+                        },
+                        {
+                            title: "Watch out — fake い-adjectives are secretly な-adjectives",
+                            explain: "A couple of words end in い by coincidence and LOOK like い-adjectives, but conjugate as な-adjectives instead: きれい (pretty/clean), きらい (dislike/hate). Negate them with じゃないです, never くない — checking a な-adjective vocab list beats guessing from spelling every time."
                         }
                     ],
                     examples: [
-                        { jp: "私は起きます。", romaji: "Watashi wa okimasu.", en: "I wake up." },
-                        { jp: "私は学校に行きます。", romaji: "Watashi wa gakkou ni ikimasu.", en: "I go to school." },
-                        { jp: "私は先生と話します。", romaji: "Watashi wa sensei to hanashimasu.", en: "I speak with the teacher." },
-                        { jp: "私は勉強します。", romaji: "Watashi wa benkyoushimasu.", en: "I study." },
-                        { jp: "かばんを買います。", romaji: "Kaban wo kaimasu.", en: "I buy a bag." },
-                        { jp: "本を読みます。", romaji: "Hon wo yomimasu.", en: "I read a book." },
-                        { jp: "友達に会います。", romaji: "Tomodachi ni aimasu.", en: "I meet a friend." }
+                        { jp: "図書館は静かです", romaji: "Toshokan wa shizuka desu.", en: "The library is quiet." },
+                        { jp: "これは便利じゃないです", romaji: "Kore wa benri ja nai desu.", en: "This isn't convenient." },
+                        { jp: "あの先生は有名じゃないです", romaji: "Ano sensei wa yuumei ja nai desu.", en: "That teacher isn't famous." },
+                        { jp: "図書館は静かでした", romaji: "Toshokan wa shizuka deshita.", en: "The library was quiet. (past)" },
+                        { jp: "静かだ", romaji: "Shizuka da.", en: "It's quiet. (plain/casual register)" },
+                        { jp: "静かな図書館です", romaji: "Shizuka na toshokan desu.", en: "It's a quiet library. (adjective directly modifying the noun)" }
+                    ],
+                    examplesMore: [
+                        { label: "な-adjective", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS Na-Adj.pdf") }
                     ],
                     vocab: [
-                        { jp: "起きる", romaji: "okiru", en: "to wake up" }, { jp: "食べる", romaji: "taberu", en: "to eat" },
+                        { jp: "静か", romaji: "shizuka", en: "quiet" }, { jp: "好き", romaji: "suki", en: "like" },
+                        { jp: "元気", romaji: "genki", en: "energetic" }, { jp: "便利", romaji: "benri", en: "convenient" },
+                        { jp: "有名", romaji: "yuumei", en: "famous" }, { jp: "大切", romaji: "taisetsu", en: "important" },
+                        { jp: "きれい", romaji: "kirei", en: "pretty/clean" }, { jp: "きらい", romaji: "kirai", en: "dislike/hate" },
+                        { jp: "大変", romaji: "taihen", en: "tough/serious" },
+                        { jp: "静かです→静かでした", romaji: "shizuka deshita", en: "was quiet (な-adj/noun past)" },
+                        { jp: "静かじゃないです→静かじゃなかったです", romaji: "shizuka ja nakatta desu", en: "was not quiet (past negative)" },
+                        { jp: "静かです→静かだ", romaji: "shizuka da", en: "is quiet (plain/casual register)" },
+                        { jp: "静かじゃないです→静かじゃない", romaji: "shizuka ja nai", en: "is not quiet (plain/casual)" }
+                    ],
+                    sources: ["Tae Kim's Guide (な-adjectives)", "Wasabi Japanese adjectives guide"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let naAdj = pick(wb.naAdjectives);
+                let negAdj = wb.naAdjectives[Math.floor(Math.random() * wb.naAdjectives.length)];
+                let exercises = [
+                    {
+                        prompt: "Write: <strong>The library is " + naAdj.en + "</strong>",
+                        accepted: [["としょかん", "は", naAdj.jp, "です"]],
+                        hint: "としょかんは" + naAdj.jp + "です",
+                        refWords: [
+                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: naAdj.jp, role: "adjective" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    },
+                    {
+                        prompt: "Write: <strong>The library is not " + negAdj.en + "</strong>",
+                        accepted: [["としょかん", "は", negAdj.jp + "じゃないです"]],
+                        hint: "としょかんは" + negAdj.jp + "じゃないです",
+                        refWords: [
+                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: negAdj.jp + "じゃないです", role: "adjective" }
+                        ]
+                    }
+                ];
+                /* Bonus: sneak peek at shelf 10c's よく, paired with this
+                   lesson's own な-adjective predicate sentence shape. */
+                let preview = wb.preview && wb.preview[0];
+                if (preview) {
+                    exercises.push({
+                        prompt: "(bonus — sneak peek: shelf 10c) Write: <strong>The library is often quiet</strong>",
+                        accepted: [["としょかん", "は", preview.jp, "しずか", "です"]],
+                        hint: "としょかんは" + preview.jp + "しずかです",
+                        refWords: [
+                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: preview.jp, role: "neutral" }, { jp: "しずか", role: "adjective" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    });
+                }
+                return exercises;
+            }
+        };
+    }
+
+    function s10c() {
+        return {
+            id: "s10c", title: "Adverbs", subtitle: "Shelf 10c",
+            wordBank: {
+                iAdjectives: [{ jp: "はやい", en: "fast" }, { jp: "おそい", en: "slow" }],
+                newWords: [{ jp: "はやい", en: "fast/early" }, { jp: "おそい", en: "slow/late" }, { jp: "じょうず", en: "skillful" }],
+                preview: [{ jp: "おきます", en: "wake up", note: "Coming up in shelf 11a — ichidan verbs" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "What an adverb does",
+                            explain: "An adverb sits right before the word it describes — usually a verb, sometimes another adjective — and answers \"how?\" or \"how much?\": 大きく笑う ('laugh loudly'), とても大きい ('very big'). Unlike English, Japanese doesn't have one universal ending like \"-ly\" — how you form an adverb depends on what kind of word you're starting from."
+                        },
+                        {
+                            title: "い-adjective → adverb: drop い, add く",
+                            explain: "大きい → 大きく ('big' → 'greatly/loudly'), 早い → 早く ('fast/early' → 'quickly/early'), 遅い → 遅く ('slow/late' → 'slowly/late'). 良い is irregular here too, same as everywhere else — it becomes よく ('well'), built from よ, never いく.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">大き<span class="slash-char">い</span></span><span>い-adjective</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">大き<span class="add-char">く</span></span><span>drop い, add く</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Watch the trailing い get slashed away, then く fades in — that one swap is the whole rule (良い aside)."
+                        },
+                        {
+                            title: "な-adjective → adverb: just add に",
+                            explain: "静か → 静かに ('quiet' → 'quietly'), 上手 → 上手に ('skillful' → 'skillfully'). This is the easier of the two rules — な-adjectives don't change shape at all, they just pick up a に.",
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">静か</span><span>な-adjective</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">静か<span class="add-na">に</span></span><span>just add に</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Nothing gets dropped here — the adjective stays whole, に just pops onto the end."
+                        },
+                        {
+                            title: "Frequency adverbs — a closed set to just memorize",
+                            explain: "A handful of very common adverbs don't derive from an adjective at all — they're their own words, and N5 expects you to just know them: いつも (always), よく (often), ときどき (sometimes), あまり (not much — always paired with a negative verb/adjective), まだ (still/not yet), もう (already), とても (very), すぐに (right away)."
+                        }
+                    ],
+                    /* Every example below was re-checked for accuracy: particle
+                       choice, verb conjugation, and adjective->adverb form
+                       all verified against Tae Kim's Guide / Wasabi's
+                       adverb references before this lesson shipped. Three
+                       な-adjective examples and two い-adjective examples
+                       were added (below the original five) per explicit
+                       feedback asking for more of each -- all reuse verbs
+                       and adjectives already introduced elsewhere in the
+                       N5 curriculum rather than new vocabulary. */
+                    examples: [
+                        { jp: "猫はよく遊びます", romaji: "Neko wa yoku asobimasu.", en: "The cat often plays." },
+                        { jp: "図書館はいつも静かです", romaji: "Toshokan wa itsumo shizuka desu.", en: "The library is always quiet." },
+                        { jp: "これはあまり大きくないです", romaji: "Kore wa amari ookikunai desu.", en: "This isn't very big." },
+                        { jp: "早く行きます", romaji: "Hayaku ikimasu.", en: "I'll go quickly." },
+                        { jp: "静かに話します", romaji: "Shizuka ni hanashimasu.", en: "I'll speak quietly." },
+                        { jp: "猫は元気に遊びます", romaji: "Neko wa genki ni asobimasu.", en: "The cat plays energetically. (な-adjective → adverb)" },
+                        { jp: "彼は上手に歌います", romaji: "Kare wa jouzu ni utaimasu.", en: "He sings skillfully. (な-adjective → adverb)" },
+                        { jp: "きれいに書きます", romaji: "Kirei ni kakimasu.", en: "I write neatly. (な-adjective → adverb)" },
+                        { jp: "たのしく遊びます", romaji: "Tanoshiku asobimasu.", en: "I play happily. (い-adjective → adverb)" },
+                        { jp: "おそく起きます", romaji: "Osoku okimasu.", en: "I wake up late. (い-adjective → adverb)" }
+                    ],
+                    vocab: [
+                        { jp: "よく", romaji: "yoku", en: "often/well" }, { jp: "いつも", romaji: "itsumo", en: "always" },
+                        { jp: "ときどき", romaji: "tokidoki", en: "sometimes" }, { jp: "あまり", romaji: "amari", en: "not much (+negative)" },
+                        { jp: "すぐに", romaji: "sugu ni", en: "right away" }, { jp: "まだ", romaji: "mada", en: "still/not yet" },
+                        { jp: "もう", romaji: "mou", en: "already" }, { jp: "とても", romaji: "totemo", en: "very" },
+                        { jp: "はやい→はやく", romaji: "hayai → hayaku", en: "fast/early → quickly/early" },
+                        { jp: "おそい→おそく", romaji: "osoi → osoku", en: "slow/late → slowly/late" },
+                        { jp: "じょうず→じょうずに", romaji: "jouzu → jouzu ni", en: "skillful → skillfully" }
+                    ],
+                    sources: ["Tae Kim's Guide (adverbs)", "Wasabi Japanese adverbs guide"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let iAdj = pick(wb.iAdjectives);
+                let advForm = iAdj.jp.slice(0, -1) + "く";
+                let exercises = [
+                    {
+                        prompt: "Write: <strong>The library is always quiet</strong>",
+                        accepted: [["としょかん", "は", "いつも", "しずか", "です"]],
+                        hint: "としょかんはいつもしずかです",
+                        refWords: [
+                            { jp: "としょかん", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: "いつも", role: "neutral" }, { jp: "しずか", role: "adjective" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    },
+                    {
+                        prompt: "Write: <strong>I'll go " + (iAdj.jp === "はやい" ? "quickly" : "slowly") + "</strong>",
+                        accepted: [[advForm, "いきます"]],
+                        hint: advForm + "いきます",
+                        refWords: [{ jp: advForm, role: "neutral" }, { jp: "いきます", role: "predicate" }]
+                    }
+                ];
+                /* Bonus: sneak peek at shelf 11a's ichidan ます-form, paired
+                   with this lesson's own い-adjective-to-adverb rule. */
+                let preview = wb.preview && wb.preview[0];
+                if (preview) {
+                    exercises.push({
+                        prompt: "(bonus — sneak peek: shelf 11a) Write: <strong>I always wake up early</strong>",
+                        accepted: [["いつも", "はやく", preview.jp]],
+                        hint: "いつもはやく" + preview.jp,
+                        refWords: [{ jp: "いつも", role: "neutral" }, { jp: "はやく", role: "neutral" }, { jp: preview.jp, role: "predicate" }]
+                    });
+                }
+                return exercises;
+            }
+        };
+    }
+
+    /* SHELF 11a/11b/11c: Verbs, split into their own pages per explicit
+       feedback (ichidan / godan / kuru & suru are three genuinely
+       different conjugation systems, previously crammed into one shelf).
+       Each page: the shared verb-basics recap (11a only, so it exists
+       exactly once), then that group's own N5 verb list, THEN that
+       group's ます-form conjugation pattern — in that order, per
+       explicit request. */
+    function s11a() {
+        return {
+            id: "s11a", title: "Ichidan Verbs", subtitle: "Shelf 11a",
+            wordBank: {
+                objects: [{ jp: "パン", en: "bread" }, { jp: "テレビ", en: "TV" }],
+                verbs: [{ jp: "たべます", en: "will eat" }, { jp: "みます", en: "will watch" }],
+                newWords: [{ jp: "でます", en: "will exit/leave" }, { jp: "かります", en: "will borrow" }, { jp: "おしえます", en: "will teach" }],
+                preview: [{ jp: "よみます", en: "will read", note: "Coming up in shelf 11b — godan verbs" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Ichidan verbs — いる／える",
+                            explain: "Ichidan verbs end in る, with an い or え sound right before it — 食べる (taberu, \"eat\"), 見る (miru, \"see\"), 起きる (okiru, \"wake up\"). Whatever the verb, it always comes last in the sentence, with を marking the object right before it: パンを食べます ('will eat bread').",
+                            pattern: '<span class="pattern-box__slot">Object</span> <span class="pattern-box__fixed">を</span> <span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ます</span>'
+                        },
+                        {
+                            title: "Conjugating to ます-form",
+                            explain: "Ichidan verbs are the easy case: drop る, then add ます. No sound changes, no exceptions inside this group — every real ichidan verb conjugates exactly this way.",
+                            pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">る</span> &rarr; <span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">ます</span>',
+                            diagramSvg: '<div class="masu-diagram">'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">食べ<span class="slash-char">る</span></span><span>taberu — dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">食べ</span><span>tabe — る is dropped</span></div>'
+                                + '</div>'
+                                + '<div class="masu-arrow-down">&darr;</div>'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">食べ</span><span>tabe — the stem</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">食べ<span class="add-char">ます</span></span><span>tabemasu — ます is added</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Two steps, zero exceptions: 食べる (taberu) → 食べ (tabe, る slashed off) → 食べます (tabemasu, ます added). Every ichidan verb follows this exact formula — try it yourself with 起きる (okiru) or 見る (miru)."
+                        },
+                        {
+                            title: "Impostors — look ichidan, conjugate godan",
+                            explain: "A handful of very common N5 verbs end in る with an い or え sound right before it, exactly like an ichidan verb — but they secretly conjugate as godan verbs instead. Drop る and add ます like ichidan here, and the ます-form comes out wrong.",
+                            diagramSvg: '<div class="impostor-table-wrap"><table class="impostor-table">'
+                                + '<tr><th>Verb</th><th>Meaning</th><th>ます-form (godan, not ichidan)</th></tr>'
+                                + '<tr><td class="impostor-table__jp">帰る (かえる)</td><td class="impostor-table__en">to go home</td><td class="impostor-table__masu">帰ります (kaerimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">入る (はいる)</td><td class="impostor-table__en">to enter</td><td class="impostor-table__masu">入ります (hairimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">走る (はしる)</td><td class="impostor-table__en">to run</td><td class="impostor-table__masu">走ります (hashirimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">知る (しる)</td><td class="impostor-table__en">to know</td><td class="impostor-table__masu">知ります (shirimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">要る (いる)</td><td class="impostor-table__en">to need</td><td class="impostor-table__masu">要ります (irimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">切る (きる)</td><td class="impostor-table__en">to cut</td><td class="impostor-table__masu">切ります (kirimasu)</td></tr>'
+                                + '</table></div>',
+                            diagramCaption: "These six show up constantly in N5 material — memorize them as a set, since there's no way to tell just by looking. See the Godan Verbs page for how their conjugation actually works."
+                        }
+                    ],
+                    /* ます is the non-past polite form -- it covers a flat
+                       present-tense habit AND a future action, and reads
+                       most naturally in English as "will [verb]" rather
+                       than a bare present tense, per explicit feedback
+                       that "eat bread" was a misleading translation. */
+                    examples: [
+                        { jp: "私は起きます。", romaji: "Watashi wa okimasu.", en: "I will wake up." },
+                        { jp: "私は寝ます。", romaji: "Watashi wa nemasu.", en: "I will sleep." },
+                        { jp: "パンを食べます。", romaji: "Pan wo tabemasu.", en: "I will eat bread." },
+                        { jp: "テレビを見ます。", romaji: "Terebi wo mimasu.", en: "I will watch TV." },
+                        { jp: "本を借ります。", romaji: "Hon wo karimasu.", en: "I will borrow a book." }
+                    ],
+                    examplesMore: [
+                        { label: "ichidan verb", href: encodeURI("../../assets/lesson pdf/N5_ICHIDAN_VERBS.pdf") }
+                    ],
+                    vocab: [
+                        { jp: "起きる", romaji: "okiru", en: "to wake up" }, { jp: "寝る", romaji: "neru", en: "to sleep" },
+                        { jp: "食べる", romaji: "taberu", en: "to eat" }, { jp: "見る", romaji: "miru", en: "to see/watch" },
+                        { jp: "出る", romaji: "deru", en: "to exit/leave" }, { jp: "借りる", romaji: "kariru", en: "to borrow" },
+                        { jp: "教える", romaji: "oshieru", en: "to teach" }, { jp: "いる", romaji: "iru", en: "to exist/be (people, animals)" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar — verb groups and the ます-form", "Genki I — Lesson 3"]
+                };
+            },
+            /* Object/verb pairs are curated (パン+たべます, テレビ+みます) so both
+               combos stay grammatically valid and both verbs are genuinely
+               ichidan. */
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let idx = Math.floor(Math.random() * wb.objects.length);
+                let obj = wb.objects[idx];
+                let verb = wb.verbs[idx];
+                let exercises = [{
+                    prompt: "Write: <strong>I " + verb.en + " " + obj.en + "</strong>",
+                    accepted: [["わたし", "は", obj.jp, "を", verb.jp]],
+                    hint: "わたしは" + obj.jp + "を" + verb.jp,
+                    refWords: [
+                        { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                        { jp: obj.jp, role: "object" }, { jp: "を", role: "particle" }, { jp: verb.jp, role: "predicate" }
+                    ]
+                }];
+                /* Bonus: sneak peek at shelf 11b's godan 読みます. */
+                let preview = wb.preview && wb.preview[0];
+                if (preview) {
+                    exercises.push({
+                        prompt: "(bonus — sneak peek: shelf 11b) Write: <strong>I will read a book</strong>",
+                        accepted: [["わたし", "は", "ほん", "を", preview.jp]],
+                        hint: "わたしはほんを" + preview.jp,
+                        refWords: [
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: "ほん", role: "object" }, { jp: "を", role: "particle" }, { jp: preview.jp, role: "predicate" }
+                        ]
+                    });
+                }
+                return exercises;
+            }
+        };
+    }
+
+    function s11b() {
+        return {
+            id: "s11b", title: "Godan Verbs", subtitle: "Shelf 11b",
+            wordBank: {
+                /* Kana-only, per the site's "graded accepted answers stay in
+                   kana" convention — the original combined shelf 11 had
+                   kanji here (本, 学校, 読みます, 買います), which silently made
+                   those two exercises ungradeable via plain hiragana typing;
+                   fixed while splitting this content out. */
+                objects: [{ jp: "ほん", en: "a book" }, { jp: "かばん", en: "a bag" }],
+                places: [{ jp: "がっこう", en: "school" }],
+                verbs: [{ jp: "よみます", en: "will read" }, { jp: "かいます", en: "will buy" }, { jp: "いきます", en: "will go" }],
+                newWords: [
+                    { jp: "しんぶん", en: "newspaper" }, { jp: "ざっし", en: "magazine" }, { jp: "てがみ", en: "letter" }
+                ],
+                preview: [{ jp: "します", en: "will do", note: "Coming up in shelf 11c — kuru & suru" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "N5 Godan Verbs",
+                            explain: "This is the largest verb group by far. Every one ends in an u-sound &mdash; that final syllable (highlighted below) is what makes it godan: 行く (い<span class=\"godan-ending\">く</span>, go), 話す (はな<span class=\"godan-ending\">す</span>, speak), 帰る (かえ<span class=\"godan-ending\">る</span>, go home), 読む (よ<span class=\"godan-ending\">む</span>, read), 買う (か<span class=\"godan-ending\">う</span>, buy), 書く (か<span class=\"godan-ending\">く</span>, write), 聞く (き<span class=\"godan-ending\">く</span>, listen/ask), 会う (あ<span class=\"godan-ending\">う</span>, meet), 立つ (た<span class=\"godan-ending\">つ</span>, stand), 座る (すわ<span class=\"godan-ending\">る</span>, sit), 働く (はたら<span class=\"godan-ending\">く</span>, work), 休む (やす<span class=\"godan-ending\">む</span>, rest), 遊ぶ (あそ<span class=\"godan-ending\">ぶ</span>, play), 分かる (わか<span class=\"godan-ending\">る</span>, understand), 歌う (うた<span class=\"godan-ending\">う</span>, sing). That final sound is the one that changes when you conjugate it &mdash; see the ます-form diagram below."
+                        },
+                        {
+                            title: "Conjugating to ます-form",
+                            explain: "Swap the final u-sound for its matching i-sound (same row, い column), then add ます: く→き, ぐ→ぎ, す→し, つ→ち, ぬ→に, ぶ→び, む→み, う→い, る→り.",
+                            pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">(u-sound)</span> &rarr; <span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">(i-sound) + ます</span>',
+                            diagramSvg: '<div class="masu-diagram">'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">飲<span class="slash-char">む</span></span><span>nomu — dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">飲</span><span>nom — う-sound dropped</span></div>'
+                                + '</div>'
+                                + '<div class="masu-arrow-down">&darr;</div>'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">飲</span><span>nom — the stem</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">飲<span class="add-char">みます</span></span><span>nomimasu — い-sound + ます added</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "飲む (nomu, \"drink\") → 飲 (nom, む dropped) → 飲みます (nomimasu, み + ます added). Same two-step shape every time, just swap the u-sound for its matching い row first: 行く→行きます, 話す→話します, 読む→読みます, 買う→買います."
+                        },
+                        {
+                            title: "Impostors — look ichidan, conjugate godan",
+                            explain: "These N5 verbs end in いる/える, exactly like an ichidan verb, but are secretly godan &mdash; drop る the ichidan way and you'll get it wrong every time. Check a verb against this list (or a dictionary) rather than guessing from its ending alone.",
+                            diagramSvg: '<div class="impostor-table-wrap"><table class="impostor-table">'
+                                + '<tr><th>Verb</th><th>Meaning</th><th>ます-form (godan, not ichidan)</th></tr>'
+                                + '<tr><td class="impostor-table__jp">帰る (かえる)</td><td class="impostor-table__en">to go home</td><td class="impostor-table__masu">帰ります (kaerimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">入る (はいる)</td><td class="impostor-table__en">to enter</td><td class="impostor-table__masu">入ります (hairimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">走る (はしる)</td><td class="impostor-table__en">to run</td><td class="impostor-table__masu">走ります (hashirimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">知る (しる)</td><td class="impostor-table__en">to know</td><td class="impostor-table__masu">知ります (shirimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">要る (いる)</td><td class="impostor-table__en">to need</td><td class="impostor-table__masu">要ります (irimasu)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">切る (きる)</td><td class="impostor-table__en">to cut</td><td class="impostor-table__masu">切ります (kirimasu)</td></tr>'
+                                + '</table></div>',
+                            diagramCaption: "帰る is the single most common trap at N5 — 帰ります, never 帰ます. The rest of this list follows the exact same rule: real u-sound godan verbs that just happen to look like they end in -iru/-eru."
+                        }
+                    ],
+                    examples: [
+                        { jp: "私は学校に行きます。", romaji: "Watashi wa gakkou ni ikimasu.", en: "I will go to school." },
+                        { jp: "私は先生と話します。", romaji: "Watashi wa sensei to hanashimasu.", en: "I will speak with the teacher." },
+                        { jp: "かばんを買います。", romaji: "Kaban wo kaimasu.", en: "I will buy a bag." },
+                        { jp: "本を読みます。", romaji: "Hon wo yomimasu.", en: "I will read a book." },
+                        { jp: "友達に会います。", romaji: "Tomodachi ni aimasu.", en: "I will meet a friend." }
+                    ],
+                    examplesMore: [
+                        { label: "godan verb", href: encodeURI("../../assets/lesson pdf/N5_GODAN_VERBS.pdf") }
+                    ],
+                    vocab: [
                         { jp: "行く", romaji: "iku", en: "to go" }, { jp: "話す", romaji: "hanasu", en: "to speak" },
-                        { jp: "帰る", romaji: "kaeru", en: "to go home" }, { jp: "勉強する", romaji: "benkyousuru", en: "to study" },
-                        { jp: "読む", romaji: "yomu", en: "to read" }, { jp: "買う", romaji: "kau", en: "to buy" },
-                        { jp: "書く", romaji: "kaku", en: "to write" }, { jp: "聞く", romaji: "kiku", en: "to listen/ask" },
-                        { jp: "会う", romaji: "au", en: "to meet" }, { jp: "立つ", romaji: "tatsu", en: "to stand" },
-                        { jp: "座る", romaji: "suwaru", en: "to sit" }, { jp: "働く", romaji: "hataraku", en: "to work" },
-                        { jp: "休む", romaji: "yasumu", en: "to rest" }, { jp: "遊ぶ", romaji: "asobu", en: "to play" },
-                        { jp: "分かる", romaji: "wakaru", en: "to understand" }, { jp: "歌う", romaji: "utau", en: "to sing" }
+                        { jp: "帰る", romaji: "kaeru", en: "to go home" }, { jp: "読む", romaji: "yomu", en: "to read" },
+                        { jp: "買う", romaji: "kau", en: "to buy" }, { jp: "書く", romaji: "kaku", en: "to write" },
+                        { jp: "聞く", romaji: "kiku", en: "to listen/ask" }, { jp: "会う", romaji: "au", en: "to meet" },
+                        { jp: "立つ", romaji: "tatsu", en: "to stand" }, { jp: "座る", romaji: "suwaru", en: "to sit" },
+                        { jp: "働く", romaji: "hataraku", en: "to work" }, { jp: "休む", romaji: "yasumu", en: "to rest" },
+                        { jp: "遊ぶ", romaji: "asobu", en: "to play" }, { jp: "分かる", romaji: "wakaru", en: "to understand" },
+                        { jp: "歌う", romaji: "utau", en: "to sing" }, { jp: "飲む", romaji: "nomu", en: "to drink" }
                     ],
                     sources: ["Tae Kim's Guide to Japanese Grammar — verb groups and the ます-form", "Genki I — Lesson 3"]
                 };
@@ -1426,7 +3133,7 @@
                     let place = wb.places[0];
                     let verb = wb.verbs[2];
                     exercises = [{
-                        prompt: "Write: <strong>I go to " + place.en + "</strong>",
+                        prompt: "Write: <strong>I will go to " + place.en + "</strong>",
                         accepted: [["わたし", "は", place.jp, "に", verb.jp]],
                         hint: "わたしは" + place.jp + "に" + verb.jp,
                         refWords: [
@@ -1435,20 +3142,16 @@
                         ]
                     }];
                 }
-                /* Bonus: sneak peek at shelf 12's ましょう, built off this
-                   lesson's own ます-stem (drop ます, add ましょう). */
+                /* Bonus: sneak peek at shelf 11c's します. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
-                    let obj2 = pick(wb.objects);
-                    let verb2 = wb.verbs[wb.objects.indexOf(obj2)];
-                    let stem = verb2.jp.replace(/ます$/, "");
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 12) Write: <strong>Let's " + verb2.en + " " + obj2.en + "</strong>",
-                        accepted: [[obj2.jp, "を", stem + preview.jp]],
-                        hint: obj2.jp + "を" + stem + preview.jp,
+                        prompt: "(bonus — sneak peek: shelf 11c) Write: <strong>I will study</strong>",
+                        accepted: [["わたし", "は", "べんきょう", preview.jp]],
+                        hint: "わたしはべんきょう" + preview.jp,
                         refWords: [
-                            { jp: obj2.jp, role: "object" }, { jp: "を", role: "particle" },
-                            { jp: stem + preview.jp, role: "predicate" }
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: "べんきょう", role: "object" }, { jp: preview.jp, role: "predicate" }
                         ]
                     });
                 }
@@ -1457,14 +3160,122 @@
         };
     }
 
-    /* SHELF 12: Volitional & Invitations */
+    function s11c() {
+        return {
+            id: "s11c", title: "Kuru & Suru (Irregular Verbs)", subtitle: "Shelf 11c",
+            wordBank: {
+                suruWords: [{ jp: "べんきょう", en: "will study" }, { jp: "でんわ", en: "will phone/call" }],
+                newWords: [{ jp: "れんしゅうします", en: "will practice" }],
+                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 13 — invitations" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "N5 する-verbs & 来る",
+                            explain: "Only two verbs — plus the whole family of する compound verbs — don't follow either the ichidan or godan pattern at N5: する (to do, on its own) and 来る (くる, 'to come'). The compounds are just a noun glued to する: 勉強する (べんきょうする, study), 電話する (でんわする, phone/call), 練習する (れんしゅうする, practice)."
+                        },
+                        {
+                            title: "What makes these verbs irregular",
+                            explain: "する and 来る conjugate in ways that don't follow any predictable sound rule — 来る's stem sound literally changes, from く to き, which neither ichidan nor godan verbs ever do. Every する-compound conjugates exactly the same way once you know plain する's own pattern, since only する itself is doing anything irregular — the noun in front of it (勉強, 電話, 練習...) never changes."
+                        },
+                        {
+                            title: "Conjugating to ます-form",
+                            explain: "する and 来る don't follow the drop-and-swap formulas ichidan and godan verbs use — each one just has to be memorized on its own, as shown below. For a compound する-verb, keep the noun and just swap する for します: 勉強する → 勉強します, 電話する → 電話します.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">する</span> &rarr; <span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">します</span>',
+                            diagramSvg: '<div class="masu-diagram">'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">す<span class="slash-char">る</span></span><span>suru — dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">し</span><span>shi — irregular stem (す&rarr;し, not a simple drop)</span></div>'
+                                + '</div>'
+                                + '<div class="masu-arrow-down">&darr;</div>'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">し</span><span>shi — the stem</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">し<span class="add-char">ます</span></span><span>shimasu — ます added</span></div>'
+                                + '</div>'
+                                + '</div>'
+                                + '<div class="masu-diagram" style="margin-top:14px">'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">く<span class="slash-char">る</span></span><span>kuru — dictionary form (来る)</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">き</span><span>ki — irregular stem (く&rarr;き, the reading itself shifts)</span></div>'
+                                + '</div>'
+                                + '<div class="masu-arrow-down">&darr;</div>'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">き</span><span>ki — the stem</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">き<span class="add-char">ます</span></span><span>kimasu — ます added (来ます)</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "する → し → します, and 来る (kuru) → き → 来ます (kimasu) — same two-step \"stem, then add ます\" shape as ichidan/godan, just with a stem that has to be memorized instead of derived from a rule."
+                        }
+                    ],
+                    examples: [
+                        { jp: "私は勉強します。", romaji: "Watashi wa benkyoushimasu.", en: "I will study." },
+                        { jp: "友達に電話します。", romaji: "Tomodachi ni denwashimasu.", en: "I will call a friend." },
+                        { jp: "練習します。", romaji: "Renshuu shimasu.", en: "I will practice." },
+                        { jp: "学校に来ます。", romaji: "Gakkou ni kimasu.", en: "I will come to school." }
+                    ],
+                    vocab: [
+                        { jp: "する", romaji: "suru", en: "to do" }, { jp: "来る", romaji: "kuru", en: "to come" },
+                        { jp: "勉強する", romaji: "benkyousuru", en: "to study" }, { jp: "電話する", romaji: "denwasuru", en: "to phone/call" },
+                        { jp: "練習する", romaji: "renshuusuru", en: "to practice" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar — verb groups and the ます-form", "Genki I — Lesson 3"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let word = pick(wb.suruWords);
+                let exercises = [
+                    {
+                        prompt: "Write: <strong>I " + word.en + "</strong>",
+                        accepted: [["わたし", "は", word.jp, "します"]],
+                        hint: "わたしは" + word.jp + "します",
+                        refWords: [
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: word.jp, role: "object" }, { jp: "します", role: "predicate" }
+                        ]
+                    },
+                    {
+                        prompt: "Write: <strong>I come to school</strong>",
+                        accepted: [["がっこう", "に", "きます"]],
+                        hint: "がっこうにきます",
+                        refWords: [
+                            { jp: "がっこう", role: "object" }, { jp: "に", role: "particle" }, { jp: "きます", role: "predicate" }
+                        ]
+                    }
+                ];
+                /* Bonus: sneak peek at shelf 12's ましょう, built off this
+                   lesson's own する-verb ます-stem (drop ます, add ましょう). */
+                let preview = wb.preview && wb.preview[0];
+                if (preview) {
+                    exercises.push({
+                        prompt: "(bonus — sneak peek: shelf 12) Write: <strong>Let's study</strong>",
+                        accepted: [["べんきょう", "し" + preview.jp]],
+                        hint: "べんきょうし" + preview.jp,
+                        refWords: [{ jp: "べんきょう", role: "object" }, { jp: "し" + preview.jp, role: "predicate" }]
+                    });
+                }
+                return exercises;
+            }
+        };
+    }
+
+    /* SHELF 13: Volitional & Invitations */
     function s12() {
         return {
-            id: "s12", title: "Invitations", subtitle: "Shelf 12",
+            id: "s12", title: "Invitations", subtitle: "Shelf 13",
             wordBank: {
                 places: [{ jp: "図書館", en: "the library", particle: "に" }, { jp: "公園", en: "the park", particle: "で" }],
                 verbs: [{ jp: "行きましょう", en: "let's go to" }, { jp: "遊びませんか", en: "won't you play at" }],
-                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in shelf 13 — the て-form" }]
+                newWords: [
+                    { jp: "カフェ", en: "café" }, { jp: "どうぶつえん", en: "zoo" }, { jp: "うみ", en: "sea / beach" },
+                    { jp: "たのしい", en: "fun" }, { jp: "きれい", en: "pretty / beautiful" }
+                ],
+                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in shelf 14 — the て-form" }]
             },
             buildInstruction: function () {
                 return {
@@ -1472,12 +3283,28 @@
                         {
                             title: "ましょう — \"Let's...\"",
                             explain: "Both patterns build on the ます-stem already known — just swap what comes after it. Drop ます, add ましょう — 行きます becomes 行きましょう ('let's go'). A confident, ready-to-act suggestion.",
-                            pattern: '<span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ましょう</span>'
+                            pattern: '<span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ましょう</span>',
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">行き<span class="slash-char">ます</span></span><span>ikimasu — ます-form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">行き<span class="add-char">ましょう</span></span><span>ikimashou — drop ます, add ましょう</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "行きます (ikimasu) → 行きましょう (ikimashou, \"let's go\") — the same ます-stem you already know, just with a different ending swapped on."
                         },
                         {
                             title: "ませんか — \"Won't you...?\"",
                             explain: "The negative-question shape 行きませんか literally asks 'won't you go?' — softer and more polite than ましょう, since it leaves room for the other person to say no.",
-                            pattern: '<span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ませんか</span>'
+                            pattern: '<span class="pattern-box__slot">Verb</span> <span class="pattern-box__fixed">ませんか</span>',
+                            diagramSvg: '<div class="grammar-box__no-diagram">'
+                                + '<div class="no-diagram-steps">'
+                                + '<div class="no-step"><span class="jp">行き<span class="slash-char">ます</span></span><span>ikimasu — ます-form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">行き<span class="add-char">ませんか</span></span><span>ikimasenka — drop ます, add ませんか</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "行きます (ikimasu) → 行きませんか (ikimasenka, \"won't you go?\") — same ます-stem again, this time swapped for the softer negative-question ending."
                         },
                         {
                             title: "One more — ましょうか",
@@ -1523,17 +3350,21 @@
         };
     }
 
-    /* SHELF 13: Conjugations (te-form + ください) */
+    /* SHELF 14: Conjugations (te-form + ください) */
     function s13() {
         return {
-            id: "s13", title: "Conjugations", subtitle: "Shelf 13",
+            id: "s13", title: "Conjugations", subtitle: "Shelf 14",
             wordBank: {
                 verbs: [
                     { te: "食べて", en: "eat" }, { te: "話して", en: "speak" },
                     { te: "読んで", en: "read" }, { te: "買って", en: "buy" },
                     { te: "歌って", en: "sing" }, { te: "書いて", en: "write" }
                 ],
-                preview: [{ jp: "ません", en: "don't (present negative)", note: "Coming up in shelf 14 — four forms, one stem" }]
+                newWords: [
+                    { jp: "まど", en: "window" }, { jp: "ドア", en: "door" }, { jp: "かぎ", en: "key" },
+                    { jp: "あかるい", en: "bright" }, { jp: "くらい", en: "dark" }
+                ],
+                preview: [{ jp: "から", en: "because", note: "Coming up in shelf 15 — sentence construction" }]
             },
             buildInstruction: function () {
                 return {
@@ -1545,15 +3376,44 @@
                         },
                         {
                             title: "Godan verbs — 5 endings, all one group",
-                            explain: "う・る・つ → って (買う→買って); ぶ・む・ぬ → んで (読む→読んで); ぐ → いで (泳ぐ→泳いで); く → いて (書く→書いて) — EXCEPTION: 行く breaks its own rule → 行って, not 行いて (the single most common て-form mistake); す → して (話す→話して)."
+                            explain: "Every godan verb's dictionary-form ending sorts into one of five swap rules below — drop the ending shown and replace it with what's on the right. EXCEPTION: 行く breaks its own rule → 行って, not 行いて (the single most common て-form mistake).",
+                            diagramSvg: '<div class="impostor-table-wrap"><table class="impostor-table">'
+                                + '<tr><th>Ending group</th><th>Swap to</th><th>Example</th></tr>'
+                                + '<tr><td class="impostor-table__jp">う・つ・る</td><td class="impostor-table__masu">って</td><td class="impostor-table__en">買う &rarr; 買って (kau &rarr; katte)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">ぬ・ぶ・む</td><td class="impostor-table__masu">んで</td><td class="impostor-table__en">読む &rarr; 読んで (yomu &rarr; yonde)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">く</td><td class="impostor-table__masu">いて</td><td class="impostor-table__en">書く &rarr; 書いて (kaku &rarr; kaite)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">ぐ</td><td class="impostor-table__masu">いで</td><td class="impostor-table__en">泳ぐ &rarr; 泳いで (oyogu &rarr; oyoide)</td></tr>'
+                                + '<tr><td class="impostor-table__jp">す</td><td class="impostor-table__masu">して</td><td class="impostor-table__en">話す &rarr; 話して (hanasu &rarr; hanashite)</td></tr>'
+                                + '</table></div>',
+                            diagramCaption: "Five swap rules, zero memorizing sentence-by-sentence — one exception to remember: 行く (iku) &rarr; 行って (itte), not 行いて."
                         },
                         {
                             title: "Ichidan — drop る, add て",
-                            explain: "Same shape as the ます-stem already known — just add て instead: 食べる→食べて, 起きる→起きて. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — 帰る (shelf 11) is one, hence 帰って not 帰て. A few more you'll meet later (reference only, not tested here): 入る (はいる, enter), 走る (はしる, run), 知る (しる, know), 要る (いる, need), 切る (きる, cut), 減る (へる, decrease)."
+                            explain: "Same shape as the ます-stem already known — just add て instead of ます. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — see the Impostors table on the Ichidan Verbs page (帰る, 入る, 走る, 知る, 要る, 切る) — so they follow the godan う・つ・る rule above instead: 帰る &rarr; 帰って, not 帰て.",
+                            diagramSvg: '<div class="masu-diagram">'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">食べ<span class="slash-char">る</span></span><span>taberu — dictionary form</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">食べ</span><span>tabe — る is dropped</span></div>'
+                                + '</div>'
+                                + '<div class="masu-arrow-down">&darr;</div>'
+                                + '<div class="masu-row">'
+                                + '<div class="no-step"><span class="jp">食べ</span><span>tabe — the stem</span></div>'
+                                + '<div class="no-eq">&rarr;</div>'
+                                + '<div class="no-step no-step--result"><span class="jp">食べ<span class="add-char">て</span></span><span>tabete — て is added</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Identical two steps to the ます-form formula from shelf 11a — just swap in て instead of ます at the end."
                         },
                         {
-                            title: "Irregular verbs & connecting actions",
-                            explain: "Only one truly irregular pattern at this level: する-verbs swap to して the same way they swap to します (勉強する→勉強して). The other classic irregular is 来る (くる, 'to come') → 来て (きて) — not taught as vocabulary in this course, but worth knowing by name since it follows no group's rule at all, same as する. て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'"
+                            title: "Irregular verbs — fixed forms, no formula",
+                            explain: "する and 来る (くる, 'to come', shelf 11c) don't follow any group's rule at all — irregular verbs always have their own fixed conjugation, memorized individually rather than derived from an ending. する &rarr; して (so 勉強する &rarr; 勉強して, the same swap it makes for ます). 来る &rarr; 来て (きて). て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'",
+                            diagramSvg: '<div class="impostor-table-wrap"><table class="impostor-table">'
+                                + '<tr><th>Dictionary form</th><th>て-form</th><th>Rule</th></tr>'
+                                + '<tr><td class="impostor-table__jp">する (suru)</td><td class="impostor-table__masu">して (shite)</td><td class="impostor-table__en">memorized — no group</td></tr>'
+                                + '<tr><td class="impostor-table__jp">来る (kuru)</td><td class="impostor-table__masu">来て (kite)</td><td class="impostor-table__en">memorized — no group</td></tr>'
+                                + '</table></div>',
+                            diagramCaption: "Only two irregulars exist at this level — worth memorizing by name since neither one is derivable from a rule."
                         }
                     ],
                     examples: [
@@ -1575,9 +3435,8 @@
                     sources: ["Tae Kim's Guide — the て-form chapter", "Bunpro — て-form conjugation reference"]
                 };
             },
-            /* No bonus exercise: shelf 14's ません pattern is a different,
-               competing polite ending (not something that stacks onto て+
-               ください) — preview stays exposure-only. */
+            /* No bonus exercise: shelf 15's から needs an adjective/reason
+               clause this lesson doesn't have vocab for yet — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let v = pick(this.wordBank.verbs);
                 return [{
@@ -1590,10 +3449,10 @@
         };
     }
 
-    /* SHELF 14: Past & Negative Tense */
+    /* SHELF 12: Past & Negative Tense */
     function s14() {
         return {
-            id: "s14", title: "Past & Negative", subtitle: "Shelf 14",
+            id: "s14", title: "Past & Negative", subtitle: "Shelf 12",
             wordBank: {
                 verbs: [
                     { neg: "読みません", past: "読みました", en: "read" },
@@ -1601,7 +3460,11 @@
                     { neg: "行きません", past: "行きました", en: "go" },
                     { neg: "話しません", past: "話しました", en: "speak" }
                 ],
-                preview: [{ jp: "から", en: "because", note: "Coming up in shelf 15 — sentence construction" }]
+                newWords: [
+                    { jp: "きのう", en: "yesterday" }, { jp: "きょう", en: "today" }, { jp: "あした", en: "tomorrow" },
+                    { jp: "さびしい", en: "lonely" }, { jp: "うれしい", en: "happy" }
+                ],
+                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 13 — invitations" }]
             },
             buildInstruction: function () {
                 return {
@@ -1626,8 +3489,8 @@
                     sources: ["Tae Kim's Guide — past and negative verb forms", "Genki I — Lesson 3"]
                 };
             },
-            /* No bonus exercise: shelf 15's から needs an adjective/reason
-               clause this lesson doesn't have vocab for yet — exposure-only. */
+            /* No bonus exercise: shelf 13's ましょう／ませんか swaps onto its own
+               ます-stem taught fresh there — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let v1 = pick(this.wordBank.verbs);
                 let v2 = pick(this.wordBank.verbs);
@@ -1657,11 +3520,32 @@
                 adjectives: [{ jp: "静か", en: "quiet" }, { jp: "古い", en: "old" }],
                 connectors: [{ jp: "から", en: "because" }, { jp: "けど", en: "but" }, { jp: "と", en: "and (nouns only)" }],
                 nouns: [{ jp: "本", en: "book" }, { jp: "かばん", en: "bag" }],
+                /* This lesson's own wordBank already puts real kanji into
+                   adjectives/nouns (静か, 古い, 本) — per the newWords
+                   convention, kanji is fair game here too (unlike most
+                   other kana-only lessons), so these five are picked
+                   straight from the KANJI_READINGS furigana dictionary
+                   above so their readings stay verified/correct. */
+                newWords: [
+                    { jp: "大きい", en: "big" }, { jp: "新しい", en: "new" }, { jp: "高い", en: "expensive / tall" },
+                    { jp: "友達", en: "friend" }, { jp: "好き", en: "like / favorite" }
+                ],
                 preview: [{ jp: "が", en: "but (formal) / singles something out", note: "Coming up in shelf 16 — every particle, one place" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
+                        {
+                            title: "Basic sentence order — S-T-P-O-V",
+                            explain: "Before connecting clauses together, here's the skeleton every clause is built on. Japanese word order is fixed by ROLE, not by where a word \"feels\" like it goes in English: Subject, Time, Place, Object, then the Verb, always last. Click each letter below to see what it marks and which particle(s) go with it.",
+                            diagramSvg: window.NekoSTPOV.buildSignalStackHTML(),
+                            diagramCaption: "私は 三時に 図書館で 本を 読みます — Subject(は) Time(に) Place(で) Object(を) Verb. Time and Place can swap order with each other, but the Verb never moves from the end, and the Subject never moves from the front."
+                        },
+                        {
+                            title: "Practice — build the sentence",
+                            explain: "Pick up a word chip, then click the slot you think matches its role. A wrong slot just shakes — try again. Three rounds, each a full S-T-P-O-V sentence.",
+                            diagramSvg: window.NekoSTPOV.buildBuilderHTML()
+                        },
                         {
                             title: "Putting it all together — four connectors",
                             explain: "You already know single-clause sentences. This shelf connects them into longer ones with a small set of connector words: て-form (already known, chains actions), から ('because'), けど ('but'), と ('and,' nouns only)."
@@ -1757,19 +3641,57 @@
             wordBank: {
                 predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
                 places: [{ jp: "図書館", kana: "としょかん", en: "the library" }, { jp: "公園", kana: "こうえん", en: "the park" }],
-                actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }]
+                actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }],
+                /* Same jp/kana/en shape as predicates/places/actions above
+                   (this lesson's own convention) — all five readings are
+                   verified against the KANJI_READINGS furigana dictionary. */
+                newWords: [
+                    { jp: "猫", kana: "ねこ", en: "cat" }, { jp: "友達", kana: "ともだち", en: "friend" },
+                    { jp: "本", kana: "ほん", en: "book" }, { jp: "大きい", kana: "おおきい", en: "big" },
+                    { jp: "好き", kana: "すき", en: "like / favorite" }
+                ]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "Every particle, one place",
-                            explain: "This shelf reviews every particle taught so far (は topic shelf 3, を object shelf 11, に location/target shelf 8, で action-location shelf 12, の possessive shelf 5, か question shelf 6, と and/with shelf 11/15, から because shelf 15, けど but shelf 15), then adds the last two: が and も. Sentence skeleton, when several particles show up together: topic/subject (は・が) → place (に・で) → thing (を) → verb.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">が/も</span> <span class="pattern-box__slot">Predicate</span>'
+                            explain: "This shelf reviews every particle taught so far (は topic shelf 3, を object shelf 11a, に location/target shelf 8, で action-location shelf 12, の possessive shelf 5, か question shelf 6, と and/with shelf 11/15, から because shelf 15, けど but shelf 15), then adds the last two: が and も. Sentence skeleton, when several particles show up together: topic/subject (は・が) → place (に・で) → thing (を) → verb.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">が/も</span> <span class="pattern-box__slot">Predicate</span>',
+                            /* Ported from n5-phaser-game.js's shelf-16 "Where each
+                               particle goes" sentence-skeleton diagram — reuses the
+                               already-existing .conv-hl role spans (see study-style.css)
+                               instead of the original's lesson-box-only
+                               .lesson-box__skeleton-slot/role-* classes, same approach
+                               as s06's ported diagram above. Not every sentence uses
+                               every slot, but this is the fixed order when several
+                               particles show up together. */
+                            diagramSvg: '<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;font-size:17px;">'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--subject">猫</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">topic/subject</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--particle">は・が</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">は / が</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--subject">図書館</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">place</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--particle">に・で</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">に / で</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--subject">本</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">thing</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--particle">を</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">object</span></div>'
+                                + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--copula">読みます</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">verb</span></div>'
+                                + '</div>',
+                            diagramCaption: "Not every sentence uses every slot — but when several particles show up together, this is the order: topic/subject first, then place, then the direct object, then the verb last."
                         },
                         {
                             title: "が — singling something out",
-                            explain: "が singles out exactly what fits a description — often answering an unspoken 'which one?' 猫はかわいいです ('as for the cat, it's cute' — general statement) vs. 猫がかわいいです ('IT'S the cat that's cute' — maybe among several animals, this one stands out)."
+                            explain: "が singles out exactly what fits a description — often answering an unspoken 'which one?' 猫はかわいいです ('as for the cat, it's cute' — general statement) vs. 猫がかわいいです ('IT'S the cat that's cute' — maybe among several animals, this one stands out).",
+                            /* Ported from n5-phaser-game.js's は vs が reference table
+                               (shelf-16) — plain HTML table instead of the original's
+                               .lesson-box__particletable classes, styled inline with the
+                               same conv-hl badge spans used elsewhere on this page. */
+                            diagramSvg: '<table style="width:100%;border-collapse:collapse;font-size:15px;">'
+                                + '<thead><tr style="text-align:left;color:var(--term-text-dim,#c9a66b);font-size:12px;text-transform:uppercase;letter-spacing:1px;">'
+                                + '<th style="padding:4px 8px;"></th><th style="padding:4px 8px;">Job</th><th style="padding:4px 8px;">Example</th><th style="padding:4px 8px;">Use when...</th></tr></thead>'
+                                + '<tbody>'
+                                + '<tr><td style="padding:6px 8px;"><span class="conv-hl conv-hl--particle">は</span></td><td style="padding:6px 8px;">Topic marker</td><td style="padding:6px 8px;">猫はかわいいです</td><td style="padding:6px 8px;">Making a general statement about the topic.</td></tr>'
+                                + '<tr><td style="padding:6px 8px;"><span class="conv-hl conv-hl--subject">が</span></td><td style="padding:6px 8px;">Subject marker</td><td style="padding:6px 8px;">猫がかわいいです</td><td style="padding:6px 8px;">Singling one thing out — often answering "which one?"</td></tr>'
+                                + '</tbody></table>',
+                            diagramCaption: "Same word, same predicate — only the particle changes."
                         },
                         {
                             title: "も — \"also\"",
@@ -2927,6 +4849,160 @@
         };
     }
 
+    /* ===== CHECKPOINT QUIZZES (cq1/cq2/cq3) =====
+       A 10-question review every 5 lessons in curriculum order, same idea
+       as the Adventure Room's review piles (REVIEW_1/2/3_QUIZ_QUESTIONS in
+       n5-phaser-game.js) but built fresh for the Study Room's own document-
+       mode engine rather than porting lesson-box.js's DOM. Segregated from
+       the s01..s16 shelves and the k01 kanji track the same way k01 is
+       segregated from the shelves — its own `quizGroup` flag (parallel to
+       `kanjiGroup`), its own <optgroup> in renderLessonPicker(), and its
+       own branch in openLesson() that hands off to renderCheckpointQuiz()
+       instead of the normal currentExercises/renderExercise() flow (see
+       "===== CHECKPOINT QUIZ RENDERING =====" below openLesson()).
+       Question shape is copied exactly from REVIEW_1_QUIZ_QUESTIONS:
+       { kind:'mc', prompt, choices, correctIndex } or
+       { kind:'fill', prompt?, before, after, answer, altAnswers? } — every
+       question below is drawn from the real wordBank/buildInstruction
+       content of the 5 lessons it covers, nothing invented. Lessons #16-18
+       (s14/s15/s16) roll straight into the existing 50-question N5 Final
+       Quiz instead of getting a 4th checkpoint. */
+    const CQ1_QUESTIONS = [
+        // s01 — Basic Greetings
+        { kind: 'mc', prompt: 'What does こんばんは mean?',
+          choices: ['Good morning', 'Good evening', 'Goodbye', 'Thank you'], correctIndex: 1 },
+        { kind: 'fill', prompt: '"Excuse me / Sorry":',
+          before: '', after: '', answer: 'すみません', altAnswers: ['sumimasen'] },
+        // s02 — Greetings & Everyday Phrases
+        { kind: 'mc', prompt: 'What does よろしくお願いします mean (roughly)?',
+          choices: ['Good evening', 'Nice to meet you / please treat me well', 'Goodbye', 'Excuse me'], correctIndex: 1 },
+        { kind: 'fill', prompt: '"How are you?" (polite check-in):',
+          before: '', after: '', answer: 'お元気ですか', altAnswers: ['ogenki desu ka', 'おげんきですか'] },
+        // s02b — At Home & At the Table
+        { kind: 'fill', prompt: 'Said right when you arrive back home:',
+          before: '', after: '', answer: 'ただいま', altAnswers: ['tadaima'] },
+        { kind: 'fill', prompt: '"Excuse me for intruding" (said entering someone’s home):',
+          before: '', after: '', answer: 'お邪魔します', altAnswers: ['ojama shimasu', 'おじゃまします'] },
+        // s02c — Filler Words & Reactions
+        { kind: 'mc', prompt: 'What does なるほど mean?',
+          choices: ['I see / that makes sense', 'Probably', 'Not at all', 'First of all'], correctIndex: 0 },
+        { kind: 'mc', prompt: 'Which word means "not at all" (paired with a negative)?',
+          choices: ['多分', 'それほど', '全然', 'やっぱり'], correctIndex: 2 },
+        // s03 — A は B です
+        { kind: 'fill', prompt: 'Complete with the topic marker: これ___ほんです。',
+          before: 'これ', after: 'ほんです。', answer: 'は', altAnswers: ['wa'] },
+        { kind: 'fill', prompt: '"I was a student" (past tense): わたしはがくせい___。',
+          before: 'わたしはがくせい', after: '。', answer: 'でした', altAnswers: ['deshita'] }
+    ];
+
+    function cq1() {
+        return {
+            id: "cq1", title: "Checkpoint Quiz 1 (Shelves 1–5)", subtitle: "10-question checkpoint",
+            quizGroup: true,
+            questions: CQ1_QUESTIONS,
+            buildInstruction: function () {
+                return {
+                    sections: [{
+                        title: "Checkpoint Quiz 1 — Shelves 1–5",
+                        explain: "A 10-question review covering everything so far: Basic Greetings (s01), Greetings & Everyday Phrases (s02), At Home & At the Table (s02b), Filler Words & Reactions (s02c), and A は B です (s03). Answer all 10 questions on the right, then submit to see your score and the correct answers."
+                    }]
+                };
+            }
+        };
+    }
+
+    const CQ2_QUESTIONS = [
+        // s04 — Self Introduction
+        { kind: 'fill', prompt: '"What is your name?" (polite): ___は何ですか。',
+          before: '', after: 'は何ですか。', answer: 'お名前', altAnswers: ['onamae', 'o-namae', 'おなまえ'] },
+        { kind: 'mc', prompt: 'What is the correct order of a self-introduction (jikoshoukai)?',
+          choices: ['Close → Name → Greet', 'Greet → Name → Close', 'Name → Close → Greet', 'Greet → Close → Name'], correctIndex: 1 },
+        // s05 — Demonstratives
+        { kind: 'mc', prompt: 'What does あれ mean?',
+          choices: ['This', 'That (near listener)', 'That over there (far from both)', 'Which one'], correctIndex: 2 },
+        { kind: 'fill', prompt: '"Where" (asking about a place):',
+          before: '', after: '', answer: 'どこ', altAnswers: ['doko'] },
+        // s06 — Questions (か)
+        { kind: 'mc', prompt: 'What does だれ mean?',
+          choices: ['What', 'Who', 'When', 'Where'], correctIndex: 1 },
+        { kind: 'fill', prompt: 'Turn a statement into a question by adding this to the end: これはほんです___',
+          before: 'これはほんです', after: '', answer: 'か', altAnswers: ['ka'] },
+        // s07b — つ & 匹 Counters
+        { kind: 'mc', prompt: 'Which counter is used for small animals like cats?',
+          choices: ['つ', '匹', '時', '分'], correctIndex: 1 },
+        // s07c — Telling Time
+        { kind: 'fill', prompt: '"4 o’clock" (special reading, not よんじ):',
+          before: '', after: '', answer: 'よじ', altAnswers: ['yoji'] },
+        // s08a — There Is/Are & Places
+        { kind: 'mc', prompt: 'Which word means "there is / are" for people and animals?',
+          choices: ['あります', 'います', 'ください', 'です'], correctIndex: 1 },
+        // s08b — Direction Words
+        { kind: 'fill', prompt: '"Next to" (direction word):',
+          before: '', after: '', answer: '隣', altAnswers: ['となり', 'tonari'] }
+    ];
+
+    function cq2() {
+        return {
+            id: "cq2", title: "Checkpoint Quiz 2 (Shelves 6–10)", subtitle: "10-question checkpoint",
+            quizGroup: true,
+            questions: CQ2_QUESTIONS,
+            buildInstruction: function () {
+                return {
+                    sections: [{
+                        title: "Checkpoint Quiz 2 — Shelves 6–10",
+                        explain: "A 10-question review covering Self Introduction (s04), Demonstratives (s05), Questions か (s06), Numbers (s07a–e), and Places & Directions (s08a–d). Answer all 10 questions on the right, then submit to see your score and the correct answers."
+                    }]
+                };
+            }
+        };
+    }
+
+    const CQ3_QUESTIONS = [
+        // s09b — Pronouns
+        { kind: 'mc', prompt: 'What does あなた mean?',
+          choices: ['you', 'he / him', 'we / us', 'everyone'], correctIndex: 0 },
+        { kind: 'fill', prompt: '"This kind of ___" (asking/describing a kind, not one specific thing): ___本',
+          before: '', after: '本', answer: 'こんな', altAnswers: ['konna'] },
+        // s10b — な-Adjectives
+        { kind: 'mc', prompt: 'Which of these is a な-adjective (negates with じゃないです, not くない)?',
+          choices: ['大きい', '静か', '新しい', '高い'], correctIndex: 1 },
+        // s10a — い-Adjectives
+        { kind: 'fill', prompt: '"This book is not small." — この本は小さ___です。',
+          before: 'この本は小さ', after: 'です。', answer: 'くない', altAnswers: ['kunai'] },
+        // s11b — Godan Verbs
+        { kind: 'mc', prompt: 'Which verb group does 帰る (かえる, "to go home") secretly belong to, despite looking like an ichidan る-verb?',
+          choices: ['Ichidan', 'Godan', 'する-verb', 'Irregular'], correctIndex: 1 },
+        // s11a — Ichidan Verbs (verb basics: を marks the object)
+        { kind: 'fill', prompt: '"I read a book." — 本___読みます。 (object marker)',
+          before: '本', after: '読みます。', answer: 'を', altAnswers: ['o', 'wo'] },
+        // s12 — Invitations
+        { kind: 'mc', prompt: 'Which pattern politely asks "Won’t you...?", leaving room for the other person to decline?',
+          choices: ['〜ましょう', '〜ませんか', '〜ましょうか', '〜てください'], correctIndex: 1 },
+        { kind: 'fill', prompt: '"Let’s go to the library." — 図書館に行き___。',
+          before: '図書館に行き', after: '。', answer: 'ましょう', altAnswers: ['mashou'] },
+        // s13 — Conjugations (て-form)
+        { kind: 'mc', prompt: 'What is the て-form of 買う ("to buy")?',
+          choices: ['買いて', '買って', '買んで', '買した'], correctIndex: 1 },
+        { kind: 'fill', prompt: '"Please write it." — 書いて___。',
+          before: '書いて', after: '。', answer: 'ください', altAnswers: ['kudasai'] }
+    ];
+
+    function cq3() {
+        return {
+            id: "cq3", title: "Checkpoint Quiz 3 (Shelves 11–15)", subtitle: "10-question checkpoint",
+            quizGroup: true,
+            questions: CQ3_QUESTIONS,
+            buildInstruction: function () {
+                return {
+                    sections: [{
+                        title: "Checkpoint Quiz 3 — Shelves 11–15",
+                        explain: "A 10-question review covering Nouns & Pronouns (s09a/s09b), Adjectives & Adverbs (s10a/s10b/s10c), Verbs (s11a/s11b/s11c), Invitations (s12), and Conjugations — the て-form (s13). Answer all 10 questions on the right, then submit to see your score and the correct answers."
+                    }]
+                };
+            }
+        };
+    }
+
     /* ===== STATE ===== */
     let currentLesson = null;
     let currentExercises = [];
@@ -2948,6 +5024,17 @@
     function hide(el) { if (el) el.style.display = "none"; }
 
     /* ===== HEADER LESSON PICKER (dropdown, replaces the old sidebar list) ===== */
+    // Same synthetic shelf-group labels as GROUP_LABELS in
+    // n5-lessons-dashboard.js -- shown as a disabled header option above a
+    // lettered run that has no bare lesson of its own (07a-e, 08a-d).
+    var SHELF_GROUP_LABELS = {
+        "07": "Numbers & Counters",
+        "08": "Places & Directions",
+        "09": "Nouns & Pronouns",
+        "10": "Adjectives & Adverbs",
+        "11": "Verbs"
+    };
+
     function lessonOptionLabel(les) {
         let done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
         /* Kanji-track lessons carry their name in the title already
@@ -2955,28 +5042,65 @@
            would just restate the segregation the optgroup below
            already provides. */
         if (les.kanjiGroup) return (done ? "✓ " : "") + les.title;
-        return (done ? "✓ " : "") + les.id.replace("s", "") + ". " + les.title;
+        /* Checkpoint quizzes carry their own "Checkpoint Quiz N (Shelves
+           X–Y)" name already — same reasoning as the kanji-group branch
+           above, no shelf-number prefix needed on top of that. */
+        if (les.quizGroup) return (done ? "✓ " : "") + les.title;
+        /* Lettered ids (s07a, s08b...) are sub-lessons of a shared numbered
+           shelf — indent them so the dropdown reads as "shelf 7, then its
+           four sub-lessons" instead of a flat, unrelated list. */
+        let isSubLesson = /^s\d+[a-z]$/.test(les.id);
+        let prefix = isSubLesson ? "   ↳ " : "";
+        return (done ? "✓ " : "") + prefix + les.id.replace("s", "") + ". " + les.title;
     }
 
     function renderLessonPicker() {
         let select = $("studyLessonSelect");
         if (!select) return;
         select.innerHTML = "";
-        /* Kanji lessons are a segregated track, not more numbered shelves —
-           their own <optgroup> keeps that visually true in the dropdown
-           instead of just interleaving them into the shelf sequence. */
+        /* Kanji lessons and checkpoint quizzes are both segregated tracks,
+           not more numbered shelves — their own <optgroup>s keep that
+           visually true in the dropdown instead of just interleaving them
+           into the shelf sequence. */
         let shelvesGroup = document.createElement("optgroup");
         shelvesGroup.label = "Shelves — Grammar & Vocab";
         let kanjiGroupEl = document.createElement("optgroup");
         kanjiGroupEl.label = "N5 Kanji";
+        let quizGroupEl = document.createElement("optgroup");
+        quizGroupEl.label = "Checkpoint Quizzes";
+        // Curriculum order lets a single pass detect "entering a lettered
+        // run with no bare lesson before it" (07a right after s06, 08a
+        // right after s07e) and insert a disabled header option there --
+        // matches the folder > shelf-group > lettered-lesson hierarchy
+        // used on the lessons directory page. 02b/02c need no such header
+        // since s02 itself, immediately before them, already reads as one.
+        let lastNumPrefix = null;
         lessons.forEach(function (les) {
+            if (les.kanjiGroup || les.quizGroup) {
+                let opt = document.createElement("option");
+                opt.value = les.id;
+                opt.textContent = lessonOptionLabel(les);
+                (les.kanjiGroup ? kanjiGroupEl : quizGroupEl).appendChild(opt);
+                return;
+            }
+            let m = les.id.match(/^s(\d+)([a-z]?)$/);
+            let numPrefix = m ? m[1] : null;
+            let letter = m ? m[2] : "";
+            if (letter && numPrefix !== lastNumPrefix) {
+                let header = document.createElement("option");
+                header.disabled = true;
+                header.textContent = "── " + numPrefix + " " + (SHELF_GROUP_LABELS[numPrefix] || "") + " ──";
+                shelvesGroup.appendChild(header);
+            }
+            lastNumPrefix = numPrefix;
             let opt = document.createElement("option");
             opt.value = les.id;
             opt.textContent = lessonOptionLabel(les);
-            (les.kanjiGroup ? kanjiGroupEl : shelvesGroup).appendChild(opt);
+            shelvesGroup.appendChild(opt);
         });
         select.appendChild(shelvesGroup);
         select.appendChild(kanjiGroupEl);
+        select.appendChild(quizGroupEl);
         select.addEventListener("change", function () { openLesson(this.value); });
     }
 
@@ -3004,6 +5128,7 @@
 
         let mainEl = document.querySelector(".study-main");
         if (mainEl) mainEl.classList.toggle("is-kanji-lesson", !!currentLesson.kanjiGroup);
+        if (mainEl) mainEl.classList.toggle("is-checkpoint-lesson", !!currentLesson.quizGroup);
 
         if (currentLesson.kanjiGroup) {
             /* Card-gallery UI, not a quiz — there's no single "correct
@@ -3012,6 +5137,7 @@
                and hands off to assets/js/kanji-cards.js instead. */
             hide($("studyPractice"));
             hide($("studyComplete"));
+            hide($("checkpointQuiz"));
             let kanjiWrap = $("kanjiCards");
             show(kanjiWrap);
             if (window.KanjiCards) KanjiCards.render(currentLesson, kanjiWrap);
@@ -3023,7 +5149,24 @@
             return;
         }
 
+        if (currentLesson.quizGroup) {
+            /* All 10 questions rendered at once as one sheet, graded on
+               Submit — not the one-at-a-time currentExercises/
+               renderExercise() flow the s01-s16 shelves use — so this
+               skips that machinery entirely too, same as the kanjiGroup
+               branch above, and hands off to renderCheckpointQuiz()
+               instead (see "===== CHECKPOINT QUIZ RENDERING =====" below). */
+            hide($("studyPractice"));
+            hide($("studyComplete"));
+            hide($("kanjiCards"));
+            let quizWrap = $("checkpointQuiz");
+            show(quizWrap);
+            renderCheckpointQuiz(currentLesson, quizWrap);
+            return;
+        }
+
         hide($("kanjiCards"));
+        hide($("checkpointQuiz"));
         currentExercises = currentLesson.vocabOnly
             ? currentLesson.buildMatchExercises()
             : currentLesson.buildWordBankExercises();
@@ -3038,6 +5181,49 @@
         let progressWrap = $("studyProgressFill") ? $("studyProgressFill").parentElement.parentElement : null;
         if (progressWrap) progressWrap.style.display = "";
         renderExercise();
+    }
+
+    /* Renders an optional `conversation: { turns: [...] }` field on
+       buildInstruction()'s return value as a two-party dialogue thread —
+       Study Room's own equivalent of the Adventure Room's LessonBox
+       'conversation' page type, built fresh for this file's own DOM/CSS
+       rather than reusing lesson-box.js's markup (same reasoning as every
+       other Study Room feature: this engine deliberately doesn't share
+       code with the Phaser game's dialogue component). Each turn is
+       `{ speaker: 'sensei'|'player', name, action, actionLabel, text, romaji }` —
+       `action` must be a key in CONV_ACTION_SPRITES (meow/scratch/
+       tailwagFront/tailwagLeft/tailwagRight). `text` may contain
+       `.conv-hl--subject/particle/predicate/copula` spans for word-role
+       highlighting, styled in study-style.css with the exact same colors
+       lesson-box.css uses for its own `.role-*` spans, so a ported
+       conversation reads identically in both systems. */
+    function renderConversation(conv) {
+        let turnsHtml = conv.turns.map(function (t) {
+            let sprite = CONV_ACTION_SPRITES[t.action] || CONV_ACTION_SPRITES.meow;
+            let color = t.speaker === "player" ? "orange" : "black";
+            /* Percentage-based background-position (0% -> 100%) needs no
+               per-frame-count keyframe variant — steps(N) alone decides
+               how many discrete positions that same 0-100% range gets
+               divided into, matching the technique companion-cat.css
+               uses for its own multi-sheet animations. 0.28s/frame
+               matches this site's other cat-sprite loops exactly
+               (e.g. companion-cat.css's 1.4s/5-frame tailwag). */
+            let avatarStyle = "background-image:url('" + sprite[color] + "');"
+                + "background-size:" + (sprite.frames * 100) + "% 100%;"
+                + "animation:studyConvSprite " + (sprite.frames * 0.28).toFixed(2) + "s steps(" + sprite.frames + ") infinite;";
+            return "<div class='study-conv-turn" + (t.speaker === "player" ? " is-player" : "") + "'>"
+                + "<div class='study-conv-avatar' style=\"" + avatarStyle + "\"></div>"
+                + "<div class='study-conv-bubble-wrap'>"
+                + "<div class='study-conv-name-row'>"
+                + "<span class='study-conv-name'>" + t.name + "</span>"
+                + (t.actionLabel ? "<span class='study-conv-action-tag'>" + t.actionLabel + "</span>" : "")
+                + "</div>"
+                + "<div class='study-conv-bubble'>" + t.text + "</div>"
+                + (t.romaji ? "<div class='study-conv-meta'>" + t.romaji + "</div>" : "")
+                + "</div>"
+                + "</div>";
+        }).join("");
+        return "<div class='study-conv-thread'>" + turnsHtml + "</div>";
     }
 
     function renderInstruction() {
@@ -3057,6 +5243,10 @@
                 + "</div>";
         });
 
+        if (inst.conversation && inst.conversation.turns && inst.conversation.turns.length) {
+            html += renderConversation(inst.conversation);
+        }
+
         if (inst.examples && inst.examples.length) {
             html += "<h3>Examples</h3>";
             inst.examples.forEach(function (ex) {
@@ -3066,6 +5256,23 @@
                     + "<span class='example-sentence__english'>&mdash; " + ex.en + "</span>"
                     + "</div>";
             });
+            /* Points to a full reference PDF (assets/lesson pdf/) for shelves
+               whose curated example set is a small slice of a much bigger
+               real list -- same PDFs the Adventure Room's printer-icon popup
+               already links per shelf (see PRINT_LINKS_BY_SHELF in
+               n5-phaser-game.js), just surfaced inline here instead of
+               behind an icon click. */
+            if (inst.examplesMore && inst.examplesMore.length) {
+                /* Paraphrased per feedback that "you can view the whole list
+                   of X by downloading this" read as awkward/unclear -- says
+                   plainly what the file is and what's in it instead. */
+                html += "<p class='examples-more'>"
+                    + inst.examplesMore.map(function (l) {
+                        return "Want the full " + l.label + " list, beyond the examples above? "
+                            + "<a class='examples-more__link' href='" + l.href + "' target='_blank' rel='noopener'>Download the " + l.label + " reference sheet (PDF)</a>.";
+                    }).join(" ")
+                    + "</p>";
+            }
         }
 
         /* The kanji-track lesson's own "vocab" IS its 103-entry kanji
@@ -3073,8 +5280,11 @@
            just duplicate the card gallery next to it (see kanji-cards.js)
            and, at 103 rows, dominate the panel for no reason. Skip both
            here; the shelf lessons still get the full vocab table + word
-           bank box. */
-        if (!currentLesson.kanjiGroup) {
+           bank box. Checkpoint-quiz lessons (cq1/cq2/cq3) have no
+           wordBank/vocab of their own at all — they're a review of 5
+           earlier lessons' content, not a new lesson with its own set —
+           so they're excluded the same way. */
+        if (!currentLesson.kanjiGroup && !currentLesson.quizGroup) {
             if (inst.vocab && inst.vocab.length) {
                 html += "<h3>Vocabulary</h3>" + buildVocabTable(inst.vocab);
             }
@@ -3100,47 +5310,38 @@
         return "<div class='vocab-table-wrap'><table class='vocab-table'>" + rows + "</table></div>";
     }
 
-    /* Display-name + chip-role lookup for each wordBank category key */
-    const WORD_BANK_LABELS = {
-        phrases: "Phrases", subjects: "Subjects", thingSubjects: "Subjects",
-        peoplePredicates: "Predicates (people)", thingPredicates: "Predicates (things)",
-        demonstratives: "Demonstratives", nouns: "Nouns", creatures: "Nouns",
-        topics: "Topics", questionWords: "Question Words", people: "People", things: "Things",
-        names: "Names", iAdjectives: "い-Adjectives", naAdjectives: "な-Adjectives",
-        adjectives: "Adjectives", verbs: "Verbs", objects: "Objects", places: "Places",
-        counters: "Counters", connectors: "Connectors", predicates: "Predicates", directions: "Directions",
-        kanji: "Kanji"
-    };
-    const WORD_BANK_ROLES = {
-        phrases: "greeting", subjects: "subject", thingSubjects: "subject",
-        peoplePredicates: "predicate", thingPredicates: "predicate",
-        demonstratives: "subject", nouns: "object", creatures: "subject",
-        topics: "subject", questionWords: "particle", people: "subject", things: "predicate",
-        names: "subject", iAdjectives: "adjective", naAdjectives: "adjective",
-        adjectives: "adjective", verbs: "predicate", objects: "object", places: "object",
-        counters: "object", connectors: "particle", predicates: "predicate", directions: "object",
-        kanji: "neutral"
-    };
 
-    /* Renders the "Fixed word bank for this lesson" box in the instruction panel
-       (Study Room Word-Bank Sentence Builder PRD, FR1/FR5) directly from the
-       lesson's own wordBank object — the exact words that CAN be asked, no more. */
+    /* Renders the word-bank box in the instruction panel. Used to also list
+       every category of vocab the lesson's exercises are allowed to draw
+       from (subjects/verbs/particles/etc, straight from the lesson's
+       wordBank object) — but that just repeated the same words already
+       shown in the lesson's own vocab table above (buildVocabTable()),
+       so it was cut per explicit feedback ("kinda redundant... to have
+       the vocabulary, then phrases again"). What's actually still useful
+       here is content NOT already shown elsewhere: the "New this lesson"
+       exposure-only words and the next-lesson preview chips. The exercise
+       grading logic (buildWordBankExercises()) is untouched — it still
+       pulls from the lesson's full wordBank object regardless of what
+       this box displays. */
     function buildWordBankBox(wordBank) {
         if (!wordBank) return "";
-        let rowsHtml = "";
-        Object.keys(wordBank).forEach(function (key) {
-            if (key === "preview") return;
-            let items = wordBank[key];
-            if (!items || !items.length) return;
-            let label = WORD_BANK_LABELS[key] || key;
-            let role = WORD_BANK_ROLES[key] || "neutral";
-            let chipsHtml = items.map(function (w) {
-                return "<span class='word-bank__chip' data-role='" + role + "'>" + w.jp + "</span>";
+        /* "New this lesson" — exposure-only vocabulary, exactly like the
+           preview block below (never wired into buildWordBankExercises()/
+           grading), just surfacing 5 fresh nouns/adjectives for THIS
+           lesson instead of a sneak peek at the next one. Visually
+           distinct from the amber "coming up" preview chips below via
+           its own --new-tokened modifier classes (see study-style.css). */
+        let newWordsHtml = "";
+        if (wordBank.newWords && wordBank.newWords.length) {
+            let newChips = wordBank.newWords.map(function (w) {
+                return "<span class='word-bank__chip word-bank__chip--new' data-role='new'>" + w.jp
+                    + "<span class='word-bank__chip-tag word-bank__chip-tag--new'>NEW &mdash; “" + w.en + "”</span></span>";
             }).join("");
-            rowsHtml += "<div class='word-bank-box__category'>" + label + "</div>"
-                + "<div class='word-bank'>" + chipsHtml + "</div>";
-        });
-        if (!rowsHtml) return "";
+            newWordsHtml = "<div class='word-bank-box__new'>"
+                + "<div class='word-bank-box__new-label'>🆕 New this lesson:</div>"
+                + "<div class='word-bank'>" + newChips + "</div>"
+                + "</div>";
+        }
         let previewHtml = "";
         if (wordBank.preview && wordBank.preview.length) {
             let chips = wordBank.preview.map(function (w) {
@@ -3152,10 +5353,10 @@
                 + "<div class='word-bank'>" + chips + "</div>"
                 + "</div>";
         }
+        if (!newWordsHtml && !previewHtml) return "";
         return "<div class='word-bank-box'>"
-            + "<div class='word-bank-box__title'>&#128274; Fixed word bank for this lesson</div>"
-            + rowsHtml
-            + "<p class='word-bank-box__note'>Only these words are ever used in this lesson's exercises — nothing outside this list.</p>"
+            + "<div class='word-bank-box__title'>&#128274; Word bank</div>"
+            + newWordsHtml
             + previewHtml
             + "</div>";
     }
@@ -3172,24 +5373,16 @@
         let prompt = $("studyPractice").querySelector(".study-practice__prompt");
         if (prompt) prompt.innerHTML = ex.prompt;
 
-        /* Option-C hybrid: non-clickable reference chips for this exercise's words */
+        /* Reference chips for this exercise's words used to render up front,
+           before the learner had even tried — which meant the "exercise"
+           was really just copying the shown words into the input box
+           instead of recalling them. Per explicit feedback ("remove the
+           words in the exercise... let the user properly think things
+           through"), this now stays empty at render time; showHint() is
+           what populates it, and only once the learner has earned it via
+           2 wrong attempts (see checkAnswer()'s attempts >= 2 branch). */
         let refWrap = $("studyWordBankRef");
-        if (refWrap) {
-            if (ex.refWords && ex.refWords.length) {
-                /* Shuffled on display only (grading never reads this order) —
-                   the chips used to render in the exact order the correct
-                   sentence needs, which meant the "exercise" was just
-                   copying top-to-bottom instead of actually recalling word
-                   order. Applies to every sentence-building lesson (s03
-                   onward) automatically since this is the one shared
-                   render path they all go through. */
-                refWrap.innerHTML = shuffle(ex.refWords).map(function (w) {
-                    return "<span class='word-bank__chip word-bank__chip--ref' data-role='" + (w.role || "neutral") + "'>" + w.jp + "</span>";
-                }).join("");
-            } else {
-                refWrap.innerHTML = "";
-            }
-        }
+        if (refWrap) refWrap.innerHTML = "";
 
         let input = $("studyInput");
         let checkBtn = $("studyCheckBtn");
@@ -3338,11 +5531,26 @@
         renderExercise();
     }
 
-    /* ===== HINT ===== */
+    /* ===== HINT =====
+       Only reachable after 2 wrong attempts (checkAnswer() gates the
+       button itself). Reveals the WORDS the sentence needs — same
+       reference chips that used to render up front — not the full
+       constructed sentence, so the learner still has to work out order
+       and particles themselves rather than just re-reading the answer.
+       Exercises without refWords (a few pattern/open-ended ones) fall
+       back to the old full-hint text since there's no word list to show. */
     function showHint() {
         let ex = currentExercises[exerciseIndex];
         if (!ex) return;
-        showFeedback("Hint: <strong>" + ex.hint + "</strong>", "hint");
+        let refWrap = $("studyWordBankRef");
+        if (refWrap && ex.refWords && ex.refWords.length) {
+            refWrap.innerHTML = shuffle(ex.refWords).map(function (w) {
+                return "<span class='word-bank__chip word-bank__chip--ref' data-role='" + (w.role || "neutral") + "'>" + w.jp + "</span>";
+            }).join("");
+            showFeedback("Hint &mdash; here are the words you'll need. Work out the order and particles yourself!", "hint");
+        } else {
+            showFeedback("Hint: <strong>" + ex.hint + "</strong>", "hint");
+        }
     }
 
     /* ===== FEEDBACK ===== */
@@ -3404,6 +5612,134 @@
 
         let continueBtn = $("studyContinueBtn");
         if (continueBtn) continueBtn.addEventListener("click", function () { openLesson(nextLesson.id); });
+    }
+
+    /* ===== CHECKPOINT QUIZ RENDERING (cq1/cq2/cq3) =====
+       All 10 questions render on one sheet at once — radio-style buttons
+       for 'mc', a text input for 'fill' — rather than the one-at-a-time
+       currentExercises/renderExercise() flow the s01-s16 shelves use.
+       No inline grading while answering (same "answer everything, then
+       compare against the key" idea as the Adventure Room's quiz-review/
+       quiz-answers pages in lesson-box.js) — Submit reveals every correct
+       answer next to the player's own pick, tallies a score, and awards
+       XP via the same StudyProgress.completeLesson() every other lesson
+       in this file uses (once per lesson id, no score-gating). */
+    function gradeCheckpointFill(q, raw) {
+        /* Same normalization this file already uses for grading elsewhere
+           (norm() — see checkAnswer() above) plus a case-fold, since some
+           altAnswers here are romaji (matching gradeQuizQuestion()'s
+           .trim().toLowerCase() approach in lesson-box.js). */
+        let typed = norm((raw || "").toLowerCase());
+        let accepted = [q.answer].concat(q.altAnswers || []).map(function (a) {
+            return norm(a.toLowerCase());
+        });
+        return accepted.indexOf(typed) !== -1;
+    }
+
+    function renderCheckpointQuiz(lesson, container) {
+        if (!container) return;
+        let questions = lesson.questions || [];
+        let quizAnswers = {};
+        let submitted = false;
+
+        function renderSheet() {
+            let questionsHtml = questions.map(function (q, i) {
+                let promptHtml = "<div class='checkpoint-quiz__prompt'>" + (i + 1) + ". " + (q.prompt || "") + "</div>";
+                if (q.kind === "mc") {
+                    let choicesHtml = q.choices.map(function (choice, ci) {
+                        let selected = quizAnswers[i] === ci ? " is-selected" : "";
+                        return "<button type='button' class='checkpoint-quiz__choice" + selected + "' data-q='" + i + "' data-choice='" + ci + "'>" + choice + "</button>";
+                    }).join("");
+                    return "<div class='checkpoint-quiz__block' data-q='" + i + "'>" + promptHtml
+                        + "<div class='checkpoint-quiz__choices'>" + choicesHtml + "</div></div>";
+                }
+                let val = quizAnswers[i] || "";
+                return "<div class='checkpoint-quiz__block' data-q='" + i + "'>" + promptHtml
+                    + "<div class='checkpoint-quiz__fill'>" + (q.before || "")
+                    + "<input type='text' class='checkpoint-quiz__input' data-q='" + i + "' autocomplete='off' spellcheck='false' value=\""
+                    + String(val).replace(/"/g, "&quot;") + "\">"
+                    + (q.after || "") + "</div></div>";
+            }).join("");
+
+            container.innerHTML = "<div class='checkpoint-quiz__title'>" + lesson.title + "</div>"
+                + "<p class='checkpoint-quiz__intro'>Answer all " + questions.length + " questions below, then submit to see your score.</p>"
+                + "<div class='checkpoint-quiz__sheet'>" + questionsHtml + "</div>"
+                + "<button type='button' class='checkpoint-quiz__submit' id='checkpointQuizSubmit'" + (submitted ? " disabled" : "") + ">Submit</button>"
+                + "<div class='checkpoint-quiz__result' id='checkpointQuizResult'></div>";
+
+            Array.prototype.forEach.call(container.querySelectorAll(".checkpoint-quiz__choice"), function (btn) {
+                btn.disabled = submitted;
+                btn.addEventListener("click", function () {
+                    if (submitted) return;
+                    let qi = Number(btn.dataset.q);
+                    quizAnswers[qi] = Number(btn.dataset.choice);
+                    let block = container.querySelector(".checkpoint-quiz__block[data-q='" + qi + "']");
+                    if (block) {
+                        Array.prototype.forEach.call(block.querySelectorAll(".checkpoint-quiz__choice"), function (b) {
+                            b.classList.remove("is-selected");
+                        });
+                    }
+                    btn.classList.add("is-selected");
+                });
+            });
+            Array.prototype.forEach.call(container.querySelectorAll(".checkpoint-quiz__input"), function (input) {
+                input.disabled = submitted;
+                input.addEventListener("input", function () {
+                    quizAnswers[Number(input.dataset.q)] = input.value;
+                });
+            });
+
+            let submitBtn = $("checkpointQuizSubmit");
+            if (submitBtn) submitBtn.addEventListener("click", gradeAndShow);
+        }
+
+        function gradeAndShow() {
+            submitted = true;
+            let correctCount = 0;
+            let rowsHtml = questions.map(function (q, i) {
+                let userAnswer = quizAnswers[i];
+                let correct, yourLabel, correctLabel;
+                if (q.kind === "mc") {
+                    correct = userAnswer === q.correctIndex;
+                    yourLabel = userAnswer != null ? q.choices[userAnswer] : "(no answer)";
+                    correctLabel = q.choices[q.correctIndex];
+                } else {
+                    correct = gradeCheckpointFill(q, userAnswer);
+                    yourLabel = (userAnswer && String(userAnswer).trim()) ? userAnswer : "(no answer)";
+                    correctLabel = q.answer;
+                }
+                if (correct) correctCount++;
+                return "<div class='checkpoint-quiz__result-row'>"
+                    + "<span class='checkpoint-quiz__result-mark " + (correct ? "is-correct" : "is-wrong") + "'>" + (correct ? "&#10003;" : "&#10007;") + "</span>"
+                    + "<div><div class='checkpoint-quiz__result-correct'>" + (i + 1) + ". Correct: <strong>" + correctLabel + "</strong></div>"
+                    + "<div class='checkpoint-quiz__result-yours'>Your answer: " + yourLabel + "</div></div>"
+                    + "</div>";
+            }).join("");
+
+            let pct = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+            let xpGained = 0;
+            let alreadyDone = false;
+            if (window.StudyProgress) {
+                let result = StudyProgress.completeLesson(lesson.id);
+                xpGained = result.gained || 0;
+                alreadyDone = !(result.gained > 0);
+                StudyProgress.renderXpBadges();
+                refreshLessonPickerLabels();
+            }
+
+            let resultWrap = $("checkpointQuizResult");
+            if (resultWrap) {
+                resultWrap.innerHTML = "<div class='checkpoint-quiz__score'>" + correctCount + " / " + questions.length + " (" + pct + "%)</div>"
+                    + "<div class='checkpoint-quiz__xp'>+" + xpGained + " XP" + (alreadyDone ? " &mdash; already completed before, no bonus XP" : "") + "</div>"
+                    + rowsHtml;
+            }
+            let submitBtn = $("checkpointQuizSubmit");
+            if (submitBtn) submitBtn.disabled = true;
+            Array.prototype.forEach.call(container.querySelectorAll(".checkpoint-quiz__choice"), function (btn) { btn.disabled = true; });
+            Array.prototype.forEach.call(container.querySelectorAll(".checkpoint-quiz__input"), function (input) { input.disabled = true; });
+        }
+
+        renderSheet();
     }
 
     /* ===== EVENT WIRING ===== */

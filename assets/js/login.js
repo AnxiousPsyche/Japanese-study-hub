@@ -17,6 +17,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loginForm.addEventListener("submit", loginExplorer);
 
+    // Enter-key fix: both "Sign In" and "Create Account" are type="submit"
+    // buttons inside this ONE shared <form>. A form's implicit submitter
+    // for a keyboard-triggered submit (pressing Enter in a text field) is
+    // always the FIRST submit button in the form regardless of which field
+    // has focus -- so Enter inside the Create Account fields was silently
+    // submitting as "Log In" (continueButton), using the empty sign-in
+    // fields. Fix: on Enter in any text input, explicitly submit with that
+    // input's OWN section's button as the submitter, so loginExplorer()'s
+    // event.submitter check resolves correctly either way.
+    loginForm.addEventListener("keydown", (event) => {
+
+        // keyCode/which fallback alongside .key -- some environments (seen
+        // in this project's own browser-automation preview tooling) fire a
+        // synthetic Enter keydown with an empty .key but a correct keyCode.
+        let isEnter = event.key === "Enter" || event.keyCode === 13 || event.which === 13;
+
+        if(!isEnter) return;
+
+        const target = event.target;
+
+        if(target.tagName !== "INPUT" || target.type === "file") return;
+
+        const section = target.closest(".login-section");
+
+        const button = section && section.querySelector("button[type='submit']");
+
+        if(!button) return;
+
+        event.preventDefault();
+
+        loginForm.requestSubmit(button);
+
+    });
+
     loadExplorer();
 
     initPasswordToggles();

@@ -431,10 +431,12 @@ function initializeWindowButtons(){
 
         // Red — close (immediate, no slide animation — that's minimize's
         // job below). Reopen the same way any closed window comes back:
-        // its taskbar button, desktop shortcut, or the search box.
+        // its taskbar button (if still shown — see hideTaskbarApp below),
+        // desktop shortcut, or the search box.
         buttons[0].addEventListener("click", (e) => {
             e.stopPropagation();
             windowEl.style.display = "none";
+            hideTaskbarApp(windowEl.id);
         });
 
         // Yellow — minimize
@@ -456,7 +458,31 @@ function initializeWindowButtons(){
 
 
 //======================================================
-// RESTORE WINDOW (called by taskbar buttons)
+// TASKBAR ENTRY VISIBILITY
+//
+// Closing a window (the red button) removes its taskbar entry, same as
+// a real OS taskbar — only restoreWindow() brings it back, whether
+// that's triggered by a desktop shortcut's onclick or a search-box hit,
+// not just the taskbar button itself (which would otherwise already be
+// gone once its window is closed). Minimizing does NOT hide the entry —
+// a minimized window still has a taskbar button to click back open.
+//======================================================
+
+function hideTaskbarApp(id){
+    if(!id) return;
+    const app = document.querySelector('.taskbar-app[data-window="' + id + '"]');
+    if(app) app.style.display = "none";
+}
+
+function showTaskbarApp(id){
+    if(!id) return;
+    const app = document.querySelector('.taskbar-app[data-window="' + id + '"]');
+    if(app) app.style.display = "";
+}
+
+
+//======================================================
+// RESTORE WINDOW (called by taskbar buttons, desktop shortcuts, and search)
 //======================================================
 
 function restoreWindow(id){
@@ -469,6 +495,7 @@ function restoreWindow(id){
     windowEl.style.zIndex = highestZ;
     windowEl.classList.remove("window-minimizing");
     windowEl.classList.add("window-restoring");
+    showTaskbarApp(id);
 
     setTimeout(() => {
         windowEl.classList.remove("window-restoring");

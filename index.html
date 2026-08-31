@@ -150,16 +150,20 @@
 
             <div class="login-header">
 
-                <!-- Orange cat, curled up asleep and breathing, standing in
-                     for the old logo image — same orangecat-sleep-sheet.png
-                     rig the Adventure Room uses for the player's own
-                     idle-sleep animation (frames 6-9, the fully-curled
-                     "breathing" loop specifically). -->
+                <!-- Orange cat, playing/pouncing, standing in for the old
+                     logo image — orangeCatPlaying.png, the same sprite
+                     companion-cat.js uses for its "is-playing" ambient
+                     action, tightly cropped to its real content bounds (see
+                     login.css's .login-cat comment) so it sits snug against
+                     the title instead of leaving dead space above it.
+                     assets/js/login-cat.js periodically scrambles/resolves
+                     the title text in .scroll-title__text to sell the "cat
+                     batting at the letters" effect. -->
                 <div class="login-cat" aria-hidden="true"></div>
 
                 <h1 class="scroll-title">
 
-                    Welcome to Neko Bunko OS<span class="scroll-title__cursor"></span>
+                    <span class="scroll-title__text">Welcome to Neko Bunko OS</span><span class="scroll-title__cursor"></span>
 
                 </h1>
 
@@ -1569,6 +1573,8 @@ STUDY ROOM — Codecademy-style N5 learning
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="assets/js/companion-cat.js"></script>
+
+    <script src="assets/js/login-cat.js"></script>
 
 </body>
 

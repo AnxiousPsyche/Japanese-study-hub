@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../../assets/css/variables.css">
     <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/study-style.css">
+    <link rel="stylesheet" href="../../assets/css/levels-directory.css">
     <link rel="stylesheet" href="../../assets/css/companion-cat.css">
 </head>
 <body>
@@ -22,32 +23,48 @@
             <h1 class="study-header__title">&#128218; Study Room &mdash; Choose Your Level</h1>
             <span class="xp-badge">&#11088; <span data-study-xp>0</span> XP</span>
         </header>
-        <div class="quiz-body">
-            <div class="levels-grid">
-                <a href="n5-lessons.html" class="level-card">
-                    <span class="level-card__level">JLPT N5</span>
-                    <p class="level-card__desc">The foundations: greetings, &#12391;&#12377; patterns, particles, verbs, and the &#12390;-form.</p>
-                    <span class="level-card__meta" id="n5Meta">19 lessons + final quiz</span>
-                </a>
-                <div class="level-card is-locked">
-                    <span class="level-card__level">JLPT N4</span>
-                    <p class="level-card__desc">Transitive/intransitive, conditionals, causative-passive, and more. Explore it in the Adventure Room for now.</p>
-                    <span class="level-card__meta">Coming soon to the Study Room</span>
+        <div class="quiz-body lvldir-body">
+            <div class="lvldir-board">
+                <div class="lvldir-board__header">
+                    <span class="lvldir-board__title">&#127970; Building Directory</span>
+                    <span class="lvldir-board__sub">Ground floor up &mdash; each level is a floor in the library</span>
                 </div>
-                <div class="level-card is-locked">
-                    <span class="level-card__level">JLPT N3</span>
-                    <p class="level-card__desc">Intermediate grammar, keigo foundations, and longer reading passages.</p>
-                    <span class="level-card__meta">Coming soon</span>
-                </div>
-                <div class="level-card is-locked">
-                    <span class="level-card__level">JLPT N2</span>
-                    <p class="level-card__desc">Upper-intermediate patterns, formal writing, and nuance-focused grammar.</p>
-                    <span class="level-card__meta">Coming soon</span>
-                </div>
-                <div class="level-card is-locked">
-                    <span class="level-card__level">JLPT N1</span>
-                    <p class="level-card__desc">Advanced literary grammar, dense readings, and near-native nuance.</p>
-                    <span class="level-card__meta">Coming soon</span>
+
+                <div class="lvldir-rows">
+                    <div class="lvldir-row is-locked">
+                        <span class="lvldir-row__floor">5F</span>
+                        <span class="lvldir-row__level">JLPT N1</span>
+                        <p class="lvldir-row__desc">Advanced literary grammar, dense readings, and near-native nuance.</p>
+                        <span class="lvldir-row__status">Coming soon</span>
+                    </div>
+
+                    <div class="lvldir-row is-locked">
+                        <span class="lvldir-row__floor">4F</span>
+                        <span class="lvldir-row__level">JLPT N2</span>
+                        <p class="lvldir-row__desc">Upper-intermediate patterns, formal writing, and nuance-focused grammar.</p>
+                        <span class="lvldir-row__status">Coming soon</span>
+                    </div>
+
+                    <div class="lvldir-row is-locked">
+                        <span class="lvldir-row__floor">3F</span>
+                        <span class="lvldir-row__level">JLPT N3</span>
+                        <p class="lvldir-row__desc">Intermediate grammar, keigo foundations, and longer reading passages.</p>
+                        <span class="lvldir-row__status">Coming soon</span>
+                    </div>
+
+                    <div class="lvldir-row is-locked">
+                        <span class="lvldir-row__floor">2F</span>
+                        <span class="lvldir-row__level">JLPT N4</span>
+                        <p class="lvldir-row__desc">Transitive/intransitive, conditionals, causative-passive, and more. Explore it in the Adventure Room for now.</p>
+                        <span class="lvldir-row__status">Coming soon to the Study Room</span>
+                    </div>
+
+                    <a href="n5-lessons.html" class="lvldir-row is-open">
+                        <span class="lvldir-row__floor">1F</span>
+                        <span class="lvldir-row__level">JLPT N5</span>
+                        <p class="lvldir-row__desc">The foundations: greetings, &#12391;&#12377; patterns, particles, verbs, and the &#12390;-form.</p>
+                        <span class="lvldir-row__status" id="n5Meta">23 lessons + final quiz</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -60,7 +77,7 @@
         if (meta && window.StudyProgress) {
             const done = StudyProgress.lessonsCompleted();
             const quiz = StudyProgress.quizBest("n5");
-            let txt = done + " / 19 lessons complete";
+            let txt = done + " / 23 lessons complete";
             if (quiz !== null) txt += " &middot; quiz best " + quiz + "%";
             meta.innerHTML = txt;
         }

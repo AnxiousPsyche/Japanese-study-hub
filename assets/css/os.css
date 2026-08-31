@@ -6,8 +6,12 @@ TASKBAR
 /* Classic CRT Status Bar re-theme. Deliberately NOT tied to #desktop's
    own light/dark data-theme — this bar reads the same dark glowing-green
    terminal in both, same as the mockup that was approved for it; only the
-   desktop backdrop behind it changes with theme. Thinner (34px vs the old
-   56px) since there's no icon art left to give room to. */
+   desktop backdrop behind it changes with theme. Bumped back up to 46px
+   (from the original re-theme's 34px, itself down from the pre-rethink
+   56px) and lightened from #0F241B to #1B4636 — at 34px/near-black it
+   blended into the equally-dark desktop backdrop behind it and was hard
+   to make out as a distinct bar; the taller, lighter strip plus a
+   brighter 2px top border reads clearly as its own UI chrome now. */
 .taskbar{
 
     position:fixed;
@@ -18,7 +22,7 @@ TASKBAR
 
     width:100%;
 
-    height:34px;
+    height:46px;
 
     display:flex;
 
@@ -28,9 +32,9 @@ TASKBAR
 
     padding:0 14px;
 
-    background:#0F241B;
+    background:#1B4636;
 
-    border-top:1px solid #1D9E75;
+    border-top:2px solid #2EDBA0;
 
     box-shadow:none;
 
@@ -273,7 +277,7 @@ START MENU
 
     left:12px;
 
-    bottom:42px;
+    bottom:54px;
 
     width:260px;
 
@@ -715,7 +719,7 @@ VOLUME PANEL
 
     right:12px;
 
-    bottom:68px;
+    bottom:80px;
 
     width:310px;
 

@@ -68,63 +68,119 @@ LOGIN WINDOW — Windows 95 3D-beveled chrome
 
 }
 
-/* Curled-up sleep pose, frames 6-9 of the same 14-frame sheet the Adventure
-   Room uses for the player cat's own idle-sleep animation
-   (assets/js/n5-phaser-game.js SLEEP_SHEETS) — frames 6-9 are the
-   fully-curled "breathing" loop specifically (0-5 are the sit-down/curl-up
-   transition, not a resting pose on their own). Now the hero visual in the
-   header in place of the old static logo image — sized to ~80% of the
-   dialog's own width (min(78%, 320px), so it stays proportional on
-   narrower screens instead of overflowing) rather than a small icon.
+/* Lying-down, self-licking cat, standing in for the old static logo
+   image — assets/images/avatars/whiteCatLick.png, the *fourth* sprite
+   tried here (see the historical bullets below for the earlier three).
 
-   background-position/-size are expressed as PERCENTAGES of the element's
-   own box, not literal pixels — since the box is now a fluid, responsive
-   size (min(78%, 320px)) rather than the old fixed 72px, a percentage
-   stays mathematically correct at any resolved width with no separate
-   mobile-breakpoint override needed. The math: with background-size set to
-   1400% (14 frames) and the box itself always square (aspect-ratio 1/1),
-   background-position-x = 100 * frameIndex / (frameCount - 1) lands the
-   image exactly frameIndex container-widths to the left — 46.1538% for
-   frame 6, 76.9231% for frame 10 (one past frame 9, kept as an exclusive
-   end the same way the original px version used -720px = frame 10 * 72px),
-   so steps(4) over that range visits exactly frames 6, 7, 8, 9. */
+   1536x64px, a confirmed-uniform 24-frame grid at a clean 64px pitch
+   (1536/24=64, no fractional remainder). A per-column opaque-pixel scan
+   found every frame's content run starting exactly 64px after the
+   last one (13, 77, 141, 205, ... — a constant offset each time), so
+   the cat's body sits at the *identical* local position within every
+   frame. That constancy is what the old Sprite-0005 sheet apparently
+   lacked, which is what made the cat visibly creep sideways as the
+   animation cycled ("moving sideways" bug report) — swapping to this
+   sheet's rock-steady pitch fixes that outright, it doesn't just
+   relocate it. Re-verify a new sheet's per-frame offsets the same way
+   (a small Node script decoding raw PNG scanlines, no library) before
+   trusting a future swap not to drift the same way.
+
+   Same plain percentage-based background-position trick as before
+   (0% -> 100%, same as companion-cat.css's multi-sheet animations):
+   background-size:2400% 100% (24 frames) + steps(24). Container stays
+   a plain square since the source cell is square (64x64 native).
+
+   Pulled 5px closer to the title text than the previous sprite
+   (margin-bottom -11px, was -6px) so it visually nestles into the
+   text block below it, like the cat is lying right up against it
+   instead of floating above with a gap.
+
+   Color is still theme-aware via CSS `filter` (`.login-cat--black`/
+   `--white`), same reasoning as before: this sheet has no separate
+   black/white export, so `grayscale(1) brightness()` approximates one
+   from this single light-toned source instead of swapping images. */
 .login-cat{
 
-    width:min(78%, 320px);
+    /* 192px = 64px source cell x 3 -- an exact integer multiple, not the
+       previous 200px (200/64 = 3.125). A non-integer scale factor made
+       each frame round to a slightly different sub-pixel offset under
+       image-rendering:pixelated, which is what actually read as the cat
+       "moving sideways" -- the sprite sheet's own frame content was
+       already pixel-identical across all 24 frames (verified directly),
+       so the drift was a rasterization artifact, not bad source data. */
+    width:192px;
 
-    aspect-ratio:1 / 1;
+    height:192px;
 
-    margin:0 auto 10px;
+    margin:0 auto -11px;
 
-    background-image:url("../images/avatars/orangecat-sleep-sheet.png");
+    background-image:url("../images/avatars/whiteCatLick.png");
 
     background-repeat:no-repeat;
 
-    background-size:1400% 100%;
+    background-size:2400% 100%;
 
-    background-position:46.1538% 0;
+    background-position:0% 0;
 
     image-rendering:pixelated;
 
-    animation:loginCatBreathe 1.8s steps(4) infinite;
+    /* Prolonged from 2.4s per explicit feedback -- slower, calmer loop
+       fits a lying-down self-licking pose better than a brisk one.
+       steps(23), not steps(24): with background-position-x going 0%->100%
+       across a 24-frame sheet, each frame sits at k/23*100% (23 gaps
+       between 24 frames). steps(24) instead lands each held value at
+       k/24*100%, which is NOT a frame boundary -- every frame shown was
+       a partial crop straddling two adjacent poses, and that per-frame
+       misalignment is what actually read as the cat "moving sideways"
+       (the earlier integer-container-size fix addressed a real but
+       unrelated rounding concern, not this). */
+    animation:loginCatPlay 4.8s steps(23) infinite;
 
     pointer-events:none;
 
-}
+    position:relative;
 
-@keyframes loginCatBreathe{
-
-    from{ background-position-x:46.1538%; }
-
-    to{ background-position-x:76.9231%; }
+    z-index:1;
 
 }
 
-@media (prefers-reduced-motion:reduce){
+.login-cat--black{
 
-    .login-cat{ animation:none; }
+    filter:grayscale(1) brightness(0.4);
 
 }
+
+.login-cat--white{
+
+    filter:grayscale(1) brightness(1.7);
+
+}
+
+@keyframes loginCatPlay{
+
+    from{ background-position-x:0%; }
+
+    to{ background-position-x:100%; }
+
+}
+
+/* Deliberately does NOT respect prefers-reduced-motion, unlike every
+   other animation on this site — explicit user decision after
+   confirming their system has reduced motion enabled and still
+   wanting this decorative loop to play regardless; the same reasoning
+   extends to the title-scramble effect in login-cat.js. Worth knowing
+   if this ever comes up again: the *previous* sprite here
+   ({color}CatPlaying.png, a pouncing/reaching pose) looked broken when
+   frozen under reduced motion — its single static frame read as two
+   disconnected cat-shaped blobs, which is what got reported as a
+   "duplicate cat" bug before a live console check traced it to
+   `animationName` genuinely computing to `"none"`, not a second DOM
+   element. whiteCatLick.png (the current sheet, and Sprite-0005.png
+   before it) doesn't have that problem — every frame is a similar,
+   compact, centered lying-down pose — but if a future sprite swap ever
+   reintroduces an extended/dynamic pose, re-check how its own frame 0
+   looks completely still before assuming reduced-motion support can
+   just be re-added with a bare `animation:none`. */
 
 .login-glass{
 
@@ -779,9 +835,18 @@ no internal scrolling needed
 
     }
 
+    /* Just a smaller square — background-size/position are percentage-
+       based (see the desktop rule above), so no separate crop math is
+       needed per breakpoint the way the old literal-px sprites required. */
     .login-cat{
 
-        margin-bottom:6px;
+        /* 128px = 64px source cell x 2 -- same integer-multiple fix as the
+           desktop rule above (was 130px, not a clean multiple). */
+        width:128px;
+
+        height:128px;
+
+        margin:0 auto -4px;
 
     }
 

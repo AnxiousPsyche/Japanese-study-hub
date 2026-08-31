@@ -18,18 +18,23 @@
     const VALID_COLORS = ["orange", "black", "white"]; // matches CAT_COLOR_ORDER in n5-phaser-game.js exactly
 
     /* Ambient extra actions layered on top of the idle tail-wag loop (see
-       companion-cat.css's .is-standing/.is-playing rules) so the cat isn't
-       just sitting there indefinitely. Black has no "standing" entry:
-       blackCatStandingUp.png is a byte-identical duplicate of
-       blackCatTailWagging.png (verified — no real standing-up pose was
-       ever exported for the black cat), so it's left out here rather than
-       playing the wrong animation. */
+       companion-cat.css's .is-scratching/.is-playing rules) so the cat
+       isn't just sitting there indefinitely — cycles between scratching
+       and playing bursts instead of the earlier standing/playing pair.
+       Black still gets a "scratching" entry in the pool for parity with
+       the other two colors, but heads up: blackCatScratching.png is a
+       byte-identical duplicate of blackCatTailWagging.png (verified via
+       hash — no real scratching pose was ever exported for the black cat,
+       same asset gap the old "standing" pose had), so a black cat's
+       scratching burst will just silently replay its own idle frames
+       rather than visibly do anything different. Swap this back out (or
+       drop it) if/when a real blackCatScratching.png ever gets exported. */
     const EXTRA_ACTIONS = {
-        orange: ["standing", "playing"],
-        white: ["standing", "playing"],
-        black: ["playing"]
+        orange: ["scratching", "playing"],
+        white: ["scratching", "playing"],
+        black: ["scratching", "playing"]
     };
-    const ACTION_DURATION_MS = { standing: 700, playing: 2600 };
+    const ACTION_DURATION_MS = { scratching: 2000, playing: 2600 };
     const ACTION_MIN_GAP_MS = 16000;
     const ACTION_MAX_GAP_MS = 34000;
 
@@ -96,7 +101,7 @@
         }
     }
 
-    /* Schedules one ambient "standing up" or "playing" burst at a random
+    /* Schedules one ambient "scratching" or "playing" burst at a random
        15-35s gap, then reschedules itself — runs for the lifetime of the
        page. Skipped entirely under reduced-motion (matches the CSS media
        query, which also turns off the idle tail-wag loop), and a burst
@@ -127,6 +132,17 @@
 
     function init() {
         if (!readLocal(EXPLORER_KEY)) return; // no profile yet — stay hidden on login
+
+        /* Belt-and-suspenders against showing alongside the login screen's
+           own .login-cat (index.html's synchronous inline script is
+           supposed to hide #login-screen before first paint whenever
+           jpExplorer exists, via the has-saved-explorer class — this
+           guard covers the case where that check doesn't fire for some
+           reason and #login-screen is still visible, which would
+           otherwise put two different cats on screen at once). Only
+           index.html has a #login-screen element at all. */
+        const loginScreen = document.getElementById("login-screen");
+        if (loginScreen && getComputedStyle(loginScreen).display !== "none") return;
 
         const color = getCatColor();
         let lastTip = null;

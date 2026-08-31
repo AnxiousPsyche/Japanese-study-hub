@@ -12,6 +12,26 @@
       "port": 8080
     },
     {
+      "name": "jp-library-static-s08-pics",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "44210"
+      ],
+      "port": 44210
+    },
+    {
+      "name": "jp-library-static-round4-catflip",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "51733"
+      ],
+      "port": 51733
+    },
+    {
       "name": "jp-library-static-fresh",
       "runtimeExecutable": "python",
       "runtimeArgs": [
@@ -2620,6 +2640,26 @@
         "35191"
       ],
       "port": 35191
+    },
+    {
+      "name": "jp-library-static-round47-8fixes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35302"
+      ],
+      "port": 35302
+    },
+    {
+      "name": "jp-library-static-round48-dropdown-verify",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35413"
+      ],
+      "port": 35413
     }
   ],
   "autoVerify": true
