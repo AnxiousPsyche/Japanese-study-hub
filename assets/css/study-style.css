@@ -368,8 +368,8 @@
 }
 .study-instruction h2 {
     font-family: "VT323", monospace;
-    font-size: 25px;
-    color: var(--term-heading);
+    font-size: 32px;
+    color: var(--term-amber);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
@@ -400,8 +400,8 @@
 }
 .study-instruction .grammar-box__title {
     font-family: "VT323", monospace;
-    font-size: 22px;
-    color: var(--term-heading);
+    font-size: 26px;
+    color: var(--term-amber);
     margin-bottom: 6px;
 }
 .study-instruction .grammar-box code {
@@ -969,6 +969,7 @@
    as an underline instead of a filled chip. A small color legend renders
    once per lesson, above the first sample block, same "explain the colors
    once" convention as lesson-box.js's own auto-shown legend. */
+.n5-sample-label { font-family: "VT323", monospace; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--term-amber); opacity: 0.8; margin: 10px 0 4px; }
 .n5-sample-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 10px; border: 1px dashed var(--term-border); border-radius: 4px; margin: 10px 0; font-size: 10px; color: var(--term-text-dim); }
 .n5-sample-legend__item { display: flex; align-items: center; gap: 5px; }
 .n5-sample-legend__swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
@@ -983,6 +984,12 @@
 .n5-sample__tile-text.role-copula { color: #ffffff; border-color: #ffffff; }
 .n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 9px; color: #201d54; background: #f0c674; padding: 1px 4px; letter-spacing: 0.04em; }
 .n5-sample__tile-gloss { font-size: 10px; color: var(--term-text-dim); text-align: center; max-width: 110px; }
+/* Auto-shrink-on-wrap fix (see fixN5SampleAlignment() in study-room.js) —
+   same rationale/shape as .lesson-box__word-tile-gloss.is-small in
+   lesson-box.css: .n5-sample__row uses align-items:flex-end, so any tile
+   whose gloss wraps to 2 lines visibly shifts its kana relative to
+   single-line neighbors. */
+.n5-sample__tile-gloss.is-small { font-size: 9px; line-height: 15px; max-width: none; white-space: nowrap; }
 .n5-sample__romaji { font-size: 11px; color: var(--term-text-dim); font-family: "Space Mono", monospace; margin-top: 4px; }
 
 /* Impostor-verb table (godan verbs shaped like ichidan る-verbs) */

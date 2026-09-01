@@ -1095,7 +1095,12 @@ window.NekoWaGa = {
           <text x="10" y="178" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">— every one of these is the SAME sentence with different cards in the same two slots.</text>
         </svg>
       `,
-                        diagramCaption: "The word bank below is exactly this deck — pick any topic card and any predicate card, and the sentence is correct."
+                        diagramCaption: "The word bank below is exactly this deck — pick any topic card and any predicate card, and the sentence is correct.",
+                        sample: {
+                            tag: '"I am a student."',
+                            tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "がくせい", role: "predicate", gloss: "student", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
+                            romaji: "Watashi wa gakusei desu."
+                        }
                     }],
                     examples: [
                         { jp: "わたしはがくせいです", romaji: "Watashi wa gakusei desu.", en: "I am a student." },
@@ -1221,7 +1226,12 @@ window.NekoWaGa = {
                         title: "自己紹介 (jikoshoukai) — Self-Intro",
                         explain: "A Japanese self-introduction always follows the exact same 3-step shape — like a knock-knock joke: everyone already knows the shape, so you just fill in your own punchline (your name) in the middle. 1) Greet — はじめまして, said only at a first meeting. 2) Name — わたしは [name] です, the pattern from the last shelf, put to work. 3) Close — よろしくお願いします, every time.",
                         pattern: '<span class="pattern-box__fixed">はじめまして</span> → <span class="pattern-box__slot">わたしは [name] です</span> → <span class="pattern-box__fixed">よろしくお願いします</span>',
-                        culture: "Jikoshoukai isn't just small talk — it's treated like a small ritual, given standing up (often with a slight bow) on a first day at school/work, or when meeting someone through a mutual connection. よろしくお願いします doesn't really translate into English — it's closer to \"please treat me well going forward,\" and saying it at the end of a self-introduction is basically mandatory, not optional politeness."
+                        culture: "Jikoshoukai isn't just small talk — it's treated like a small ritual, given standing up (often with a slight bow) on a first day at school/work, or when meeting someone through a mutual connection. よろしくお願いします doesn't really translate into English — it's closer to \"please treat me well going forward,\" and saying it at the end of a self-introduction is basically mandatory, not optional politeness.",
+                        sample: {
+                            tag: '"I am Tanaka."',
+                            tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "たなか", role: "predicate", gloss: "Tanaka", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
+                            romaji: "Watashi wa Tanaka desu."
+                        }
                     }],
                     /* Ported verbatim from the Adventure Room's shelf-04
                        LESSON_CONTENT (the same self-intro exchange,
@@ -1419,7 +1429,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Polite direction words — こちら/そちら/あちら/どちら",
-                            explain: "The polite versions of これ/それ/あれ/どれ — same distance rules, softer tone. Common on signs, in shops, and when politely introducing someone ('こちらは〜です' = 'this is ~')."
+                            explain: "The polite versions of これ/それ/あれ/どれ — same distance rules, softer tone. Common on signs, in shops, and when politely introducing someone ('こちらは〜です' = 'this is ~').",
+                            sample: {
+                                tag: '"That over there is a book."',
+                                tiles: [{ text: "あれ", role: "subject", gloss: "that over there", isNew: true }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "ほん", role: "predicate", gloss: "book" }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Are wa hon desu."
+                            }
                         }
                     ],
                     /* Ported verbatim from the Adventure Room's shelf-05
@@ -1597,7 +1612,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Six more question words",
-                            explain: "だれ (who) and いつ (when) attach exactly like どこ did in shelf 5 — swap it in, everything else stays put. どうして and なぜ both mean 'why,' but aren't interchangeable registers: どうして is what you'd actually say out loud to a friend, while なぜ leans formal/written — a news report or an essay reaches for なぜ, a conversation reaches for どうして. いくつ and いくら split the same way: いくつ counts small countable things ('how many apples?'), いくら asks a price ('how much is this?') — never mix the two up just because English uses 'how' for both."
+                            explain: "だれ (who) and いつ (when) attach exactly like どこ did in shelf 5 — swap it in, everything else stays put. どうして and なぜ both mean 'why,' but aren't interchangeable registers: どうして is what you'd actually say out loud to a friend, while なぜ leans formal/written — a news report or an essay reaches for なぜ, a conversation reaches for どうして. いくつ and いくら split the same way: いくつ counts small countable things ('how many apples?'), いくら asks a price ('how much is this?') — never mix the two up just because English uses 'how' for both.",
+                            sample: {
+                                tag: '"Who is the teacher?"',
+                                tiles: [{ text: "せんせい", role: "subject", gloss: "teacher" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "だれ", role: "predicate", gloss: "who", isNew: true }, { text: "ですか", role: "copula", gloss: "is...?" }],
+                                romaji: "Sensei wa dare desu ka?"
+                            }
                         }
                     ],
                     /* Ported verbatim from the Adventure Room's shelf-06
@@ -1744,7 +1764,12 @@ window.NekoWaGa = {
                         {
                             title: "Counters — why the numbers change shape",
                             explain: "This is the part that trips people up next: いち・に・さん by themselves only work for pure counting ('1, 2, 3...') — the moment you're counting something specific, a counter word glues onto the number, and often changes its sound. English does a mild version of this too ('a slice of bread,' 'a herd of cattle') but Japanese counters are mandatory, not optional. The three you'll use constantly at N5 — つ (everyday objects), 匹 (small animals), and 時/分 (time) — each get their own lesson next, since they don't follow one shared rule.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + Counter</span> <span class="pattern-box__fixed">です</span>'
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + Counter</span> <span class="pattern-box__fixed">です</span>',
+                            sample: {
+                                tag: '"It\'s 100."',
+                                tiles: [{ text: "ひゃく", role: "predicate", gloss: "100", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Hyaku desu."
+                            }
                         }
                     ],
                     examples: [
@@ -1864,7 +1889,12 @@ window.NekoWaGa = {
                                 + '<tr><td class="jp">きゅうにん</td><td>kyuunin</td><td class="counter-count">9</td><td class="counter-photo"></td></tr>'
                                 + '<tr><td class="jp">じゅうにん</td><td>juunin</td><td class="counter-count">10</td><td class="counter-photo"></td></tr>'
                                 + '</tbody></table>',
-                            diagramCaption: "がくせいは さんにんです。 (Gakusei wa sannin desu. — \"There are three students.\") Only 1 and 2 people break the pattern — everything from 3 up is just [number]+にん."
+                            diagramCaption: "がくせいは さんにんです。 (Gakusei wa sannin desu. — \"There are three students.\") Only 1 and 2 people break the pattern — everything from 3 up is just [number]+にん.",
+                            sample: {
+                                tag: '"There are three students."',
+                                tiles: [{ text: "がくせい", role: "subject", gloss: "student" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "さんにん", role: "predicate", gloss: "three people", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Gakusei wa sannin desu."
+                            }
                         }
                     ],
                     examples: [
@@ -1958,7 +1988,12 @@ window.NekoWaGa = {
                         {
                             title: "分 (minute) — telling time, part 2",
                             explain: "Minutes attach the same way as hours — but 分's sound shifts around even more than 匹's did, reading ふん or ぷん depending on the number before it (いっぷん, にふん, さんぷん...). 'What minute?' is 何分 (なんぷん). Put both halves together and you can tell any time: さんじじゅっぷん — '3:10.'",
-                            pattern: '<span class="pattern-box__slot">Hour</span> <span class="pattern-box__fixed">時</span> <span class="pattern-box__slot">Minute</span> <span class="pattern-box__fixed">分</span>'
+                            pattern: '<span class="pattern-box__slot">Hour</span> <span class="pattern-box__fixed">時</span> <span class="pattern-box__slot">Minute</span> <span class="pattern-box__fixed">分</span>',
+                            sample: {
+                                tag: '"It\'s 3:10 now."',
+                                tiles: [{ text: "いま", role: "subject", gloss: "now" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "さんじじゅっぷん", role: "predicate", gloss: "3:10", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Ima wa sanji juppun desu."
+                            }
                         }
                     ],
                     /* Ported verbatim from the Adventure Room's shelf-07
@@ -2103,7 +2138,12 @@ window.NekoWaGa = {
                                 ["いちわ", "ichiwa", "1", "bird"], ["にわ", "niwa", "2"], ["さんわ", "sanwa", "3"], ["よんわ", "yonwa", "4"], ["ごわ", "gowa", "5"],
                                 ["ろくわ", "rokuwa", "6"], ["ななわ", "nanawa", "7"], ["はちわ", "hachiwa", "8"], ["きゅうわ", "kyuuwa", "9"], ["じゅうわ", "juuwa", "10"]
                             ]),
-                            diagramCaption: "うさぎは いちわです。 (Usagi wa ichiwa desu. — \"There is one rabbit.\") Yes — 羽, the bird counter, not 匹."
+                            diagramCaption: "うさぎは いちわです。 (Usagi wa ichiwa desu. — \"There is one rabbit.\") Yes — 羽, the bird counter, not 匹.",
+                            sample: {
+                                tag: '"There are four rabbits."',
+                                tiles: [{ text: "うさぎ", role: "subject", gloss: "rabbit" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "よんわ", role: "predicate", gloss: "four (birds/rabbits)", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Usagi wa yonwa desu."
+                            }
                         }
                     ],
                     examples: [
@@ -2227,7 +2267,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Sound changes to watch for",
-                            explain: "本, 杯, and 匹 all shift sound the same three ways depending on the number before them — 1, 6, 8, 10 usually trigger a small-つ doubling (いっぽん, ろっぽん, はっぽん, じゅっぽん), while 3 often voices the counter (さんぼん, さんばい). 個, 枚, and 台 stay simple and regular the whole way through — いっこ, にこ, さんこ..."
+                            explain: "本, 杯, and 匹 all shift sound the same three ways depending on the number before them — 1, 6, 8, 10 usually trigger a small-つ doubling (いっぽん, ろっぽん, はっぽん, じゅっぽん), while 3 often voices the counter (さんぼん, さんばい). 個, 枚, and 台 stay simple and regular the whole way through — いっこ, にこ, さんこ...",
+                            sample: {
+                                tag: '"There is one car."',
+                                tiles: [{ text: "くるま", role: "subject", gloss: "car" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "いちだい", role: "predicate", gloss: "one (machine)", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Kuruma wa ichidai desu."
+                            }
                         }
                     ],
                     examples: [
@@ -2347,7 +2392,12 @@ window.NekoWaGa = {
                                 + '</div>'
                                 + '</div>'
                                 + '</div>',
-                            diagramCaption: "Same pattern either way: [thing] は/が [place/container] に あります／います — only the verb changes, and only based on whether the thing itself could get up and move."
+                            diagramCaption: "Same pattern either way: [thing] は/が [place/container] に あります／います — only the verb changes, and only based on whether the thing itself could get up and move.",
+                            sample: {
+                                tag: '"The teacher is at school."',
+                                tiles: [{ text: "せんせい", role: "subject", gloss: "teacher" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "がっこうに", role: "particle", gloss: "at school" }, { text: "います", role: "predicate", gloss: "is there", isNew: true }],
+                                romaji: "Sensei wa gakkou ni imasu."
+                            }
                         }
                     ],
                     examples: [
@@ -2534,7 +2584,12 @@ window.NekoWaGa = {
                                 + '<img class="no-cat" src="../../assets/images/lesson/transparent/cat.png" alt="cat">'
                                 + '</div>'
                                 + '</div>',
-                            diagramCaption: "テーブルの下に います。 (Teeburu no shita ni imasu.) — \"[The cat] is under the table.\" Swap テーブルの下 for any [reference]の[direction] pair and the rest of the sentence never changes."
+                            diagramCaption: "テーブルの下に います。 (Teeburu no shita ni imasu.) — \"[The cat] is under the table.\" Swap テーブルの下 for any [reference]の[direction] pair and the rest of the sentence never changes.",
+                            sample: {
+                                tag: '"The book is next to the cat."',
+                                tiles: [{ text: "ほん", role: "subject", gloss: "book" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "ねこの隣に", role: "particle", gloss: "next to the cat", isNew: true }, { text: "あります", role: "predicate", gloss: "is there" }],
+                                romaji: "Hon wa neko no tonari ni arimasu."
+                            }
                         }
                     ],
                     /* Ported verbatim from the Adventure Room's shelf-08
@@ -2735,7 +2790,12 @@ window.NekoWaGa = {
                                 + '<div class="cross-label e"><span class="jp">東</span><span class="romaji">higashi</span></div>'
                                 + '<div class="cross-label w"><span class="jp">西</span><span class="romaji">nishi</span></div>'
                                 + '</div>',
-                            diagramCaption: "Unlike 前/後ろ/右/左 (which rotate with whoever is speaking), 北・南・東・西 always point the same way — the same compass works on every map."
+                            diagramCaption: "Unlike 前/後ろ/右/左 (which rotate with whoever is speaking), 北・南・東・西 always point the same way — the same compass works on every map.",
+                            sample: {
+                                tag: '"The library is north of the station."',
+                                tiles: [{ text: "としょかん", role: "subject", gloss: "library" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "えきのきたに", role: "particle", gloss: "north of the station", isNew: true }, { text: "あります", role: "predicate", gloss: "is there" }],
+                                romaji: "Toshokan wa eki no kita ni arimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -2858,7 +2918,12 @@ window.NekoWaGa = {
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/library.png" alt="library"><div class="grammar-box__place-jp">としょかん</div><div class="grammar-box__place-en">toshokan &middot; library</div></div>'
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/park.png" alt="park"><div class="grammar-box__place-jp">こうえん</div><div class="grammar-box__place-en">kouen &middot; park</div></div>'
                                 + '</div>',
-                            diagramCaption: "Every one of these is a plain noun — no counter, no special grammar. The ONLY thing that changes sentence to sentence is which direction word (shelf 08b) sits between the place and に あります."
+                            diagramCaption: "Every one of these is a plain noun — no counter, no special grammar. The ONLY thing that changes sentence to sentence is which direction word (shelf 08b) sits between the place and に あります.",
+                            sample: {
+                                tag: '"The book is at the library."',
+                                tiles: [{ text: "ほん", role: "subject", gloss: "book" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "としょかんに", role: "particle", gloss: "at the library", isNew: true }, { text: "あります", role: "predicate", gloss: "is there" }],
+                                romaji: "Hon wa toshokan ni arimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -2971,7 +3036,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "People & relationships",
-                            explain: "A cluster of N5 nouns exists just to name the people around you: 友達 (friend), 家族 (family), 先生 (teacher), 学生 (student) — plus a workplace/school-hierarchy set: せんぱい (senior/upperclassman) and こうはい (junior/underclassman) mark relative seniority, not age; どうりょう (colleague) and しんせき (relative) round out the everyday relationship vocabulary you'll reach for constantly once you start describing your own life in Japanese."
+                            explain: "A cluster of N5 nouns exists just to name the people around you: 友達 (friend), 家族 (family), 先生 (teacher), 学生 (student) — plus a workplace/school-hierarchy set: せんぱい (senior/upperclassman) and こうはい (junior/underclassman) mark relative seniority, not age; どうりょう (colleague) and しんせき (relative) round out the everyday relationship vocabulary you'll reach for constantly once you start describing your own life in Japanese.",
+                            sample: {
+                                tag: '"This is the teacher\'s book."',
+                                tiles: [{ text: "これ", role: "subject", gloss: "this" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "先生の本", role: "predicate", gloss: "teacher's book", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Kore wa sensei no hon desu."
+                            }
                         }
                     ],
                     examples: [
@@ -3127,7 +3197,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "自分 (jibun) — pointing back at the subject",
-                            explain: "自分 (jibun) can point back to whoever the sentence is already about — '自分の家族 (jibun no kazoku)' means 'my own family' if you're speaking, or 'their own family' if the sentence is about someone else."
+                            explain: "自分 (jibun) can point back to whoever the sentence is already about — '自分の家族 (jibun no kazoku)' means 'my own family' if you're speaking, or 'their own family' if the sentence is about someone else.",
+                            sample: {
+                                tag: '"I am a teacher." (casual, male speaker)',
+                                tiles: [{ text: "僕", role: "subject", gloss: "I (casual, male)", isNew: true }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "せんせい", role: "predicate", gloss: "teacher" }, { text: "です", role: "copula", gloss: "am" }],
+                                romaji: "Boku wa sensei desu."
+                            }
                         }
                     ],
                     examples: [
@@ -3279,7 +3354,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Watch out — fake い-adjectives",
-                            explain: "A couple of words end in い by coincidence, not because they're real い-adjectives: きれい (pretty/clean), きらい (dislike/hate). They're actually な-adjectives — negate with じゃないです, never くない. That trap, and the rest of な-adjective conjugation, gets its own lesson next."
+                            explain: "A couple of words end in い by coincidence, not because they're real い-adjectives: きれい (pretty/clean), きらい (dislike/hate). They're actually な-adjectives — negate with じゃないです, never くない. That trap, and the rest of な-adjective conjugation, gets its own lesson next.",
+                            sample: {
+                                tag: '"The book is big."',
+                                tiles: [{ text: "本", role: "subject", gloss: "book" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "大きい", role: "predicate", gloss: "big", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Hon wa ookii desu."
+                            }
                         }
                     ],
                     examples: [
@@ -3427,7 +3507,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Watch out — fake い-adjectives are secretly な-adjectives",
-                            explain: "A couple of words end in い by coincidence and LOOK like い-adjectives, but conjugate as な-adjectives instead: きれい (pretty/clean), きらい (dislike/hate). Negate them with じゃないです, never くない — checking a な-adjective vocab list beats guessing from spelling every time."
+                            explain: "A couple of words end in い by coincidence and LOOK like い-adjectives, but conjugate as な-adjectives instead: きれい (pretty/clean), きらい (dislike/hate). Negate them with じゃないです, never くない — checking a な-adjective vocab list beats guessing from spelling every time.",
+                            sample: {
+                                tag: '"The library is quiet."',
+                                tiles: [{ text: "図書館", role: "subject", gloss: "library" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "静か", role: "predicate", gloss: "quiet", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Toshokan wa shizuka desu."
+                            }
                         }
                     ],
                     examples: [
@@ -3572,7 +3657,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Frequency adverbs — a closed set to just memorize",
-                            explain: "A handful of very common adverbs don't derive from an adjective at all — they're their own words, and N5 expects you to just know them: いつも (always), よく (often), ときどき (sometimes), あまり (not much — always paired with a negative verb/adjective), まだ (still/not yet), もう (already), とても (very), すぐに (right away)."
+                            explain: "A handful of very common adverbs don't derive from an adjective at all — they're their own words, and N5 expects you to just know them: いつも (always), よく (often), ときどき (sometimes), あまり (not much — always paired with a negative verb/adjective), まだ (still/not yet), もう (already), とても (very), すぐに (right away).",
+                            sample: {
+                                tag: '"The cat often plays."',
+                                tiles: [{ text: "猫", role: "subject", gloss: "cat" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "よく", role: "particle", gloss: "often", isNew: true }, { text: "遊びます", role: "predicate", gloss: "plays" }],
+                                romaji: "Neko wa yoku asobimasu."
+                            }
                         }
                     ],
                     /* Every example below was re-checked for accuracy: particle
@@ -4156,7 +4246,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "New particle along the way — で",
-                            explain: "で marks WHERE an action happens (playing, working, eating) — a different job from に, which marks a destination or where something simply exists."
+                            explain: "で marks WHERE an action happens (playing, working, eating) — a different job from に, which marks a destination or where something simply exists.",
+                            sample: {
+                                tag: '"Let\'s go to the library."',
+                                tiles: [{ text: "図書館に", role: "particle", gloss: "to the library" }, { text: "行きましょう", role: "predicate", gloss: "let's go", isNew: true }],
+                                romaji: "Toshokan ni ikimashou."
+                            }
                         }
                     ],
                     examples: [
@@ -4378,7 +4473,12 @@ window.NekoWaGa = {
                     sections: [{
                         title: "Four forms, one stem — ません / ました / ませんでした",
                         explain: "Already know present-tense ます. Three more forms all attach to the exact same ます-stem: present negative — drop ます, add ません (起きません, 'I don't wake up'). Past — swap ます for ました (起きました, 'I woke up'). Past negative — builds on the present-negative form: ません + でした = ませんでした (起きませんでした, 'I didn't wake up'). The 'present' ます form also covers habits and future plans, not just this instant — use the past forms only for things that have already happened.",
-                        pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">ません/ました/ませんでした</span>'
+                        pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">ません/ました/ませんでした</span>',
+                        sample: {
+                            tag: '"I met a friend."',
+                            tiles: [{ text: "友達に", role: "particle", gloss: "a friend" }, { text: "会いました", role: "predicate", gloss: "met", isNew: true }],
+                            romaji: "Tomodachi ni aimashita."
+                        }
                     }],
                     examples: [
                         { jp: "本を読みません。", romaji: "Hon o yomimasen.", en: "I don't read books." },
@@ -4503,7 +4603,12 @@ window.NekoWaGa = {
                         {
                             title: "と — \"and\" (for listing nouns)",
                             explain: "と is the odd one out: it never joins two WHOLE sentences the way から and けど do. Instead it sits directly BETWEEN two nouns, gluing them into a single combined item — 本とかばん ('a book and a bag') is still just ONE Object, filling ONE O slot in S-T-P-O-V, not two separate sentences. Only works on nouns, never on verbs or full sentences (て-form handles those, up on shelf 13).",
-                            pattern: '<span class="pattern-box__slot">Noun A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">Noun B</span> <span class="pattern-box__fixed">&larr; still just one O slot</span>'
+                            pattern: '<span class="pattern-box__slot">Noun A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">Noun B</span> <span class="pattern-box__fixed">&larr; still just one O slot</span>',
+                            sample: {
+                                tag: '"Because it\'s quiet, I like it."',
+                                tiles: [{ text: "静かだから", role: "particle", gloss: "because it's quiet", isNew: true }, { text: "好きです", role: "predicate", gloss: "I like it" }],
+                                romaji: "Shizuka dakara, suki desu."
+                            }
                         }
                     ],
                     examples: [
@@ -4634,7 +4739,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "も — \"also\"",
-                            explain: "も replaces は or が entirely (never stacks with them) when the same thing applies to something else too. It sits in the exact same Subject slot, just with a different job: not \"here's the topic\" or \"it's this one\" but \"this one too.\" 友達も学生です, 'My friend is ALSO a student' — implying someone else (probably you) already is one."
+                            explain: "も replaces は or が entirely (never stacks with them) when the same thing applies to something else too. It sits in the exact same Subject slot, just with a different job: not \"here's the topic\" or \"it's this one\" but \"this one too.\" 友達も学生です, 'My friend is ALSO a student' — implying someone else (probably you) already is one.",
+                            sample: {
+                                tag: '"My friend is also a student."',
+                                tiles: [{ text: "友達", role: "subject", gloss: "friend" }, { text: "も", role: "particle", gloss: "also", isNew: true }, { text: "学生", role: "predicate", gloss: "student" }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Tomodachi mo gakusei desu."
+                            }
                         }
                     ],
                     examples: [
@@ -4729,7 +4839,12 @@ window.NekoWaGa = {
                             title: "Relative time words skip に",
                             explain: "A small, memorize-as-a-set group of time words never take に at all: あした (tomorrow), きょう (today), きのう (yesterday), and similar \"relative to today\" words. あした勉強します, 'I will study tomorrow' — no に anywhere, even though あした is filling the exact same Time slot 三時に did above. Mixing に onto one of these is one of the most common N5 mistakes.",
                             diagramSvg: '<div class="waga-sentence" style="font-size:18px;">あした<span class="conv-hl conv-hl--copula">勉強します。</span></div>',
-                            diagramCaption: "Ashita benkyoushimasu — no particle after あした at all."
+                            diagramCaption: "Ashita benkyoushimasu — no particle after あした at all.",
+                            sample: {
+                                tag: '"I wake up at 3 o\'clock."',
+                                tiles: [{ text: "三時に", role: "particle", gloss: "at 3 o'clock", isNew: true }, { text: "起きます", role: "predicate", gloss: "wake up" }],
+                                romaji: "Sanji ni okimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -4820,7 +4935,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "に / へ — heading TOWARD a place (full detail on shelf 08c)",
-                            explain: "A third job, easy to lose track of next to the two above: に also marks the destination after a movement verb (行きます／来ます／帰ります), and へ can swap in for that exact job with no change in meaning. 図書館に行きます and 図書館へ行きます both just mean 'I go to the library' — this course accepts either wherever a 'going to [place]' sentence is asked for. へ ONLY does this one job; it can't replace に's existence or action-adjacent uses above. See shelf 08c for the full explanation and diagram."
+                            explain: "A third job, easy to lose track of next to the two above: に also marks the destination after a movement verb (行きます／来ます／帰ります), and へ can swap in for that exact job with no change in meaning. 図書館に行きます and 図書館へ行きます both just mean 'I go to the library' — this course accepts either wherever a 'going to [place]' sentence is asked for. へ ONLY does this one job; it can't replace に's existence or action-adjacent uses above. See shelf 08c for the full explanation and diagram.",
+                            sample: {
+                                tag: '"I study at the library."',
+                                tiles: [{ text: "図書館で", role: "particle", gloss: "at the library", isNew: true }, { text: "勉強します", role: "predicate", gloss: "study" }],
+                                romaji: "Toshokan de benkyoushimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -4905,7 +5025,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "と — combining two nouns into one object",
-                            explain: "と glues two nouns into a single combined item — 本とかばん, 'a book AND a bag.' That combined pair still only fills ONE Object slot, not two. と is covered in full on shelf 15, since it's really a joining word rather than a normal object-marking particle."
+                            explain: "と glues two nouns into a single combined item — 本とかばん, 'a book AND a bag.' That combined pair still only fills ONE Object slot, not two. と is covered in full on shelf 15, since it's really a joining word rather than a normal object-marking particle.",
+                            sample: {
+                                tag: '"I read a book."',
+                                tiles: [{ text: "本を", role: "particle", gloss: "a book", isNew: true }, { text: "読みます", role: "predicate", gloss: "read" }],
+                                romaji: "Hon o yomimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -5034,7 +5159,12 @@ window.NekoWaGa = {
                                 + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">か</span><span class="particle-glance__meaning"><strong>question marker</strong> — 学生ですか "Are you a student?"</span></div>'
                                 + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">から</span><span class="particle-glance__meaning"><strong>because (reason first)</strong> — 静かだから、好きです "BECAUSE it\'s quiet, I like it"</span></div>'
                                 + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">けど</span><span class="particle-glance__meaning"><strong>but</strong> — 古いけど、好きです "It\'s old, BUT I like it"</span></div>'
-                                + '</div>'
+                                + '</div>',
+                            sample: {
+                                tag: '"It\'s my book."',
+                                tiles: [{ text: "私の", role: "particle", gloss: "my", isNew: true }, { text: "本", role: "subject", gloss: "book" }, { text: "です", role: "copula", gloss: "is" }],
+                                romaji: "Watashi no hon desu."
+                            }
                         }
                     ],
                     examples: [
@@ -5126,7 +5256,12 @@ window.NekoWaGa = {
                         {
                             title: "Vるのが好き・きらい — liking or disliking an ACTION",
                             explain: "好き and きらい (shelf 09) already describe liking/disliking a thing — but a verb can't sit directly in front of です the way a noun can. の turns the whole verb phrase into a noun first (\"the act of swimming\"), which 好き／きらい can then describe like any other noun. およぐのが好きです, 'I like swimming' (literally 'swimming is a liked thing').",
-                            pattern: '<span class="pattern-box__slot">Vる</span> <span class="pattern-box__fixed">の</span> <span class="pattern-box__fixed">が 好き／きらい</span>'
+                            pattern: '<span class="pattern-box__slot">Vる</span> <span class="pattern-box__fixed">の</span> <span class="pattern-box__fixed">が 好き／きらい</span>',
+                            sample: {
+                                tag: '"I want to eat bread."',
+                                tiles: [{ text: "パンが", role: "particle", gloss: "bread" }, { text: "たべたいです", role: "predicate", gloss: "want to eat", isNew: true }],
+                                romaji: "Pan ga tabetai desu."
+                            }
                         }
                     ],
                     examples: [
@@ -5243,7 +5378,12 @@ window.NekoWaGa = {
                         {
                             title: "ないでください — a direct request not to do something",
                             explain: "Built on the ない-form (shelf 14), not て-form — attach でください straight onto the plain negative stem. しんぱいしないでください, 'please don't worry.' Reads as a personal request rather than てはいけません's blanket rule.",
-                            pattern: '<span class="pattern-box__slot">Vない</span> <span class="pattern-box__fixed">でください</span>'
+                            pattern: '<span class="pattern-box__slot">Vない</span> <span class="pattern-box__fixed">でください</span>',
+                            sample: {
+                                tag: '"May I sit here?"',
+                                tiles: [{ text: "ここに", role: "particle", gloss: "here" }, { text: "すわってもいいですか", role: "predicate", gloss: "may I sit?", isNew: true }],
+                                romaji: "Koko ni suwattemo ii desu ka."
+                            }
                         }
                     ],
                     examples: [
@@ -5362,7 +5502,12 @@ window.NekoWaGa = {
                         {
                             title: "くなる・になる — a quality changing over time",
                             explain: "い-adjectives drop い and add くなる; な-adjectives and nouns just add になる. Either way, it says a quality has shifted rather than just describing it as a fixed fact — ふゆにさむくなります, 'it gets cold in winter' (not just 'winter is cold').",
-                            pattern: '<span class="pattern-box__slot">i-Adj (drop い)／na-Adj／N</span> <span class="pattern-box__fixed">くなる／になる</span>'
+                            pattern: '<span class="pattern-box__slot">i-Adj (drop い)／na-Adj／N</span> <span class="pattern-box__fixed">くなる／になる</span>',
+                            sample: {
+                                tag: '"I like dogs more."',
+                                tiles: [{ text: "いぬの", role: "particle", gloss: "dogs" }, { text: "ほうが", role: "particle", gloss: "more", isNew: true }, { text: "すきです", role: "predicate", gloss: "like" }],
+                                romaji: "Inu no hou ga suki desu."
+                            }
                         }
                     ],
                     examples: [
@@ -5483,7 +5628,12 @@ window.NekoWaGa = {
                         {
                             title: "もう〜／まだ〜ていません — already / not yet",
                             explain: "もう + past tense reports a task is already complete — もうしゅくだいをしましたか, 'have you already done the homework?' まだ + ...ていません reports it's still outstanding — いいえ、まだしていません, 'no, not yet.'",
-                            pattern: '<span class="pattern-box__slot">もう</span> <span class="pattern-box__fixed">Vました</span> <span class="pattern-box__fixed">／ まだ</span> <span class="pattern-box__fixed">Vていません</span>'
+                            pattern: '<span class="pattern-box__slot">もう</span> <span class="pattern-box__fixed">Vました</span> <span class="pattern-box__fixed">／ まだ</span> <span class="pattern-box__fixed">Vていません</span>',
+                            sample: {
+                                tag: '"The thing is, my head hurts."',
+                                tiles: [{ text: "あたまが", role: "particle", gloss: "my head" }, { text: "いたいんです", role: "predicate", gloss: "hurts", isNew: true }],
+                                romaji: "Atama ga itai n desu."
+                            }
                         }
                     ],
                     examples: [
@@ -6678,8 +6828,10 @@ window.NekoWaGa = {
        segregated from the shelves — its own `quizGroup` flag (parallel to
        `kanjiGroup`), its own <optgroup> in renderLessonPicker(), and its
        own branch in openLesson() that hands off to renderCheckpointQuiz()
-       instead of the normal currentExercises/renderExercise() flow (see
-       "===== CHECKPOINT QUIZ RENDERING =====" below openLesson()).
+       (see "===== CHECKPOINT QUIZ RENDERING =====" below openLesson()) —
+       the same "full sheet, grade on submit" shape the regular shelves'
+       renderMondaiQuiz() now also uses, just kept as its own function
+       since a checkpoint review's questions aren't grouped into もんだい1/2.
        Question shape is copied exactly from REVIEW_1_QUIZ_QUESTIONS:
        { kind:'mc', prompt, choices, correctIndex } or
        { kind:'fill', prompt?, before, after, answer, altAnswers? } — every
@@ -6825,16 +6977,6 @@ window.NekoWaGa = {
 
     /* ===== STATE ===== */
     let currentLesson = null;
-    let currentExercises = [];
-    let exerciseIndex = 0;
-    let attempts = 0;
-    let maxAttempts = 3;
-    let totalExercises = 0;
-    let completedExercises = 0;
-    let lessonScore = 0;
-    let streak = 0;
-    let bestStreak = 0;
-    let wordOrderState = null;
 
     const lessons = buildLessons();
 
@@ -6953,12 +7095,10 @@ window.NekoWaGa = {
 
         if (currentLesson.kanjiGroup) {
             /* Card-gallery UI, not a quiz — there's no single "correct
-               answer" to grade when browsing kanji, so this skips the
-               whole currentExercises/renderExercise machinery entirely
-               and hands off to assets/js/kanji-cards.js instead. */
-            hide($("studyPractice"));
-            hide($("studyComplete"));
+               answer" to grade when browsing kanji, so this hands off to
+               assets/js/kanji-cards.js instead of the mondai engine. */
             hide($("checkpointQuiz"));
+            hide($("mondaiQuiz"));
             let kanjiWrap = $("kanjiCards");
             show(kanjiWrap);
             if (window.KanjiCards) KanjiCards.render(currentLesson, kanjiWrap);
@@ -6972,37 +7112,24 @@ window.NekoWaGa = {
 
         if (currentLesson.quizGroup) {
             /* All 10 questions rendered at once as one sheet, graded on
-               Submit — not the one-at-a-time currentExercises/
-               renderExercise() flow the s01-s16 shelves use — so this
-               skips that machinery entirely too, same as the kanjiGroup
-               branch above, and hands off to renderCheckpointQuiz()
-               instead (see "===== CHECKPOINT QUIZ RENDERING =====" below). */
-            hide($("studyPractice"));
-            hide($("studyComplete"));
+               Submit — the checkpoint reviews already used this same
+               "full sheet, grade on submit" shape the regular shelves'
+               mondai worksheet now also uses, so they keep their own
+               renderCheckpointQuiz() rather than sharing renderMondaiQuiz(). */
             hide($("kanjiCards"));
+            hide($("mondaiQuiz"));
             let quizWrap = $("checkpointQuiz");
             show(quizWrap);
             renderCheckpointQuiz(currentLesson, quizWrap);
             return;
         }
 
-        /* Every regular shelf now gets the mondai-worksheet practice
-           section (see renderMondaiQuiz() above) — two もんだい blocks of
-           5 multiple-choice questions each, shown together on one sheet,
-           graded on Submit. This replaces the old one-at-a-time
-           buildWordBankExercises()/buildMatchExercises()/
-           buildWordOrderExercises() flow (currentExercises/
-           renderExercise()/the word-order star-slot UI) entirely for
-           these lessons — that machinery is now only reachable by
-           quizGroup's renderCheckpointQuiz(), which already used this
-           same "full sheet, grade on submit" shape. */
+        /* Every regular shelf gets the mondai-worksheet practice section
+           (see renderMondaiQuiz() above) — two もんだい blocks of 5
+           multiple-choice questions each, shown together on one sheet,
+           graded on Submit. */
         hide($("kanjiCards"));
         hide($("checkpointQuiz"));
-        hide($("studyPractice"));
-        hide($("studyComplete"));
-        let divider = $("studyQuizDivider");
-        hide(divider);
-        if (divider) divider.classList.remove("is-visible");
         let mondaiWrap = $("mondaiQuiz");
         show(mondaiWrap);
         renderMondaiQuiz(currentLesson, mondaiWrap);
@@ -7061,7 +7188,7 @@ window.NekoWaGa = {
         (inst.sections || []).forEach(function (sec) {
             let sampleHtml = "";
             if (sec.sample) {
-                sampleHtml = (sampleLegendShown ? "" : buildSampleLegendHTML()) + buildSampleHTML(sec.sample);
+                sampleHtml = (sampleLegendShown ? "" : "<div class='n5-sample-label'>Samples</div>" + buildSampleLegendHTML()) + buildSampleHTML(sec.sample);
                 sampleLegendShown = true;
             }
             html += "<div class='grammar-box'>"
@@ -7129,6 +7256,7 @@ window.NekoWaGa = {
 
         panel.innerHTML = html;
         wireClawforms(panel);
+        fixN5SampleAlignment(panel);
     }
 
     /* Full vocab list for the lesson (content-fidelity pass) — a compact
@@ -7212,6 +7340,26 @@ window.NekoWaGa = {
             + "</div>";
     }
 
+    /* Auto-shrinks any .n5-sample__tile-gloss that wraps onto a second
+       line, so its tile's total height still matches single-line
+       neighbors in the same row (.n5-sample__row uses align-items:
+       flex-end — see the .is-small CSS comment in study-style.css). Same
+       shape as lesson-box.js's fixWordTileAlignment()/study-room-n4.js's
+       own copy, kept as its own copy for the same reason those two are
+       separate — this file has no access to either's scope. */
+    function fixN5SampleAlignment(container) {
+        container.querySelectorAll(".n5-sample__row").forEach(function (row) {
+            row.querySelectorAll(".n5-sample__tile-gloss").forEach(function (g) {
+                if (g.classList.contains("is-small")) return;
+                let fontSize = parseFloat(getComputedStyle(g).fontSize) || 10;
+                let singleLineHeight = fontSize * 1.4;
+                if (g.scrollHeight > singleLineHeight * 1.4) {
+                    g.classList.add("is-small");
+                }
+            });
+        });
+    }
+
     function buildSampleLegendHTML() {
         return "<div class='n5-sample-legend'>"
             + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#6fb3e6'></span>Subject</span>"
@@ -7272,428 +7420,9 @@ window.NekoWaGa = {
             + "</div>";
     }
 
-    /* ===== EXERCISE RENDERING ===== */
-    /* Quiz Set 1 = this lesson's existing exercises (word-bank fill-in or
-       vocab-only multiple-choice); Quiz Set 2 = the new word-order
-       exercise. Both live in one flat currentExercises array (tagged
-       .quizSet in openLesson()) so the underlying index/attempts/streak
-       state machine below is unchanged — renderExercise() just detects
-       the boundary between the two sets and shows a one-time interstitial
-       there instead of a new parallel state machine. */
-    function quizSetLabel(n) {
-        return n === 2 ? "Word Order" : "Fill in the Blank";
-    }
-
-    function renderExercise() {
-        if (exerciseIndex >= currentExercises.length) {
-            showResult();
-            return;
-        }
-        let ex = currentExercises[exerciseIndex];
-        let prevEx = exerciseIndex > 0 ? currentExercises[exerciseIndex - 1] : null;
-        if (prevEx && prevEx.quizSet !== ex.quizSet) {
-            showQuizSetDivider(ex);
-            return;
-        }
-        renderExerciseBody(ex);
-    }
-
-    function showQuizSetDivider(nextEx) {
-        let div = $("studyQuizDivider");
-        if (!div) { renderExerciseBody(nextEx); return; }
-        hide($("studyPractice"));
-        div.innerHTML = "<p class='study-quiz-divider__heading'>Quiz " + (nextEx.quizSet - 1) + " complete!</p>"
-            + "<p class='study-quiz-divider__msg'>Starting Quiz " + nextEx.quizSet + ": " + quizSetLabel(nextEx.quizSet) + "</p>"
-            + "<button type='button' class='study-quiz-divider__btn' id='studyQuizContinueBtn'>Continue &#8594;</button>";
-        show(div);
-        div.classList.add("is-visible");
-        let btn = $("studyQuizContinueBtn");
-        if (btn) btn.addEventListener("click", function () {
-            hide(div);
-            div.classList.remove("is-visible");
-            show($("studyPractice"));
-            renderExerciseBody(nextEx);
-        });
-    }
-
-    function renderExerciseBody(ex) {
-        attempts = 0;
-        wordOrderState = null;
-
-        let heading = $("studyQuizHeading");
-        if (heading) heading.textContent = "Quiz " + (ex.quizSet || 1) + ": " + quizSetLabel(ex.quizSet || 1);
-
-        let prompt = $("studyPractice").querySelector(".study-practice__prompt");
-        if (prompt) prompt.innerHTML = ex.type === "wordOrder" ? ex.promptEn : ex.prompt;
-
-        /* Reference chips for this exercise's words used to render up front,
-           before the learner had even tried — which meant the "exercise"
-           was really just copying the shown words into the input box
-           instead of recalling them. Per explicit feedback ("remove the
-           words in the exercise... let the user properly think things
-           through"), this now stays empty at render time; showHint() is
-           what populates it, and only once the learner has earned it via
-           2 wrong attempts (see checkAnswer()'s attempts >= 2 branch). */
-        let refWrap = $("studyWordBankRef");
-        if (refWrap) refWrap.innerHTML = "";
-
-        let input = $("studyInput");
-        let checkBtn = $("studyCheckBtn");
-        let hintBtn = $("studyHintBtn");
-        let matchWrap = $("studyMatchChoices");
-        let wordOrderWrap = $("studyWordOrder");
-
-        if (ex.type === "wordOrder") {
-            hide(input);
-            hide(matchWrap);
-            if (matchWrap) matchWrap.innerHTML = "";
-            show(wordOrderWrap);
-            show(checkBtn);
-            hide(hintBtn);
-            renderWordOrderExercise(ex);
-        } else if (currentLesson.vocabOnly) {
-            hide(wordOrderWrap);
-            hide(input);
-            hide(checkBtn);
-            hide(hintBtn);
-            show(matchWrap);
-            renderMatchChoices(ex);
-        } else {
-            hide(wordOrderWrap);
-            hide(matchWrap);
-            if (matchWrap) matchWrap.innerHTML = "";
-            show(checkBtn);
-            checkBtn.disabled = false;
-            /* Hint stays hidden until the learner has actually tried —
-               revealed after 2 wrong attempts in checkAnswer() below,
-               instead of being available from the very first look. */
-            hide(hintBtn);
-            if (input) {
-                show(input);
-                input.value = "";
-                input.disabled = false;
-                input.className = "study-practice__input";
-                input.placeholder = ex.openEnded
-                    ? "Type your full self-introduction here, all on one line..."
-                    : "Type your answer in hiragana...";
-                setTimeout(function () { input.focus(); }, 80);
-            }
-        }
-
-        let setStart = currentExercises.findIndex(function (e) { return e.quizSet === ex.quizSet; });
-        let setTotal = currentExercises.filter(function (e) { return e.quizSet === ex.quizSet; }).length;
-        let setIndex = exerciseIndex - setStart;
-        let fill = $("studyProgressFill");
-        if (fill) fill.style.width = Math.round((setIndex / setTotal) * 100) + "%";
-        let txt = $("studyProgressText");
-        if (txt) txt.textContent = "Quiz " + (ex.quizSet || 1) + " · " + setIndex + " / " + setTotal;
-
-        hide($("studyFeedback"));
-        let fb = $("studyFeedback");
-        if (fb) { fb.className = "study-practice__feedback"; fb.innerHTML = ""; }
-
-        hide($("studyNextBtn"));
-    }
-
-    /* ===== QUIZ SET 2 — WORD-ORDER / STAR-SLOT EXERCISE =====
-       Click-to-place tiles rather than drag-and-drop — this file's own
-       preview-tooling gotchas around post-mutation rect readback and
-       position:fixed inline-style changes make a drag interaction hard to
-       verify here, and click-to-place is the same low-risk interaction
-       class the retro in-canvas menus elsewhere in this codebase use. */
-    function renderWordOrderExercise(ex) {
-        wordOrderState = {
-            ex: ex,
-            slots: new Array(ex.correctOrder.length).fill(null),
-            trayIndices: shuffle(ex.chunks.map(function (_, i) { return i; }))
-        };
-        renderWordOrderUI();
-    }
-
-    function renderWordOrderUI() {
-        let wrap = $("studyWordOrder");
-        if (!wrap || !wordOrderState) return;
-        let st = wordOrderState;
-        let slotsHtml = st.slots.map(function (chunkIdx, i) {
-            let isStar = i === st.ex.starIndex;
-            let filled = chunkIdx !== null;
-            let cls = "study-wordorder__slot" + (isStar ? " study-wordorder__slot--star" : "") + (filled ? " study-wordorder__slot--filled" : "");
-            let label = filled ? st.ex.chunks[chunkIdx] : "<span class='study-wordorder__slot--empty'>" + (i + 1) + "</span>";
-            return "<button type='button' class='" + cls + "' data-slot='" + i + "'" + (filled ? "" : " disabled") + ">" + label + "</button>";
-        }).join("");
-        let trayHtml = st.trayIndices.map(function (chunkIdx) {
-            return "<button type='button' class='study-wordorder__chip' data-chunk='" + chunkIdx + "'>" + st.ex.chunks[chunkIdx] + "</button>";
-        }).join("");
-        wrap.innerHTML = "<div class='study-wordorder__slots'>" + slotsHtml + "</div>"
-            + "<div class='study-wordorder__tray'>" + trayHtml + "</div>";
-
-        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__chip"), function (btn) {
-            btn.addEventListener("click", function () { placeWordOrderChunk(parseInt(btn.getAttribute("data-chunk"), 10)); });
-        });
-        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__slot:not([disabled])"), function (btn) {
-            btn.addEventListener("click", function () { removeWordOrderSlot(parseInt(btn.getAttribute("data-slot"), 10)); });
-        });
-
-        let checkBtn = $("studyCheckBtn");
-        if (checkBtn) checkBtn.disabled = st.slots.some(function (s) { return s === null; });
-    }
-
-    function placeWordOrderChunk(chunkIdx) {
-        let st = wordOrderState;
-        if (!st) return;
-        let emptySlot = st.slots.indexOf(null);
-        if (emptySlot === -1) return;
-        st.slots[emptySlot] = chunkIdx;
-        st.trayIndices = st.trayIndices.filter(function (i) { return i !== chunkIdx; });
-        renderWordOrderUI();
-    }
-
-    function removeWordOrderSlot(slotIdx) {
-        let st = wordOrderState;
-        if (!st) return;
-        let chunkIdx = st.slots[slotIdx];
-        if (chunkIdx === null || chunkIdx === undefined) return;
-        st.slots[slotIdx] = null;
-        st.trayIndices.push(chunkIdx);
-        renderWordOrderUI();
-    }
-
-    function checkWordOrderAnswer(ex) {
-        let st = wordOrderState;
-        if (!st) return;
-        let slotEls = document.querySelectorAll("#studyWordOrder .study-wordorder__slot");
-        let correct = st.slots.every(function (v, i) { return v === ex.correctOrder[i]; });
-
-        if (correct) {
-            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-correct"); el.disabled = true; });
-            completedExercises++;
-            lessonScore++;
-            streak++;
-            if (streak > bestStreak) bestStreak = streak;
-            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
-            show($("studyNextBtn"));
-            hide($("studyCheckBtn"));
-            hide($("studyHintBtn"));
-        } else {
-            attempts++;
-            streak = 0;
-            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-wrong"); });
-            setTimeout(function () { Array.prototype.forEach.call(slotEls, function (el) { el.classList.remove("is-wrong"); }); }, 400);
-            if (attempts >= maxAttempts) {
-                Array.prototype.forEach.call(slotEls, function (el) { el.disabled = true; });
-                completedExercises++;
-                let correctSentence = ex.correctOrder.map(function (chunkIdx, pos) {
-                    return pos === ex.starIndex ? "[" + ex.chunks[chunkIdx] + "]" : ex.chunks[chunkIdx];
-                }).join(" ");
-                showFeedback("&#10007; the correct order was: <strong>" + correctSentence + "</strong>" + (ex.translation ? " &mdash; " + ex.translation : ""), "reveal");
-                show($("studyNextBtn"));
-                hide($("studyCheckBtn"));
-                hide($("studyHintBtn"));
-            } else {
-                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
-                if (attempts >= 2) show($("studyHintBtn"));
-            }
-        }
-    }
-
-    /* ===== MATCH-CHOICE EXERCISES (vocab-only lessons) ===== */
-    function renderMatchChoices(ex) {
-        let wrap = $("studyMatchChoices");
-        if (!wrap) return;
-        wrap.classList.remove("is-locked");
-        wrap.innerHTML = ex.choices.map(function (choice) {
-            return "<button type='button' class='study-match-choice'>" + choice + "</button>";
-        }).join("");
-        Array.prototype.forEach.call(wrap.querySelectorAll(".study-match-choice"), function (btn) {
-            btn.addEventListener("click", function () { checkMatchAnswer(ex, btn, wrap); });
-        });
-    }
-
-    function checkMatchAnswer(ex, btnEl, wrap) {
-        if (wrap.classList.contains("is-locked")) return;
-        wrap.classList.add("is-locked");
-
-        let choiceButtons = wrap.querySelectorAll(".study-match-choice");
-        Array.prototype.forEach.call(choiceButtons, function (btn) {
-            btn.disabled = true;
-            if (btn.textContent === ex.correct) btn.classList.add("is-correct");
-        });
-
-        let correct = btnEl.textContent === ex.correct;
-        completedExercises++;
-        if (correct) {
-            lessonScore++;
-            streak++;
-            if (streak > bestStreak) bestStreak = streak;
-            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
-        } else {
-            streak = 0;
-            btnEl.classList.add("is-wrong");
-            showFeedback("&#10007; the answer was: <strong>" + ex.correct + "</strong>", "reveal");
-        }
-        show($("studyNextBtn"));
-    }
-
-    /* ===== CHECK ANSWER ===== */
-    function checkAnswer() {
-        if (!currentLesson) return;
-        let ex = currentExercises[exerciseIndex];
-        if (!ex) return;
-        if (ex.type === "wordOrder") { checkWordOrderAnswer(ex); return; }
-        let input = $("studyInput");
-        if (!input) return;
-        let userVal = norm(input.value);
-        /* Three grading modes, checked in order of how open-ended they are:
-           - `openEnded` (free-write, e.g. s04's jiko-shoukai capstone): no
-             single correct answer exists, so `validate` (if given) checks
-             for the loose shape of a real attempt; with no `validate` any
-             non-empty input passes.
-           - `pattern` (a RegExp): grades by sentence SHAPE instead of one
-             fixed string — used by exercises that let the learner pick any
-             word from the word bank rather than one baked-in "correct" word
-             (see s03/s05).
-           - otherwise: the original exact-match-against-accepted behavior,
-             unchanged for every exercise that doesn't opt into the above. */
-        let accepted;
-        if (ex.openEnded) {
-            accepted = ex.validate ? ex.validate(input.value, userVal) : userVal.length > 0;
-        } else if (ex.pattern) {
-            accepted = ex.pattern.test(userVal);
-        } else {
-            accepted = ex.accepted.some(function (acc) {
-                let fullSentence = acc.join("");
-                return norm(fullSentence) === userVal;
-            });
-        }
-
-        if (accepted) {
-            input.disabled = true;
-            input.classList.add("is-correct");
-            completedExercises++;
-            lessonScore++;
-            streak++;
-            if (streak > bestStreak) bestStreak = streak;
-            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
-            show($("studyNextBtn"));
-            hide($("studyCheckBtn"));
-            hide($("studyHintBtn"));
-        } else {
-            attempts++;
-            streak = 0;
-            input.classList.add("is-wrong");
-            setTimeout(function () { input.classList.remove("is-wrong"); }, 400);
-            if (attempts >= maxAttempts) {
-                input.disabled = true;
-                completedExercises++;
-                showFeedback("&#10007; " + (ex.openEnded ? "here's the pattern to follow: " : "the answer was: ") + "<strong>" + ex.hint + "</strong>", "reveal");
-                show($("studyNextBtn"));
-                hide($("studyCheckBtn"));
-                hide($("studyHintBtn"));
-            } else {
-                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
-                /* Reveal the hint button only once the learner has genuinely
-                   struggled (2 wrong tries), not on the very first look. */
-                if (attempts >= 2) show($("studyHintBtn"));
-            }
-        }
-    }
-
-    function nextExercise() {
-        exerciseIndex++;
-        renderExercise();
-    }
-
-    /* ===== HINT =====
-       Only reachable after 2 wrong attempts (checkAnswer() gates the
-       button itself). Reveals the WORDS the sentence needs — same
-       reference chips that used to render up front — not the full
-       constructed sentence, so the learner still has to work out order
-       and particles themselves rather than just re-reading the answer.
-       Exercises without refWords (a few pattern/open-ended ones) fall
-       back to the old full-hint text since there's no word list to show. */
-    function showHint() {
-        let ex = currentExercises[exerciseIndex];
-        if (!ex) return;
-        if (ex.type === "wordOrder") {
-            showFeedback("Hint &mdash; the &#9733; slot needs: <strong>" + ex.chunks[ex.correctOrder[ex.starIndex]] + "</strong>", "hint");
-            return;
-        }
-        let refWrap = $("studyWordBankRef");
-        if (refWrap && ex.refWords && ex.refWords.length) {
-            refWrap.innerHTML = shuffle(ex.refWords).map(function (w) {
-                return "<span class='word-bank__chip word-bank__chip--ref' data-role='" + (w.role || "neutral") + "'>" + w.jp + "</span>";
-            }).join("");
-            showFeedback("Hint &mdash; here are the words you'll need. Work out the order and particles yourself!", "hint");
-        } else {
-            showFeedback("Hint: <strong>" + ex.hint + "</strong>", "hint");
-        }
-    }
-
-    /* ===== FEEDBACK ===== */
-    function showFeedback(msg, type) {
-        let fb = $("studyFeedback");
-        if (!fb) return;
-        fb.className = "study-practice__feedback study-practice__feedback--" + type + " is-visible";
-        fb.innerHTML = msg;
-        show(fb);
-    }
-
-    /* ===== RESULT ===== */
-    function showResult() {
-        hide($("studyPractice"));
-        let panel = $("studyComplete");
-        if (!panel) return;
-        let pct = totalExercises > 0 ? Math.round((lessonScore / totalExercises) * 100) : 0;
-        let msg;
-        if (pct === 100) msg = "Perfect score! You're amazing!";
-        else if (pct >= 75) msg = "Great job! Almost there!";
-        else if (pct >= 50) msg = "Not bad! Keep practicing!";
-        else msg = "Don't give up! Try again!";
-
-        let xpGained = 0;
-        let alreadyDone = false;
-        if (currentLesson && window.StudyProgress) {
-            let result = StudyProgress.completeLesson(currentLesson.id);
-            xpGained = result.gained || 0;
-            alreadyDone = !(result.gained > 0);
-            StudyProgress.renderXpBadges();
-            refreshLessonPickerLabels();
-        }
-
-        let lessonIdx = lessons.indexOf(currentLesson);
-        let nextLesson = lessonIdx >= 0 ? lessons[lessonIdx + 1] : null;
-
-        panel.innerHTML = "<p class='study-complete__heading'>&#9670; lesson " + (lessonIdx + 1) + " complete &mdash; " + currentLesson.title + " cleared</p>"
-            + "<p class='study-complete__msg'>" + msg + "</p>"
-            + "<div class='study-complete__tiles'>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>accuracy</p><p class='study-complete__tile-value'>" + pct + "%</p></div>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>xp earned</p><p class='study-complete__tile-value'>+" + xpGained + "</p></div>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>best streak</p><p class='study-complete__tile-value'>" + bestStreak + "</p></div>"
-            + "</div>"
-            + (alreadyDone ? "<p class='study-complete__note'>Lesson already completed before &mdash; no bonus XP.</p>" : "")
-            + (nextLesson
-                ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>Next Lesson &#8594; " + nextLesson.title + "</button>"
-                : "<p class='study-complete__note'>You've completed every lesson in the Study Room!</p>");
-        /* show() first to clear the inline style.display:none that
-           openLesson()'s hide($("studyComplete")) sets on every lesson
-           open — classList.add("is-visible") alone can't win against
-           that inline style (inline always beats a CSS class), so the
-           whole completion panel — including the Next Lesson button —
-           silently never appeared. Same gotcha documented elsewhere in
-           this file: hide()/show() must be paired, not mixed with class
-           toggling. */
-        show(panel);
-        panel.classList.add("is-visible");
-        hide($("studyProgressFill").parentElement.parentElement);
-
-        let continueBtn = $("studyContinueBtn");
-        if (continueBtn) continueBtn.addEventListener("click", function () { openLesson(nextLesson.id); });
-    }
-
     /* ===== CHECKPOINT QUIZ RENDERING (cq1/cq2/cq3) =====
        All 10 questions render on one sheet at once — radio-style buttons
-       for 'mc', a text input for 'fill' — rather than the one-at-a-time
-       currentExercises/renderExercise() flow the s01-s16 shelves use.
+       for 'mc', a text input for 'fill'.
        No inline grading while answering (same "answer everything, then
        compare against the key" idea as the Adventure Room's quiz-review/
        quiz-answers pages in lesson-box.js) — Submit reveals every correct
@@ -7702,7 +7431,7 @@ window.NekoWaGa = {
        in this file uses (once per lesson id, no score-gating). */
     function gradeCheckpointFill(q, raw) {
         /* Same normalization this file already uses for grading elsewhere
-           (norm() — see checkAnswer() above) plus a case-fold, since some
+           (norm()) plus a case-fold, since some
            altAnswers here are romaji (matching gradeQuizQuestion()'s
            .trim().toLowerCase() approach in lesson-box.js). */
         let typed = norm((raw || "").toLowerCase());
@@ -7938,43 +7667,6 @@ window.NekoWaGa = {
 
     /* ===== EVENT WIRING ===== */
     function wireEvents() {
-        let checkBtn = $("studyCheckBtn");
-        if (checkBtn) checkBtn.addEventListener("click", checkAnswer);
-
-        let hintBtn = $("studyHintBtn");
-        if (hintBtn) hintBtn.addEventListener("click", showHint);
-
-        let nextBtn = $("studyNextBtn");
-        if (nextBtn) nextBtn.addEventListener("click", nextExercise);
-
-        let input = $("studyInput");
-        if (input) input.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                if ($("studyNextBtn").style.display !== "none" && $("studyNextBtn").style.display !== "") {
-                    nextExercise();
-                } else {
-                    checkAnswer();
-                }
-            }
-        });
-
-        let skipBtn = $("studySkipBtn");
-        if (skipBtn) skipBtn.addEventListener("click", function () {
-            if (!currentLesson) return;
-            /* Guard against the quiz-set interstitial or the lesson-complete
-               screen already being up (both leave this button in the DOM,
-               and it has no visibility toggle of its own) — a stray extra
-               click there used to keep incrementing exerciseIndex past
-               currentExercises.length, silently skipping the next quiz set
-               or throwing in checkAnswer() on the following Check click. */
-            let divider = $("studyQuizDivider");
-            let complete = $("studyComplete");
-            if ((divider && divider.classList.contains("is-visible")) || (complete && complete.classList.contains("is-visible"))) return;
-            if (exerciseIndex >= currentExercises.length) return;
-            exerciseIndex++;
-            renderExercise();
-        });
-
         let printBtn = $("studyPrintBtn");
         if (printBtn) printBtn.addEventListener("click", function () {
             if (currentLesson && typeof window.exportLessonPdf === "function") {
@@ -7988,10 +7680,6 @@ window.NekoWaGa = {
         init: function () {
             renderLessonPicker();
             wireEvents();
-            let practice = $("studyPractice");
-            if (practice) practice.style.display = "none";
-            let complete = $("studyComplete");
-            if (complete) { complete.classList.remove("is-visible"); complete.innerHTML = ""; }
 
             /* Auto-open a lesson from ?lesson=sXX URL param when present
                (deep link from the dashboard) -- otherwise fall back to

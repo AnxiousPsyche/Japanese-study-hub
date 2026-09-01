@@ -969,16 +969,6 @@
 
     const lessons = buildLessons();
     let currentLesson = null;
-    let currentExercises = [];
-    let exerciseIndex = 0;
-    let attempts = 0;
-    let maxAttempts = 3;
-    let totalExercises = 0;
-    let completedExercises = 0;
-    let lessonScore = 0;
-    let streak = 0;
-    let bestStreak = 0;
-    let wordOrderState = null;
 
     function lessonOptionLabel(les) {
         let done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
@@ -1069,21 +1059,11 @@
         highlightActiveLesson(id);
         renderInstruction();
 
-        /* Every lesson now gets the mondai-worksheet practice section
-           (see renderMondaiQuiz() below) — two もんだい blocks of 5
-           multiple-choice questions each, shown together on one sheet,
-           graded on Submit. Replaces the old one-at-a-time
-           buildWordBankExercises()/buildWordOrderExercises() flow
-           (currentExercises/renderExercise()/the word-order star-slot
-           UI) entirely, per explicit feedback that the word-order
-           rearrange quiz didn't land and a real JLPT-style mondai
-           worksheet was wanted instead — see study-room.js's matching
-           openLesson() branch for the fuller rationale. */
-        hide($("studyPractice"));
-        hide($("studyComplete"));
-        let divider = $("studyQuizDivider");
-        hide(divider);
-        if (divider) divider.classList.remove("is-visible");
+        /* Every lesson gets the mondai-worksheet practice section (see
+           renderMondaiQuiz() below) — two もんだい blocks of 5 multiple-
+           choice questions each, shown together on one sheet, graded on
+           Submit — see study-room.js's matching openLesson() branch for
+           the fuller rationale. */
         let mondaiWrap = $("mondaiQuiz");
         show(mondaiWrap);
         renderMondaiQuiz(currentLesson, mondaiWrap);
@@ -1092,9 +1072,7 @@
     /* ===== MONDAI QUIZ RENDERING =====
        Same engine/shape as study-room.js's renderMondaiQuiz() — see that
        file for the full rationale. Kept as its own copy since this file
-       is a separate IIFE with no access to that one's scope, same as
-       every other N4/N5 pair in this file (checkAnswer's null-guard,
-       the skip-button overflow guard, etc). */
+       is a separate IIFE with no access to that one's scope. */
     function renderMondaiQuiz(lesson, container) {
         if (!container) return;
         let data = lesson.buildMondaiExercises ? lesson.buildMondaiExercises() : { mondai1: { questions: [] }, mondai2: { questions: [] } };
@@ -1197,346 +1175,7 @@
         renderSheet();
     }
 
-    /* ===== EXERCISE RENDERING =====
-       Quiz Set 1/2 share one flat currentExercises array (tagged
-       .quizSet in openLesson()); renderExercise() detects the boundary
-       between the two sets and shows a one-time interstitial there
-       instead of a second parallel state machine. */
-    function quizSetLabel(n) {
-        return n === 2 ? "Word Order" : "Fill in the Blank";
-    }
-
-    function renderExercise() {
-        if (exerciseIndex >= currentExercises.length) {
-            showResult();
-            return;
-        }
-        let ex = currentExercises[exerciseIndex];
-        let prevEx = exerciseIndex > 0 ? currentExercises[exerciseIndex - 1] : null;
-        if (prevEx && prevEx.quizSet !== ex.quizSet) {
-            showQuizSetDivider(ex);
-            return;
-        }
-        renderExerciseBody(ex);
-    }
-
-    function showQuizSetDivider(nextEx) {
-        let div = $("studyQuizDivider");
-        if (!div) { renderExerciseBody(nextEx); return; }
-        hide($("studyPractice"));
-        div.innerHTML = "<p class='study-quiz-divider__heading'>Quiz " + (nextEx.quizSet - 1) + " complete!</p>"
-            + "<p class='study-quiz-divider__msg'>Starting Quiz " + nextEx.quizSet + ": " + quizSetLabel(nextEx.quizSet) + "</p>"
-            + "<button type='button' class='study-quiz-divider__btn' id='studyQuizContinueBtn'>Continue &#8594;</button>";
-        show(div);
-        div.classList.add("is-visible");
-        let btn = $("studyQuizContinueBtn");
-        if (btn) btn.addEventListener("click", function () {
-            hide(div);
-            div.classList.remove("is-visible");
-            show($("studyPractice"));
-            renderExerciseBody(nextEx);
-        });
-    }
-
-    function renderExerciseBody(ex) {
-        attempts = 0;
-        wordOrderState = null;
-
-        let heading = $("studyQuizHeading");
-        if (heading) heading.textContent = "Quiz " + (ex.quizSet || 1) + ": " + quizSetLabel(ex.quizSet || 1);
-
-        let prompt = $("studyPractice").querySelector(".study-practice__prompt");
-        if (prompt) prompt.innerHTML = ex.type === "wordOrder" ? ex.promptEn : ex.prompt;
-
-        let refWrap = $("studyWordBankRef");
-        if (refWrap) refWrap.innerHTML = "";
-
-        let input = $("studyInput");
-        let checkBtn = $("studyCheckBtn");
-        let hintBtn = $("studyHintBtn");
-        let matchWrap = $("studyMatchChoices");
-        let wordOrderWrap = $("studyWordOrder");
-
-        if (ex.type === "wordOrder") {
-            hide(input);
-            hide(matchWrap);
-            if (matchWrap) matchWrap.innerHTML = "";
-            show(wordOrderWrap);
-            show(checkBtn);
-            hide(hintBtn);
-            renderWordOrderExercise(ex);
-        } else {
-            hide(wordOrderWrap);
-            hide(matchWrap);
-            if (matchWrap) matchWrap.innerHTML = "";
-            show(checkBtn);
-            checkBtn.disabled = false;
-            hide(hintBtn);
-            if (input) {
-                show(input);
-                input.value = "";
-                input.disabled = false;
-                input.className = "study-practice__input";
-                input.placeholder = "Type just the missing part...";
-                setTimeout(function () { input.focus(); }, 80);
-            }
-        }
-
-        let setStart = currentExercises.findIndex(function (e) { return e.quizSet === ex.quizSet; });
-        let setTotal = currentExercises.filter(function (e) { return e.quizSet === ex.quizSet; }).length;
-        let setIndex = exerciseIndex - setStart;
-        let fill = $("studyProgressFill");
-        if (fill) fill.style.width = Math.round((setIndex / setTotal) * 100) + "%";
-        let txt = $("studyProgressText");
-        if (txt) txt.textContent = "Quiz " + (ex.quizSet || 1) + " · " + setIndex + " / " + setTotal;
-
-        let fb = $("studyFeedback");
-        if (fb) { fb.className = "study-practice__feedback"; fb.innerHTML = ""; }
-        hide(fb);
-        hide($("studyNextBtn"));
-    }
-
-    /* ===== QUIZ SET 2 — WORD-ORDER / STAR-SLOT EXERCISE =====
-       Click-to-place tiles, same shape/grading as study-room.js's copy
-       of this engine — see that file's comment for why not drag-drop. */
-    function renderWordOrderExercise(ex) {
-        wordOrderState = {
-            ex: ex,
-            slots: new Array(ex.correctOrder.length).fill(null),
-            trayIndices: shuffle(ex.chunks.map(function (_, i) { return i; }))
-        };
-        renderWordOrderUI();
-    }
-
-    function renderWordOrderUI() {
-        let wrap = $("studyWordOrder");
-        if (!wrap || !wordOrderState) return;
-        let st = wordOrderState;
-        let slotsHtml = st.slots.map(function (chunkIdx, i) {
-            let isStar = i === st.ex.starIndex;
-            let filled = chunkIdx !== null;
-            let cls = "study-wordorder__slot" + (isStar ? " study-wordorder__slot--star" : "") + (filled ? " study-wordorder__slot--filled" : "");
-            let label = filled ? st.ex.chunks[chunkIdx] : "<span class='study-wordorder__slot--empty'>" + (i + 1) + "</span>";
-            return "<button type='button' class='" + cls + "' data-slot='" + i + "'" + (filled ? "" : " disabled") + ">" + label + "</button>";
-        }).join("");
-        let trayHtml = st.trayIndices.map(function (chunkIdx) {
-            return "<button type='button' class='study-wordorder__chip' data-chunk='" + chunkIdx + "'>" + st.ex.chunks[chunkIdx] + "</button>";
-        }).join("");
-        wrap.innerHTML = "<div class='study-wordorder__slots'>" + slotsHtml + "</div>"
-            + "<div class='study-wordorder__tray'>" + trayHtml + "</div>";
-
-        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__chip"), function (btn) {
-            btn.addEventListener("click", function () { placeWordOrderChunk(parseInt(btn.getAttribute("data-chunk"), 10)); });
-        });
-        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__slot:not([disabled])"), function (btn) {
-            btn.addEventListener("click", function () { removeWordOrderSlot(parseInt(btn.getAttribute("data-slot"), 10)); });
-        });
-
-        let checkBtn = $("studyCheckBtn");
-        if (checkBtn) checkBtn.disabled = st.slots.some(function (s) { return s === null; });
-    }
-
-    function placeWordOrderChunk(chunkIdx) {
-        let st = wordOrderState;
-        if (!st) return;
-        let emptySlot = st.slots.indexOf(null);
-        if (emptySlot === -1) return;
-        st.slots[emptySlot] = chunkIdx;
-        st.trayIndices = st.trayIndices.filter(function (i) { return i !== chunkIdx; });
-        renderWordOrderUI();
-    }
-
-    function removeWordOrderSlot(slotIdx) {
-        let st = wordOrderState;
-        if (!st) return;
-        let chunkIdx = st.slots[slotIdx];
-        if (chunkIdx === null || chunkIdx === undefined) return;
-        st.slots[slotIdx] = null;
-        st.trayIndices.push(chunkIdx);
-        renderWordOrderUI();
-    }
-
-    function checkWordOrderAnswer(ex) {
-        let st = wordOrderState;
-        if (!st) return;
-        let slotEls = document.querySelectorAll("#studyWordOrder .study-wordorder__slot");
-        let correct = st.slots.every(function (v, i) { return v === ex.correctOrder[i]; });
-
-        if (correct) {
-            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-correct"); el.disabled = true; });
-            completedExercises++;
-            lessonScore++;
-            streak++;
-            if (streak > bestStreak) bestStreak = streak;
-            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
-            show($("studyNextBtn"));
-            hide($("studyCheckBtn"));
-            hide($("studyHintBtn"));
-        } else {
-            attempts++;
-            streak = 0;
-            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-wrong"); });
-            setTimeout(function () { Array.prototype.forEach.call(slotEls, function (el) { el.classList.remove("is-wrong"); }); }, 400);
-            if (attempts >= maxAttempts) {
-                Array.prototype.forEach.call(slotEls, function (el) { el.disabled = true; });
-                completedExercises++;
-                let correctSentence = ex.correctOrder.map(function (chunkIdx, pos) {
-                    return pos === ex.starIndex ? "[" + ex.chunks[chunkIdx] + "]" : ex.chunks[chunkIdx];
-                }).join(" ");
-                showFeedback("&#10007; the correct order was: <strong>" + correctSentence + "</strong>" + (ex.translation ? " &mdash; " + ex.translation : ""), "reveal");
-                show($("studyNextBtn"));
-                hide($("studyCheckBtn"));
-                hide($("studyHintBtn"));
-            } else {
-                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
-                if (attempts >= 2) show($("studyHintBtn"));
-            }
-        }
-    }
-
-    function showFeedback(msg, type) {
-        let fb = $("studyFeedback");
-        if (!fb) return;
-        fb.className = "study-practice__feedback study-practice__feedback--" + type + " is-visible";
-        fb.innerHTML = msg;
-        show(fb);
-    }
-
-    function showHint() {
-        let ex = currentExercises[exerciseIndex];
-        if (!ex) return;
-        if (ex.type === "wordOrder") {
-            showFeedback("Hint &mdash; the &#9733; slot needs: <strong>" + ex.chunks[ex.correctOrder[ex.starIndex]] + "</strong>", "hint");
-            return;
-        }
-        showFeedback("Hint: <strong>" + ex.hint + "</strong>", "hint");
-    }
-
-    function checkAnswer() {
-        if (!currentLesson) return;
-        let ex = currentExercises[exerciseIndex];
-        if (!ex) return;
-        if (ex.type === "wordOrder") { checkWordOrderAnswer(ex); return; }
-        let input = $("studyInput");
-        if (!input) return;
-        let userVal = norm(input.value);
-        let accepted = ex.accepted.some(function (acc) { return norm(acc.join("")) === userVal; });
-
-        if (accepted) {
-            input.disabled = true;
-            input.classList.add("is-correct");
-            completedExercises++;
-            lessonScore++;
-            streak++;
-            if (streak > bestStreak) bestStreak = streak;
-            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
-            show($("studyNextBtn"));
-            hide($("studyCheckBtn"));
-            hide($("studyHintBtn"));
-        } else {
-            attempts++;
-            streak = 0;
-            input.classList.add("is-wrong");
-            setTimeout(function () { input.classList.remove("is-wrong"); }, 400);
-            if (attempts >= maxAttempts) {
-                input.disabled = true;
-                completedExercises++;
-                showFeedback("&#10007; the answer was: <strong>" + ex.hint + "</strong>", "reveal");
-                show($("studyNextBtn"));
-                hide($("studyCheckBtn"));
-                hide($("studyHintBtn"));
-            } else {
-                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
-                if (attempts >= 2) show($("studyHintBtn"));
-            }
-        }
-    }
-
-    function nextExercise() {
-        exerciseIndex++;
-        renderExercise();
-    }
-
-    /* ===== RESULT ===== */
-    function showResult() {
-        hide($("studyPractice"));
-        let panel = $("studyComplete");
-        if (!panel) return;
-        let pct = totalExercises > 0 ? Math.round((lessonScore / totalExercises) * 100) : 0;
-        let msg;
-        if (pct === 100) msg = "Perfect score! You're amazing!";
-        else if (pct >= 75) msg = "Great job! Almost there!";
-        else if (pct >= 50) msg = "Not bad! Keep practicing!";
-        else msg = "Don't give up! Try again!";
-
-        let xpGained = 0;
-        let alreadyDone = false;
-        if (currentLesson && window.StudyProgress) {
-            let result = StudyProgress.completeLesson(currentLesson.id);
-            xpGained = result.gained || 0;
-            alreadyDone = !(result.gained > 0);
-            StudyProgress.renderXpBadges();
-            refreshLessonPickerLabels();
-        }
-
-        let lessonIdx = lessons.indexOf(currentLesson);
-        let nextLesson = lessonIdx >= 0 ? lessons[lessonIdx + 1] : null;
-
-        panel.innerHTML = "<p class='study-complete__heading'>&#9670; " + currentLesson.title + " cleared</p>"
-            + "<p class='study-complete__msg'>" + msg + "</p>"
-            + "<div class='study-complete__tiles'>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>accuracy</p><p class='study-complete__tile-value'>" + pct + "%</p></div>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>xp earned</p><p class='study-complete__tile-value'>+" + xpGained + "</p></div>"
-            + "<div class='study-complete__tile'><p class='study-complete__tile-label'>best streak</p><p class='study-complete__tile-value'>" + bestStreak + "</p></div>"
-            + "</div>"
-            + (alreadyDone ? "<p class='study-complete__note'>Lesson already completed before &mdash; no bonus XP.</p>" : "")
-            + (nextLesson
-                ? "<button type='button' class='study-complete__cta' id='studyContinueBtn'>Next Lesson &#8594; " + nextLesson.title + "</button>"
-                : "<p class='study-complete__note'>You've completed every N4 lesson in the Study Room!</p>");
-        show(panel);
-        panel.classList.add("is-visible");
-        let progressWrap = $("studyProgressFill") ? $("studyProgressFill").parentElement.parentElement : null;
-        if (progressWrap) hide(progressWrap);
-
-        let continueBtn = $("studyContinueBtn");
-        if (continueBtn) continueBtn.addEventListener("click", function () { openLesson(nextLesson.id); });
-    }
-
     function wireEvents() {
-        let checkBtn = $("studyCheckBtn");
-        if (checkBtn) checkBtn.addEventListener("click", checkAnswer);
-
-        let hintBtn = $("studyHintBtn");
-        if (hintBtn) hintBtn.addEventListener("click", showHint);
-
-        let nextBtn = $("studyNextBtn");
-        if (nextBtn) nextBtn.addEventListener("click", nextExercise);
-
-        let input = $("studyInput");
-        if (input) input.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                if ($("studyNextBtn").style.display !== "none" && $("studyNextBtn").style.display !== "") {
-                    nextExercise();
-                } else {
-                    checkAnswer();
-                }
-            }
-        });
-
-        let skipBtn = $("studySkipBtn");
-        if (skipBtn) skipBtn.addEventListener("click", function () {
-            if (!currentLesson) return;
-            /* Guard against the quiz-set interstitial or the lesson-complete
-               screen already being up — see study-room.js's matching skip
-               handler comment for the bug this prevents. */
-            let divider = $("studyQuizDivider");
-            let complete = $("studyComplete");
-            if ((divider && divider.classList.contains("is-visible")) || (complete && complete.classList.contains("is-visible"))) return;
-            if (exerciseIndex >= currentExercises.length) return;
-            exerciseIndex++;
-            renderExercise();
-        });
-
         let printBtn = $("studyPrintBtn");
         if (printBtn) printBtn.addEventListener("click", function () {
             if (currentLesson && typeof window.exportLessonPdf === "function") {
@@ -1550,10 +1189,6 @@
         init: function () {
             renderLessonPicker();
             wireEvents();
-            let practice = $("studyPractice");
-            if (practice) practice.style.display = "none";
-            let complete = $("studyComplete");
-            if (complete) { complete.classList.remove("is-visible"); complete.innerHTML = ""; }
 
             /* Same bare-page-load fallback as the N5 Study Room's own
                StudyRoom.init() (see assets/js/study-room.js): a
