@@ -58,7 +58,15 @@
         { id: "s13", title: "Conjugations (て-form)" },
         { id: "s14", title: "Past & Negative" },
         { id: "s15", title: "Sentence Construction" },
-        { id: "s16", title: "Particle Mastery" }
+        { id: "s16a", title: "Subject Particles" },
+        { id: "s16b", title: "Time Particles" },
+        { id: "s16c", title: "Place Particles" },
+        { id: "s16d", title: "Object Particles" },
+        { id: "s16e", title: "Other Particles & Full Reference" },
+        { id: "s17", title: "Wants & Preferences" },
+        { id: "s18", title: "Ongoing Actions & Restrictions" },
+        { id: "s19", title: "Comparing & Changing" },
+        { id: "s20", title: "Explaining Yourself" }
     ];
 
     const KANJI_LESSON = { id: "k01", title: "N5 Kanji — full card gallery" };
@@ -100,8 +108,9 @@
         { title: "Places & Directions", ids: ["s08a", "s08b", "s08c", "s08d"], quiz: "cq2", flat: true },
         { title: "Nouns & Pronouns", ids: ["s09a", "s09b"], quiz: null, flat: true },
         { title: "Adjectives & Adverbs", ids: ["s10a", "s10b", "s10c"], quiz: null, flat: true },
-        { title: "Verbs & Conjugations", ids: ["s11a", "s11b", "s11c", "s12", "s13"], quiz: "cq3" },
-        { title: "Actions & Structure", ids: ["s14", "s15", "s16"], quiz: null }
+        { title: "Verbs & Conjugations", ids: ["s11a", "s11b", "s11c", "s12", "s14", "s13"], quiz: "cq3" },
+        { title: "Actions & Structure", ids: ["s15", "s16a", "s16b", "s16c", "s16d", "s16e"], quiz: null },
+        { title: "Everyday Expression", ids: ["s17", "s18", "s19", "s20"], quiz: null }
     ];
 
     // Human labels for a shelf-number group that has no lesson of its own,
@@ -112,7 +121,7 @@
     // and "Verbs & Conjugations" stayed a mixed folder (s11a-c + s12/s13)
     // rather than going flat, so groupFolderIds() renders this label as
     // the synthetic header above the three lettered verb lessons.
-    const GROUP_LABELS = { "11": "Verbs" };
+    const GROUP_LABELS = { "11": "Verbs", "16": "Particles" };
 
     function lessonById(id) {
         return LESSONS.find((l) => l.id === id);

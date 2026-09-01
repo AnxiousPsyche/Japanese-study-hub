@@ -2660,6 +2660,86 @@
         "35413"
       ],
       "port": 35413
+    },
+    {
+      "name": "jp-library-static-round49-particle-context",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35524"
+      ],
+      "port": 35524
+    },
+    {
+      "name": "jp-library-static-round50-n4-hints",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35635"
+      ],
+      "port": 35635
+    },
+    {
+      "name": "jp-library-static-round51-n5-tiles",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35746"
+      ],
+      "port": 35746
+    },
+    {
+      "name": "jp-library-static-round52-n4-content-add",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35857"
+      ],
+      "port": 35857
+    },
+    {
+      "name": "jp-library-static-round53-n4-gapfill",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "35968"
+      ],
+      "port": 35968
+    },
+    {
+      "name": "jp-library-static-round54-n4-tenquestions",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "36079"
+      ],
+      "port": 36079
+    },
+    {
+      "name": "jp-library-static-round55-n5-newshelves",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "36190"
+      ],
+      "port": 36190
+    },
+    {
+      "name": "jp-library-static-round56-quiz2-wordorder",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "36301"
+      ],
+      "port": 36301
     }
   ],
   "autoVerify": true

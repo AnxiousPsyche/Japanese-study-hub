@@ -5969,11 +5969,11 @@ const LESSON_CONTENT = {
       ],
       samples: [
         {
-          tag: '"IT\'S the cat (not the dog) that\'s here." (answering "what\'s here?")',
+          tag: '"IT\'S the cat (not the dog) that\'s here." (answering "which one is here?")',
           tiles: [
             { text: '猫', role: 'subject', gloss: 'cat', isNew: true },
             { text: 'が', role: 'particle', gloss: 'subject marker', isNew: true },
-            { text: 'います', role: 'predicate', gloss: 'is here (animate)' },
+            { text: 'います', role: 'predicate', gloss: 'exists / is present (animate)' },
           ],
           translation: 'Neko ga imasu.',
         },
@@ -6264,7 +6264,7 @@ const LESSON_CONTENT = {
       sectionLabel: 'Mixed practice',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '猫', after: 'います。', answer: 'が', hint: '"IT\'S the cat that\'s here."' },
+        { before: '猫', after: 'います。', answer: 'が', hint: '"IT\'S the cat that\'s present."' },
         { before: '友達', after: '学生です。', answer: 'も', hint: '"My friend is also a student."' },
         { before: '図書館', after: '勉強します。', answer: 'で', hint: '"I study at the library."' },
         { before: '猫は椅子', after: 'います。', answer: 'に', hint: '"The cat is on the chair."' },

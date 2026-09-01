@@ -251,6 +251,74 @@ window.NekoSTPOV = {
     }
 };
 
+/* s16's は-vs-が interactive comparison widget. A shared PAIRS list of
+   sentence templates: each pair's meaning genuinely changes depending
+   on which particle fills the slot, so clicking is-active updates the
+   highlighted particle AND the English readout together -- one live
+   sentence instead of two static ones the learner has to compare by
+   eye. State (which pair, which particle) lives on .waga-compare's own
+   data-pair/data-particle attributes, same reasoning as the other
+   widgets above: a lesson re-render always starts clean. */
+window.NekoWaGa = {
+    PAIRS: [
+        {
+            jp: "猫", pred: "かわいいです。",
+            wa_en: "As for cats (in general), they're cute — a plain statement about cats as a topic.",
+            ga_en: "IT'S the cat that's cute — maybe among a few animals, singling this one out."
+        },
+        {
+            jp: "これ", pred: "私の本です。",
+            wa_en: "As for this, it's my book — introducing \"this\" as the topic and describing it.",
+            ga_en: "THIS is my book — answering an unspoken \"which one is yours?\""
+        },
+        {
+            jp: "田中さん", pred: "先生です。",
+            wa_en: "As for Tanaka, they're a teacher — a general statement about Tanaka.",
+            ga_en: "IT'S Tanaka who's the teacher — singling Tanaka out from a group."
+        }
+    ],
+    pairHTML: function (pairIdx, particle) {
+        var pair = this.PAIRS[pairIdx];
+        var jp = particle === "wa" ? "は" : "が";
+        var hlClass = particle === "wa" ? "conv-hl--particle" : "conv-hl--subject";
+        var sentence = pair.jp + '<span class="conv-hl ' + hlClass + '">' + jp + "</span>" + pair.pred;
+        var readout = "<strong>" + jp + "</strong> — " + (particle === "wa" ? pair.wa_en : pair.ga_en);
+        return { sentence: sentence, readout: readout };
+    },
+    buildHTML: function () {
+        var r0 = this.pairHTML(0, "wa");
+        return '<div class="waga-compare" data-pair="0" data-particle="wa">'
+            + '<div class="waga-toggle">'
+            + '<button type="button" class="waga-btn is-active" data-particle="wa" onclick="window.NekoWaGa.selectParticle(this)">は</button>'
+            + '<button type="button" class="waga-btn" data-particle="ga" onclick="window.NekoWaGa.selectParticle(this)">が</button>'
+            + '</div>'
+            + '<div class="waga-sentence" data-role="sentence">' + r0.sentence + '</div>'
+            + '<div class="waga-readout" data-role="readout">' + r0.readout + '</div>'
+            + '<button type="button" class="waga-next" onclick="window.NekoWaGa.nextPair(this)">Next example &rarr;</button>'
+            + '</div>';
+    },
+    render: function (wrap) {
+        var pairIdx = parseInt(wrap.dataset.pair, 10);
+        var particle = wrap.dataset.particle;
+        var r = this.pairHTML(pairIdx, particle);
+        wrap.querySelector('[data-role="sentence"]').innerHTML = r.sentence;
+        wrap.querySelector('[data-role="readout"]').innerHTML = r.readout;
+    },
+    selectParticle: function (btn) {
+        var wrap = btn.closest(".waga-compare");
+        wrap.dataset.particle = btn.dataset.particle;
+        wrap.querySelectorAll(".waga-btn").forEach(function (b) { b.classList.remove("is-active"); });
+        btn.classList.add("is-active");
+        this.render(wrap);
+    },
+    nextPair: function (btn) {
+        var wrap = btn.closest(".waga-compare");
+        var idx = (parseInt(wrap.dataset.pair, 10) + 1) % this.PAIRS.length;
+        wrap.dataset.pair = String(idx);
+        this.render(wrap);
+    }
+};
+
 (function () {
     "use strict";
 
@@ -403,7 +471,8 @@ window.NekoSTPOV = {
 
     function buildLessons() {
         return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07a(),s07b(),s07c(),s07d(),s07e(),s08a(),s08b(),s08c(),s08d(),
-                s09a(),s09b(),s10a(),s10b(),s10c(),s11a(),s11b(),s11c(),s14(),s12(),s13(),s15(),s16(),
+                s09a(),s09b(),s10a(),s10b(),s10c(),s11a(),s11b(),s11c(),s12(),s14(),s13(),s15(),s16a(),s16b(),s16c(),s16d(),s16e(),
+                s17(),s18(),s19(),s20(),
                 k01(), cq1(), cq2(), cq3()];
     }
 
@@ -493,6 +562,28 @@ window.NekoSTPOV = {
                a sentence — there's no grammar pattern here to build one. */
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "こんにちは", choices: ["Hello", "Good morning", "Good evening", "Goodbye"], correctIndex: 0 },
+                            { prompt: "おはようございます", choices: ["Hello", "Good morning", "Thank you", "Excuse me"], correctIndex: 1 },
+                            { prompt: "こんばんは", choices: ["Hello", "Good evening", "Goodbye", "Thank you"], correctIndex: 1 },
+                            { prompt: "さようなら", choices: ["Hello", "Thank you", "Goodbye", "Excuse me"], correctIndex: 2 },
+                            { prompt: "ありがとうございます", choices: ["Excuse me", "Goodbye", "Thank you", "Hello"], correctIndex: 2 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "\"Excuse me / Sorry\"", choices: ["すみません", "こんにちは", "さようなら", "ねこ"], correctIndex: 0 },
+                            { prompt: "\"cat\"", choices: ["みず", "ねこ", "がっこう", "おおきい"], correctIndex: 1 },
+                            { prompt: "\"water\"", choices: ["みず", "ねこ", "がっこう", "ちいさい"], correctIndex: 0 },
+                            { prompt: "\"big\"", choices: ["おおきい", "ちいさい", "みず", "がっこう"], correctIndex: 0 },
+                            { prompt: "\"school\"", choices: ["がっこう", "ねこ", "みず", "ちいさい"], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -607,6 +698,28 @@ window.NekoSTPOV = {
                word/phrase, same as s01 — no sentence pattern to build yet. */
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "お元気ですか", choices: ["How are you?", "I'm doing well", "See you again", "Nice to meet you"], correctIndex: 0 },
+                            { prompt: "元気です", choices: ["How are you?", "I'm doing well", "See you again", "Please"], correctIndex: 1 },
+                            { prompt: "はじめまして", choices: ["See you again", "Nice to meet you", "How do you do (first meeting)", "Thank you"], correctIndex: 2 },
+                            { prompt: "ください", choices: ["Please (go ahead)", "Please (asking for something)", "Yes", "Thanks"], correctIndex: 1 },
+                            { prompt: "どうぞ", choices: ["Please (go ahead)", "Please (asking for something)", "Yes (softer)", "Thanks"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "\"telephone\"", choices: ["でんわ", "くるま", "ほん", "たのしい"], correctIndex: 0 },
+                            { prompt: "\"car\"", choices: ["でんわ", "くるま", "ほん", "いそがしい"], correctIndex: 1 },
+                            { prompt: "\"book\"", choices: ["でんわ", "くるま", "ほん", "たのしい"], correctIndex: 2 },
+                            { prompt: "\"fun\"", choices: ["たのしい", "いそがしい", "でんわ", "ほん"], correctIndex: 0 },
+                            { prompt: "\"busy\"", choices: ["たのしい", "いそがしい", "くるま", "ほん"], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -672,6 +785,28 @@ window.NekoSTPOV = {
             },
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "いってきます", choices: ["I'm heading out", "I'm home", "Excuse me for intruding", "Thanks for having me"], correctIndex: 0 },
+                            { prompt: "ただいま", choices: ["I'm heading out", "I'm home", "Excuse me — is anyone home?", "said before eating"], correctIndex: 1 },
+                            { prompt: "いただきます", choices: ["said before eating", "said after eating", "I'm home", "Excuse me for intruding"], correctIndex: 0 },
+                            { prompt: "ごちそうさまでした", choices: ["said before eating", "said after eating", "I'm heading out", "I'm home"], correctIndex: 1 },
+                            { prompt: "お邪魔します", choices: ["Excuse me for intruding (entering)", "Thanks for having me (leaving)", "I'm home", "I'm heading out"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "\"food\"", choices: ["たべもの", "おちゃ", "いえ", "おいしい"], correctIndex: 0 },
+                            { prompt: "\"tea\"", choices: ["たべもの", "おちゃ", "いえ", "あつい"], correctIndex: 1 },
+                            { prompt: "\"house\"", choices: ["たべもの", "おちゃ", "いえ", "おいしい"], correctIndex: 2 },
+                            { prompt: "\"delicious\"", choices: ["おいしい", "あつい", "いえ", "おちゃ"], correctIndex: 0 },
+                            { prompt: "\"hot\"", choices: ["おいしい", "あつい", "たべもの", "いえ"], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -780,6 +915,28 @@ window.NekoSTPOV = {
                exposure-only until shelf 03 itself teaches the pattern. */
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "なるほど", choices: ["I see / now I understand", "Probably", "Not at all", "First of all"], correctIndex: 0 },
+                            { prompt: "やっぱり", choices: ["As I thought / after all", "If / in case", "Ah!/Oh!", "From now on"], correctIndex: 0 },
+                            { prompt: "多分", choices: ["Probably / perhaps", "Not that much", "Not at all", "As much as possible"], correctIndex: 0 },
+                            { prompt: "全然", choices: ["Not that much (+negative)", "Not at all (+negative)", "Probably", "First of all"], correctIndex: 1 },
+                            { prompt: "まず", choices: ["First of all", "From now on", "If / in case", "Well then"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "\"talk / story\"", choices: ["はなし", "きもち", "おもしろい", "うれしい"], correctIndex: 0 },
+                            { prompt: "\"feeling\"", choices: ["はなし", "きもち", "おもしろい", "へん"], correctIndex: 1 },
+                            { prompt: "\"interesting\"", choices: ["はなし", "きもち", "おもしろい", "うれしい"], correctIndex: 2 },
+                            { prompt: "\"happy\"", choices: ["おもしろい", "うれしい", "へん", "はなし"], correctIndex: 1 },
+                            { prompt: "\"strange / odd\"", choices: ["おもしろい", "うれしい", "へん", "きもち"], correctIndex: 2 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -804,7 +961,7 @@ window.NekoSTPOV = {
                 return {
                     sections: [{
                         title: "A は B です",
-                        explain: "Use は to mark the topic and です to make it polite — です changes shape to move the tense: swap it for でした and the whole sentence slides from now to before, nothing else changes. Japanese doesn't have a separate future word either — です already covers 'will be.'",
+                        explain: "は marks the topic; です makes it polite and carries the tense. Swap です for でした to shift to the past — nothing else changes, and there's no separate future form either.",
                         pattern: '<span class="pattern-box__slot">Topic</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Predicate</span> <span class="pattern-box__fixed">です</span>',
                         /* Ported verbatim (structure/wording) from n5-phaser-game.js's
                            LESSON_CONTENT['shelf-03'] grammar-intro diagram page. The
@@ -867,7 +1024,7 @@ window.NekoSTPOV = {
                         culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\""
                     }, {
                         title: "Sentence construction — the box breakdown",
-                        explain: "Here's the same pattern with every piece labeled by its job, not just its meaning: a Topic slot, the は particle that marks it, a Predicate slot (whatever the topic IS), and です sitting fixed at the very end. これ works exactly like わたし here — 'this' is just a topic like any other, so it slots into the same first box.",
+                        explain: "Topic + は + Predicate + です — です never moves. これ slots into the Topic box exactly like わたし; it's just another topic.",
                         diagramSvg: `
         <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
           <text x="20" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">A は B です - BOX BY BOX</text>
@@ -905,7 +1062,7 @@ window.NekoSTPOV = {
                         diagramCaption: "Same four boxes, every time — only what goes IN the topic and predicate boxes ever changes. は and です never move."
                     }, {
                         title: "Swap the cards — any topic, any predicate",
-                        explain: "は and です never move — they're fixed. Everything else is a deck of interchangeable cards: pull any topic card, pull any predicate card, drop them into the same two slots. That's exactly why the exercise below accepts any word from the word bank instead of one baked-in answer.",
+                        explain: "は and です are fixed; Topic and Predicate are swappable cards — any pair from the word bank works.",
                         diagramSvg: `
         <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
           <text x="10" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">SWAP THE CARDS - TOPIC AND PREDICATE ARE INTERCHANGEABLE</text>
@@ -994,6 +1151,53 @@ window.NekoSTPOV = {
                         ].concat(this.wordBank.thingPredicates.map(function (w) { return { jp: w.jp, role: "predicate" }; }))
                     }
                 ];
+            },
+            /* Quiz Set 2 — word-order / star-slot exercise (see openLesson's
+               quizSet tagging + checkWordOrderAnswer). ★ lands on ほん, the
+               predicate noun, since that's the word actually being taught
+               here — は/です are fixed and not worth quizzing on order. */
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"This is a book.\"",
+                        chunks: ["ほん", "です", "は", "これ"],
+                        correctOrder: [3, 2, 0, 1],
+                        starIndex: 2,
+                        translation: "これはほんです — \"This is a book.\""
+                    }
+                ];
+            },
+            /* もんだい1: fill-in-the-blank on the sentence mechanics (subject
+               card, predicate card, は, です/でした) — matches this lesson's
+               own buildWordBankExercises pattern above, just as 4-choice MC.
+               もんだい2: reading comprehension — pick the correct English
+               meaning for a whole sentence, including a couple of でした
+               (past) sentences so that half of the lesson gets quizzed too.
+               Every choice/prompt uses only vocab this lesson itself
+               teaches (わたし/がくせい/せんせい/これ/ほん/ペン/は/です/でした) —
+               none of shelf 05's これ/それ/あれ contrast, which isn't taught
+               yet at this point in the sequence. */
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "わたしは　<u>＿＿＿</u>　です。 (\"I am a student.\")", choices: ["がくせい", "せんせい", "ほん", "ペン"], correctIndex: 0 },
+                            { prompt: "これは　<u>＿＿＿</u>　です。 (\"This is a book.\")", choices: ["がくせい", "ほん", "ペン", "せんせい"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　はせんせいです。 (\"I am a teacher.\")", choices: ["これ", "わたし", "ほん", "ペン"], correctIndex: 1 },
+                            { prompt: "わたしはがくせい　<u>＿＿＿</u>　。 (\"I am a student.\")", choices: ["です", "でした", "は", "が"], correctIndex: 0 },
+                            { prompt: "これ　<u>＿＿＿</u>　ペンです。 (\"This is a pen.\")", choices: ["は", "が", "を", "の"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "わたしはがくせいです。", choices: ["I am a student.", "I am a teacher.", "This is a book.", "This is a pen."], correctIndex: 0 },
+                            { prompt: "これはほんです。", choices: ["I am a student.", "This is a pen.", "This is a book.", "I am a teacher."], correctIndex: 2 },
+                            { prompt: "わたしはせんせいでした。", choices: ["I am a teacher.", "I was a teacher.", "I was a student.", "This was a book."], correctIndex: 1 },
+                            { prompt: "これはペンです。", choices: ["This is a book.", "I am a student.", "This is a pen.", "I am a teacher."], correctIndex: 2 },
+                            { prompt: "わたしはがくせいでした。", choices: ["I am a student.", "I was a teacher.", "I was a student.", "This was a pen."], correctIndex: 2 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1107,6 +1311,40 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                let nm = this.wordBank.names[0];
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I am " + nm.en + ".\"",
+                        chunks: ["です", "わたしは", nm.jp],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "わたしは" + nm.jp + "です — \"I am " + nm.en + ".\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　。お名前は何ですか。 (\"How do you do. What is your name?\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "すみません"], correctIndex: 0 },
+                            { prompt: "わたしは　<u>＿＿＿</u>　。 (\"I am Tanaka.\")", choices: ["たなかです", "たなかでした", "たなかでしたか", "たなかですか"], correctIndex: 0 },
+                            { prompt: "たなかさん、　<u>＿＿＿</u>　。 (\"Nice to meet you, Tanaka!\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "さようなら"], correctIndex: 1 },
+                            { prompt: "お　<u>＿＿＿</u>　は何ですか。 (\"What is your name?\")", choices: ["名前", "誕生日", "仕事", "住所"], correctIndex: 0 },
+                            { prompt: "あの人は　<u>＿＿＿</u>　です。 (\"That person is a doctor.\")", choices: ["いしゃ", "かいしゃいん", "しゅふ", "わかい"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "はじめまして。お名前は何ですか。", choices: ["How do you do. What is your name?", "Goodbye, see you again.", "Thank you very much.", "What time is it now?"], correctIndex: 0 },
+                            { prompt: "わたしはたなかです。", choices: ["I am Tanaka.", "This is Tanaka's.", "Tanaka is here.", "I met Tanaka."], correctIndex: 0 },
+                            { prompt: "たなかさん、よろしくお願いします！", choices: ["Goodbye, Tanaka!", "Nice to meet you, Tanaka!", "Thank you, Tanaka!", "Excuse me, Tanaka!"], correctIndex: 1 },
+                            { prompt: "あの人はいしゃです。", choices: ["That person is a doctor.", "That person is a teacher.", "That person is a student.", "That person is young."], correctIndex: 0 },
+                            { prompt: "あの人はやさしいです。", choices: ["That person is young.", "That person is kind.", "That person is a homemaker.", "That person is an office worker."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1275,6 +1513,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"That is a pen.\"",
+                        chunks: ["です", "それは", "ペン"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 0,
+                        translation: "それはペンです — \"That is a pen.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　はほんです。 (\"This is a book.\")", choices: ["これ", "それ", "あれ", "どれ"], correctIndex: 0 },
+                            { prompt: "<u>＿＿＿</u>　はペンです。 (\"That is a pen.\" — near listener)", choices: ["これ", "それ", "あれ", "どれ"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　はほんです。 (\"That over there is a book.\")", choices: ["これ", "それ", "あれ", "どれ"], correctIndex: 2 },
+                            { prompt: "ねこは　<u>＿＿＿</u>　ですか。 (\"Where is the cat?\")", choices: ["どこ", "だれ", "いつ", "いくら"], correctIndex: 0 },
+                            { prompt: "えきは　<u>＿＿＿</u>　ですか。 (\"Which way is the station?\" — polite)", choices: ["どこ", "どちら", "どんな", "どうして"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "これはほんです。", choices: ["This is a book.", "That is a book.", "That book over there.", "Where is the book?"], correctIndex: 0 },
+                            { prompt: "それはペンです。", choices: ["This is a pen.", "That is a pen.", "That pen over there.", "Is this a pen?"], correctIndex: 1 },
+                            { prompt: "このペンはわたしのです。", choices: ["This pen is mine.", "That pen is yours.", "This is not my pen.", "Whose pen is this?"], correctIndex: 0 },
+                            { prompt: "こちらはたなかさんです。", choices: ["This is Tanaka-san.", "That is Tanaka-san's.", "Where is Tanaka-san?", "Is that Tanaka-san?"], correctIndex: 0 },
+                            { prompt: "えきはどちらですか。", choices: ["Where is the station?", "Which way is the station?", "Is this the station?", "How far is the station?"], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1398,6 +1669,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"Is this a book?\"",
+                        chunks: ["ほん", "ですか", "これは"],
+                        correctOrder: [2, 0, 1],
+                        starIndex: 2,
+                        translation: "これはほんですか — \"Is this a book?\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "これはほんです　<u>＿＿＿</u>　。 (\"Is this a book?\")", choices: ["か", "ね", "よ", "の"], correctIndex: 0 },
+                            { prompt: "せんせいは　<u>＿＿＿</u>　ですか。 (\"Who is the teacher?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 0 },
+                            { prompt: "たんじょうびは　<u>＿＿＿</u>　ですか。 (\"When is your birthday?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 1 },
+                            { prompt: "これは　<u>＿＿＿</u>　ですか。 (\"How much is this?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 2 },
+                            { prompt: "はい、　<u>＿＿＿</u>　。 (\"Yes, that's right.\")", choices: ["そうです", "ちがいます", "どうしてですか", "なぜですか"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "いいえ、ちがいます。ほんです。", choices: ["Yes, that's right. It's a book.", "No, that's wrong. It's a book.", "I don't know what it is.", "It's not a book at all."], correctIndex: 1 },
+                            { prompt: "せんせいはだれですか。", choices: ["Who is the teacher?", "Where is the teacher?", "When is the teacher coming?", "Is there a teacher?"], correctIndex: 0 },
+                            { prompt: "これはいくらですか。", choices: ["What is this?", "How much is this?", "Where is this from?", "Do you like this?"], correctIndex: 1 },
+                            { prompt: "どうしてですか。", choices: ["Why?", "When?", "Where?", "Who?"], correctIndex: 0 },
+                            { prompt: "これはほんですか。", choices: ["This is a book.", "Is this a book?", "That is not a book.", "I have a book."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1466,6 +1770,39 @@ window.NekoSTPOV = {
                         refWords: [{ jp: n.jp, role: "neutral" }]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"It's 100.\"",
+                        chunks: ["です", "ひゃく"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "ひゃくです — \"It's 100.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "20 は日本語で　<u>＿＿＿</u>　です。", choices: ["にじゅう", "さんじゅう", "じゅうに", "にじゅうご"], correctIndex: 0 },
+                            { prompt: "35 は日本語で　<u>＿＿＿</u>　です。", choices: ["さんじゅうご", "ごじゅうさん", "さんじゅう", "じゅうさんご"], correctIndex: 0 },
+                            { prompt: "100 は日本語で　<u>＿＿＿</u>　です。", choices: ["じゅう", "ひゃく", "せん", "まん"], correctIndex: 1 },
+                            { prompt: "47 は日本語で　<u>＿＿＿</u>　です。", choices: ["よんじゅうなな", "ななじゅうよん", "よんじゅう", "なな"], correctIndex: 0 },
+                            { prompt: "58 は日本語で　<u>＿＿＿</u>　です。", choices: ["はちじゅうご", "ごじゅうはち", "ごじゅう", "はちじゅう"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "にじゅうです。", choices: ["It's 12.", "It's 20.", "It's 2.", "It's 200."], correctIndex: 1 },
+                            { prompt: "さんじゅうごです。", choices: ["It's 53.", "It's 305.", "It's 35.", "It's 3."], correctIndex: 2 },
+                            { prompt: "ひゃくです。", choices: ["It's 10.", "It's 1000.", "It's 100.", "It's 10000."], correctIndex: 2 },
+                            { prompt: "よんじゅうななです。", choices: ["It's 74.", "It's 47.", "It's 407.", "It's 4."], correctIndex: 1 },
+                            { prompt: "ごじゅうはちです。", choices: ["It's 85.", "It's 58.", "It's 508.", "It's 5."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1561,6 +1898,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"There are three students.\"",
+                        chunks: ["です", "がくせいは", "さんにん"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "がくせいはさんにんです — \"There are three students.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "りんごは　<u>＿＿＿</u>　です。 (\"There is one apple.\")", choices: ["ひとつ", "ひとり", "いっぽん", "いっぴき"], correctIndex: 0 },
+                            { prompt: "りんごは　<u>＿＿＿</u>　です。 (\"There are three apples.\")", choices: ["さんにん", "みっつ", "さんぼん", "さんびき"], correctIndex: 1 },
+                            { prompt: "がくせいは　<u>＿＿＿</u>　です。 (\"There is one student.\")", choices: ["ひとつ", "ひとり", "いっぽん", "いっぴき"], correctIndex: 1 },
+                            { prompt: "がくせいは　<u>＿＿＿</u>　です。 (\"There are three students.\")", choices: ["みっつ", "さんにん", "さんぼん", "さんびき"], correctIndex: 1 },
+                            { prompt: "たまごは　<u>＿＿＿</u>　です。 (\"There is one egg.\")", choices: ["ひとつ", "ひとり", "いっぽん", "いっぴき"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "りんごはひとつです。", choices: ["There are two apples.", "There is one apple.", "There are no apples.", "There are many apples."], correctIndex: 1 },
+                            { prompt: "がくせいはひとりです。", choices: ["There are two students.", "There is one student.", "There are no students.", "There are many students."], correctIndex: 1 },
+                            { prompt: "がくせいはさんにんです。", choices: ["There is one student.", "There are two students.", "There are three students.", "There are four students."], correctIndex: 2 },
+                            { prompt: "りんごはみっつです。", choices: ["There is one apple.", "There are two apples.", "There are three apples.", "There are four apples."], correctIndex: 2 },
+                            { prompt: "たまごはふたつです。", choices: ["There is one egg.", "There are two eggs.", "There are three eggs.", "There are no eggs."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1639,6 +2009,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"It's 3:10 now.\"",
+                        chunks: ["です", "いまは", "さんじじゅっぷん"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "いまはさんじじゅっぷんです — \"It's 3:10 now.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "いまは　<u>＿＿＿</u>　です。 (\"It's 4 o'clock now.\")", choices: ["よじ", "よんじ", "しじ", "よっつ"], correctIndex: 0 },
+                            { prompt: "いまは　<u>＿＿＿</u>　です。 (\"It's 9 o'clock now.\")", choices: ["きゅうじ", "くじ", "ここのじ", "きゅう"], correctIndex: 1 },
+                            { prompt: "いまは　<u>＿＿＿</u>　です。 (\"It's 3:10 now.\")", choices: ["さんじじゅっぷん", "よじじゅっぷん", "さんじごふん", "くじじゅっぷん"], correctIndex: 0 },
+                            { prompt: "すみません、いま　<u>＿＿＿</u>　ですか。 (\"Excuse me, what time is it now?\")", choices: ["なんじ", "いつ", "どこ", "だれ"], correctIndex: 0 },
+                            { prompt: "いまは　<u>＿＿＿</u>　です。 (\"It's morning now.\")", choices: ["あさ", "よる", "くるま", "いま"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "すみません、いまなんじですか？", choices: ["Excuse me, what time is it now?", "Excuse me, where is it?", "Excuse me, how much is it?", "Excuse me, who are you?"], correctIndex: 0 },
+                            { prompt: "いまさんじじゅっぷんです。", choices: ["It's 3:00 now.", "It's 3:10 now.", "It's 10:03 now.", "It's 4:10 now."], correctIndex: 1 },
+                            { prompt: "いまはよじです。", choices: ["It's 4 o'clock now.", "It's 9 o'clock now.", "It's 40 o'clock now.", "It's 4 minutes now."], correctIndex: 0 },
+                            { prompt: "いまはくじです。", choices: ["It's 4 o'clock now.", "It's 9 o'clock now.", "It's 90 o'clock now.", "It's 9 minutes now."], correctIndex: 1 },
+                            { prompt: "これはくるまです。", choices: ["This is a car.", "This is a book.", "This is a pen.", "This is a clock."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1741,6 +2144,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"There are four rabbits.\"",
+                        chunks: ["です", "うさぎは", "よんわ"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "うさぎはよんわです — \"There are four rabbits.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "ねこは　<u>＿＿＿</u>　です。 (\"There is one cat.\")", choices: ["いっぴき", "いっとう", "いちわ", "ひとつ"], correctIndex: 0 },
+                            { prompt: "うまは　<u>＿＿＿</u>　です。 (\"There are three horses.\")", choices: ["さんびき", "さんとう", "さんわ", "みっつ"], correctIndex: 1 },
+                            { prompt: "とりは　<u>＿＿＿</u>　です。 (\"There are two birds.\")", choices: ["にひき", "にとう", "にわ", "ふたつ"], correctIndex: 2 },
+                            { prompt: "うさぎは　<u>＿＿＿</u>　です。 (\"There are four rabbits.\")", choices: ["よんひき", "よんとう", "よんわ", "よっつ"], correctIndex: 2 },
+                            { prompt: "いぬは　<u>＿＿＿</u>　です。 (\"There is one dog.\")", choices: ["いっぴき", "いっとう", "いちわ", "ひとり"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "ねこはいっぴきです。", choices: ["There are two cats.", "There is one cat.", "There are no cats.", "There are many cats."], correctIndex: 1 },
+                            { prompt: "うまはさんとうです。", choices: ["There is one horse.", "There are two horses.", "There are three horses.", "There are four horses."], correctIndex: 2 },
+                            { prompt: "とりはにわです。", choices: ["There is one bird.", "There are two birds.", "There are three birds.", "There are no birds."], correctIndex: 1 },
+                            { prompt: "うさぎはよんわです。", choices: ["There are four rabbits.", "There is one rabbit.", "There are four birds.", "There are no rabbits."], correctIndex: 0 },
+                            { prompt: "ぞうはいっとうです。", choices: ["There is one elephant.", "There are two elephants.", "There is one cat.", "There is one bird."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1822,6 +2258,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"There is one car.\"",
+                        chunks: ["です", "くるまは", "いちだい"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "くるまはいちだいです — \"There is one car.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "ほんは　<u>＿＿＿</u>　です。 (\"There is one book.\")", choices: ["いっさつ", "いっぽん", "いっこ", "いちまい"], correctIndex: 0 },
+                            { prompt: "ペンは　<u>＿＿＿</u>　です。 (\"There are two pens.\")", choices: ["にさつ", "にほん", "にこ", "にまい"], correctIndex: 1 },
+                            { prompt: "かみは　<u>＿＿＿</u>　です。 (\"There are three sheets of paper.\")", choices: ["さんさつ", "さんぼん", "さんこ", "さんまい"], correctIndex: 3 },
+                            { prompt: "くるまは　<u>＿＿＿</u>　です。 (\"There is one car.\")", choices: ["いっさつ", "いっぽん", "いちだい", "いっこ"], correctIndex: 2 },
+                            { prompt: "くつは　<u>＿＿＿</u>　です。 (\"There is one pair of shoes.\")", choices: ["いっさつ", "いっそく", "いちだい", "いっぱい"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "ほんはいっさつです。", choices: ["There is one book.", "There are two books.", "There is one pen.", "There are no books."], correctIndex: 0 },
+                            { prompt: "ペンはにほんです。", choices: ["There is one pen.", "There are two pens.", "There are three pens.", "There are no pens."], correctIndex: 1 },
+                            { prompt: "かみはさんまいです。", choices: ["There is one sheet of paper.", "There are two sheets of paper.", "There are three sheets of paper.", "There are four sheets of paper."], correctIndex: 2 },
+                            { prompt: "くるまはいちだいです。", choices: ["There is one car.", "There are two cars.", "There is one bicycle.", "There are no cars."], correctIndex: 0 },
+                            { prompt: "コーヒーはいっぱいです。", choices: ["There is one cup of coffee.", "There are two cups of coffee.", "There is one cup of tea.", "There is no coffee."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -1913,6 +2382,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The teacher is at school.\"",
+                        chunks: ["います", "せんせいは", "がっこうに"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "せんせいはがっこうにいます — \"The teacher is at school.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "ねこはこうえんに　<u>＿＿＿</u>　。 (\"The cat is at the park.\")", choices: ["います", "あります", "いました", "ありました"], correctIndex: 0 },
+                            { prompt: "ほんはとしょかんに　<u>＿＿＿</u>　。 (\"The book is at the library.\")", choices: ["います", "あります", "いました", "ありました"], correctIndex: 1 },
+                            { prompt: "せんせいはがっこうに　<u>＿＿＿</u>　。 (\"The teacher is at school.\")", choices: ["います", "あります", "いました", "ありました"], correctIndex: 0 },
+                            { prompt: "ねこは　<u>＿＿＿</u>　にいます。 (\"The cat is at the park.\")", choices: ["こうえん", "としょかん", "がっこう", "えき"], correctIndex: 0 },
+                            { prompt: "ほんは　<u>＿＿＿</u>　にあります。 (\"The book is at the library.\")", choices: ["こうえん", "としょかん", "がっこう", "えき"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "ねこはこうえんにいます。", choices: ["The cat is at the park.", "The book is at the park.", "The cat is at the library.", "There is no cat."], correctIndex: 0 },
+                            { prompt: "ほんはとしょかんにあります。", choices: ["The book is at school.", "The book is at the library.", "There is no book.", "The cat is at the library."], correctIndex: 1 },
+                            { prompt: "せんせいはがっこうにいます。", choices: ["The teacher is at the library.", "The teacher is at the park.", "The teacher is at school.", "There is no teacher."], correctIndex: 2 },
+                            { prompt: "ねこははこの中にいます。", choices: ["The cat is inside the box.", "The cat is outside the box.", "There is no cat in the box.", "The box is inside the cat."], correctIndex: 0 },
+                            { prompt: "かごの中にパンがあります。", choices: ["There is no bread.", "There is bread inside the basket.", "The basket is inside the bread.", "The bread is outside the basket."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2102,6 +2604,39 @@ window.NekoSTPOV = {
                         ]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The book is next to the cat.\"",
+                        chunks: ["あります", "ほんは", "隣に", "ねこの"],
+                        correctOrder: [1, 3, 2, 0],
+                        starIndex: 2,
+                        translation: "ほんはねこの隣にあります — \"The book is next to the cat.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "としょかんはがっこうの　<u>＿＿＿</u>　にあります。 (\"The library is near the school.\")", choices: ["ちかく", "した", "うえ", "なか"], correctIndex: 0 },
+                            { prompt: "ねこはテーブルの　<u>＿＿＿</u>　にいます。 (\"The cat is under the table.\")", choices: ["ちかく", "した", "となり", "なか"], correctIndex: 1 },
+                            { prompt: "ほんはねこの　<u>＿＿＿</u>　にあります。 (\"The book is next to the cat.\")", choices: ["ちかく", "した", "となり", "なか"], correctIndex: 2 },
+                            { prompt: "ほんははこの　<u>＿＿＿</u>　にあります。 (\"The book is inside the box.\")", choices: ["ちかく", "した", "となり", "なか"], correctIndex: 3 },
+                            { prompt: "レストランはこうえんの　<u>＿＿＿</u>　にあります。 (\"The restaurant is next to the park.\")", choices: ["した", "となり", "なか", "うえ"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "としょかんはがっこうのちかくにあります。", choices: ["The library is far from the school.", "The library is near the school.", "The library is inside the school.", "The school is inside the library."], correctIndex: 1 },
+                            { prompt: "ねこはテーブルのしたにいます。", choices: ["The cat is on the table.", "The cat is under the table.", "The cat is next to the table.", "There is no cat."], correctIndex: 1 },
+                            { prompt: "ほんはねこの隣にあります。", choices: ["The book is under the cat.", "The book is next to the cat.", "The book is inside the cat.", "The cat is reading the book."], correctIndex: 1 },
+                            { prompt: "ほんははこの中にあります。", choices: ["The book is inside the box.", "The book is outside the box.", "The box is inside the book.", "There is no box."], correctIndex: 0 },
+                            { prompt: "すみません、としょかんはどこですか？", choices: ["Excuse me, where is the library?", "Excuse me, what is a library?", "Excuse me, when does the library open?", "Excuse me, whose library is this?"], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2255,6 +2790,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The library is north of the station.\"",
+                        chunks: ["あります", "としょかんは", "きたに", "えきの"],
+                        correctOrder: [1, 3, 2, 0],
+                        starIndex: 2,
+                        translation: "としょかんはえきのきたにあります — \"The library is north of the station.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "わたしはがっこうに　<u>＿＿＿</u>　。 (\"I go to school.\")", choices: ["行きます", "来ます", "あります", "います"], correctIndex: 0 },
+                            { prompt: "<u>＿＿＿</u>　行きます。 (\"Go straight ahead.\")", choices: ["まっすぐ", "みぎ", "ひだり", "きた"], correctIndex: 0 },
+                            { prompt: "右に　<u>＿＿＿</u>　。 (\"Turn right.\")", choices: ["行きます", "曲がります", "あります", "います"], correctIndex: 1 },
+                            { prompt: "としょかんはえきの　<u>＿＿＿</u>　にあります。 (\"The library is north of the station.\")", choices: ["きた", "みなみ", "ひがし", "にし"], correctIndex: 0 },
+                            { prompt: "わたしはがっこう　<u>＿＿＿</u>　行きます。 (\"I go to school.\")", choices: ["へ", "で", "を", "が"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "わたしはがっこうに行きます。", choices: ["I come from school.", "I go to school.", "I am at school.", "I like school."], correctIndex: 1 },
+                            { prompt: "まっすぐ行きます。", choices: ["Turn left.", "Turn right.", "Go straight ahead.", "Stop here."], correctIndex: 2 },
+                            { prompt: "右に曲がります。", choices: ["Turn left.", "Turn right.", "Go straight.", "Go back."], correctIndex: 1 },
+                            { prompt: "としょかんはえきのきたにあります。", choices: ["The library is south of the station.", "The library is north of the station.", "The library is inside the station.", "The station is inside the library."], correctIndex: 1 },
+                            { prompt: "がっこうへ行きます。", choices: ["I go to school.", "I came from school.", "I am at school.", "I passed the school."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2318,6 +2886,39 @@ window.NekoSTPOV = {
                         refWords: [{ jp: place.jp, role: "neutral" }]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The book is at the library.\"",
+                        chunks: ["あります", "ほんは", "としょかんに"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "ほんはとしょかんにあります — \"The book is at the library.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "「home」は日本語で　<u>＿＿＿</u>　です。", choices: ["うち", "がっこう", "えき", "びょういん"], correctIndex: 0 },
+                            { prompt: "「hospital」は日本語で　<u>＿＿＿</u>　です。", choices: ["がっこう", "びょういん", "ほんや", "ぎんこう"], correctIndex: 1 },
+                            { prompt: "「bookstore」は日本語で　<u>＿＿＿</u>　です。", choices: ["としょかん", "ほんや", "ぎんこう", "こうえん"], correctIndex: 1 },
+                            { prompt: "「bank」は日本語で　<u>＿＿＿</u>　です。", choices: ["ぎんこう", "きょうかい", "えき", "うち"], correctIndex: 0 },
+                            { prompt: "「church」は日本語で　<u>＿＿＿</u>　です。", choices: ["きょうかい", "ぎんこう", "がっこう", "こうえん"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "びょういん", choices: ["school", "hospital", "bank", "church"], correctIndex: 1 },
+                            { prompt: "ほんや", choices: ["library", "bookstore", "restaurant", "park"], correctIndex: 1 },
+                            { prompt: "ぎんこう", choices: ["bank", "church", "station", "home"], correctIndex: 0 },
+                            { prompt: "えき", choices: ["station", "school", "hospital", "park"], correctIndex: 0 },
+                            { prompt: "きょうかい", choices: ["church", "bank", "bookstore", "station"], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2436,6 +3037,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"This is the teacher's book.\"",
+                        chunks: ["です", "これは", "本", "先生の"],
+                        correctOrder: [1, 3, 2, 0],
+                        starIndex: 1,
+                        translation: "これは先生の本です — \"This is the teacher's book.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "あの人は私の　<u>＿＿＿</u>　です。 (\"That person is my friend.\")", choices: ["友達", "先生", "せんぱい", "こうはい"], correctIndex: 0 },
+                            { prompt: "これは先生　<u>＿＿＿</u>　本です。 (\"This is the teacher's book.\")", choices: ["は", "が", "の", "を"], correctIndex: 2 },
+                            { prompt: "彼は私の　<u>＿＿＿</u>　です。 (\"He is my senior/upperclassman.\")", choices: ["友達", "せんぱい", "こうはい", "どうりょう"], correctIndex: 1 },
+                            { prompt: "会社の　<u>＿＿＿</u>　です。 (\"[He/she is] a colleague at the company.\")", choices: ["せんぱい", "こうはい", "どうりょう", "しんせき"], correctIndex: 2 },
+                            { prompt: "私の　<u>＿＿＿</u>　です。 (\"[He/she is] my relative.\")", choices: ["せんぱい", "こうはい", "どうりょう", "しんせき"], correctIndex: 3 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "あの人は私の友達です。", choices: ["That person is my friend.", "That person is my teacher.", "That person is a stranger.", "I don't know that person."], correctIndex: 0 },
+                            { prompt: "これは先生の本です。", choices: ["This is my book.", "This is the teacher's book.", "This is a new book.", "The teacher has no book."], correctIndex: 1 },
+                            { prompt: "彼は私のせんぱいです。", choices: ["He is my junior.", "He is my senior/upperclassman.", "He is my colleague.", "He is my relative."], correctIndex: 1 },
+                            { prompt: "こうはいはだれですか。", choices: ["Who is the junior/underclassman?", "Who is the senior?", "Where is the junior?", "Is there a junior?"], correctIndex: 0 },
+                            { prompt: "どうりょうと会いました。", choices: ["I met my colleague.", "I met my teacher.", "I met a stranger.", "I never met anyone."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2557,6 +3191,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say (casual): \"I am a teacher.\"",
+                        chunks: ["です", "僕は", "せんせい"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 0,
+                        translation: "僕はせんせいです — \"I am a teacher.\" (casual, male speaker)"
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　はせんせいですか。 (\"Are you a teacher?\")", choices: ["あなた", "わたし", "かれ", "かのじょ"], correctIndex: 0 },
+                            { prompt: "そのかばんは彼　<u>＿＿＿</u>　じゃないです。 (\"That bag is not his.\")", choices: ["は", "が", "の", "を"], correctIndex: 2 },
+                            { prompt: "<u>＿＿＿</u>　はせんせいです。 (\"I am a teacher\" — casual, male)", choices: ["わたし", "ぼく", "あなた", "きみ"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　人ですか。 (\"What kind of person is it?\")", choices: ["こんな", "そんな", "どんな", "あんな"], correctIndex: 2 },
+                            { prompt: "わたし　<u>＿＿＿</u>　。 (\"we/us\")", choices: ["たち", "ら", "も", "の"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "あなたはせんせいですか？", choices: ["Are you a teacher?", "Is he a teacher?", "Am I a teacher?", "Was she a teacher?"], correctIndex: 0 },
+                            { prompt: "そのかばんは彼のじゃないです。", choices: ["That bag is his.", "That bag is not his.", "That bag is mine.", "Whose bag is that?"], correctIndex: 1 },
+                            { prompt: "僕はせんせいです。", choices: ["You are a teacher.", "I am a teacher.", "He is a teacher.", "We are teachers."], correctIndex: 1 },
+                            { prompt: "どんな人ですか。", choices: ["Who is that person?", "Where is that person?", "What kind of person is it?", "Is that a person?"], correctIndex: 2 },
+                            { prompt: "彼女は私のせんせいです。", choices: ["He is my teacher.", "She is my teacher.", "They are my teachers.", "You are my teacher."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2679,6 +3346,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The book is big.\"",
+                        chunks: ["です", "本は", "大きい"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "本は大きいです — \"The book is big.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "本は　<u>＿＿＿</u>　です。 (\"The book is big.\")", choices: ["大きい", "大きくない", "大きかった", "大きく"], correctIndex: 0 },
+                            { prompt: "これは　<u>＿＿＿</u>　時計です。 (\"This is a new clock.\")", choices: ["新しい", "新しく", "新しかった", "新しくない"], correctIndex: 0 },
+                            { prompt: "この本は　<u>＿＿＿</u>　です。 (\"This book is not small.\")", choices: ["小さい", "小さくない", "小さかった", "小さく"], correctIndex: 1 },
+                            { prompt: "この本はとても　<u>＿＿＿</u>　です。 (\"This book is very big.\")", choices: ["大きい", "大きく", "大きくない", "大きかった"], correctIndex: 0 },
+                            { prompt: "<u>＿＿＿</u>　本です。 (\"It's a big book.\")", choices: ["大きい", "大きく", "大きさ", "大きかった"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "本は大きいです。", choices: ["The book is small.", "The book is big.", "The book is new.", "The book is old."], correctIndex: 1 },
+                            { prompt: "これは新しい時計です。", choices: ["This clock is old.", "This clock is new.", "This clock is broken.", "This clock is expensive."], correctIndex: 1 },
+                            { prompt: "この本は小さくないです。", choices: ["This book is small.", "This book is not small.", "This book is big.", "This book is not big."], correctIndex: 1 },
+                            { prompt: "さむいです。", choices: ["It's hot.", "It's cold.", "It's heavy.", "It's light."], correctIndex: 1 },
+                            { prompt: "おもいかばんです。", choices: ["A light bag.", "A heavy bag.", "A new bag.", "An old bag."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2794,6 +3494,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The library is quiet.\"",
+                        chunks: ["です", "図書館は", "静か"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "図書館は静かです — \"The library is quiet.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "図書館は　<u>＿＿＿</u>　です。 (\"The library is quiet.\")", choices: ["静か", "静かい", "静かの", "静かく"], correctIndex: 0 },
+                            { prompt: "これは便利　<u>＿＿＿</u>　です。 (\"This isn't convenient.\")", choices: ["じゃない", "くない", "ない", "では"], correctIndex: 0 },
+                            { prompt: "あの先生は有名　<u>＿＿＿</u>　です。 (\"That teacher isn't famous.\")", choices: ["じゃない", "くない", "ない", "も"], correctIndex: 0 },
+                            { prompt: "図書館は静か　<u>＿＿＿</u>。 (\"The library was quiet.\")", choices: ["です", "でした", "だ", "な"], correctIndex: 1 },
+                            { prompt: "静か　<u>＿＿＿</u>　図書館です。 (\"It's a quiet library.\")", choices: ["だ", "な", "の", "に"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "図書館は静かです。", choices: ["The library is noisy.", "The library is quiet.", "The library is closed.", "The library is big."], correctIndex: 1 },
+                            { prompt: "これは便利じゃないです。", choices: ["This is convenient.", "This isn't convenient.", "This is expensive.", "This isn't expensive."], correctIndex: 1 },
+                            { prompt: "あの先生は有名じゃないです。", choices: ["That teacher is famous.", "That teacher isn't famous.", "That teacher is strict.", "That teacher isn't strict."], correctIndex: 1 },
+                            { prompt: "図書館は静かでした。", choices: ["The library is quiet.", "The library was quiet.", "The library will be quiet.", "The library is never quiet."], correctIndex: 1 },
+                            { prompt: "きれいな部屋です。", choices: ["It's an ugly room.", "It's a pretty room.", "It's a big room.", "It's a small room."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2908,6 +3641,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The cat often plays.\"",
+                        chunks: ["遊びます", "猫は", "よく"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "猫はよく遊びます — \"The cat often plays.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "猫は　<u>＿＿＿</u>　遊びます。 (\"The cat often plays.\")", choices: ["よく", "いつも", "あまり", "とても"], correctIndex: 0 },
+                            { prompt: "図書館は　<u>＿＿＿</u>　静かです。 (\"The library is always quiet.\")", choices: ["よく", "いつも", "あまり", "すぐに"], correctIndex: 1 },
+                            { prompt: "これは　<u>＿＿＿</u>　大きくないです。 (\"This isn't very big.\")", choices: ["よく", "いつも", "あまり", "とても"], correctIndex: 2 },
+                            { prompt: "早　<u>＿＿＿</u>　行きます。 (\"I'll go quickly.\")", choices: ["い", "く", "かった", "くない"], correctIndex: 1 },
+                            { prompt: "静か　<u>＿＿＿</u>　話します。 (\"I'll speak quietly.\")", choices: ["だ", "な", "に", "の"], correctIndex: 2 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "猫はよく遊びます。", choices: ["The cat never plays.", "The cat often plays.", "The cat always sleeps.", "The cat rarely plays."], correctIndex: 1 },
+                            { prompt: "彼は上手に歌います。", choices: ["He sings poorly.", "He sings skillfully.", "He never sings.", "He listens to songs."], correctIndex: 1 },
+                            { prompt: "たのしく遊びます。", choices: ["I play sadly.", "I play happily.", "I don't play.", "I play quietly."], correctIndex: 1 },
+                            { prompt: "おそく起きます。", choices: ["I wake up early.", "I wake up late.", "I sleep early.", "I never wake up."], correctIndex: 1 },
+                            { prompt: "きれいに書きます。", choices: ["I write messily.", "I write neatly.", "I don't write.", "I write quickly."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -2940,20 +3706,17 @@ window.NekoSTPOV = {
                             title: "Conjugating to ます-form",
                             explain: "Ichidan verbs are the easy case: drop る, then add ます. No sound changes, no exceptions inside this group — every real ichidan verb conjugates exactly this way.",
                             pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">る</span> &rarr; <span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">ます</span>',
-                            diagramSvg: '<div class="masu-diagram">'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">食べ<span class="slash-char">る</span></span><span>taberu — dictionary form</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">食べ</span><span>tabe — る is dropped</span></div>'
-                                + '</div>'
-                                + '<div class="masu-arrow-down">&darr;</div>'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">食べ</span><span>tabe — the stem</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">食べ<span class="add-char">ます</span></span><span>tabemasu — ます is added</span></div>'
-                                + '</div>'
-                                + '</div>',
-                            diagramCaption: "Two steps, zero exceptions: 食べる (taberu) → 食べ (tabe, る slashed off) → 食べます (tabemasu, ます added). Every ichidan verb follows this exact formula — try it yourself with 起きる (okiru) or 見る (miru)."
+                            diagramSvg: buildEndingSwapDiagram("食べ", "る", "ます"),
+                            diagramCaption: "食べる (taberu) → 食べます (tabemasu) — drop る, add ます. Every ichidan verb follows this exact formula — try it yourself with 起きる (okiru) or 見る (miru).",
+                            sample: {
+                                tag: '"I will eat bread."',
+                                tiles: [
+                                    { text: "パン", role: "subject", gloss: "bread" },
+                                    { text: "を", role: "particle", gloss: "object marker" },
+                                    { text: "食べます", role: "predicate", gloss: "will eat", isNew: true }
+                                ],
+                                romaji: "Pan o tabemasu."
+                            }
                         },
                         {
                             title: "Impostors — look ichidan, conjugate godan",
@@ -3025,6 +3788,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I will watch TV.\"",
+                        chunks: ["見ます", "私は", "テレビを"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "私はテレビを見ます — \"I will watch TV.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "私は　<u>＿＿＿</u>。 (\"I will wake up.\")", choices: ["起きます", "起きる", "起きて", "起きた"], correctIndex: 0 },
+                            { prompt: "パンを　<u>＿＿＿</u>。 (\"I will eat bread.\")", choices: ["食べる", "食べます", "食べて", "食べた"], correctIndex: 1 },
+                            { prompt: "テレビを　<u>＿＿＿</u>。 (\"I will watch TV.\")", choices: ["見る", "見ます", "見て", "見た"], correctIndex: 1 },
+                            { prompt: "本を　<u>＿＿＿</u>。 (\"I will borrow a book.\")", choices: ["借りる", "借ります", "借りて", "借りた"], correctIndex: 1 },
+                            { prompt: "食べる　<u>→</u>　食べ　<u>＿＿＿</u>。 (drop る, add ___)", choices: ["ます", "る", "て", "た"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "私は起きます。", choices: ["I will sleep.", "I will wake up.", "I will eat.", "I will watch."], correctIndex: 1 },
+                            { prompt: "パンを食べます。", choices: ["I will eat bread.", "I will buy bread.", "I will make bread.", "I will see bread."], correctIndex: 0 },
+                            { prompt: "テレビを見ます。", choices: ["I will watch TV.", "I will listen to TV.", "I will sell the TV.", "I will fix the TV."], correctIndex: 0 },
+                            { prompt: "本を借ります。", choices: ["I will buy a book.", "I will borrow a book.", "I will read a book.", "I will lose a book."], correctIndex: 1 },
+                            { prompt: "私は寝ます。", choices: ["I will wake up.", "I will sleep.", "I will eat.", "I will study."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -3057,20 +3853,17 @@ window.NekoSTPOV = {
                             title: "Conjugating to ます-form",
                             explain: "Swap the final u-sound for its matching i-sound (same row, い column), then add ます: く→き, ぐ→ぎ, す→し, つ→ち, ぬ→に, ぶ→び, む→み, う→い, る→り.",
                             pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">(u-sound)</span> &rarr; <span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">(i-sound) + ます</span>',
-                            diagramSvg: '<div class="masu-diagram">'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">飲<span class="slash-char">む</span></span><span>nomu — dictionary form</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">飲</span><span>nom — う-sound dropped</span></div>'
-                                + '</div>'
-                                + '<div class="masu-arrow-down">&darr;</div>'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">飲</span><span>nom — the stem</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">飲<span class="add-char">みます</span></span><span>nomimasu — い-sound + ます added</span></div>'
-                                + '</div>'
-                                + '</div>',
-                            diagramCaption: "飲む (nomu, \"drink\") → 飲 (nom, む dropped) → 飲みます (nomimasu, み + ます added). Same two-step shape every time, just swap the u-sound for its matching い row first: 行く→行きます, 話す→話します, 読む→読みます, 買う→買います."
+                            diagramSvg: buildEndingSwapDiagram("飲", "む", "みます"),
+                            diagramCaption: "飲む (nomu, \"drink\") → 飲みます (nomimasu) — swap む for its matching い-row sound, then add ます. Same two-step shape every time: 行く→行きます, 話す→話します, 読む→読みます, 買う→買います.",
+                            sample: {
+                                tag: '"I will read a book."',
+                                tiles: [
+                                    { text: "本", role: "subject", gloss: "book" },
+                                    { text: "を", role: "particle", gloss: "object marker" },
+                                    { text: "読みます", role: "predicate", gloss: "will read", isNew: true }
+                                ],
+                                romaji: "Hon o yomimasu."
+                            }
                         },
                         {
                             title: "Impostors — look ichidan, conjugate godan",
@@ -3156,6 +3949,39 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I will meet a friend.\"",
+                        chunks: ["会います", "私は", "友達に"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "私は友達に会います — \"I will meet a friend.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "私は学校に　<u>＿＿＿</u>。 (\"I will go to school.\")", choices: ["行く", "行きます", "行って", "行った"], correctIndex: 1 },
+                            { prompt: "私は先生と　<u>＿＿＿</u>。 (\"I will speak with the teacher.\")", choices: ["話す", "話します", "話して", "話した"], correctIndex: 1 },
+                            { prompt: "かばんを　<u>＿＿＿</u>。 (\"I will buy a bag.\")", choices: ["買う", "買います", "買って", "買った"], correctIndex: 1 },
+                            { prompt: "本を　<u>＿＿＿</u>。 (\"I will read a book.\")", choices: ["読む", "読みます", "読んで", "読んだ"], correctIndex: 1 },
+                            { prompt: "友達に　<u>＿＿＿</u>。 (\"I will meet a friend.\")", choices: ["会う", "会います", "会って", "会った"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "私は学校に行きます。", choices: ["I will come from school.", "I will go to school.", "I am at school.", "I like school."], correctIndex: 1 },
+                            { prompt: "かばんを買います。", choices: ["I will sell a bag.", "I will buy a bag.", "I will make a bag.", "I will lose a bag."], correctIndex: 1 },
+                            { prompt: "本を読みます。", choices: ["I will write a book.", "I will read a book.", "I will buy a book.", "I will lose a book."], correctIndex: 1 },
+                            { prompt: "友達に会います。", choices: ["I will call a friend.", "I will meet a friend.", "I will avoid a friend.", "I will forget a friend."], correctIndex: 1 },
+                            { prompt: "私は先生と話します。", choices: ["I will listen to the teacher.", "I will speak with the teacher.", "I will avoid the teacher.", "I will write to the teacher."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -3166,7 +3992,7 @@ window.NekoSTPOV = {
             wordBank: {
                 suruWords: [{ jp: "べんきょう", en: "will study" }, { jp: "でんわ", en: "will phone/call" }],
                 newWords: [{ jp: "れんしゅうします", en: "will practice" }],
-                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 13 — invitations" }]
+                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 12 — invitations" }]
             },
             buildInstruction: function () {
                 return {
@@ -3183,33 +4009,18 @@ window.NekoSTPOV = {
                             title: "Conjugating to ます-form",
                             explain: "する and 来る don't follow the drop-and-swap formulas ichidan and godan verbs use — each one just has to be memorized on its own, as shown below. For a compound する-verb, keep the noun and just swap する for します: 勉強する → 勉強します, 電話する → 電話します.",
                             pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">する</span> &rarr; <span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">します</span>',
-                            diagramSvg: '<div class="masu-diagram">'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">す<span class="slash-char">る</span></span><span>suru — dictionary form</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">し</span><span>shi — irregular stem (す&rarr;し, not a simple drop)</span></div>'
-                                + '</div>'
-                                + '<div class="masu-arrow-down">&darr;</div>'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">し</span><span>shi — the stem</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">し<span class="add-char">ます</span></span><span>shimasu — ます added</span></div>'
-                                + '</div>'
-                                + '</div>'
-                                + '<div class="masu-diagram" style="margin-top:14px">'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">く<span class="slash-char">る</span></span><span>kuru — dictionary form (来る)</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">き</span><span>ki — irregular stem (く&rarr;き, the reading itself shifts)</span></div>'
-                                + '</div>'
-                                + '<div class="masu-arrow-down">&darr;</div>'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">き</span><span>ki — the stem</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">き<span class="add-char">ます</span></span><span>kimasu — ます added (来ます)</span></div>'
-                                + '</div>'
-                                + '</div>',
-                            diagramCaption: "する → し → します, and 来る (kuru) → き → 来ます (kimasu) — same two-step \"stem, then add ます\" shape as ichidan/godan, just with a stem that has to be memorized instead of derived from a rule."
+                            diagramSvg: buildEndingSwapDiagram("す", "る", "る (irreg. stem し) → します")
+                                + '<div style="margin-top:14px">' + buildEndingSwapDiagram("く", "る", "る (irreg. stem き) → 来ます") + '</div>',
+                            diagramCaption: "する → します, and 来る (kuru) → 来ます (kimasu) — both irregular: the stem itself has to be memorized (す→し, く→き) instead of derived from a rule the way ichidan/godan verbs are.",
+                            sample: {
+                                tag: '"I will study."',
+                                tiles: [
+                                    { text: "わたし", role: "subject", gloss: "I" },
+                                    { text: "は", role: "particle", gloss: "topic marker" },
+                                    { text: "勉強します", role: "predicate", gloss: "will study", isNew: true }
+                                ],
+                                romaji: "Watashi wa benkyoushimasu."
+                            }
                         }
                     ],
                     examples: [
@@ -3260,14 +4071,47 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I will call a friend.\"",
+                        chunks: ["電話します", "私は", "友達に"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "私は友達に電話します — \"I will call a friend.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "私は　<u>＿＿＿</u>。 (\"I will study.\")", choices: ["勉強する", "勉強します", "勉強して", "勉強した"], correctIndex: 1 },
+                            { prompt: "友達に　<u>＿＿＿</u>。 (\"I will call a friend.\")", choices: ["電話する", "電話します", "電話して", "電話した"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>。 (\"I will practice.\")", choices: ["練習する", "練習します", "練習して", "練習した"], correctIndex: 1 },
+                            { prompt: "学校に　<u>＿＿＿</u>。 (\"I will come to school.\")", choices: ["来る", "来ます", "来て", "来た"], correctIndex: 1 },
+                            { prompt: "する　<u>→</u>　<u>＿＿＿</u>。 (する → します: swap する for ___)", choices: ["します", "する", "して", "した"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "私は勉強します。", choices: ["I will study.", "I will teach.", "I will sleep.", "I will play."], correctIndex: 0 },
+                            { prompt: "友達に電話します。", choices: ["I will visit a friend.", "I will call a friend.", "I will forget a friend.", "I will meet a friend."], correctIndex: 1 },
+                            { prompt: "練習します。", choices: ["I will practice.", "I will rest.", "I will finish.", "I will start."], correctIndex: 0 },
+                            { prompt: "学校に来ます。", choices: ["I will leave school.", "I will come to school.", "I will avoid school.", "I will build a school."], correctIndex: 1 },
+                            { prompt: "わたしは勉強します。", choices: ["I will study.", "I will play.", "I will eat.", "I will sleep."], correctIndex: 0 }
+                        ]
+                    }
+                };
             }
         };
     }
 
-    /* SHELF 13: Volitional & Invitations */
+    /* SHELF 12: Volitional & Invitations */
     function s12() {
         return {
-            id: "s12", title: "Invitations", subtitle: "Shelf 13",
+            id: "s12", title: "Invitations", subtitle: "Shelf 12",
             wordBank: {
                 places: [{ jp: "図書館", en: "the library", particle: "に" }, { jp: "公園", en: "the park", particle: "で" }],
                 verbs: [{ jp: "行きましょう", en: "let's go to" }, { jp: "遊びませんか", en: "won't you play at" }],
@@ -3275,7 +4119,7 @@ window.NekoSTPOV = {
                     { jp: "カフェ", en: "café" }, { jp: "どうぶつえん", en: "zoo" }, { jp: "うみ", en: "sea / beach" },
                     { jp: "たのしい", en: "fun" }, { jp: "きれい", en: "pretty / beautiful" }
                 ],
-                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in shelf 14 — the て-form" }]
+                preview: [{ jp: "ません", en: "don't (present negative)", note: "Coming up in shelf 13 — past & negative" }]
             },
             buildInstruction: function () {
                 return {
@@ -3330,8 +4174,9 @@ window.NekoSTPOV = {
                     sources: ["Bunpro — ましょう／ませんか grammar entries", "Tae Kim's Guide — invitations and suggestions"]
                 };
             },
-            /* No bonus exercise: shelf 13's て-form needs its own conjugation
-               rules taught first — preview stays exposure-only.
+            /* No bonus exercise: shelf 13's ません pattern is a different, competing
+               polite ending (not something that stacks onto ましょう/ませんか) — preview
+               stays exposure-only.
                Index-paired: library goes with "let's go" (destination に), park with "won't you play" (location-of-action で). */
             buildWordBankExercises: function () {
                 let wb = this.wordBank;
@@ -3346,6 +4191,39 @@ window.NekoSTPOV = {
                         { jp: place.jp, role: "object" }, { jp: place.particle, role: "particle" }, { jp: verb.jp, role: "predicate" }
                     ]
                 }];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"Won't you play at the park with me?\"",
+                        chunks: ["遊びませんか", "一緒に", "公園で"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "一緒に公園で遊びませんか — \"Won't you play at the park with me?\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "図書館に　<u>＿＿＿</u>。 (\"Let's go to the library.\")", choices: ["行きます", "行きましょう", "行きませんか", "行って"], correctIndex: 1 },
+                            { prompt: "一緒に　<u>＿＿＿</u>。 (\"Won't you eat with me?\")", choices: ["食べます", "食べましょう", "食べませんか", "食べて"], correctIndex: 2 },
+                            { prompt: "手伝い　<u>＿＿＿</u>。 (\"Shall I help?\")", choices: ["ます", "ましょう", "ましょうか", "ませんか"], correctIndex: 2 },
+                            { prompt: "少し　<u>＿＿＿</u>。 (\"Let's rest a little.\")", choices: ["休みます", "休みましょう", "休みませんか", "休んで"], correctIndex: 1 },
+                            { prompt: "公園　<u>＿＿＿</u>　遊びませんか。 (\"Won't you play at the park?\")", choices: ["に", "で", "を", "へ"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "図書館に行きましょう。", choices: ["I went to the library.", "Let's go to the library.", "Don't go to the library.", "The library is closed."], correctIndex: 1 },
+                            { prompt: "一緒に食べませんか。", choices: ["I already ate.", "Won't you eat with me?", "Please don't eat.", "I don't want to eat."], correctIndex: 1 },
+                            { prompt: "手伝いましょうか。", choices: ["Please help me.", "Shall I help?", "I don't need help.", "Thank you for helping."], correctIndex: 1 },
+                            { prompt: "少し休みましょう。", choices: ["Let's work more.", "Let's rest a little.", "I'm not tired.", "Don't rest yet."], correctIndex: 1 },
+                            { prompt: "公園で遊びませんか。", choices: ["I already played.", "Won't you play at the park?", "Don't play at the park.", "The park is closed."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -3390,20 +4268,16 @@ window.NekoSTPOV = {
                         {
                             title: "Ichidan — drop る, add て",
                             explain: "Same shape as the ます-stem already known — just add て instead of ます. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — see the Impostors table on the Ichidan Verbs page (帰る, 入る, 走る, 知る, 要る, 切る) — so they follow the godan う・つ・る rule above instead: 帰る &rarr; 帰って, not 帰て.",
-                            diagramSvg: '<div class="masu-diagram">'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">食べ<span class="slash-char">る</span></span><span>taberu — dictionary form</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">食べ</span><span>tabe — る is dropped</span></div>'
-                                + '</div>'
-                                + '<div class="masu-arrow-down">&darr;</div>'
-                                + '<div class="masu-row">'
-                                + '<div class="no-step"><span class="jp">食べ</span><span>tabe — the stem</span></div>'
-                                + '<div class="no-eq">&rarr;</div>'
-                                + '<div class="no-step no-step--result"><span class="jp">食べ<span class="add-char">て</span></span><span>tabete — て is added</span></div>'
-                                + '</div>'
-                                + '</div>',
-                            diagramCaption: "Identical two steps to the ます-form formula from shelf 11a — just swap in て instead of ます at the end."
+                            diagramSvg: buildEndingSwapDiagram("食べ", "る", "て"),
+                            diagramCaption: "Identical shape to the ます-form formula from shelf 11a — just swap in て instead of ます at the end.",
+                            sample: {
+                                tag: '"Please write it."',
+                                tiles: [
+                                    { text: "書いて", role: "predicate", gloss: "write (て-form)", isNew: true },
+                                    { text: "ください", role: "copula", gloss: "please" }
+                                ],
+                                romaji: "Kaite kudasai."
+                            }
                         },
                         {
                             title: "Irregular verbs — fixed forms, no formula",
@@ -3445,14 +4319,47 @@ window.NekoSTPOV = {
                     hint: v.te + "ください",
                     refWords: [{ jp: v.te + "ください", role: "verb" }]
                 }];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"Please sit here.\"",
+                        chunks: ["ください", "ここに", "座って"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "ここに座ってください — \"Please sit here.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　ください。 (\"Please write it.\")", choices: ["書いて", "書きます", "書く", "書いた"], correctIndex: 0 },
+                            { prompt: "<u>＿＿＿</u>　ください。 (\"Please sit.\")", choices: ["座って", "座ります", "座る", "座った"], correctIndex: 0 },
+                            { prompt: "起き　<u>＿＿＿</u>　食べます。 (\"I wake up and eat.\")", choices: ["て", "ます", "る", "た"], correctIndex: 0 },
+                            { prompt: "読ん　<u>＿＿＿</u>　ください。 (\"Please read it.\")", choices: ["で", "て", "った", "いて"], correctIndex: 0 },
+                            { prompt: "買っ　<u>＿＿＿</u>　ください。 (\"Please buy it.\")", choices: ["て", "で", "いて", "して"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "書いてください。", choices: ["Please read it.", "Please write it.", "Please erase it.", "Please copy it."], correctIndex: 1 },
+                            { prompt: "座ってください。", choices: ["Please stand.", "Please sit.", "Please leave.", "Please wait."], correctIndex: 1 },
+                            { prompt: "起きて食べます。", choices: ["I eat and sleep.", "I wake up and eat.", "I sleep and wake up.", "I eat before waking."], correctIndex: 1 },
+                            { prompt: "話してください。", choices: ["Please be quiet.", "Please speak.", "Please listen.", "Please write."], correctIndex: 1 },
+                            { prompt: "歌ってください。", choices: ["Please dance.", "Please sing.", "Please stop.", "Please listen."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
 
-    /* SHELF 12: Past & Negative Tense */
+    /* SHELF 13: Past & Negative Tense */
     function s14() {
         return {
-            id: "s14", title: "Past & Negative", subtitle: "Shelf 12",
+            id: "s14", title: "Past & Negative", subtitle: "Shelf 13",
             wordBank: {
                 verbs: [
                     { neg: "読みません", past: "読みました", en: "read" },
@@ -3464,7 +4371,7 @@ window.NekoSTPOV = {
                     { jp: "きのう", en: "yesterday" }, { jp: "きょう", en: "today" }, { jp: "あした", en: "tomorrow" },
                     { jp: "さびしい", en: "lonely" }, { jp: "うれしい", en: "happy" }
                 ],
-                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 13 — invitations" }]
+                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in shelf 14 — the て-form" }]
             },
             buildInstruction: function () {
                 return {
@@ -3489,8 +4396,8 @@ window.NekoSTPOV = {
                     sources: ["Tae Kim's Guide — past and negative verb forms", "Genki I — Lesson 3"]
                 };
             },
-            /* No bonus exercise: shelf 13's ましょう／ませんか swaps onto its own
-               ます-stem taught fresh there — preview stays exposure-only. */
+            /* No bonus exercise: shelf 14's て-form needs its own conjugation
+               rules taught first — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let v1 = pick(this.wordBank.verbs);
                 let v2 = pick(this.wordBank.verbs);
@@ -3508,6 +4415,39 @@ window.NekoSTPOV = {
                         refWords: [{ jp: "わたし", role: "subject" }, { jp: "は", role: "particle" }, { jp: v2.past, role: "predicate" }]
                     }
                 ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I met a friend.\"",
+                        chunks: ["会いました", "私は", "友達に"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 2,
+                        translation: "私は友達に会いました — \"I met a friend.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "本を　<u>＿＿＿</u>。 (\"I don't read books.\")", choices: ["読みます", "読みません", "読みました", "読みませんでした"], correctIndex: 1 },
+                            { prompt: "友達に　<u>＿＿＿</u>。 (\"I met a friend.\")", choices: ["会います", "会いません", "会いました", "会いませんでした"], correctIndex: 2 },
+                            { prompt: "今日　<u>＿＿＿</u>。 (\"I didn't work today.\")", choices: ["働きます", "働きません", "働きました", "働きませんでした"], correctIndex: 3 },
+                            { prompt: "わたしは　<u>＿＿＿</u>。 (\"I don't eat.\")", choices: ["食べます", "食べません", "食べました", "食べませんでした"], correctIndex: 1 },
+                            { prompt: "わたしは学校に　<u>＿＿＿</u>。 (\"I went to school.\")", choices: ["行きます", "行きません", "行きました", "行きませんでした"], correctIndex: 2 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "本を読みません。", choices: ["I read books.", "I don't read books.", "I read a book yesterday.", "I will read books."], correctIndex: 1 },
+                            { prompt: "友達に会いました。", choices: ["I will meet a friend.", "I met a friend.", "I don't meet friends.", "I never met a friend."], correctIndex: 1 },
+                            { prompt: "今日働きませんでした。", choices: ["I worked today.", "I didn't work today.", "I will work today.", "I always work."], correctIndex: 1 },
+                            { prompt: "話しませんでした。", choices: ["I spoke.", "I didn't speak.", "I will speak.", "I always speak."], correctIndex: 1 },
+                            { prompt: "行きませんでした。", choices: ["I went.", "I didn't go.", "I will go.", "I am going."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
@@ -3547,23 +4487,23 @@ window.NekoSTPOV = {
                             diagramSvg: window.NekoSTPOV.buildBuilderHTML()
                         },
                         {
-                            title: "Putting it all together — four connectors",
-                            explain: "You already know single-clause sentences. This shelf connects them into longer ones with a small set of connector words: て-form (already known, chains actions), から ('because'), けど ('but'), と ('and,' nouns only)."
+                            title: "Putting it all together — joining two sentences",
+                            explain: "Every S-T-P-O-V sentence above stands on its own. This shelf shows how to stick TWO whole sentences together into one longer one, using a small set of joining words: て-form (already known — glues two ACTIONS in a row, one full sentence's worth of action after another), から ('because' — glues a REASON sentence to a RESULT sentence), けど ('but' — glues two sentences that contrast), と ('and' — different from the other three: it glues two single NOUNS together, not two whole sentences, so the pair still only fills ONE slot in S-T-P-O-V)."
                         },
                         {
                             title: "から — \"because...\"",
-                            explain: "から attaches to the end of the reason clause, then a comma, then the result — the reason always comes first, unlike English 'I rested because I was tired' (reason comes second there). から attaches directly after a verb too, not just だ.",
-                            pattern: '<span class="pattern-box__slot">Reason</span> <span class="pattern-box__fixed">から、</span> <span class="pattern-box__slot">Result</span>'
+                            explain: "から sits at the very end of the FIRST full sentence (the reason) — that whole S-T-P-O-V sentence, then から, then a comma, then a SECOND complete sentence (the result) follows with its own S-T-P-O-V. Japanese always puts the reason first — the opposite order from English, where 'because' usually sits in the middle ('I rested because I was tired' — reason comes second there, not first).",
+                            pattern: '<span class="pattern-box__slot">Reason (a full S-T-P-O-V sentence)</span> <span class="pattern-box__fixed">から、</span> <span class="pattern-box__slot">Result (another full sentence)</span>'
                         },
                         {
                             title: "けど — \"but...\"",
-                            explain: "けど joins two contrasting clauses — 'X, but Y.' The everyday-conversation version; が can be used the same way in more formal writing, but that's a different job from the subject-marker が you'll meet on shelf 16.",
-                            pattern: '<span class="pattern-box__slot">Clause 1</span> <span class="pattern-box__fixed">けど、</span> <span class="pattern-box__slot">Clause 2</span>'
+                            explain: "けど works the same way as から structurally — it sits at the end of the FIRST full sentence, then a comma, then a SECOND complete sentence that contrasts with it. Think of it as 'but' bridging two whole English sentences, not sitting inside just one of them. が can do this same job in more formal writing (a different job from the subject-marker が you'll meet on shelf 16), but けど is the everyday version.",
+                            pattern: '<span class="pattern-box__slot">Sentence 1 (a full S-T-P-O-V sentence)</span> <span class="pattern-box__fixed">けど、</span> <span class="pattern-box__slot">Sentence 2 (another full sentence)</span>'
                         },
                         {
                             title: "と — \"and\" (for listing nouns)",
-                            explain: "と joins nouns into a complete list — 'A and B,' nothing left out. Only works for nouns, never verbs or full clauses (て-form handles those).",
-                            pattern: '<span class="pattern-box__slot">Noun A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">Noun B</span>'
+                            explain: "と is the odd one out: it never joins two WHOLE sentences the way から and けど do. Instead it sits directly BETWEEN two nouns, gluing them into a single combined item — 本とかばん ('a book and a bag') is still just ONE Object, filling ONE O slot in S-T-P-O-V, not two separate sentences. Only works on nouns, never on verbs or full sentences (て-form handles those, up on shelf 13).",
+                            pattern: '<span class="pattern-box__slot">Noun A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">Noun B</span> <span class="pattern-box__fixed">&larr; still just one O slot</span>'
                         }
                     ],
                     examples: [
@@ -3577,7 +4517,7 @@ window.NekoSTPOV = {
                         { jp: "〜けど", romaji: "~kedo", en: "but..." },
                         { jp: "〜と〜", romaji: "~to~", en: "...and... (nouns only)" }
                     ],
-                    sources: ["Bunpro — から／けど／と grammar entries", "Tae Kim's Guide — connecting clauses"]
+                    sources: ["Bunpro — から／けど／と grammar entries", "Tae Kim's Guide — joining sentences together"]
                 };
             },
             /* 静か pairs with から (な-adjective + だ + から), 古い pairs with けど (い-adjective, no だ).
@@ -3623,49 +4563,450 @@ window.NekoSTPOV = {
                     });
                 }
                 return exercises;
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"Because it's quiet, I like it.\"",
+                        chunks: ["好きです", "静かだから、"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "静かだから、好きです — \"Because it's quiet, I like it.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "静かだ　<u>＿＿＿</u>、好きです。 (\"Because it's quiet, I like it.\")", choices: ["から", "けど", "と", "ので"], correctIndex: 0 },
+                            { prompt: "古い　<u>＿＿＿</u>、好きです。 (\"It's old, but I like it.\")", choices: ["から", "けど", "と", "も"], correctIndex: 1 },
+                            { prompt: "本　<u>＿＿＿</u>　かばん。 (\"A book and a bag.\")", choices: ["から", "けど", "と", "も"], correctIndex: 2 },
+                            { prompt: "私は三時に図書館で本を　<u>＿＿＿</u>。 (\"I read a book at the library at 3 o'clock.\")", choices: ["読みます", "図書館", "三時", "本"], correctIndex: 0 },
+                            { prompt: "古い　<u>＿＿＿</u>、好きです。 (formal — same meaning as けど)", choices: ["が", "けど", "から", "も"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "静かだから、好きです。", choices: ["Even though it's quiet, I dislike it.", "Because it's quiet, I like it.", "It's not quiet, so I dislike it.", "It's loud, but I like it."], correctIndex: 1 },
+                            { prompt: "古いけど、好きです。", choices: ["It's new, so I like it.", "It's old, but I like it.", "It's old, so I dislike it.", "It's new, but I dislike it."], correctIndex: 1 },
+                            { prompt: "本とかばん。", choices: ["A book or a bag.", "A book and a bag.", "Neither a book nor a bag.", "A book without a bag."], correctIndex: 1 },
+                            { prompt: "起きて静かだから、読みました。", choices: ["I slept because it was noisy.", "I woke up, and because it was quiet, I read.", "I woke up and it got noisy.", "I read before waking up."], correctIndex: 1 },
+                            { prompt: "私は三時に図書館で本を読みます。", choices: ["I read a book at home at 3 o'clock.", "I read a book at the library at 3 o'clock.", "I write a book at the library.", "I read a book at 5 o'clock."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
 
     /* SHELF 16: Particle Mastery */
-    function s16() {
+    /* SHELF 16a: Subject Particles (は / が / も) — split out of the old
+       single "Particle Mastery" shelf per explicit feedback that it felt
+       too crowded; same lettered-sub-lesson pattern as shelves 07/08/09/
+       10/11 (see n5-lessons-dashboard.js's FOLDERS comment). */
+    function s16a() {
         return {
-            id: "s16", title: "Particle Mastery", subtitle: "Shelf 16",
-            /* kana: alongside every kanji jp entry — this shelf and shelf 15
-               are the only two lessons that put real kanji into a graded
-               answer at all (every other shelf's accepted answers are
-               already pure kana), so buildWordBankExercises() below accepts
-               either spelling: a learner who hasn't memorized 学生/先生/
-               図書館/公園/勉強します/遊びます yet can still answer correctly
-               in hiragana. */
+            id: "s16a", title: "Subject Particles", subtitle: "Shelf 16a",
             wordBank: {
                 predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
-                places: [{ jp: "図書館", kana: "としょかん", en: "the library" }, { jp: "公園", kana: "こうえん", en: "the park" }],
-                actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }],
-                /* Same jp/kana/en shape as predicates/places/actions above
-                   (this lesson's own convention) — all five readings are
-                   verified against the KANJI_READINGS furigana dictionary. */
-                newWords: [
-                    { jp: "猫", kana: "ねこ", en: "cat" }, { jp: "友達", kana: "ともだち", en: "friend" },
-                    { jp: "本", kana: "ほん", en: "book" }, { jp: "大きい", kana: "おおきい", en: "big" },
-                    { jp: "好き", kana: "すき", en: "like / favorite" }
-                ]
+                newWords: [{ jp: "猫", kana: "ねこ", en: "cat" }, { jp: "友達", kana: "ともだち", en: "friend" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
-                            title: "Every particle, one place",
-                            explain: "This shelf reviews every particle taught so far (は topic shelf 3, を object shelf 11a, に location/target shelf 8, で action-location shelf 12, の possessive shelf 5, か question shelf 6, と and/with shelf 11/15, から because shelf 15, けど but shelf 15), then adds the last two: が and も. Sentence skeleton, when several particles show up together: topic/subject (は・が) → place (に・で) → thing (を) → verb.",
+                            title: "は — the topic marker",
+                            explain: "は introduces what the sentence is ABOUT, then says something general about it — it doesn't single anything out, it just sets the topic and moves on. 猫はかわいいです literally reads \"as for the cat, (it's) cute\" — a plain, general statement. は fills the Subject slot in S-T-P-O-V (shelf 15), almost always right at the front of the sentence.",
+                            diagramSvg: '<div class="waga-sentence" style="font-size:20px;">猫<span class="conv-hl conv-hl--particle">は</span>かわいいです。</div>',
+                            diagramCaption: "Neko wa kawaii desu — \"As for the cat, it's cute\" (a general statement about cats)."
+                        },
+                        {
+                            title: "が — singling something out",
+                            explain: "が marks WHICH ONE specifically fits a description — often answering an unspoken \"which one?\" rather than making a general statement. 猫がかわいいです reads \"IT'S the cat that's cute\" — maybe among a few animals, this one stands out. が sits in the exact same Subject slot は does; the sentence shape doesn't change, only the emphasis does.",
+                            diagramSvg: '<div class="waga-sentence" style="font-size:20px;">猫<span class="conv-hl conv-hl--subject">が</span>かわいいです。</div>',
+                            diagramCaption: "Neko ga kawaii desu — \"IT'S the cat that's cute\" (singling the cat out)."
+                        },
+                        {
+                            title: "は vs が — how they compare",
+                            explain: "Same word, same rest of the sentence — only the particle changes, and the meaning shifts with it. Toggle between は and が below and watch the highlighted particle and the English meaning update together. Rule of thumb: は for a general statement about the topic, が for singling one thing out from a group or answering \"which one?\"",
+                            diagramSvg: window.NekoWaGa.buildHTML()
+                        },
+                        {
+                            title: "も — \"also\"",
+                            explain: "も replaces は or が entirely (never stacks with them) when the same thing applies to something else too. It sits in the exact same Subject slot, just with a different job: not \"here's the topic\" or \"it's this one\" but \"this one too.\" 友達も学生です, 'My friend is ALSO a student' — implying someone else (probably you) already is one."
+                        }
+                    ],
+                    examples: [
+                        { jp: "猫はかわいいです。", romaji: "Neko wa kawaii desu.", en: "As for cats, they're cute (general statement)." },
+                        { jp: "猫がいます。", romaji: "Neko ga imasu.", en: "IT'S the cat (not the dog) that's present." },
+                        { jp: "友達も学生です。", romaji: "Tomodachi mo gakusei desu.", en: "My friend is also a student." }
+                    ],
+                    vocab: [
+                        { jp: "は", romaji: "wa", en: "topic marker" },
+                        { jp: "が", romaji: "ga", en: "subject marker (singles out)" },
+                        { jp: "も", romaji: "mo", en: "also" }
+                    ],
+                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — は vs が chapter"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let pred = pick(this.wordBank.predicates);
+                return [
+                    {
+                        prompt: "Context: \"There are dogs, there are mice — but is there a cat?\"<br>Write: <strong>There IS a cat (using が)</strong>",
+                        accepted: [["猫", "が", "います"], ["ねこ", "が", "います"]],
+                        hint: "猫がいます (ねこがいます)",
+                        refWords: [{ jp: "猫", role: "subject" }, { jp: "が", role: "particle" }, { jp: "います", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>My friend is also " + pred.en + "</strong>",
+                        accepted: [["友達", "も", pred.jp, "です"], ["ともだち", "も", pred.kana, "です"]],
+                        hint: "友達も" + pred.jp + "です (ともだちも" + pred.kana + "です)",
+                        refWords: [{ jp: "友達", role: "subject" }, { jp: "も", role: "particle" }, { jp: pred.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"My friend is also a student.\"",
+                        chunks: ["です", "友達も", "学生"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 0,
+                        translation: "友達も学生です — \"My friend is also a student.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "猫　<u>＿＿＿</u>　かわいいです。 (\"As for cats, they're cute.\")", choices: ["は", "が", "も", "を"], correctIndex: 0 },
+                            { prompt: "猫　<u>＿＿＿</u>　います。 (\"IT'S the cat that's present.\")", choices: ["は", "が", "も", "を"], correctIndex: 1 },
+                            { prompt: "友達　<u>＿＿＿</u>　学生です。 (\"My friend is also a student.\")", choices: ["は", "が", "も", "を"], correctIndex: 2 },
+                            { prompt: "せんせい　<u>＿＿＿</u>　います。 (\"It's the teacher who's here.\")", choices: ["は", "が", "も", "を"], correctIndex: 1 },
+                            { prompt: "友達　<u>＿＿＿</u>　先生です。 (\"My friend is also a teacher.\")", choices: ["は", "が", "も", "を"], correctIndex: 2 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "猫はかわいいです。", choices: ["Cats are ugly.", "As for cats, they're cute (general statement).", "IT'S the cat that's cute.", "Only this cat is cute."], correctIndex: 1 },
+                            { prompt: "猫がいます。", choices: ["There is no cat.", "IT'S the cat (not the dog) that's present.", "Cats are generally present.", "The dog is present."], correctIndex: 1 },
+                            { prompt: "友達も学生です。", choices: ["My friend is not a student.", "My friend is also a student.", "Only my friend is a student.", "My friend is a teacher."], correctIndex: 1 },
+                            { prompt: "猫が学生です。", choices: ["Cats are generally students.", "IT'S the cat that's the student.", "The cat is not a student.", "Students like cats."], correctIndex: 1 },
+                            { prompt: "先生も学生です。", choices: ["The teacher is not a student.", "The teacher is also a student.", "Only the teacher is a student.", "The student is a teacher."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 16b: Time Particles (に for a specific point in time, and the
+       relative-time-words-skip-に exception) — new dedicated content;
+       the old merged shelf only mentioned に's time job in passing inside
+       a vocab gloss, it never got its own explanation. Reuses the same
+       あした/朝 examples shelf 15's STPOV slot-builder already taught,
+       so the exception isn't landing on the learner cold. */
+    function s16b() {
+        return {
+            id: "s16b", title: "Time Particles", subtitle: "Shelf 16b",
+            wordBank: {
+                verbs: [{ jp: "おきます", en: "wake up" }, { jp: "ねます", en: "sleep" }],
+                times: [{ jp: "三時に", en: "at 3 o'clock" }, { jp: "七時に", en: "at 7 o'clock" }],
+                newWords: [{ jp: "あした", en: "tomorrow" }, { jp: "きょう", en: "today" }, { jp: "朝", en: "morning" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "に — marking a specific point in time",
+                            explain: "に attaches to a specific, countable point in time — a clock time, a day of the week, a date — and fills the Time slot in S-T-P-O-V (shelf 15). 三時に起きます, 'I wake up AT 3 o'clock.' Without に, the sentence wouldn't be wrong exactly, but it would lose the sense that this is a fixed, specific time rather than a loose description of when.",
+                            pattern: '<span class="pattern-box__slot">Specific time</span> <span class="pattern-box__fixed">に</span> <span class="pattern-box__slot">Verb</span>'
+                        },
+                        {
+                            title: "Relative time words skip に",
+                            explain: "A small, memorize-as-a-set group of time words never take に at all: あした (tomorrow), きょう (today), きのう (yesterday), and similar \"relative to today\" words. あした勉強します, 'I will study tomorrow' — no に anywhere, even though あした is filling the exact same Time slot 三時に did above. Mixing に onto one of these is one of the most common N5 mistakes.",
+                            diagramSvg: '<div class="waga-sentence" style="font-size:18px;">あした<span class="conv-hl conv-hl--copula">勉強します。</span></div>',
+                            diagramCaption: "Ashita benkyoushimasu — no particle after あした at all."
+                        }
+                    ],
+                    examples: [
+                        { jp: "三時に起きます。", romaji: "Sanji ni okimasu.", en: "I wake up at 3 o'clock." },
+                        { jp: "あした勉強します。", romaji: "Ashita benkyoushimasu.", en: "I will study tomorrow." },
+                        { jp: "朝にねます。", romaji: "Asa ni nemasu.", en: "I sleep in the morning." }
+                    ],
+                    vocab: [
+                        { jp: "に", romaji: "ni", en: "marks a specific point in time" },
+                        { jp: "あした", romaji: "ashita", en: "tomorrow (no に)" },
+                        { jp: "きょう", romaji: "kyou", en: "today (no に)" }
+                    ],
+                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — time expressions"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let v = pick(this.wordBank.verbs);
+                let t = pick(this.wordBank.times);
+                return [{
+                    prompt: "Write: <strong>I " + v.en + " " + t.en + "</strong>",
+                    accepted: [[t.jp, v.jp]],
+                    hint: t.jp + v.jp,
+                    refWords: [{ jp: t.jp, role: "particle" }, { jp: v.jp, role: "predicate" }]
+                }];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I wake up at 3 o'clock.\"",
+                        chunks: ["起きます", "三時に"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "三時に起きます — \"I wake up at 3 o'clock.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "三時　<u>＿＿＿</u>　起きます。 (\"I wake up at 3 o'clock.\")", choices: ["に", "で", "は", "も"], correctIndex: 0 },
+                            { prompt: "三時　<u>＿＿＿</u>　ねます。 (\"I sleep at 3 o'clock.\")", choices: ["に", "で", "は", "も"], correctIndex: 0 },
+                            { prompt: "朝　<u>＿＿＿</u>　ねます。 (\"I sleep in the morning.\")", choices: ["に", "で", "は", "も"], correctIndex: 0 },
+                            { prompt: "七時　<u>＿＿＿</u>　起きます。 (\"I wake up at 7 o'clock.\")", choices: ["に", "で", "は", "も"], correctIndex: 0 },
+                            { prompt: "七時　<u>＿＿＿</u>　勉強します。 (\"I study at 7 o'clock.\")", choices: ["に", "で", "は", "も"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "あした勉強します。", choices: ["I studied yesterday.", "I will study tomorrow.", "I am studying now.", "I never study."], correctIndex: 1 },
+                            { prompt: "三時に起きます。", choices: ["I sleep at 3 o'clock.", "I wake up at 3 o'clock.", "I eat at 3 o'clock.", "I study at 3 o'clock."], correctIndex: 1 },
+                            { prompt: "朝にねます。", choices: ["I wake up in the morning.", "I sleep in the morning.", "I study in the morning.", "I eat in the morning."], correctIndex: 1 },
+                            { prompt: "七時に起きます。", choices: ["I wake up at 3 o'clock.", "I wake up at 7 o'clock.", "I sleep at 7 o'clock.", "I study at 7 o'clock."], correctIndex: 1 },
+                            { prompt: "きょう勉強します。", choices: ["I studied yesterday.", "I study today.", "I will never study.", "I studied last week."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 16c: Place Particles (で vs に) — split out of the old
+       merged shelf's "で vs に" section, given its own room and a fuller
+       explanation. */
+    function s16c() {
+        return {
+            id: "s16c", title: "Place Particles", subtitle: "Shelf 16c",
+            wordBank: {
+                places: [{ jp: "図書館", kana: "としょかん", en: "the library" }, { jp: "公園", kana: "こうえん", en: "the park" }],
+                actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "で — the place an ACTION happens",
+                            explain: "で marks where something is DONE — reading, working, playing, eating, studying. It fills the Place slot in S-T-P-O-V (shelf 15) whenever the verb describes an activity. 図書館で勉強します, 'I study AT the library' — the library is where the studying happens.",
+                            pattern: '<span class="pattern-box__slot">Place</span> <span class="pattern-box__fixed">で</span> <span class="pattern-box__slot">Action verb</span>'
+                        },
+                        {
+                            title: "に — the place something EXISTS",
+                            explain: "に marks where something simply IS — with あります (things) and います (people/animals), never で. 図書館にいます, 'I am AT the library' — no action, just existence. Mixing these up is the single most common particle mistake at this level.",
+                            pattern: '<span class="pattern-box__slot">Place</span> <span class="pattern-box__fixed">に</span> <span class="pattern-box__slot">います/あります</span>'
+                        },
+                        {
+                            title: "で vs に — same place, different job",
+                            explain: "図書館にいます ('I am AT the library' — existence) vs. 図書館で勉強します ('I study AT the library' — action). Same building, same real-world location — the particle changes based entirely on whether the verb is an ACTION (で) or plain EXISTENCE (に)."
+                        },
+                        {
+                            title: "に / へ — heading TOWARD a place (full detail on shelf 08c)",
+                            explain: "A third job, easy to lose track of next to the two above: に also marks the destination after a movement verb (行きます／来ます／帰ります), and へ can swap in for that exact job with no change in meaning. 図書館に行きます and 図書館へ行きます both just mean 'I go to the library' — this course accepts either wherever a 'going to [place]' sentence is asked for. へ ONLY does this one job; it can't replace に's existence or action-adjacent uses above. See shelf 08c for the full explanation and diagram."
+                        }
+                    ],
+                    examples: [
+                        { jp: "図書館で勉強します。", romaji: "Toshokan de benkyoushimasu.", en: "I study at the library." },
+                        { jp: "図書館にいます。", romaji: "Toshokan ni imasu.", en: "I am at the library." },
+                        { jp: "公園で遊びます。", romaji: "Kouen de asobimasu.", en: "I play at the park." },
+                        { jp: "図書館に行きます。", romaji: "Toshokan ni ikimasu.", en: "I go to the library." },
+                        { jp: "図書館へ行きます。", romaji: "Toshokan e ikimasu.", en: "I go to the library. (same meaning, へ instead of に)" }
+                    ],
+                    vocab: [
+                        { jp: "で", romaji: "de", en: "place an action happens" },
+                        { jp: "に", romaji: "ni", en: "place something exists / place you're heading" },
+                        { jp: "へ", romaji: "e", en: "toward a place (movement only — interchangeable with this に)" }
+                    ],
+                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — location particles"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let i = Math.floor(Math.random() * this.wordBank.places.length);
+                let place = this.wordBank.places[i];
+                let action = this.wordBank.actions[i];
+                return [{
+                    prompt: "Write: <strong>I " + action.en + " at " + place.en + " (using で)</strong>",
+                    accepted: [[place.jp, "で", action.jp], [place.kana, "で", action.kana]],
+                    hint: place.jp + "で" + action.jp + " (" + place.kana + "で" + action.kana + ")",
+                    refWords: [{ jp: place.jp, role: "object" }, { jp: "で", role: "particle" }, { jp: action.jp, role: "predicate" }]
+                }];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I study at the library.\"",
+                        chunks: ["勉強します", "図書館で"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "図書館で勉強します — \"I study at the library.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "図書館　<u>＿＿＿</u>　勉強します。 (\"I study at the library.\")", choices: ["で", "に", "は", "も"], correctIndex: 0 },
+                            { prompt: "図書館　<u>＿＿＿</u>　います。 (\"I am at the library.\")", choices: ["で", "に", "は", "も"], correctIndex: 1 },
+                            { prompt: "公園　<u>＿＿＿</u>　遊びます。 (\"I play at the park.\")", choices: ["で", "に", "は", "も"], correctIndex: 0 },
+                            { prompt: "図書館　<u>＿＿＿</u>　行きます。 (\"I go to the library.\")", choices: ["で", "に", "は", "も"], correctIndex: 1 },
+                            { prompt: "図書館　<u>＿＿＿</u>　行きます。 (\"I go to the library\" — へ variant)", choices: ["へ", "で", "は", "も"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "図書館で勉強します。", choices: ["I am at the library.", "I study at the library.", "I go to the library.", "I own the library."], correctIndex: 1 },
+                            { prompt: "図書館にいます。", choices: ["I am at the library.", "I study at the library.", "I go to the library.", "I built the library."], correctIndex: 0 },
+                            { prompt: "公園で遊びます。", choices: ["I am at the park.", "I play at the park.", "I go to the park.", "I own the park."], correctIndex: 1 },
+                            { prompt: "図書館に行きます。", choices: ["I am at the library.", "I study at the library.", "I go to the library.", "I left the library."], correctIndex: 2 },
+                            { prompt: "図書館へ行きます。", choices: ["I came from the library.", "I go to the library.", "I am at the library.", "I study at the library."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 16d: Object Particles (を / と) — new dedicated section for
+       を, which the old merged shelf only showed inside the sentence-
+       skeleton diagram, never explained on its own. */
+    function s16d() {
+        return {
+            id: "s16d", title: "Object Particles", subtitle: "Shelf 16d",
+            wordBank: {
+                nouns: [{ jp: "本", en: "book" }, { jp: "パン", en: "bread" }],
+                verbs: [{ jp: "読みます", en: "read" }, { jp: "食べます", en: "eat" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "を — marking the direct object",
+                            explain: "を marks the thing a verb directly acts on — the thing being read, eaten, watched, bought. It fills the Object slot in S-T-P-O-V (shelf 15), always right before the verb. 本を読みます, 'I read A BOOK' — 本 is what gets read.",
+                            pattern: '<span class="pattern-box__slot">Object</span> <span class="pattern-box__fixed">を</span> <span class="pattern-box__slot">Verb</span>'
+                        },
+                        {
+                            title: "と — combining two nouns into one object",
+                            explain: "と glues two nouns into a single combined item — 本とかばん, 'a book AND a bag.' That combined pair still only fills ONE Object slot, not two. と is covered in full on shelf 15, since it's really a joining word rather than a normal object-marking particle."
+                        }
+                    ],
+                    examples: [
+                        { jp: "本を読みます。", romaji: "Hon o yomimasu.", en: "I read a book." },
+                        { jp: "パンを食べます。", romaji: "Pan o tabemasu.", en: "I eat bread." },
+                        { jp: "本とかばん。", romaji: "Hon to kaban.", en: "A book and a bag." }
+                    ],
+                    vocab: [
+                        { jp: "を", romaji: "o", en: "object marker" },
+                        { jp: "と", romaji: "to", en: "and (nouns only)" }
+                    ],
+                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — direct objects"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let i = Math.floor(Math.random() * this.wordBank.nouns.length);
+                let noun = this.wordBank.nouns[i];
+                let verb = this.wordBank.verbs[i];
+                return [{
+                    prompt: "Write: <strong>I " + verb.en + " " + (noun.en === "bread" ? "" : "a ") + noun.en + "</strong>",
+                    accepted: [[noun.jp, "を", verb.jp]],
+                    hint: noun.jp + "を" + verb.jp,
+                    refWords: [{ jp: noun.jp, role: "object" }, { jp: "を", role: "particle" }, { jp: verb.jp, role: "predicate" }]
+                }];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I read a book.\"",
+                        chunks: ["読みます", "本を"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "本を読みます — \"I read a book.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "本　<u>＿＿＿</u>　読みます。 (\"I read a book.\")", choices: ["を", "と", "は", "も"], correctIndex: 0 },
+                            { prompt: "パン　<u>＿＿＿</u>　食べます。 (\"I eat bread.\")", choices: ["を", "と", "は", "も"], correctIndex: 0 },
+                            { prompt: "本　<u>＿＿＿</u>　かばん。 (\"A book and a bag.\")", choices: ["を", "と", "は", "も"], correctIndex: 1 },
+                            { prompt: "ペン　<u>＿＿＿</u>　買います。 (\"I buy a pen.\")", choices: ["を", "と", "は", "も"], correctIndex: 0 },
+                            { prompt: "ほん　<u>＿＿＿</u>　ペン。 (\"A book and a pen.\")", choices: ["を", "と", "は", "も"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "本を読みます。", choices: ["I write a book.", "I read a book.", "I buy a book.", "I sell a book."], correctIndex: 1 },
+                            { prompt: "パンを食べます。", choices: ["I buy bread.", "I eat bread.", "I make bread.", "I sell bread."], correctIndex: 1 },
+                            { prompt: "本とかばん。", choices: ["A book or a bag.", "A book and a bag.", "Neither a book nor a bag.", "A book without a bag."], correctIndex: 1 },
+                            { prompt: "パンとほん。", choices: ["Bread or a book.", "Bread and a book.", "Neither bread nor a book.", "Bread without a book."], correctIndex: 1 },
+                            { prompt: "かばんを買います。", choices: ["I sell a bag.", "I buy a bag.", "I lose a bag.", "I make a bag."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 16e: Other Particles (の / か) + the full particle reference
+       — closes out the split with the leftover particles that don't fit
+       Subject/Time/Place/Object, plus the sentence-skeleton diagram and
+       the master "all particles at a glance" list moved here so they
+       read as a wrap-up after all four other 16x pages, not squeezed in
+       partway through. */
+    function s16e() {
+        return {
+            id: "s16e", title: "Other Particles & Full Reference", subtitle: "Shelf 16e",
+            wordBank: {
+                predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
+                newWords: [{ jp: "本", kana: "ほん", en: "book" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "の — possessive",
+                            explain: "の links two nouns so the first describes or owns the second — 私の本, 'MY book.' It doesn't fill a slot of its own in S-T-P-O-V; instead it builds a bigger noun phrase that then fills whichever slot it belongs in (here, 私の本 together is the Object in 私の本を読みます, 'I read my book').",
+                            pattern: '<span class="pattern-box__slot">Owner</span> <span class="pattern-box__fixed">の</span> <span class="pattern-box__slot">Thing</span>'
+                        },
+                        {
+                            title: "か — the question marker",
+                            explain: "か turns any statement into a yes/no question just by tacking it onto the very end — nothing else about the sentence changes, no word order shuffle, no verb change. 学生ですか, 'Are you a student?' か always comes after the verb or です, right at the true end of the sentence.",
+                            pattern: '<span class="pattern-box__slot">Statement</span> <span class="pattern-box__fixed">か</span>'
+                        },
+                        {
+                            title: "から / けど / と — sentence-joining words (full detail on shelf 15)",
+                            explain: "These three aren't slot-filling particles like the others on this page — they JOIN two complete S-T-P-O-V sentences together instead. Quick recap: から puts the reason first, then the result; けど joins two contrasting sentences; と (also covered on shelf 16d) glues two nouns into one object. See shelf 15 for the full explanation of all three."
+                        },
+                        {
+                            title: "Sentence skeleton — where every particle goes",
+                            explain: "One last look at the big picture: when several particles show up together in one sentence, this is the fixed order. Not every sentence uses every slot.",
                             pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">が/も</span> <span class="pattern-box__slot">Predicate</span>',
                             /* Ported from n5-phaser-game.js's shelf-16 "Where each
                                particle goes" sentence-skeleton diagram — reuses the
                                already-existing .conv-hl role spans (see study-style.css)
                                instead of the original's lesson-box-only
                                .lesson-box__skeleton-slot/role-* classes, same approach
-                               as s06's ported diagram above. Not every sentence uses
-                               every slot, but this is the fixed order when several
-                               particles show up together. */
+                               as s06's ported diagram above. */
                             diagramSvg: '<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;font-size:17px;">'
                                 + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--subject">猫</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">topic/subject</span></div>'
                                 + '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;"><span class="conv-hl conv-hl--particle">は・が</span><span style="font-size:11px;color:var(--term-text-dim,#c9a66b);">は / が</span></div>'
@@ -3678,81 +5019,560 @@ window.NekoSTPOV = {
                             diagramCaption: "Not every sentence uses every slot — but when several particles show up together, this is the order: topic/subject first, then place, then the direct object, then the verb last."
                         },
                         {
-                            title: "が — singling something out",
-                            explain: "が singles out exactly what fits a description — often answering an unspoken 'which one?' 猫はかわいいです ('as for the cat, it's cute' — general statement) vs. 猫がかわいいです ('IT'S the cat that's cute' — maybe among several animals, this one stands out).",
-                            /* Ported from n5-phaser-game.js's は vs が reference table
-                               (shelf-16) — plain HTML table instead of the original's
-                               .lesson-box__particletable classes, styled inline with the
-                               same conv-hl badge spans used elsewhere on this page. */
-                            diagramSvg: '<table style="width:100%;border-collapse:collapse;font-size:15px;">'
-                                + '<thead><tr style="text-align:left;color:var(--term-text-dim,#c9a66b);font-size:12px;text-transform:uppercase;letter-spacing:1px;">'
-                                + '<th style="padding:4px 8px;"></th><th style="padding:4px 8px;">Job</th><th style="padding:4px 8px;">Example</th><th style="padding:4px 8px;">Use when...</th></tr></thead>'
-                                + '<tbody>'
-                                + '<tr><td style="padding:6px 8px;"><span class="conv-hl conv-hl--particle">は</span></td><td style="padding:6px 8px;">Topic marker</td><td style="padding:6px 8px;">猫はかわいいです</td><td style="padding:6px 8px;">Making a general statement about the topic.</td></tr>'
-                                + '<tr><td style="padding:6px 8px;"><span class="conv-hl conv-hl--subject">が</span></td><td style="padding:6px 8px;">Subject marker</td><td style="padding:6px 8px;">猫がかわいいです</td><td style="padding:6px 8px;">Singling one thing out — often answering "which one?"</td></tr>'
-                                + '</tbody></table>',
-                            diagramCaption: "Same word, same predicate — only the particle changes."
-                        },
-                        {
-                            title: "も — \"also\"",
-                            explain: "も replaces は or が entirely (never stacks with them) when the same thing applies to something else too — 友達も学生です, 'My friend is also a student.'"
-                        },
-                        {
-                            title: "で vs に — same place, different job",
-                            explain: "で marks the place an ACTION happens (reading, working, playing, eating) — it never attaches to あります・います (existence uses に instead). 図書館にいます ('I am AT the library' — existence) vs. 図書館で勉強します ('I study AT the library' — action)."
-                        },
-                        {
-                            title: "から / けど / と — in depth",
-                            explain: "から: the reason always comes FIRST, then から, then a comma, then the result — backwards from English. けど is the everyday connector for 'X, but Y'; が can do the same job in more formal writing (a different job from this shelf's subject-marker が). と does two jobs on NOUNS only: listing ('A and B') and marking who you do something WITH."
+                            title: "All particles at a glance",
+                            explain: "Every particle from shelves 16a-16e, in one ordered list, with its meaning shown IN a real sentence rather than as a bare definition.",
+                            diagramSvg: '<div class="particle-glance">'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">は</span><span class="particle-glance__meaning"><strong>topic marker</strong> — 猫は… "as for the cat…" (general statement)</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">が</span><span class="particle-glance__meaning"><strong>subject marker</strong> — 猫が… "IT\'S the cat…" (singles one out)</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">も</span><span class="particle-glance__meaning"><strong>also</strong> — 友達も学生です "My friend is ALSO a student"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">に</span><span class="particle-glance__meaning"><strong>specific time / existence / destination</strong> — 三時に "AT 3 o\'clock"; 図書館にいます "I am AT the library"; 図書館に行きます "I go TO the library"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">へ</span><span class="particle-glance__meaning"><strong>toward a place (movement only)</strong> — 図書館へ行きます "I go TO the library" (same meaning as に行きます above)</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">で</span><span class="particle-glance__meaning"><strong>place an action happens</strong> — 図書館で勉強します "I study AT the library"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">を</span><span class="particle-glance__meaning"><strong>object marker</strong> — 本を読みます "I read A BOOK"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">と</span><span class="particle-glance__meaning"><strong>and (nouns only)</strong> — 本とかばん "a book AND a bag"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">の</span><span class="particle-glance__meaning"><strong>possessive</strong> — 私の本 "MY book"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">か</span><span class="particle-glance__meaning"><strong>question marker</strong> — 学生ですか "Are you a student?"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">から</span><span class="particle-glance__meaning"><strong>because (reason first)</strong> — 静かだから、好きです "BECAUSE it\'s quiet, I like it"</span></div>'
+                                + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">けど</span><span class="particle-glance__meaning"><strong>but</strong> — 古いけど、好きです "It\'s old, BUT I like it"</span></div>'
+                                + '</div>'
                         }
                     ],
                     examples: [
-                        { jp: "猫がいます。", romaji: "Neko ga imasu.", en: "IT'S the cat (not the dog) that's here." },
-                        { jp: "友達も学生です。", romaji: "Tomodachi mo gakusei desu.", en: "My friend is also a student." },
-                        { jp: "図書館で勉強します。", romaji: "Toshokan de benkyoushimasu.", en: "I study at the library." },
-                        { jp: "公園で遊びます。", romaji: "Kouen de asobimasu.", en: "I play at the park." },
-                        { jp: "学校で先生と話します。", romaji: "Gakkou de sensei to hanashimasu.", en: "I speak with the teacher at school." }
+                        { jp: "私の本です。", romaji: "Watashi no hon desu.", en: "It's my book." },
+                        { jp: "学生ですか。", romaji: "Gakusei desu ka.", en: "Are you a student?" }
                     ],
                     vocab: [
-                        { jp: "は", romaji: "wa", en: "topic marker" }, { jp: "が", romaji: "ga", en: "subject marker (singles out)" },
-                        { jp: "を", romaji: "o", en: "object marker" }, { jp: "に", romaji: "ni", en: "destination / location of being" },
-                        { jp: "で", romaji: "de", en: "location of an action" }, { jp: "の", romaji: "no", en: "possessive" },
-                        { jp: "か", romaji: "ka", en: "question marker" }, { jp: "と", romaji: "to", en: "and / with" },
-                        { jp: "も", romaji: "mo", en: "also" }, { jp: "から", romaji: "kara", en: "because" },
-                        { jp: "けど", romaji: "kedo", en: "but" }
+                        { jp: "の", romaji: "no", en: "possessive" },
+                        { jp: "か", romaji: "ka", en: "question marker" }
                     ],
-                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — は vs が chapter"]
+                    sources: ["imabi — Japanese particles reference", "Tae Kim's Guide — の and か"]
                 };
             },
             buildWordBankExercises: function () {
                 let pred = pick(this.wordBank.predicates);
-                let place = pick(this.wordBank.places);
-                let action = this.wordBank.actions[this.wordBank.places.indexOf(place)];
+                return [{
+                    prompt: "Write: <strong>Are you " + pred.en + "? (using か)</strong>",
+                    accepted: [[pred.jp, "です", "か"], [pred.kana, "です", "か"]],
+                    hint: pred.jp + "ですか (" + pred.kana + "ですか)",
+                    refWords: [{ jp: pred.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }, { jp: "か", role: "particle" }]
+                }];
+            },
+            buildWordOrderExercises: function () {
                 return [
                     {
-                        prompt: "Write: <strong>The cat is here (using が)</strong>",
-                        accepted: [["猫", "が", "います"], ["ねこ", "が", "います"]],
-                        hint: "猫がいます (ねこがいます)",
-                        refWords: [{ jp: "猫", role: "subject" }, { jp: "が", role: "particle" }, { jp: "います", role: "predicate" }]
-                    },
-                    {
-                        prompt: "Write: <strong>My friend is also " + pred.en + "</strong>",
-                        accepted: [["友達", "も", pred.jp, "です"], ["ともだち", "も", pred.kana, "です"]],
-                        hint: "友達も" + pred.jp + "です (ともだちも" + pred.kana + "です)",
-                        refWords: [{ jp: "友達", role: "subject" }, { jp: "も", role: "particle" }, { jp: pred.jp, role: "predicate" }, { jp: "です", role: "auxiliary" }]
-                    },
-                    {
-                        prompt: "Write: <strong>I " + action.en + " at " + place.en + " (using で)</strong>",
-                        accepted: [[place.jp, "で", action.jp], [place.kana, "で", action.kana]],
-                        hint: place.jp + "で" + action.jp + " (" + place.kana + "で" + action.kana + ")",
-                        refWords: [{ jp: place.jp, role: "object" }, { jp: "で", role: "particle" }, { jp: action.jp, role: "predicate" }]
+                        promptEn: "Arrange the words to say: \"It's my book.\"",
+                        chunks: ["です", "私の", "本"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 0,
+                        translation: "私の本です — \"It's my book.\""
                     }
                 ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "私　<u>＿＿＿</u>　本です。 (\"It's my book.\")", choices: ["の", "は", "が", "を"], correctIndex: 0 },
+                            { prompt: "学生です　<u>＿＿＿</u>。 (\"Are you a student?\")", choices: ["の", "は", "が", "か"], correctIndex: 3 },
+                            { prompt: "先生　<u>＿＿＿</u>　本です。 (\"It's the teacher's book.\")", choices: ["の", "は", "が", "を"], correctIndex: 0 },
+                            { prompt: "がくせいです　<u>＿＿＿</u>。 (\"Are you a student?\")", choices: ["の", "は", "が", "か"], correctIndex: 3 },
+                            { prompt: "わたし　<u>＿＿＿</u>　ほんです。 (\"It's my book.\")", choices: ["の", "は", "が", "を"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "私の本です。", choices: ["It's your book.", "It's my book.", "It's his book.", "It's not a book."], correctIndex: 1 },
+                            { prompt: "学生ですか。", choices: ["I am a student.", "Are you a student?", "You are not a student.", "Who is a student?"], correctIndex: 1 },
+                            { prompt: "先生の本です。", choices: ["It's the student's book.", "It's the teacher's book.", "It's my book.", "It's not a book."], correctIndex: 1 },
+                            { prompt: "せんせいですか。", choices: ["I am a teacher.", "Are you a teacher?", "You are not a teacher.", "Who is a teacher?"], correctIndex: 1 },
+                            { prompt: "がくせいの本です。", choices: ["It's the teacher's book.", "It's the student's book.", "It's my book.", "It's not a book."], correctIndex: 1 }
+                        ]
+                    }
+                };
             }
         };
     }
 
-    /* ===== N5 KANJI — one consolidated lesson (not segregated into
+    /* SHELF 17: Wants & Preferences — たい／ほしい／のが好き・きらい.
+       New shelf (not a split of an existing one) — added after cross-checking
+       N5 Speedmaster 3 (a real N5 reference book) against this file and
+       finding these three totally absent, despite being some of the most
+       basic things a beginner needs to say. Grouped together because all
+       three express the SPEAKER'S OWN want or preference toward a verb or
+       a thing, as opposed to a plain statement of fact. */
+    function s17() {
+        return {
+            id: "s17", title: "Wants & Preferences", subtitle: "Shelf 17",
+            wordBank: {
+                verbs: [{ jp: "たべます", stem: "たべ", en: "eat" }, { jp: "のみます", stem: "のみ", en: "drink" }],
+                nouns: [{ jp: "みず", en: "water" }, { jp: "あたらしいかばん", en: "a new bag" }],
+                actions: [{ jp: "およぐ", en: "swim" }, { jp: "うたう", en: "sing" }],
+                newWords: [{ jp: "ケーキ", en: "cake" }, { jp: "じかん", en: "time" }, { jp: "りょこう", en: "travel / trip" }],
+                preview: [{ jp: "ている", en: "is doing (ongoing)", note: "Coming up in shelf 18 — ongoing actions & restrictions" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Vたい — \"want to [do]\"",
+                            explain: "Drop ます, add たい — たべます becomes たべたい, 'want to eat.' Once attached, たい conjugates exactly like an い-adjective (たべたい／たべたくない／たべたかった), not like a verb. The object particle often shifts from を to が with たい (パンがたべたいです is just as natural as パンをたべたいです), since the wanting itself is what's being described.",
+                            pattern: '<span class="pattern-box__slot">Verb stem</span> <span class="pattern-box__fixed">たい</span>'
+                        },
+                        {
+                            title: "ほしい — \"want [a thing]\"",
+                            explain: "For wanting a THING rather than wanting to DO something, skip たい entirely — ほしい is already its own い-adjective, describing the thing itself as \"wanted.\" 水がほしいです, 'I want water.' Never attach ほしい to a verb; that job belongs to たい above.",
+                            pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">が ほしい</span>'
+                        },
+                        {
+                            title: "Vるのが好き・きらい — liking or disliking an ACTION",
+                            explain: "好き and きらい (shelf 09) already describe liking/disliking a thing — but a verb can't sit directly in front of です the way a noun can. の turns the whole verb phrase into a noun first (\"the act of swimming\"), which 好き／きらい can then describe like any other noun. およぐのが好きです, 'I like swimming' (literally 'swimming is a liked thing').",
+                            pattern: '<span class="pattern-box__slot">Vる</span> <span class="pattern-box__fixed">の</span> <span class="pattern-box__fixed">が 好き／きらい</span>'
+                        }
+                    ],
+                    examples: [
+                        { jp: "パンがたべたいです。", romaji: "Pan ga tabetai desu.", en: "I want to eat bread." },
+                        { jp: "水がほしいです。", romaji: "Mizu ga hoshii desu.", en: "I want water." },
+                        { jp: "およぐのが好きです。", romaji: "Oyogu no ga suki desu.", en: "I like swimming." },
+                        { jp: "りょこうしたいです。", romaji: "Ryokou shitai desu.", en: "I want to travel." }
+                    ],
+                    vocab: [
+                        { jp: "〜たい", romaji: "~tai", en: "want to (do)" },
+                        { jp: "ほしい", romaji: "hoshii", en: "want (a thing)" },
+                        { jp: "〜のが好き", romaji: "~no ga suki", en: "like (doing)" },
+                        { jp: "〜のがきらい", romaji: "~no ga kirai", en: "dislike (doing)" }
+                    ],
+                    sources: ["Tae Kim's Guide — desire expressions (たい／ほしい)", "imabi — nominalizing の with 好き・きらい"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let v = pick(wb.verbs);
+                let n = pick(wb.nouns);
+                let a = pick(wb.actions);
+                return [
+                    {
+                        prompt: "Write: <strong>I want to " + v.en + "</strong>",
+                        accepted: [[v.stem, "たいです"]],
+                        hint: v.stem + "たいです",
+                        refWords: [{ jp: v.stem, role: "predicate" }, { jp: "たいです", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>I want " + n.en + "</strong>",
+                        accepted: [[n.jp, "が", "ほしいです"]],
+                        hint: n.jp + "がほしいです",
+                        refWords: [{ jp: n.jp, role: "subject" }, { jp: "が", role: "particle" }, { jp: "ほしいです", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>I like " + a.en + "ing</strong>",
+                        accepted: [[a.jp, "の", "が", "好きです"], [a.jp, "の", "が", "すきです"]],
+                        hint: a.jp + "のが好きです",
+                        refWords: [{ jp: a.jp, role: "predicate" }, { jp: "の", role: "particle" }, { jp: "が", role: "particle" }, { jp: "好きです", role: "predicate" }]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I like swimming.\"",
+                        chunks: ["好きです", "およぐのが"],
+                        correctOrder: [1, 0],
+                        starIndex: 0,
+                        translation: "およぐのが好きです — \"I like swimming.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "パンが　<u>＿＿＿</u>。 (\"I want to eat bread.\")", choices: ["たべます", "たべたいです", "たべました", "たべて"], correctIndex: 1 },
+                            { prompt: "水が　<u>＿＿＿</u>。 (\"I want water.\")", choices: ["ほしいです", "たいです", "すきです", "きらいです"], correctIndex: 0 },
+                            { prompt: "およぐの　<u>＿＿＿</u>　好きです。 (\"I like swimming.\")", choices: ["が", "を", "は", "に"], correctIndex: 0 },
+                            { prompt: "<u>＿＿＿</u>　したいです。 (\"I want to travel.\")", choices: ["りょこう", "ケーキ", "じかん", "みず"], correctIndex: 0 },
+                            { prompt: "のみ　<u>＿＿＿</u>　です。 (\"I want to drink.\")", choices: ["たい", "たいです", "ます", "ました"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "パンがたべたいです。", choices: ["I ate bread.", "I want to eat bread.", "I don't want bread.", "I made bread."], correctIndex: 1 },
+                            { prompt: "水がほしいです。", choices: ["I don't want water.", "I want water.", "I have water.", "I drank water."], correctIndex: 1 },
+                            { prompt: "およぐのが好きです。", choices: ["I dislike swimming.", "I like swimming.", "I can't swim.", "I never swim."], correctIndex: 1 },
+                            { prompt: "りょこうしたいです。", choices: ["I traveled already.", "I want to travel.", "I don't want to travel.", "I hate traveling."], correctIndex: 1 },
+                            { prompt: "うたうのが好きです。", choices: ["I dislike singing.", "I like singing.", "I can't sing.", "I never sing."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 18: Ongoing Actions & Restrictions — ている／てもいい／てはいけません／ないでください.
+       New shelf. All four build directly on the て-form already taught in
+       shelf 13, extending it from a bare connector into real, usable
+       sentences: describing what's happening right now, and telling
+       someone what they may or may not do. */
+    function s18() {
+        return {
+            id: "s18", title: "Ongoing Actions & Restrictions", subtitle: "Shelf 18",
+            wordBank: {
+                teVerbs: [{ jp: "テレビをみて", en: "watching TV" }, { jp: "ほんをよんで", en: "reading a book" }],
+                permission: [{ jp: "すわって", en: "sit" }, { jp: "はいって", en: "enter" }],
+                prohibition: [{ jp: "はしって", en: "run" }, { jp: "たべて", en: "eat" }],
+                requests: [{ jp: "しんぱいしないで", en: "don't worry" }, { jp: "なかないで", en: "don't cry" }],
+                newWords: [{ jp: "きんえん", en: "no smoking" }, { jp: "ろうか", en: "hallway" }, { jp: "むりします", en: "overdo it / push too hard" }],
+                preview: [{ jp: "んです", en: "explanatory nuance", note: "Coming up in shelf 20 — explaining yourself" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "ている — an action in progress",
+                            explain: "て-form (shelf 13) + いる describes an action actually happening right now, not just a fact — いま、テレビをみています, 'I am watching TV right now.' This is the single most common thing て-form is used for in real conversation.",
+                            pattern: '<span class="pattern-box__slot">Vて</span> <span class="pattern-box__fixed">いる／います</span>'
+                        },
+                        {
+                            title: "てもいい — asking or giving permission",
+                            explain: "て-form + もいいです(か) asks 'may I...?' or grants permission — ここにすわってもいいですか, 'may I sit here?' はい、すわってもいいです grants it.",
+                            pattern: '<span class="pattern-box__slot">Vて</span> <span class="pattern-box__fixed">もいいです(か)</span>'
+                        },
+                        {
+                            title: "てはいけません — a firm prohibition",
+                            explain: "て-form + はいけません is a blunt 'must not' — ここでたばこをすってはいけません, 'you must not smoke here.' Stronger and more official-sounding than the request below.",
+                            pattern: '<span class="pattern-box__slot">Vて</span> <span class="pattern-box__fixed">はいけません</span>'
+                        },
+                        {
+                            title: "ないでください — a direct request not to do something",
+                            explain: "Built on the ない-form (shelf 14), not て-form — attach でください straight onto the plain negative stem. しんぱいしないでください, 'please don't worry.' Reads as a personal request rather than てはいけません's blanket rule.",
+                            pattern: '<span class="pattern-box__slot">Vない</span> <span class="pattern-box__fixed">でください</span>'
+                        }
+                    ],
+                    examples: [
+                        { jp: "いま、テレビをみています。", romaji: "Ima, terebi o mite imasu.", en: "I am watching TV right now." },
+                        { jp: "ここにすわってもいいですか。", romaji: "Koko ni suwattemo ii desu ka.", en: "May I sit here?" },
+                        { jp: "ここでたばこをすってはいけません。", romaji: "Koko de tabako o sutte wa ikemasen.", en: "You must not smoke here." },
+                        { jp: "しんぱいしないでください。", romaji: "Shinpai shinaide kudasai.", en: "Please don't worry." }
+                    ],
+                    vocab: [
+                        { jp: "〜ている", romaji: "~te iru", en: "is doing (ongoing)" },
+                        { jp: "〜てもいい", romaji: "~temo ii", en: "may (permission)" },
+                        { jp: "〜てはいけません", romaji: "~tewa ikemasen", en: "must not (prohibition)" },
+                        { jp: "〜ないでください", romaji: "~naide kudasai", en: "please don't" }
+                    ],
+                    sources: ["Tae Kim's Guide — ている, permission and prohibition", "Bunpro — てもいい／てはいけない／ないでください"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let te = pick(wb.teVerbs);
+                let p = pick(wb.permission);
+                let req = pick(wb.requests);
+                return [
+                    {
+                        prompt: "Write: <strong>I am " + te.en + "</strong>",
+                        accepted: [[te.jp, "います"]],
+                        hint: te.jp + "います",
+                        refWords: [{ jp: te.jp, role: "predicate" }, { jp: "います", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>May I " + p.en + "?</strong>",
+                        accepted: [[p.jp, "もいいですか"]],
+                        hint: p.jp + "もいいですか",
+                        refWords: [{ jp: p.jp, role: "predicate" }, { jp: "もいいですか", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>Please " + req.en + "</strong>",
+                        accepted: [[req.jp, "ください"]],
+                        hint: req.jp + "ください",
+                        refWords: [{ jp: req.jp, role: "predicate" }, { jp: "ください", role: "auxiliary" }]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"May I sit here?\"",
+                        chunks: ["いいですか", "ここに", "すわっても"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "ここにすわってもいいですか — \"May I sit here?\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "いま、テレビをみて　<u>＿＿＿</u>。 (\"I am watching TV right now.\")", choices: ["います", "いいです", "いけません", "ください"], correctIndex: 0 },
+                            { prompt: "ここにすわって　<u>＿＿＿</u>　ですか。 (\"May I sit here?\")", choices: ["います", "もいい", "はいけない", "ください"], correctIndex: 1 },
+                            { prompt: "ここでたばこをすって　<u>＿＿＿</u>。 (\"You must not smoke here.\")", choices: ["います", "もいいです", "はいけません", "ください"], correctIndex: 2 },
+                            { prompt: "しんぱいしないで　<u>＿＿＿</u>。 (\"Please don't worry.\")", choices: ["います", "もいい", "はいけない", "ください"], correctIndex: 3 },
+                            { prompt: "ほんをよんで　<u>＿＿＿</u>。 (\"I am reading a book.\")", choices: ["います", "もいい", "はいけない", "ください"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "いま、テレビをみています。", choices: ["I watched TV yesterday.", "I am watching TV right now.", "I will watch TV later.", "I never watch TV."], correctIndex: 1 },
+                            { prompt: "ここにすわってもいいですか。", choices: ["You must sit here.", "May I sit here?", "Don't sit here.", "I already sat here."], correctIndex: 1 },
+                            { prompt: "ここでたばこをすってはいけません。", choices: ["You may smoke here.", "You must not smoke here.", "Please smoke here.", "Smoking is required here."], correctIndex: 1 },
+                            { prompt: "しんぱいしないでください。", choices: ["Please worry more.", "Please don't worry.", "I am worried.", "Don't tell me."], correctIndex: 1 },
+                            { prompt: "はいってもいいですか。", choices: ["You must enter.", "May I enter?", "Don't enter.", "I already entered."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 19: Comparing & Changing — どちらが／のほうが／いちばん／ぐらい・くらい／くなる・になる.
+       New shelf. どちらが・のほうが (two things), いちばん (many things), and
+       ぐらい・くらい (a rough amount) are grouped as "measuring against
+       something else"; くなる・になる closes it out since it's the same
+       idea turned into a sentence about time — a quality changing from
+       one degree to another. */
+    function s19() {
+        return {
+            id: "s19", title: "Comparing & Changing", subtitle: "Shelf 19",
+            wordBank: {
+                pairsA: [{ jp: "いぬ", en: "dogs" }, { jp: "なつ", en: "summer" }],
+                pairsB: [{ jp: "ねこ", en: "cats" }, { jp: "ふゆ", en: "winter" }],
+                groups: [{ jp: "かぞくの中で", en: "in my family" }, { jp: "にほんごの中で", en: "in Japanese" }],
+                superlatives: [{ jp: "父が", en: "my father", adj: "せがたかい" }, { jp: "かんじが", en: "kanji", adj: "むずかしい" }],
+                iAdjChange: [{ jp: "さむい", stem: "さむ", en: "cold" }, { jp: "あつい", stem: "あつ", en: "hot" }],
+                newWords: [{ jp: "きせつ", en: "season" }, { jp: "せかい", en: "world" }, { jp: "きょねん", en: "last year" }],
+                preview: [{ jp: "たことがある", en: "have done (experience)", note: "Coming up in shelf 20 — explaining yourself" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "AとBとどちらが〜／Aのほうが〜 — comparing two things",
+                            explain: "Ask which of exactly two things fits a description with どちらが, then answer with のほうが marking the winner — いぬとねことどちらがすきですか, 'dogs or cats, which do you like?' いぬのほうがすきです, 'I like dogs more.'",
+                            pattern: '<span class="pattern-box__slot">A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">B</span> <span class="pattern-box__fixed">と どちらが〜</span>'
+                        },
+                        {
+                            title: "いちばん — \"the most,\" among many",
+                            explain: "Once there are three or more options, swap どちら for いちばん — Nの中でいちばん〜 picks out the single most extreme one. かぞくの中で父がいちばんせがたかいです, 'In my family, dad is the tallest.'",
+                            pattern: '<span class="pattern-box__slot">Group</span> <span class="pattern-box__fixed">の中で いちばん</span>'
+                        },
+                        {
+                            title: "ぐらい・くらい — a rough amount",
+                            explain: "Attaches to a quantity (time, money, distance) to mean \"about/approximately\" — じゅっぷんぐらいかかります, 'it takes about 10 minutes.' ぐらい and くらい are interchangeable; ぐらい is the more common spoken choice.",
+                            pattern: '<span class="pattern-box__slot">Quantity</span> <span class="pattern-box__fixed">ぐらい／くらい</span>'
+                        },
+                        {
+                            title: "くなる・になる — a quality changing over time",
+                            explain: "い-adjectives drop い and add くなる; な-adjectives and nouns just add になる. Either way, it says a quality has shifted rather than just describing it as a fixed fact — ふゆにさむくなります, 'it gets cold in winter' (not just 'winter is cold').",
+                            pattern: '<span class="pattern-box__slot">i-Adj (drop い)／na-Adj／N</span> <span class="pattern-box__fixed">くなる／になる</span>'
+                        }
+                    ],
+                    examples: [
+                        { jp: "いぬとねことどちらがすきですか。", romaji: "Inu to neko to dochira ga suki desu ka.", en: "Dogs or cats, which do you like?" },
+                        { jp: "いぬのほうがすきです。", romaji: "Inu no hou ga suki desu.", en: "I like dogs more." },
+                        { jp: "かぞくの中で父がいちばんせがたかいです。", romaji: "Kazoku no naka de chichi ga ichiban se ga takai desu.", en: "In my family, dad is the tallest." },
+                        { jp: "じゅっぷんぐらいかかります。", romaji: "Juppun gurai kakarimasu.", en: "It takes about 10 minutes." },
+                        { jp: "ふゆにさむくなります。", romaji: "Fuyu ni samuku narimasu.", en: "It gets cold in winter." }
+                    ],
+                    vocab: [
+                        { jp: "どちらが", romaji: "dochira ga", en: "which of the two" },
+                        { jp: "〜のほうが", romaji: "~no hou ga", en: "...is more" },
+                        { jp: "いちばん", romaji: "ichiban", en: "the most" },
+                        { jp: "ぐらい・くらい", romaji: "gurai / kurai", en: "about, approximately" },
+                        { jp: "〜くなる・になる", romaji: "~ku naru / ni naru", en: "becomes (change of state)" }
+                    ],
+                    sources: ["Tae Kim's Guide — comparatives and superlatives", "imabi — approximation and change-of-state expressions"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let i = Math.floor(Math.random() * wb.pairsA.length);
+                let a = wb.pairsA[i], b = wb.pairsB[i];
+                let group = pick(wb.groups);
+                let sup = pick(wb.superlatives);
+                let adj = pick(wb.iAdjChange);
+                return [
+                    {
+                        prompt: "Write: <strong>" + a.en.charAt(0).toUpperCase() + a.en.slice(1) + " or " + b.en + ", which do you like?</strong>",
+                        accepted: [[a.jp, "と", b.jp, "と", "どちらが", "好きですか"], [a.jp, "と", b.jp, "と", "どちらが", "すきですか"]],
+                        hint: a.jp + "と" + b.jp + "とどちらが好きですか",
+                        refWords: [{ jp: a.jp, role: "subject" }, { jp: "と", role: "particle" }, { jp: b.jp, role: "subject" }, { jp: "と", role: "particle" }, { jp: "どちらが", role: "predicate" }, { jp: "好きですか", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>" + group.en.charAt(0).toUpperCase() + group.en.slice(1) + ", " + sup.en + " is the tallest</strong>",
+                        accepted: [[group.jp, sup.jp, "いちばん", sup.adj, "です"]],
+                        hint: group.jp + sup.jp + "いちばん" + sup.adj + "です",
+                        refWords: [{ jp: group.jp, role: "particle" }, { jp: sup.jp, role: "subject" }, { jp: "いちばん", role: "predicate" }, { jp: sup.adj, role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>It gets " + adj.en + "</strong>",
+                        accepted: [[adj.stem, "くなります"]],
+                        hint: adj.stem + "くなります",
+                        refWords: [{ jp: adj.stem, role: "predicate" }, { jp: "くなります", role: "predicate" }]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I like dogs more.\"",
+                        chunks: ["すきです", "いぬの", "ほうが"],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "いぬのほうがすきです — \"I like dogs more.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "いぬとねこと　<u>＿＿＿</u>　すきですか。 (\"Dogs or cats, which do you like?\")", choices: ["どちらが", "いちばん", "ぐらい", "になる"], correctIndex: 0 },
+                            { prompt: "いぬの　<u>＿＿＿</u>　すきです。 (\"I like dogs more.\")", choices: ["どちらが", "ほうが", "ぐらい", "いちばん"], correctIndex: 1 },
+                            { prompt: "かぞくの中で父が　<u>＿＿＿</u>　せがたかいです。 (\"In my family, dad is the tallest.\")", choices: ["どちらが", "ほうが", "いちばん", "ぐらい"], correctIndex: 2 },
+                            { prompt: "じゅっぷん　<u>＿＿＿</u>　かかります。 (\"It takes about 10 minutes.\")", choices: ["どちらが", "ほうが", "いちばん", "ぐらい"], correctIndex: 3 },
+                            { prompt: "ふゆに　<u>＿＿＿</u>。 (\"It gets cold in winter.\")", choices: ["さむいです", "さむくなります", "さむかったです", "さむくないです"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "いぬとねことどちらがすきですか。", choices: ["I like both equally.", "Dogs or cats, which do you like?", "I don't like either.", "Dogs are better than cats."], correctIndex: 1 },
+                            { prompt: "いぬのほうがすきです。", choices: ["I like cats more.", "I like dogs more.", "I like both equally.", "I dislike dogs."], correctIndex: 1 },
+                            { prompt: "かぞくの中で父がいちばんせがたかいです。", choices: ["In my family, dad is the shortest.", "In my family, dad is the tallest.", "My dad is average height.", "No one in my family is tall."], correctIndex: 1 },
+                            { prompt: "じゅっぷんぐらいかかります。", choices: ["It takes exactly 10 minutes.", "It takes about 10 minutes.", "It takes more than an hour.", "It takes no time at all."], correctIndex: 1 },
+                            { prompt: "ふゆにさむくなります。", choices: ["It gets hot in winter.", "It gets cold in winter.", "Winter is always warm.", "It never gets cold."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* SHELF 20: Explaining Yourself — んです／ほうがいい／たことがある／もう・まだ.
+       New shelf. All four are about elaborating on a plain statement:
+       giving the reason behind it (んです), recommending an action (ほうがいい),
+       citing past experience to back it up (たことがある), or reporting how
+       far along it is (もう／まだ). */
+    function s20() {
+        return {
+            id: "s20", title: "Explaining Yourself", subtitle: "Shelf 20",
+            wordBank: {
+                explain: [{ jp: "あたまがいたい", en: "my head hurts" }, { jp: "じかんがない", en: "I don't have time" }],
+                advice: [{ jp: "はやくねた", en: "went to bed early" }, { jp: "びょういんにいった", en: "went to the hospital" }],
+                experience: [{ jp: "にほんにいった", en: "gone to Japan" }, { jp: "すしをたべた", en: "eaten sushi" }],
+                doneTasks: [{ jp: "しゅくだいをしました", en: "did the homework" }, { jp: "メールをおくりました", en: "sent the email" }],
+                newWords: [{ jp: "どうしたんですか", en: "what's wrong?" }, { jp: "たいいん", en: "hospital discharge" }, { jp: "けいけん", en: "experience" }],
+                preview: null
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "んです — an explanatory \"the thing is...\"",
+                            explain: "Attaches to the plain form and softens a statement into an explanation, or asks for one — どうしたんですか, 'what's the matter?' あたまがいたいんです, 'the thing is, my head hurts.' Plain です/だ alone would just state a fact; んです frames it as the REASON for something the listener can already see.",
+                            pattern: '<span class="pattern-box__slot">plain form</span> <span class="pattern-box__fixed">んです</span>'
+                        },
+                        {
+                            title: "ほうがいい — recommending an action",
+                            explain: "た-form + ほうがいい recommends doing something; ない-form + ほうがいい recommends against it — either way, it's advice, not a command. びょういんにいったほうがいいですよ, 'you should go to the hospital.'",
+                            pattern: '<span class="pattern-box__slot">Vた／Vない</span> <span class="pattern-box__fixed">ほうがいい</span>'
+                        },
+                        {
+                            title: "たことがある — citing past experience",
+                            explain: "た-form + ことがある reports something you've done at least once in your life, not just something that happened once — にほんにいったことがあります, 'I have been to Japan (at some point).'",
+                            pattern: '<span class="pattern-box__slot">Vた</span> <span class="pattern-box__fixed">ことがある</span>'
+                        },
+                        {
+                            title: "もう〜／まだ〜ていません — already / not yet",
+                            explain: "もう + past tense reports a task is already complete — もうしゅくだいをしましたか, 'have you already done the homework?' まだ + ...ていません reports it's still outstanding — いいえ、まだしていません, 'no, not yet.'",
+                            pattern: '<span class="pattern-box__slot">もう</span> <span class="pattern-box__fixed">Vました</span> <span class="pattern-box__fixed">／ まだ</span> <span class="pattern-box__fixed">Vていません</span>'
+                        }
+                    ],
+                    examples: [
+                        { jp: "どうしたんですか。", romaji: "Doushita n desu ka.", en: "What's the matter?" },
+                        { jp: "あたまがいたいんです。", romaji: "Atama ga itai n desu.", en: "The thing is, my head hurts." },
+                        { jp: "びょういんにいったほうがいいですよ。", romaji: "Byouin ni itta hou ga ii desu yo.", en: "You should go to the hospital." },
+                        { jp: "にほんにいったことがあります。", romaji: "Nihon ni itta koto ga arimasu.", en: "I have been to Japan." },
+                        { jp: "いいえ、まだしていません。", romaji: "Iie, mada shite imasen.", en: "No, not yet." }
+                    ],
+                    vocab: [
+                        { jp: "〜んです", romaji: "~n desu", en: "explanatory nuance" },
+                        { jp: "〜ほうがいい", romaji: "~hou ga ii", en: "should, had better" },
+                        { jp: "〜たことがある", romaji: "~ta koto ga aru", en: "have done (experience)" },
+                        { jp: "もう", romaji: "mou", en: "already" },
+                        { jp: "まだ", romaji: "mada", en: "not yet" }
+                    ],
+                    sources: ["Tae Kim's Guide — んです and giving reasons", "Bunpro — ほうがいい／たことがある／もう・まだ"]
+                };
+            },
+            buildWordBankExercises: function () {
+                let wb = this.wordBank;
+                let ex = pick(wb.explain);
+                let adv = pick(wb.advice);
+                let exp = pick(wb.experience);
+                let task = pick(wb.doneTasks);
+                return [
+                    {
+                        prompt: "Write: <strong>The thing is, " + ex.en + "</strong>",
+                        accepted: [[ex.jp, "んです"]],
+                        hint: ex.jp + "んです",
+                        refWords: [{ jp: ex.jp, role: "predicate" }, { jp: "んです", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>You should have " + adv.en + "</strong> (past advice)",
+                        accepted: [[adv.jp, "ほうがいいです"]],
+                        hint: adv.jp + "ほうがいいです",
+                        refWords: [{ jp: adv.jp, role: "predicate" }, { jp: "ほうがいいです", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>I have " + exp.en + "</strong>",
+                        accepted: [[exp.jp, "ことがあります"]],
+                        hint: exp.jp + "ことがあります",
+                        refWords: [{ jp: exp.jp, role: "predicate" }, { jp: "ことがあります", role: "predicate" }]
+                    },
+                    {
+                        prompt: "Write: <strong>I already " + task.en + "</strong>",
+                        accepted: [["もう", task.jp]],
+                        hint: "もう" + task.jp,
+                        refWords: [{ jp: "もう", role: "particle" }, { jp: task.jp, role: "predicate" }]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"The thing is, my head hurts.\"",
+                        chunks: ["いたいんです", "あたまが"],
+                        correctOrder: [1, 0],
+                        starIndex: 1,
+                        translation: "あたまがいたいんです — \"The thing is, my head hurts.\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　んですか。 (\"What's the matter?\")", choices: ["どうした", "どうして", "どこ", "いつ"], correctIndex: 0 },
+                            { prompt: "あたまがいたい　<u>＿＿＿</u>。 (\"The thing is, my head hurts.\")", choices: ["です", "んです", "でした", "ですか"], correctIndex: 1 },
+                            { prompt: "びょういんにいった　<u>＿＿＿</u>　ですよ。 (\"You should go to the hospital.\")", choices: ["ことがある", "ほうがいい", "ことになる", "ようだ"], correctIndex: 1 },
+                            { prompt: "にほんにいった　<u>＿＿＿</u>。 (\"I have been to Japan.\")", choices: ["ことがあります", "ほうがいい", "ことになる", "ようだ"], correctIndex: 0 },
+                            { prompt: "いいえ、　<u>＿＿＿</u>　していません。 (\"No, not yet.\")", choices: ["もう", "まだ", "いつも", "あまり"], correctIndex: 1 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "どうしたんですか。", choices: ["Where are you going?", "What's the matter?", "What time is it?", "Who are you?"], correctIndex: 1 },
+                            { prompt: "あたまがいたいんです。", choices: ["My head feels great.", "The thing is, my head hurts.", "I have no head.", "My stomach hurts."], correctIndex: 1 },
+                            { prompt: "びょういんにいったほうがいいですよ。", choices: ["You must not go to the hospital.", "You should go to the hospital.", "The hospital is closed.", "I already went to the hospital."], correctIndex: 1 },
+                            { prompt: "にほんにいったことがあります。", choices: ["I have never been to Japan.", "I have been to Japan.", "I am in Japan now.", "I will go to Japan."], correctIndex: 1 },
+                            { prompt: "いいえ、まだしていません。", choices: ["Yes, I already did it.", "No, not yet.", "I will never do it.", "I did it twice."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* ===== N5 KANJI    /* ===== N5 KANJI — one consolidated lesson (not segregated into
        per-theme sub-lessons — an earlier version split this into
        k01-k04 by category; the confirmed direction folds it back into
        a single browsable set) covering the full official 103-kanji N5
@@ -5014,6 +6834,7 @@ window.NekoSTPOV = {
     let lessonScore = 0;
     let streak = 0;
     let bestStreak = 0;
+    let wordOrderState = null;
 
     const lessons = buildLessons();
 
@@ -5165,22 +6986,26 @@ window.NekoSTPOV = {
             return;
         }
 
+        /* Every regular shelf now gets the mondai-worksheet practice
+           section (see renderMondaiQuiz() above) — two もんだい blocks of
+           5 multiple-choice questions each, shown together on one sheet,
+           graded on Submit. This replaces the old one-at-a-time
+           buildWordBankExercises()/buildMatchExercises()/
+           buildWordOrderExercises() flow (currentExercises/
+           renderExercise()/the word-order star-slot UI) entirely for
+           these lessons — that machinery is now only reachable by
+           quizGroup's renderCheckpointQuiz(), which already used this
+           same "full sheet, grade on submit" shape. */
         hide($("kanjiCards"));
         hide($("checkpointQuiz"));
-        currentExercises = currentLesson.vocabOnly
-            ? currentLesson.buildMatchExercises()
-            : currentLesson.buildWordBankExercises();
-        exerciseIndex = 0;
-        totalExercises = currentExercises.length;
-        completedExercises = 0;
-        lessonScore = 0;
-        streak = 0;
-        bestStreak = 0;
-        show($("studyPractice"));
+        hide($("studyPractice"));
         hide($("studyComplete"));
-        let progressWrap = $("studyProgressFill") ? $("studyProgressFill").parentElement.parentElement : null;
-        if (progressWrap) progressWrap.style.display = "";
-        renderExercise();
+        let divider = $("studyQuizDivider");
+        hide(divider);
+        if (divider) divider.classList.remove("is-visible");
+        let mondaiWrap = $("mondaiQuiz");
+        show(mondaiWrap);
+        renderMondaiQuiz(currentLesson, mondaiWrap);
     }
 
     /* Renders an optional `conversation: { turns: [...] }` field on
@@ -5232,13 +7057,20 @@ window.NekoSTPOV = {
         let inst = currentLesson.buildInstruction();
         let html = "<h2>" + currentLesson.title + " <span style='font-size:14px;color:var(--text-light)'>(" + currentLesson.subtitle + ")</span></h2>";
 
+        let sampleLegendShown = false;
         (inst.sections || []).forEach(function (sec) {
+            let sampleHtml = "";
+            if (sec.sample) {
+                sampleHtml = (sampleLegendShown ? "" : buildSampleLegendHTML()) + buildSampleHTML(sec.sample);
+                sampleLegendShown = true;
+            }
             html += "<div class='grammar-box'>"
                 + "<div class='grammar-box__title'>" + sec.title + "</div>"
                 + "<p>" + sec.explain + "</p>"
                 + (sec.pattern ? "<div class='pattern-box'><span class='pattern-box__label'>Pattern:</span> " + sec.pattern + "</div>" : "")
                 + (sec.diagramSvg ? "<div class='grammar-box__diagram'>" + sec.diagramSvg + "</div>" : "")
                 + (sec.diagramCaption ? "<p class='grammar-box__diagram-caption'>" + sec.diagramCaption + "</p>" : "")
+                + sampleHtml
                 + (sec.culture ? "<p class='grammar-box__culture'>&#127760; " + sec.culture + "</p>" : "")
                 + "</div>";
         });
@@ -5296,6 +7128,7 @@ window.NekoSTPOV = {
         }
 
         panel.innerHTML = html;
+        wireClawforms(panel);
     }
 
     /* Full vocab list for the lesson (content-fidelity pass) — a compact
@@ -5308,6 +7141,84 @@ window.NekoSTPOV = {
                 + "<td class='vocab-table__en'>" + w.en + "</td></tr>";
         }).join("");
         return "<div class='vocab-table-wrap'><table class='vocab-table'>" + rows + "</table></div>";
+    }
+
+    /* Animated ending-swap diagram markup -- ported from n4-phaser-game.js's
+       buildEndingSwapDiagram()/wireEndingSwapDiagram() pair (same technique:
+       a diagonal claw-mark SVG slashes through the old ending, then the new
+       ending pops in; replayable via the button). Call as a section's
+       diagramSvg; wireClawforms() (below) auto-plays every one found in the
+       panel after renderInstruction() inserts the HTML. */
+    function buildEndingSwapDiagram(stem, oldEnding, newEnding) {
+        return "<div class='n5-clawform'>"
+            + "<span class='n5-clawform-stem'>" + stem + "</span>"
+            + "<span class='n5-clawform-old' data-claw-old>" + oldEnding
+            + "<svg class='n5-clawform-slash' data-claw-slash viewBox='0 0 40 40'><line x1='4' y1='34' x2='34' y2='4'></line><line x1='10' y1='38' x2='38' y2='10'></line></svg>"
+            + "</span>"
+            + "<span class='n5-clawform-arrow'>&#8594;</span>"
+            + "<span class='n5-clawform-stem'>" + stem + "</span>"
+            + "<span class='n5-clawform-new' data-claw-new>" + newEnding + "</span>"
+            + "</div>"
+            + "<button type='button' class='n5-clawform-replay' data-claw-replay>&#8635; watch again</button>";
+    }
+
+    /* Finds every ending-swap diagram just inserted into the instruction
+       panel and auto-plays it once, wiring its own "watch again" replay
+       button -- same play() logic as n4-phaser-game.js's
+       wireEndingSwapDiagram(), just run over every match in the panel
+       instead of a single lesson-box page's container. */
+    function wireClawforms(panel) {
+        let diagrams = panel.querySelectorAll(".n5-clawform");
+        diagrams.forEach(function (diagram) {
+            let container = diagram.parentElement || diagram;
+            let oldEl = diagram.querySelector("[data-claw-old]");
+            let newEl = diagram.querySelector("[data-claw-new]");
+            let slashEl = diagram.querySelector("[data-claw-slash]");
+            let replayBtn = container.querySelector("[data-claw-replay]");
+            if (!oldEl || !newEl) return;
+            let play = function () {
+                oldEl.classList.remove("is-slashed");
+                newEl.classList.remove("is-in");
+                if (slashEl) slashEl.classList.remove("is-drawn");
+                void oldEl.offsetWidth;
+                requestAnimationFrame(function () {
+                    if (slashEl) slashEl.classList.add("is-drawn");
+                    setTimeout(function () { oldEl.classList.add("is-slashed"); }, 200);
+                    setTimeout(function () { newEl.classList.add("is-in"); }, 480);
+                });
+            };
+            play();
+            if (replayBtn) {
+                replayBtn.addEventListener("click", function (e) { e.stopPropagation(); play(); });
+            }
+        });
+    }
+
+    /* Word-tile sample sentence -- ported from lesson-box.js's word-tile
+       rendering (role-underlined kana + gloss caption + romaji line + a NEW
+       badge), for a section's optional `sample: {tag, tiles, romaji}` field.
+       tiles: [{text, role: 'subject'|'particle'|'predicate'|'copula', gloss, isNew?}]. */
+    function buildSampleHTML(sample) {
+        let tiles = sample.tiles.map(function (t) {
+            return "<div class='n5-sample__tile'>"
+                + "<div class='n5-sample__tile-text role-" + t.role + (t.isNew ? " is-new" : "") + "'>" + t.text + "</div>"
+                + "<div class='n5-sample__tile-gloss'>" + t.gloss + "</div>"
+                + "</div>";
+        }).join("");
+        return "<div class='n5-sample'>"
+            + (sample.tag ? "<div class='n5-sample__tag'>" + sample.tag + "</div>" : "")
+            + "<div class='n5-sample__row'>" + tiles + "</div>"
+            + (sample.romaji ? "<div class='n5-sample__romaji'>" + sample.romaji + "</div>" : "")
+            + "</div>";
+    }
+
+    function buildSampleLegendHTML() {
+        return "<div class='n5-sample-legend'>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#6fb3e6'></span>Subject</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#f0c674'></span>Particle</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#e2685f'></span>Predicate</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#ffffff'></span>です / でした</span>"
+            + "</div>";
     }
 
 
@@ -5362,16 +7273,58 @@ window.NekoSTPOV = {
     }
 
     /* ===== EXERCISE RENDERING ===== */
+    /* Quiz Set 1 = this lesson's existing exercises (word-bank fill-in or
+       vocab-only multiple-choice); Quiz Set 2 = the new word-order
+       exercise. Both live in one flat currentExercises array (tagged
+       .quizSet in openLesson()) so the underlying index/attempts/streak
+       state machine below is unchanged — renderExercise() just detects
+       the boundary between the two sets and shows a one-time interstitial
+       there instead of a new parallel state machine. */
+    function quizSetLabel(n) {
+        return n === 2 ? "Word Order" : "Fill in the Blank";
+    }
+
     function renderExercise() {
         if (exerciseIndex >= currentExercises.length) {
             showResult();
             return;
         }
         let ex = currentExercises[exerciseIndex];
+        let prevEx = exerciseIndex > 0 ? currentExercises[exerciseIndex - 1] : null;
+        if (prevEx && prevEx.quizSet !== ex.quizSet) {
+            showQuizSetDivider(ex);
+            return;
+        }
+        renderExerciseBody(ex);
+    }
+
+    function showQuizSetDivider(nextEx) {
+        let div = $("studyQuizDivider");
+        if (!div) { renderExerciseBody(nextEx); return; }
+        hide($("studyPractice"));
+        div.innerHTML = "<p class='study-quiz-divider__heading'>Quiz " + (nextEx.quizSet - 1) + " complete!</p>"
+            + "<p class='study-quiz-divider__msg'>Starting Quiz " + nextEx.quizSet + ": " + quizSetLabel(nextEx.quizSet) + "</p>"
+            + "<button type='button' class='study-quiz-divider__btn' id='studyQuizContinueBtn'>Continue &#8594;</button>";
+        show(div);
+        div.classList.add("is-visible");
+        let btn = $("studyQuizContinueBtn");
+        if (btn) btn.addEventListener("click", function () {
+            hide(div);
+            div.classList.remove("is-visible");
+            show($("studyPractice"));
+            renderExerciseBody(nextEx);
+        });
+    }
+
+    function renderExerciseBody(ex) {
         attempts = 0;
+        wordOrderState = null;
+
+        let heading = $("studyQuizHeading");
+        if (heading) heading.textContent = "Quiz " + (ex.quizSet || 1) + ": " + quizSetLabel(ex.quizSet || 1);
 
         let prompt = $("studyPractice").querySelector(".study-practice__prompt");
-        if (prompt) prompt.innerHTML = ex.prompt;
+        if (prompt) prompt.innerHTML = ex.type === "wordOrder" ? ex.promptEn : ex.prompt;
 
         /* Reference chips for this exercise's words used to render up front,
            before the learner had even tried — which meant the "exercise"
@@ -5388,17 +7341,29 @@ window.NekoSTPOV = {
         let checkBtn = $("studyCheckBtn");
         let hintBtn = $("studyHintBtn");
         let matchWrap = $("studyMatchChoices");
+        let wordOrderWrap = $("studyWordOrder");
 
-        if (currentLesson.vocabOnly) {
+        if (ex.type === "wordOrder") {
+            hide(input);
+            hide(matchWrap);
+            if (matchWrap) matchWrap.innerHTML = "";
+            show(wordOrderWrap);
+            show(checkBtn);
+            hide(hintBtn);
+            renderWordOrderExercise(ex);
+        } else if (currentLesson.vocabOnly) {
+            hide(wordOrderWrap);
             hide(input);
             hide(checkBtn);
             hide(hintBtn);
             show(matchWrap);
             renderMatchChoices(ex);
         } else {
+            hide(wordOrderWrap);
             hide(matchWrap);
             if (matchWrap) matchWrap.innerHTML = "";
             show(checkBtn);
+            checkBtn.disabled = false;
             /* Hint stays hidden until the learner has actually tried —
                revealed after 2 wrong attempts in checkAnswer() below,
                instead of being available from the very first look. */
@@ -5415,16 +7380,120 @@ window.NekoSTPOV = {
             }
         }
 
+        let setStart = currentExercises.findIndex(function (e) { return e.quizSet === ex.quizSet; });
+        let setTotal = currentExercises.filter(function (e) { return e.quizSet === ex.quizSet; }).length;
+        let setIndex = exerciseIndex - setStart;
         let fill = $("studyProgressFill");
-        if (fill) fill.style.width = Math.round((exerciseIndex / totalExercises) * 100) + "%";
+        if (fill) fill.style.width = Math.round((setIndex / setTotal) * 100) + "%";
         let txt = $("studyProgressText");
-        if (txt) txt.textContent = exerciseIndex + " / " + totalExercises;
+        if (txt) txt.textContent = "Quiz " + (ex.quizSet || 1) + " · " + setIndex + " / " + setTotal;
 
         hide($("studyFeedback"));
         let fb = $("studyFeedback");
         if (fb) { fb.className = "study-practice__feedback"; fb.innerHTML = ""; }
 
         hide($("studyNextBtn"));
+    }
+
+    /* ===== QUIZ SET 2 — WORD-ORDER / STAR-SLOT EXERCISE =====
+       Click-to-place tiles rather than drag-and-drop — this file's own
+       preview-tooling gotchas around post-mutation rect readback and
+       position:fixed inline-style changes make a drag interaction hard to
+       verify here, and click-to-place is the same low-risk interaction
+       class the retro in-canvas menus elsewhere in this codebase use. */
+    function renderWordOrderExercise(ex) {
+        wordOrderState = {
+            ex: ex,
+            slots: new Array(ex.correctOrder.length).fill(null),
+            trayIndices: shuffle(ex.chunks.map(function (_, i) { return i; }))
+        };
+        renderWordOrderUI();
+    }
+
+    function renderWordOrderUI() {
+        let wrap = $("studyWordOrder");
+        if (!wrap || !wordOrderState) return;
+        let st = wordOrderState;
+        let slotsHtml = st.slots.map(function (chunkIdx, i) {
+            let isStar = i === st.ex.starIndex;
+            let filled = chunkIdx !== null;
+            let cls = "study-wordorder__slot" + (isStar ? " study-wordorder__slot--star" : "") + (filled ? " study-wordorder__slot--filled" : "");
+            let label = filled ? st.ex.chunks[chunkIdx] : "<span class='study-wordorder__slot--empty'>" + (i + 1) + "</span>";
+            return "<button type='button' class='" + cls + "' data-slot='" + i + "'" + (filled ? "" : " disabled") + ">" + label + "</button>";
+        }).join("");
+        let trayHtml = st.trayIndices.map(function (chunkIdx) {
+            return "<button type='button' class='study-wordorder__chip' data-chunk='" + chunkIdx + "'>" + st.ex.chunks[chunkIdx] + "</button>";
+        }).join("");
+        wrap.innerHTML = "<div class='study-wordorder__slots'>" + slotsHtml + "</div>"
+            + "<div class='study-wordorder__tray'>" + trayHtml + "</div>";
+
+        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__chip"), function (btn) {
+            btn.addEventListener("click", function () { placeWordOrderChunk(parseInt(btn.getAttribute("data-chunk"), 10)); });
+        });
+        Array.prototype.forEach.call(wrap.querySelectorAll(".study-wordorder__slot:not([disabled])"), function (btn) {
+            btn.addEventListener("click", function () { removeWordOrderSlot(parseInt(btn.getAttribute("data-slot"), 10)); });
+        });
+
+        let checkBtn = $("studyCheckBtn");
+        if (checkBtn) checkBtn.disabled = st.slots.some(function (s) { return s === null; });
+    }
+
+    function placeWordOrderChunk(chunkIdx) {
+        let st = wordOrderState;
+        if (!st) return;
+        let emptySlot = st.slots.indexOf(null);
+        if (emptySlot === -1) return;
+        st.slots[emptySlot] = chunkIdx;
+        st.trayIndices = st.trayIndices.filter(function (i) { return i !== chunkIdx; });
+        renderWordOrderUI();
+    }
+
+    function removeWordOrderSlot(slotIdx) {
+        let st = wordOrderState;
+        if (!st) return;
+        let chunkIdx = st.slots[slotIdx];
+        if (chunkIdx === null || chunkIdx === undefined) return;
+        st.slots[slotIdx] = null;
+        st.trayIndices.push(chunkIdx);
+        renderWordOrderUI();
+    }
+
+    function checkWordOrderAnswer(ex) {
+        let st = wordOrderState;
+        if (!st) return;
+        let slotEls = document.querySelectorAll("#studyWordOrder .study-wordorder__slot");
+        let correct = st.slots.every(function (v, i) { return v === ex.correctOrder[i]; });
+
+        if (correct) {
+            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-correct"); el.disabled = true; });
+            completedExercises++;
+            lessonScore++;
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            showFeedback("&#10003; correct &middot; streak: " + streak, "correct");
+            show($("studyNextBtn"));
+            hide($("studyCheckBtn"));
+            hide($("studyHintBtn"));
+        } else {
+            attempts++;
+            streak = 0;
+            Array.prototype.forEach.call(slotEls, function (el) { el.classList.add("is-wrong"); });
+            setTimeout(function () { Array.prototype.forEach.call(slotEls, function (el) { el.classList.remove("is-wrong"); }); }, 400);
+            if (attempts >= maxAttempts) {
+                Array.prototype.forEach.call(slotEls, function (el) { el.disabled = true; });
+                completedExercises++;
+                let correctSentence = ex.correctOrder.map(function (chunkIdx, pos) {
+                    return pos === ex.starIndex ? "[" + ex.chunks[chunkIdx] + "]" : ex.chunks[chunkIdx];
+                }).join(" ");
+                showFeedback("&#10007; the correct order was: <strong>" + correctSentence + "</strong>" + (ex.translation ? " &mdash; " + ex.translation : ""), "reveal");
+                show($("studyNextBtn"));
+                hide($("studyCheckBtn"));
+                hide($("studyHintBtn"));
+            } else {
+                showFeedback("&#10007; not quite &middot; " + (maxAttempts - attempts) + " attempt" + (maxAttempts - attempts === 1 ? "" : "s") + " left &middot; streak reset", "wrong");
+                if (attempts >= 2) show($("studyHintBtn"));
+            }
+        }
     }
 
     /* ===== MATCH-CHOICE EXERCISES (vocab-only lessons) ===== */
@@ -5467,9 +7536,12 @@ window.NekoSTPOV = {
 
     /* ===== CHECK ANSWER ===== */
     function checkAnswer() {
-        let input = $("studyInput");
-        if (!input || !currentLesson) return;
+        if (!currentLesson) return;
         let ex = currentExercises[exerciseIndex];
+        if (!ex) return;
+        if (ex.type === "wordOrder") { checkWordOrderAnswer(ex); return; }
+        let input = $("studyInput");
+        if (!input) return;
         let userVal = norm(input.value);
         /* Three grading modes, checked in order of how open-ended they are:
            - `openEnded` (free-write, e.g. s04's jiko-shoukai capstone): no
@@ -5542,6 +7614,10 @@ window.NekoSTPOV = {
     function showHint() {
         let ex = currentExercises[exerciseIndex];
         if (!ex) return;
+        if (ex.type === "wordOrder") {
+            showFeedback("Hint &mdash; the &#9733; slot needs: <strong>" + ex.chunks[ex.correctOrder[ex.starIndex]] + "</strong>", "hint");
+            return;
+        }
         let refWrap = $("studyWordBankRef");
         if (refWrap && ex.refWords && ex.refWords.length) {
             refWrap.innerHTML = shuffle(ex.refWords).map(function (w) {
@@ -5742,6 +7818,124 @@ window.NekoSTPOV = {
         renderSheet();
     }
 
+    /* ===== MONDAI QUIZ RENDERING =====
+       The regular per-lesson practice section — two もんだい (mondai /
+       "problem set") blocks of 5 multiple-choice questions each, BOTH
+       shown on one sheet at once, graded together on Submit. Replaces
+       the old one-at-a-time buildWordBankExercises()/
+       buildWordOrderExercises() flow per explicit feedback that the
+       word-order rearrange quiz didn't land and a real JLPT-style
+       mondai worksheet (two labeled problem sets on the page together,
+       not gated behind each other) was wanted instead. Structurally
+       almost identical to renderCheckpointQuiz() above — same sheet/
+       submit/grade shape, just grouped into two labeled mondai sections
+       instead of one flat list, and every question is multiple-choice
+       (this engine has no fill-in-the-blank mode, unlike the checkpoint
+       quizzes). Reuses .checkpoint-quiz__result-row/-mark/-correct/
+       -yours verbatim for the graded rows — a graded MC row is the same
+       shape regardless of which sheet it came from. */
+    function renderMondaiQuiz(lesson, container) {
+        if (!container) return;
+        let data = lesson.buildMondaiExercises ? lesson.buildMondaiExercises() : { mondai1: { questions: [] }, mondai2: { questions: [] } };
+        let sets = [
+            { label: (data.mondai1 && data.mondai1.label) || "もんだい1", instruction: (data.mondai1 && data.mondai1.instruction) || "", questions: (data.mondai1 && data.mondai1.questions) || [] },
+            { label: (data.mondai2 && data.mondai2.label) || "もんだい2", instruction: (data.mondai2 && data.mondai2.instruction) || "", questions: (data.mondai2 && data.mondai2.questions) || [] }
+        ];
+        let quizAnswers = {}; // key "si-qi" -> chosen choice index
+        let submitted = false;
+
+        function renderSheet() {
+            let sectionsHtml = sets.map(function (set, si) {
+                let questionsHtml = set.questions.map(function (q, qi) {
+                    let key = si + "-" + qi;
+                    let choicesHtml = q.choices.map(function (choice, ci) {
+                        let selected = quizAnswers[key] === ci ? " is-selected" : "";
+                        return "<button type='button' class='mondai-quiz__choice" + selected + "' data-key='" + key + "' data-choice='" + ci + "'>"
+                            + "<span class='mondai-quiz__choice-num'>" + (ci + 1) + "</span>" + choice + "</button>";
+                    }).join("");
+                    return "<div class='mondai-quiz__block' data-key='" + key + "'>"
+                        + "<div class='mondai-quiz__prompt'><span class='mondai-quiz__prompt-num'>(" + (qi + 1) + ")</span>"
+                        + "<span class='mondai-quiz__prompt-text'>" + q.prompt + "</span></div>"
+                        + "<div class='mondai-quiz__choices'>" + choicesHtml + "</div></div>";
+                }).join("");
+                return "<div class='mondai-quiz__section'>"
+                    + "<div class='mondai-quiz__section-head'><span class='mondai-quiz__section-label'>" + set.label + "</span></div>"
+                    + (set.instruction ? "<p class='mondai-quiz__section-instruction'>" + set.instruction + "</p>" : "")
+                    + "<div class='mondai-quiz__sheet'>" + questionsHtml + "</div>"
+                    + "</div>";
+            }).join("");
+
+            let totalQ = sets.reduce(function (n, s) { return n + s.questions.length; }, 0);
+            container.innerHTML = "<div class='mondai-quiz__title'>" + lesson.title + "</div>"
+                + "<p class='mondai-quiz__intro'>Answer all " + totalQ + " questions below, then submit to see your score.</p>"
+                + sectionsHtml
+                + "<button type='button' class='mondai-quiz__submit' id='mondaiQuizSubmit'" + (submitted ? " disabled" : "") + ">Submit</button>"
+                + "<div class='mondai-quiz__result' id='mondaiQuizResult'></div>";
+
+            Array.prototype.forEach.call(container.querySelectorAll(".mondai-quiz__choice"), function (btn) {
+                btn.disabled = submitted;
+                btn.addEventListener("click", function () {
+                    if (submitted) return;
+                    let key = btn.getAttribute("data-key");
+                    quizAnswers[key] = Number(btn.getAttribute("data-choice"));
+                    let block = container.querySelector(".mondai-quiz__block[data-key='" + key + "']");
+                    if (block) {
+                        Array.prototype.forEach.call(block.querySelectorAll(".mondai-quiz__choice"), function (b) { b.classList.remove("is-selected"); });
+                    }
+                    btn.classList.add("is-selected");
+                });
+            });
+
+            let submitBtn = $("mondaiQuizSubmit");
+            if (submitBtn) submitBtn.addEventListener("click", gradeAndShow);
+        }
+
+        function gradeAndShow() {
+            submitted = true;
+            let correctCount = 0;
+            let totalQ = 0;
+            let rowsHtml = sets.map(function (set, si) {
+                return set.questions.map(function (q, qi) {
+                    totalQ++;
+                    let key = si + "-" + qi;
+                    let userAnswer = quizAnswers[key];
+                    let correct = userAnswer === q.correctIndex;
+                    if (correct) correctCount++;
+                    let yourLabel = userAnswer != null ? q.choices[userAnswer] : "(no answer)";
+                    let correctLabel = q.choices[q.correctIndex];
+                    return "<div class='checkpoint-quiz__result-row'>"
+                        + "<span class='checkpoint-quiz__result-mark " + (correct ? "is-correct" : "is-wrong") + "'>" + (correct ? "&#10003;" : "&#10007;") + "</span>"
+                        + "<div><div class='checkpoint-quiz__result-correct'>" + set.label + " (" + (qi + 1) + "). Correct: <strong>" + correctLabel + "</strong></div>"
+                        + "<div class='checkpoint-quiz__result-yours'>Your answer: " + yourLabel + "</div></div>"
+                        + "</div>";
+                }).join("");
+            }).join("");
+
+            let pct = totalQ > 0 ? Math.round((correctCount / totalQ) * 100) : 0;
+            let xpGained = 0;
+            let alreadyDone = false;
+            if (window.StudyProgress) {
+                let result = StudyProgress.completeLesson(lesson.id);
+                xpGained = result.gained || 0;
+                alreadyDone = !(result.gained > 0);
+                StudyProgress.renderXpBadges();
+                refreshLessonPickerLabels();
+            }
+
+            let resultWrap = $("mondaiQuizResult");
+            if (resultWrap) {
+                resultWrap.innerHTML = "<div class='mondai-quiz__score'>" + correctCount + " / " + totalQ + " (" + pct + "%)</div>"
+                    + "<div class='mondai-quiz__xp'>+" + xpGained + " XP" + (alreadyDone ? " &mdash; already completed before, no bonus XP" : "") + "</div>"
+                    + rowsHtml;
+            }
+            let submitBtn = $("mondaiQuizSubmit");
+            if (submitBtn) submitBtn.disabled = true;
+            Array.prototype.forEach.call(container.querySelectorAll(".mondai-quiz__choice"), function (btn) { btn.disabled = true; });
+        }
+
+        renderSheet();
+    }
+
     /* ===== EVENT WIRING ===== */
     function wireEvents() {
         let checkBtn = $("studyCheckBtn");
@@ -5766,10 +7960,19 @@ window.NekoSTPOV = {
 
         let skipBtn = $("studySkipBtn");
         if (skipBtn) skipBtn.addEventListener("click", function () {
-            if (currentLesson) {
-                exerciseIndex++;
-                renderExercise();
-            }
+            if (!currentLesson) return;
+            /* Guard against the quiz-set interstitial or the lesson-complete
+               screen already being up (both leave this button in the DOM,
+               and it has no visibility toggle of its own) — a stray extra
+               click there used to keep incrementing exerciseIndex past
+               currentExercises.length, silently skipping the next quiz set
+               or throwing in checkAnswer() on the following Check click. */
+            let divider = $("studyQuizDivider");
+            let complete = $("studyComplete");
+            if ((divider && divider.classList.contains("is-visible")) || (complete && complete.classList.contains("is-visible"))) return;
+            if (exerciseIndex >= currentExercises.length) return;
+            exerciseIndex++;
+            renderExercise();
         });
 
         let printBtn = $("studyPrintBtn");
@@ -5790,10 +7993,22 @@ window.NekoSTPOV = {
             let complete = $("studyComplete");
             if (complete) { complete.classList.remove("is-visible"); complete.innerHTML = ""; }
 
-            /* Auto-open a lesson from ?lesson=sXX URL param */
+            /* Auto-open a lesson from ?lesson=sXX URL param when present
+               (deep link from the dashboard) -- otherwise fall back to
+               the first shelf so a bare study-room.html load (or a
+               refresh that drops the query string) doesn't leave the
+               dropdown showing "01. Basic Greetings" as selected while
+               the instruction/practice panels stay empty and hidden.
+               The <select>'s own default-selected first option never
+               fires a "change" event on its own, so without this fallback
+               nothing ever calls openLesson() until the learner manually
+               picks a *different* lesson from the dropdown. */
             let params = new URLSearchParams(window.location.search);
             let lessonId = params.get("lesson");
-            if (lessonId && lessons.find(function (l) { return l.id === lessonId; })) {
+            if (!lessonId || !lessons.find(function (l) { return l.id === lessonId; })) {
+                lessonId = lessons.length ? lessons[0].id : null;
+            }
+            if (lessonId) {
                 openLesson(lessonId);
             }
         }

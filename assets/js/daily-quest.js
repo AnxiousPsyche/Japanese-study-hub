@@ -38,7 +38,11 @@ const QUEST_POOL = [
     { lessonId: "s13", title: "Conjugations (て-form)", desc: "Practice the て-form." },
     { lessonId: "s14", title: "Past & Negative", desc: "Talk about the past." },
     { lessonId: "s15", title: "Sentence Construction", desc: "Build a full sentence." },
-    { lessonId: "s16", title: "Particle Mastery", desc: "Practice your particles." },
+    { lessonId: "s16a", title: "Subject Particles", desc: "Practice は, が, and も." },
+    { lessonId: "s16b", title: "Time Particles", desc: "Practice に and time words." },
+    { lessonId: "s16c", title: "Place Particles", desc: "Practice で and に for places." },
+    { lessonId: "s16d", title: "Object Particles", desc: "Practice を." },
+    { lessonId: "s16e", title: "Other Particles", desc: "Practice の and か." },
     { lessonId: "k01", title: "N5 Kanji", desc: "Recognize a kanji from the N5 list." }
 ];
 

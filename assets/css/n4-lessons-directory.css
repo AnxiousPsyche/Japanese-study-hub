@@ -1,0 +1,131 @@
+/* N4 LESSONS DIRECTORY — same collapsible file-drawer concept as
+   assets/css/n5-lessons-directory.css (assets/js/n4-lessons-dashboard.js
+   builds the DOM this styles), but built for the dark CRT terminal skin
+   from the start (.study-room.is-terminal — see study-style.css's
+   --term-* variables) rather than the win95 chrome, per explicit user
+   request to carry the Study Room's terminal look onto its lessons-list
+   page too. Kept in its own file for the same reason n5-lessons-
+   directory.css is: page-specific layout that shouldn't need to touch
+   the large shared study-style.css file. */
+
+.lesson-grid.n4dir {
+    display: block;
+    max-width: none;
+    width: 100%;
+}
+
+.n4dir-body {
+    align-items: stretch !important;
+    padding: 28px 32px !important;
+}
+
+.n4dir-root {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ---------- folder ---------- */
+.n4dir-folder {
+    background: var(--term-panel, #032821);
+    border: 1px solid var(--term-border, #1D9E75);
+}
+.n4dir-folder__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--term-text, #E1F5EE);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 16px;
+    text-align: left;
+    padding: 16px 22px;
+    cursor: pointer;
+}
+.n4dir-folder__head:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.n4dir-folder__chevron {
+    color: var(--term-amber, #FAC775);
+    font-size: 13px;
+    width: 12px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+.n4dir-folder.is-open .n4dir-folder__chevron {
+    transform: rotate(90deg);
+}
+.n4dir-folder__icon {
+    flex-shrink: 0;
+    font-size: 18px;
+}
+.n4dir-folder__name {
+    flex: 1;
+    font-weight: 700;
+    color: var(--term-heading, #FFFFFF);
+}
+.n4dir-folder__meta {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--term-text-dim, #9FE1CB);
+    white-space: nowrap;
+}
+
+/* ---------- directory listing rows ---------- */
+.n4dir-listing {
+    display: none;
+    border-top: 1px dashed var(--term-border, #1D9E75);
+    padding: 4px 0 6px;
+}
+.n4dir-folder.is-open .n4dir-listing {
+    display: block;
+}
+.n4dir-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 160px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 22px 12px 44px;
+    text-decoration: none;
+    color: inherit;
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+}
+.n4dir-row:hover {
+    background: rgba(29, 158, 117, 0.12);
+}
+.n4dir-row__id {
+    color: var(--term-amber, #FAC775);
+    font-weight: 700;
+}
+.n4dir-row__name {
+    color: var(--term-text, #E1F5EE);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    font-size: 15px;
+}
+.n4dir-row__status {
+    text-align: right;
+    color: var(--term-text-dim, #9FE1CB);
+    white-space: nowrap;
+}
+.n4dir-row.is-done .n4dir-row__status {
+    color: var(--term-amber, #FAC775);
+    font-weight: 700;
+}
+.n4dir-row.is-done {
+    background: rgba(29, 158, 117, 0.08);
+}
+
+@media (max-width: 480px) {
+    .n4dir-row {
+        grid-template-columns: 34px 1fr;
+        grid-template-areas: "id name" ". status";
+    }
+    .n4dir-row__id { grid-area: id; }
+    .n4dir-row__name { grid-area: name; }
+    .n4dir-row__status { grid-area: status; text-align: left; }
+}

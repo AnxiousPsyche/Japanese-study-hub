@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Neko Bunko Study Room - Codecademy-style N5 learning">
-    <title>Study Room - Neko Bunko</title>
+    <meta name="description" content="Neko Bunko Study Room - N4 grammar shelves and Reading Room, document mode">
+    <title>N4 Study Room - Neko Bunko</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&family=DotGothic16&display=block" rel="stylesheet">
@@ -14,16 +14,13 @@
     <link rel="stylesheet" href="../../assets/css/reset.css">
     <link rel="stylesheet" href="../../assets/css/study-style.css">
     <link rel="stylesheet" href="../../assets/css/companion-cat.css">
-    <link rel="stylesheet" href="../../assets/css/kanji-cards.css">
     <link rel="stylesheet" href="../../assets/css/streak-popup.css">
+    <!-- Reuses the Adventure Room's own lesson-content styles verbatim
+         (diagrams, word tiles, pattern lines, culture notes) -- see
+         assets/js/study-room-n4.js's own header comment for why. -->
+    <link rel="stylesheet" href="../../assets/css/lesson-box.css">
     <!-- jsPDF + html2canvas: client-side PDF generation for the printer
-         icon's per-lesson vocab export (assets/js/lesson-pdf.js). jsPDF's
-         own built-in fonts can't render Japanese glyphs, so the export
-         renders an off-screen HTML table (in the page's own DotGothic16
-         Japanese web font, loaded above) via jsPDF's doc.html(), which
-         rasterizes through html2canvas instead of relying on jsPDF's
-         font system — same plain-CDN-script pattern as Bootstrap/Phaser
-         elsewhere in this no-build project. -->
+         icon's per-lesson vocab export (assets/js/lesson-pdf.js). -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 </head>
@@ -31,13 +28,13 @@
     <div class="study-room is-terminal is-active">
         <header class="study-header">
             <span class="study-header__dots" aria-hidden="true"><span></span><span></span><span></span></span>
-            <a href="levels-dashboard.html" class="study-header__back">&larr; Levels</a>
+            <a href="n4-lessons.html" class="study-header__back">&larr; N4 Floor</a>
             <a href="../../index.html" class="study-header__back" aria-label="Back to Home" title="Back to Home">&#127968;</a>
-            <h1 class="study-header__title">&#128218; Study Room</h1>
+            <h1 class="study-header__title">&#128218; N4 Study Room</h1>
             <select class="study-header__lesson-picker" id="studyLessonSelect" aria-label="Choose a lesson"></select>
             <div class="study-header__toggle">
                 <span class="study-header__toggle-seg study-header__toggle-seg--active">&#128214; Document</span>
-                <a href="../N5/n5-dashboard.html" class="study-header__toggle-seg">&#127983; Adventure</a>
+                <a href="n4-dashboard.html" class="study-header__toggle-seg">&#127983; Adventure</a>
             </div>
             <button type="button" class="study-header__print-btn" id="studyPrintBtn" title="Print this lesson's vocabulary (PDF)" aria-label="Print this lesson's vocabulary">
                 <img src="../../assets/images/lesson/printer-image-Original.png" alt="">
@@ -60,7 +57,7 @@
                         <div class="study-match-choices" id="studyMatchChoices" style="display:none"></div>
                         <div class="study-wordorder" id="studyWordOrder" style="display:none"></div>
                         <div class="study-practice__input-row">
-                            <input type="text" class="study-practice__input" id="studyInput" placeholder="Type your answer in hiragana..." autocomplete="off" spellcheck="false">
+                            <input type="text" class="study-practice__input" id="studyInput" placeholder="Type just the missing part..." autocomplete="off" spellcheck="false">
                             <button class="study-practice__btn study-practice__btn--check" id="studyCheckBtn">Check</button>
                             <button class="study-practice__btn study-practice__btn--hint" id="studyHintBtn">Hint</button>
                             <button class="study-practice__btn study-practice__btn--next" id="studyNextBtn" style="display:none">Next &#8594;</button>
@@ -69,8 +66,6 @@
                         <div class="study-practice__feedback" id="studyFeedback"></div>
                     </div>
                     <div class="study-quiz-divider" id="studyQuizDivider" style="display:none"></div>
-                    <div class="kanji-cards" id="kanjiCards" style="display:none"></div>
-                    <div id="checkpointQuiz" style="display:none"></div>
                     <div id="mondaiQuiz" style="display:none"></div>
                     <div class="study-complete" id="studyComplete"></div>
                 </div>
@@ -79,12 +74,11 @@
     </div>
     <script src="../../assets/js/study-progress.js"></script>
     <script src="../../assets/js/lesson-pdf.js"></script>
-    <script src="../../assets/js/kanji-cards.js"></script>
-    <script src="../../assets/js/study-room.js"></script>
+    <script src="../../assets/js/study-room-n4.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         if (window.StudyProgress) StudyProgress.renderXpBadges();
-        if (window.StudyRoom) StudyRoom.init();
+        if (window.StudyRoomN4) StudyRoomN4.init();
     });
     </script>
     <script src="../../assets/js/progress.js"></script>

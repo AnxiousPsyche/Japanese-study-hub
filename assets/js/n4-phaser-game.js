@@ -927,8 +927,16 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '日本語が', after: '。', answer: '話せます', altAnswers: ['はなせます'], hint: '"I can speak Japanese" — potential form of 話す.' },
+        { before: '日本語が', after: '。', answer: '話せます', altAnswers: ['はなせます'], hint: '"I can speak Japanese" — polite ます-form of the potential 話せる (話す → 話せる → 話せます). Plain 話せる is graded separately; this blank wants the polite form.' },
         { before: '雨が降', after: '、家にいます。', answer: 'れば', hint: '"If it rains..." — conditional ば-form.' },
+        { before: '私は100メートル', after: '。', answer: '泳げます', altAnswers: ['およげます'], hint: '"I can swim 100 meters." Potential of 泳ぐ (う-column → え-column + る).' },
+        { before: '日本料理が', after: 'か。', answer: '作れます', altAnswers: ['つくれます'], hint: '"Can you make Japanese food?" Potential of 作る.' },
+        { before: 'あと10分', after: 'か。', answer: '待てます', altAnswers: ['まてます'], hint: '"Can you wait 10 more minutes?" Potential of 待つ.' },
+        { before: 'お腹がすいた。何か', after: '。', answer: '食べよう', hint: '"I\'m hungry. Let\'s eat something." Volitional of 食べる (drop る, add よう).' },
+        { before: '天気がいいから、公園へ', after: '。', answer: '行こう', hint: '"Weather\'s nice, let\'s go to the park." Volitional of 行く.' },
+        { before: '疲れたから、少し', after: '。', answer: '休もう', hint: '"I\'m tired, let\'s rest a bit." Volitional of 休む.' },
+        { before: '値段が', after: '、買いません。', answer: '高ければ', altAnswers: ['たかければ'], hint: '"If the price is high, I won\'t buy it." Ba-form of the い-adjective 高い (drop い, add ければ).' },
+        { before: 'このボタンを', after: '、電気がつきます。', answer: '押せば', altAnswers: ['おせば'], hint: '"If you press this button, the light turns on." Ba-form of 押す.' },
       ],
     },
     {
@@ -982,8 +990,10 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '先生に', after: '。', answer: '褒められた', altAnswers: ['ほめられた'], hint: '"I was praised by the teacher" — passive form.' },
-        { before: '母は私に野菜を食べ', after: '。', answer: 'させた', hint: '"Mom made me eat vegetables" — causative form.' },
+        { before: '先生に', after: '。', answer: '褒められた', altAnswers: ['ほめられた'], hint: '"I was praised by the teacher" — plain-past passive (褒められた, not the polite 褒められました). This blank wants the plain form.' },
+        { before: '母は私に野菜を食べ', after: '。', answer: 'させた', hint: '"Mom made me eat vegetables" — plain-past causative (させた, not the polite させました). This blank wants the plain form.' },
+        { before: '友達に', after: '。', answer: '笑われた', altAnswers: ['わらわれた'], hint: '"I was laughed at by a friend" — plain-past passive of 笑う.' },
+        { before: '先生が学生に本を', after: '。', answer: '読ませた', altAnswers: ['よませた'], hint: '"The teacher made the student read the book" — plain-past causative of 読む.' },
       ],
     },
 {
@@ -1020,14 +1030,54 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: 'ドアが', after: '。', answer: '開く', altAnswers: ['あく'], hint: 'Intransitive — the door opens by itself.' },
-        { before: 'ドアを', after: '。', answer: '開ける', altAnswers: ['あける'], hint: 'Transitive — someone opens the door.' },
+        { before: 'ドアが', after: '。', answer: '開く', altAnswers: ['あく'], hint: 'Intransitive — the door opens by itself. Plain dictionary form (開く), not the polite 開きます.' },
+        { before: 'ドアを', after: '。', answer: '開ける', altAnswers: ['あける'], hint: 'Transitive — someone opens the door. Plain dictionary form (開ける), not the polite 開けます.' },
+        { before: 'ろうそくの火が', after: '。', answer: '消えた', altAnswers: ['きえた'], hint: 'Intransitive 消える (the flame went out on its own), plain past.' },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Conjugations IV — Resultant State: ～ている vs ～てある',
+      bigIdea: 'A leftover state from an earlier action, described two ways depending on WHICH verb of the pair you use.',
+      explain: [
+        '自動詞 (intransitive) + ている describes a state that just is — no one is credited with causing it. かぎがかかっています, "It\'s locked" (the lock is just in that state).',
+        '他動詞 (transitive) + てある describes a state left behind ON PURPOSE by someone — the "why" is implied even when the doer isn\'t named. かべに絵がかざってあります, "A picture has been put up on the wall" (someone put it there for a reason).',
+      ],
+      pattern: [{ text: '自動詞て + いる', role: 'subject' }, { text: '／', role: 'particle' }, { text: '他動詞て + ある', role: 'predicate' }],
+      samples: [
+        {
+          tag: '自動詞 — "The window is closed." (just a state)',
+          tiles: [
+            { text: '窓が', role: 'subject', gloss: 'the window' },
+            { text: '閉まっています', role: 'predicate', gloss: 'is closed', isNew: true },
+          ],
+          translation: 'Mado ga shimatte imasu.',
+        },
+        {
+          tag: '他動詞 — "The table has already been tidied up." (someone\'s doing, on purpose)',
+          tiles: [
+            { text: 'テーブルは', role: 'subject', gloss: 'the table' },
+            { text: 'もうかたづけてあります', role: 'predicate', gloss: 'has already been tidied', isNew: true },
+          ],
+          translation: 'Teeburu wa mou katazukete arimasu.',
+        },
+      ],
+      cultureNote: 'Same real-world scene, different framing: 窓が開いています just says the window is open; 窓が開けてあります says someone opened it on purpose (and probably left it that way for a reason).',
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '窓が', after: '。', answer: '閉まっています', altAnswers: ['しまっています'], hint: 'Intransitive 閉まる + ている — a plain resultant state, no one credited with causing it.' },
+        { before: 'テーブルは', after: '。', answer: 'もうかたづけてあります', altAnswers: ['もうかたずけてあります'], hint: 'Transitive 片づける + てある — someone tidied it on purpose, and left it that way.' },
+        { before: 'かべにポスターが', after: '。', answer: 'はってあります', altAnswers: ['貼ってあります'], hint: 'Transitive 貼る + てある — someone put the poster up on purpose.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (受身形／使役形／自動詞・他動詞)', 'imabi — passive, causative, and transitivity pairs'],
+      explain: ['Bunpro — JLPT N4 grammar list (受身形／使役形／自動詞・他動詞／ている・てある)', 'imabi — passive, causative, transitivity pairs, and resultant state'],
     },
   ],
 
@@ -1084,12 +1134,61 @@ const LESSON_CONTENT = {
         { before: '図書館', after: '勉強する。', answer: 'で', hint: 'Location of an action.' },
         { before: '九時', after: '始まります。', answer: 'から', hint: '"From nine o\'clock."' },
         { before: '私', after: '学生です。', answer: 'も', hint: '"I am a student too."' },
+        { before: '公園', after: '写真を撮りました。', answer: 'で', hint: '"Took photos at the park" — で marks where the action happened.' },
+        { before: '先生', after: '質問しました。', answer: 'に', hint: '"Asked the teacher a question" — に marks the target/indirect object.' },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Grammar Set 2 — Until vs. by, and linking two sentences',
+      bigIdea: 'The difference between "until" and "by", plus a reference shelf of the small words that glue one whole sentence onto the next.',
+      explain: ['This shelf covers まで vs までに, and the everyday sentence-connectors それに／そのうえ, それで／だから, and ところが.'],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'まで vs までに — "Until" vs. "by"',
+      diagramSvg: buildParticlePortalDiagram({ leftParticle: 'まで', leftTag: 'continues the whole time', leftWord: '待つ', rightParticle: 'までに', rightTag: 'happens once, by this point', rightWord: '出す' }),
+      wireDiagram: wireParticlePortalDiagram,
+      explain: [
+        'まで marks an ongoing action or state that keeps going all the way up to a point, then stops — 雨がやむまで、店の中で待ちましょう, "Let\'s wait inside the store until the rain stops" (the waiting continues the whole time).',
+        'までに marks a deadline — a one-time action that has to happen at some point no later than X, not continuously. しゅくだいは金曜日までに終わらせてください, "Please finish the homework by Friday" (finishing only happens once, sometime before that day).',
+        'Quick test: if the verb could keep happening right up to the deadline, use まで. If the verb is a one-off action that just needs to land before the deadline, use までに.',
+      ],
+      samples: [
+        { tag: '"I kept playing games on my phone until we arrived at the station." (continuous)', tiles: [{ text: '駅に着くまで', role: 'particle', gloss: 'until arriving at the station', smallGloss: true, isNew: true }, { text: 'ずっとスマホでゲームをしていました', role: 'predicate', gloss: 'kept playing games on my phone', smallGloss: true }], translation: 'Eki ni tsuku made, zutto sumaho de geemu o shite imashita.' },
+        { tag: '"Please finish the homework by Friday." (deadline, one-time)', tiles: [{ text: 'しゅくだいは', role: 'subject', gloss: 'the homework' }, { text: '金曜日までに', role: 'particle', gloss: 'by Friday', isNew: true }, { text: '終わらせてください', role: 'predicate', gloss: 'please finish' }], translation: 'Shukudai wa kinyoubi made ni owarasete kudasai.' },
+      ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'それに／そのうえ・それで／だから・ところが — Linking two sentences',
+      pattern: [{ text: '文A。', role: 'subject' }, { text: 'それに／それで／ところが、文B。', role: 'predicate' }],
+      explain: [
+        'それに and そのうえ add a second, similar point on top of the first — "what\'s more". 山田先生の授業はわかりやすい。それに、いつも面白い, "Yamada-sensei\'s classes are easy to understand. What\'s more, they\'re always interesting."',
+        'それで and だから both mean "so/therefore", stating a result — だから is the plainer, more everyday version. かさを忘れた。だから、コンビニで買った, "I forgot my umbrella. So I bought one at the convenience store."',
+        'ところが introduces an unexpected result — something that went against what was planned or expected, closer to "but, as it turned out". 早めに家を出た。ところが、電車が止まっていて遅刻した, "I left home early. But, as it turned out, the trains had stopped and I was late."',
+      ],
+      samples: [
+        { tag: '"Yamada-sensei\'s classes are easy to understand. What\'s more, they\'re always interesting."', tiles: [{ text: '山田先生の授業はわかりやすい', role: 'subject', gloss: "Yamada-sensei's classes are easy to understand", smallGloss: true }, { text: 'それに、いつも面白い', role: 'predicate', gloss: "what's more, always interesting", isNew: true }], translation: 'Yamada-sensei no jugyou wa wakariyasui. Sore ni, itsumo omoshiroi.' },
+      ],
+      cultureNote: 'A handful more show up constantly in N4 reading passages, worth recognizing even without a dedicated drill: そして／それから ("and then"), けれども／けれど／でも／しかし ("however"), ところで ("by the way"), たとえば ("for example"), それでは／では／じゃあ ("well then").',
+    },
+    {
+      type: 'quiz-fill',
+      sectionLabel: 'Quick check',
+      intro: 'Fill in each blank, then check your answers.',
+      questions: [
+        { before: '駅に着く', after: '、ずっとスマホでゲームをしていました。', answer: 'まで', hint: '"Kept playing games on my phone UNTIL we arrived" — an ongoing action, not a one-time deadline.' },
+        { before: 'しゅくだいは金曜日', after: '終わらせてください。', answer: 'までに', hint: '"Finish the homework BY Friday" — a one-time deadline, not a continuous action.' },
+        { before: '山田先生の授業はわかりやすい。', after: '、いつも面白い。', answer: 'それに', hint: '"What\'s more, always interesting" — adding a second point on top of the first.' },
+        { before: 'かさを忘れた。', after: '、コンビニで買った。', answer: 'だから', hint: '"So I bought one at the convenience store" — stating a plain, everyday result.' },
+        { before: '早めに家を出た。', after: '、電車が止まっていて遅刻した。', answer: 'ところが', hint: '"But, as it turned out, the trains had stopped" — an unexpected result, against what was planned.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (で／に／から／も)', 'Tae Kim\'s Guide to Japanese Grammar — particle reference'],
+      explain: ['Bunpro — JLPT N4 grammar list (で／に／から／も／まで・までに／それに・それで・ところが)', 'Tae Kim\'s Guide to Japanese Grammar — particle reference and sentence connectors'],
     },
   ],
 
@@ -1098,8 +1197,18 @@ const LESSON_CONTENT = {
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 1 — Particles II',
-      bigIdea: 'Four more particle patterns: dividing things evenly, comparing two things, adding emphasis to a location, and saying "from...too".',
-      explain: ['This shelf covers ずつ, N1はN2ほど〜ない, では・には, and からも.'],
+      bigIdea: 'Six more particle patterns: saying "only", dividing things evenly, comparing two things, adding emphasis to a location, saying "from...too", and marking how often something happens.',
+      explain: ['This shelf covers しか〜ない, ずつ, N1はN2ほど〜ない, では・には, からも, and N回に／Nに1回.'],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'しか〜ない — "Only"',
+      pattern: [{ text: 'N', role: 'subject' }, { text: 'しか', role: 'particle' }, { text: '〜ない', role: 'predicate' }],
+      explain: [
+        'しか always pairs with a negative verb, even though the sentence describes something positive in English — 千円しかない literally reads "besides a thousand yen, there isn\'t (any)", which is just how Japanese says "only a thousand yen".',
+        'It replaces は・が・を the same way も does. Easy to mix up with だけ ("just/only", no negative required) — if the verb is negative, it can only be しか, never だけ.',
+      ],
+      samples: [{ tag: '"I only have a thousand yen."', tiles: [{ text: '千円', role: 'subject', gloss: 'a thousand yen' }, { text: 'しかありません', role: 'predicate', gloss: "besides this, don't have", isNew: true }], translation: 'Sen en shika arimasen.' }],
     },
     {
       type: 'grammar-intro',
@@ -1134,18 +1243,33 @@ const LESSON_CONTENT = {
       samples: [{ tag: '"I heard it from my friend too."', tiles: [{ text: '友達からも', role: 'particle', gloss: 'from my friend too', smallGloss: true, isNew: true }, { text: '聞きました', role: 'predicate', gloss: 'heard' }], translation: 'Tomodachi kara mo kikimashita.' }],
     },
     {
+      type: 'grammar-intro',
+      sectionLabel: 'N回に／Nに1回 — Rate / frequency',
+      pattern: [{ text: '期間', role: 'subject' }, { text: 'に', role: 'particle' }, { text: '回数', role: 'predicate' }],
+      explain: ['A specific に marking a ratio of occurrences to a span of time — how many times something happens per period. 一週間に2回, "twice a week"; 一日に3回, "three times a day".'],
+      samples: [{ tag: '"I go swimming twice a week."', tiles: [{ text: '週に2回', role: 'particle', gloss: 'twice a week', isNew: true }, { text: 'プールに行きます', role: 'predicate', gloss: 'go to the pool' }], translation: 'Shuu ni nikai, puuru ni ikimasu.' }],
+    },
+    {
       type: 'quiz-fill',
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
+        { before: '千円', after: 'ありません。', answer: 'しか', hint: '"Only a thousand yen" — しか always pairs with a negative verb.' },
         { before: '一人に二つ', after: '配ります。', answer: 'ずつ', hint: '"Two each."' },
         { before: '東京は大阪', after: '暑くない。', answer: 'ほど', hint: '"Not as hot as Osaka."' },
+        { before: '週', after: '2回、プールに行きます。', answer: 'に', hint: '"Twice A WEEK" — に marks the ratio of occurrences to time span.' },
+        { before: '冷蔵庫に卵が1個', after: 'ありません。', answer: 'しか', hint: '"Only one egg in the fridge" — a second しか sentence with a different noun.' },
+        { before: 'この紙を2枚', after: '配ってください。', answer: 'ずつ', hint: '"Please hand out two sheets to each person."' },
+        { before: '妹は姉', after: '背が高くない。', answer: 'ほど', hint: '"My little sister isn\'t as tall as my older sister."' },
+        { before: 'この店', after: '日本語が話せます。', answer: 'では', hint: '"At THIS store (in particular), you can speak Japanese" — で + は, contrast/emphasis.' },
+        { before: '先生', after: '褒められました。', answer: 'からも', hint: '"I was praised by the teacher too" — から + も.' },
+        { before: '月', after: '1回、映画を見に行きます。', answer: 'に', hint: '"Once A MONTH, I go see a movie" — a second frequency-に sentence with a different span.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (ずつ／ほど〜ない／では・には／からも)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N4 grammar list (しか〜ない／ずつ／ほど〜ない／では・には／からも／頻度のに)', 'JLPT Sensei — N4 grammar reference'],
     },
   ],
 
@@ -1187,7 +1311,15 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank, then check your answers.',
       questions: [
         { before: 'お茶', after: '飲みませんか。', answer: 'でも', hint: '"Tea or something?"' },
-        { before: '電車', after: '行く。', answer: 'で', hint: '"By train."' },
+        { before: '電車', after: '行く。', answer: 'で', hint: '"By train." (method)' },
+        { before: '雨', after: '、出かけます。', answer: 'でも', hint: '"Even if it rains, I\'m going out." (concessive でも)' },
+        { before: 'コーヒー', after: '飲みましょうか。', answer: 'でも', hint: '"Shall we have coffee or something?" (soft suggestion)' },
+        { before: 'このかばんは全部', after: '5000円です。', answer: 'で', hint: '"This bag is 5000 yen in total." (range)' },
+        { before: 'かぜ', after: '学校を休みました。', answer: 'で', hint: '"I took time off school because of a cold." (reason)' },
+        { before: 'この人形は紙', after: '作りました。', answer: 'で', hint: '"This doll was made out of paper." (material)' },
+        { before: 'はさみ', after: '紙を切ります。', answer: 'で', hint: '"Cut the paper with scissors." (method, again)' },
+        { before: 'パーティーに10人', after: '来ました。', answer: 'も', hint: '"As many as 10 people came to the party!" — surprisingly large amount.' },
+        { before: 'お金を1円', after: '持っていません。', answer: 'も', hint: '"I don\'t have even one yen." — も in a negative sentence, "not even".' },
       ],
     },
     {
@@ -1250,6 +1382,9 @@ const LESSON_CONTENT = {
       questions: [
         { before: 'コーヒー', after: '紅茶とかが好きです。', answer: 'とか', hint: '"Things like coffee and tea."' },
         { before: '本を読んだり映画を見', after: 'します。', answer: 'たり', hint: '"Read, watch movies, and so on."' },
+        { before: '映画', after: 'ドラマとかが好きです。', answer: 'とか', hint: '"Things like movies and dramas" — a second とか sentence.' },
+        { before: '週末は買い物し', after: 'テレビを見たりします。', answer: 'たり', hint: '"On weekends I go shopping, watch TV, and so on."' },
+        { before: 'この店は安い', after: '、おいしいです。', answer: 'し', hint: '"This place is cheap, and tasty" — listing qualities additively.' },
       ],
     },
 {
@@ -1284,8 +1419,11 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: 'ちょうど出かける', after: 'です。', answer: 'ところ', hint: '"About to go out."' },
+        { before: 'ちょうど出かける', after: 'です。', answer: 'ところ', hint: '"About to go out." るところ = about to.' },
         { before: '家を出る', after: '雨が降っていた。', answer: '時に', hint: '"When I left the house..."' },
+        { before: '今、電話している', after: 'です。', answer: 'ところ', hint: '"I\'m in the middle of a phone call right now." ているところ = in progress.' },
+        { before: 'ちょうど宿題が終わった', after: 'です。', answer: 'ところ', hint: '"I just finished my homework." たところ = just finished.' },
+        { before: '友達を待っている', after: '、本を読みました。', answer: '間に', hint: '"While waiting for my friend, I read a book."' },
       ],
     },
     {
@@ -1329,8 +1467,11 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '疲れて、早く', after: '。', answer: '寝た', altAnswers: ['ねた'], hint: '"Being tired, I went to bed early."' },
+        { before: '疲れて、早く', after: '。', answer: '寝た', altAnswers: ['ねた'], hint: '"Being tired, I went to bed early." Plain past (寝た), not the polite 寝ました.' },
         { before: '富士山に登った', after: '。', answer: 'ことがある', hint: '"I have climbed Mt. Fuji."' },
+        { before: '急い', after: '、忘れ物をした。', answer: 'で', hint: '"Rushing, I forgot something" — て-form cause.' },
+        { before: '病気', after: '会社を休んだ。', answer: 'で', hint: '"Took time off work because of illness" — noun + で cause.' },
+        { before: '朝ご飯を食べ', after: '。', answer: 'ないことがある', hint: '"I sometimes don\'t eat breakfast" — ないことがある, an occasional habit.' },
       ],
     },
 {
@@ -1366,7 +1507,10 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank, then check your answers.',
       questions: [
         { before: '毎日運動する', after: 'した。', answer: 'ことに', hint: '"I decided to exercise every day."' },
-        { before: '春に', after: '。', answer: 'なる', hint: '"Spring comes."' },
+        { before: '春に', after: '。', answer: 'なる', hint: '"Spring comes." Plain dictionary form (なる), not the polite なります.' },
+        { before: 'たばこを吸わ', after: 'した。', answer: 'ないことに', hint: '"I decided not to smoke" — ないことにする, deciding against something.' },
+        { before: '彼は有名', after: 'なった。', answer: 'に', hint: '"He became famous" — な-adjective + になる.' },
+        { before: '来週の旅行は行か', after: '。', answer: 'ないことになった', hint: '"It\'s been decided we won\'t go on next week\'s trip" — a decision made by circumstance, not by "me".' },
       ],
     },
     {
@@ -1381,8 +1525,8 @@ const LESSON_CONTENT = {
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 3 — Obligation & permission',
-      bigIdea: 'How to say "must", and how to grant or deny permission.',
-      explain: ['This shelf covers なければなりません vs なくてはいけません／ないといけません, and てもいい／なくてもいい／てはいけない.'],
+      bigIdea: 'How to say "must" — formally and casually — and how to grant or deny permission.',
+      explain: ['This shelf covers なければなりません vs なくてはいけません／ないといけません, the casual なきゃ／なくちゃ, and てもいい／なくてもいい／てはいけない.'],
     },
     {
       type: 'grammar-intro',
@@ -1390,6 +1534,13 @@ const LESSON_CONTENT = {
       pattern: [{ text: 'Vない stem', role: 'subject' }, { text: 'なければ／なくては／ないと', role: 'predicate' }],
       explain: ['All mean "must" — なければなりません is more formal/objective; なくては／ないと feel more personal or conversational.'],
       samples: [{ tag: '"I must finish the homework by tomorrow."', tiles: [{ text: '明日までに宿題を', role: 'subject', gloss: 'homework, by tomorrow', smallGloss: true }, { text: '終わらせなければなりません', role: 'predicate', gloss: 'must finish', isNew: true }], translation: 'Ashita made ni shukudai o owarasenakereba narimasen.' }],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'なきゃ／なくちゃ — Casual "must" (spoken contractions)',
+      pattern: [{ text: 'Vない stem', role: 'subject' }, { text: 'なきゃ／なくちゃ', role: 'predicate' }],
+      explain: ['Casual, spoken contractions of なければ／なくては — the いけない／ならない that would normally follow is often dropped entirely in speech, since the listener can fill it in.'],
+      samples: [{ tag: '"Gotta clean my room."', tiles: [{ text: '部屋を', role: 'subject', gloss: 'room' }, { text: 'かたづけなきゃ', role: 'predicate', gloss: 'gotta tidy (it)', isNew: true }], translation: 'Heya o katazukenakya.' }],
     },
     {
       type: 'grammar-intro',
@@ -1407,7 +1558,11 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank, then check your answers.',
       questions: [
         { before: '明日までに宿題を終わらせ', after: 'なりません。', answer: 'なければ', hint: '"Must finish the homework."' },
+        { before: '部屋をかたづけ', after: '。', answer: 'なきゃ', hint: '"Gotta clean my room" — casual spoken contraction of なければ(いけない).' },
         { before: 'ここで写真を撮って', after: 'です。', answer: 'もいい', hint: '"You may take photos here."' },
+        { before: '今日は仕事に行か', after: 'いいです。', answer: 'なくても', hint: '"You don\'t have to go to work today" — なくてもいい, lack of obligation.' },
+        { before: 'ここで泳いで', after: 'いけません。', answer: 'は', hint: '"You must not swim here" — てはいけない, prohibition.' },
+        { before: 'もう帰ら', after: '。', answer: 'なくちゃ', hint: '"I gotta head home now" — casual spoken contraction of なくては(いけない).' },
       ],
     },
 {
@@ -1436,13 +1591,15 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank, then check your answers.',
       questions: [
         { before: '資料を準備して', after: 'ます。', answer: 'おき', hint: '"Prepare in advance."' },
-        { before: '宿題を忘れて', after: '。', answer: 'しまった', hint: '"Ended up forgetting."' },
+        { before: '宿題を忘れて', after: '。', answer: 'しまった', hint: '"Ended up forgetting." Plain past (しまった), not the polite しまいました.' },
+        { before: '飲み物を冷蔵庫に入れて', after: 'ます。', answer: 'おき', hint: '"I\'ll put the drinks in the fridge in advance" — a second ておく sentence.' },
+        { before: 'ケーキを全部食べて', after: '。', answer: 'しまった', hint: '"I ended up eating all the cake" — completion, with a hint of regret.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (なければ／なくては／ないと／てもいい／てはいけない／ておく／てしまう)', 'Tae Kim\'s Guide to Japanese Grammar — obligation and permission'],
+      explain: ['Bunpro — JLPT N4 grammar list (なければ／なくては／ないと／なきゃ・なくちゃ／てもいい／てはいけない／ておく／てしまう)', 'Tae Kim\'s Guide to Japanese Grammar — obligation and permission'],
     },
   ],
 
@@ -1451,8 +1608,8 @@ const LESSON_CONTENT = {
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 4 — Giving, purpose, goals',
-      bigIdea: 'Three verbs for giving and receiving, saying WHY you do something, and setting a goal for yourself.',
-      explain: ['This shelf covers あげる・くれる・もらう, Nのために・Vため, and ように.'],
+      bigIdea: 'Three verbs for giving and receiving, saying WHY you do something (as a goal, or as a cause), and setting a goal for yourself.',
+      explain: ['This shelf covers あげる・くれる・もらう, Nのために・Vため (purpose AND cause), and ように.'],
     },
     {
       type: 'grammar-intro',
@@ -1463,10 +1620,17 @@ const LESSON_CONTENT = {
     },
     {
       type: 'grammar-intro',
-      sectionLabel: 'Nのために・Vため — "For the sake of"',
+      sectionLabel: 'Nのために・Vため — "For the sake of" (purpose)',
       pattern: [{ text: 'Nの', role: 'subject' }, { text: 'ために', role: 'particle' }],
       explain: ['"For the sake of / in order to" — purpose.'],
       samples: [{ tag: '"For my health, I run every day."', tiles: [{ text: '健康のために', role: 'particle', gloss: 'for my health', isNew: true }, { text: '毎日走っています', role: 'predicate', gloss: 'run every day' }], translation: 'Kenkou no tame ni, mainichi hashitte imasu.' }],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'Nのため・Vため — "Because of" (cause)',
+      pattern: [{ text: 'Nの／plain form', role: 'subject' }, { text: 'ため', role: 'particle' }],
+      explain: ['The same ため also states a cause, not just a goal — same word, but no purposeful intent behind it this time. たいふうのため、電車が止まりました, "Because of the typhoon, the trains stopped" (nobody was trying to make trains stop). Tell the two apart from context: a purpose ため answers "what for?"; a cause ため answers "why did this happen?"'],
+      samples: [{ tag: '"Because of the traffic jam, I was late for the meeting."', tiles: [{ text: '渋滞のため', role: 'particle', gloss: 'because of the traffic jam', smallGloss: true, isNew: true }, { text: '会議に遅れました', role: 'predicate', gloss: 'was late for the meeting' }], translation: 'Juutai no tame, kaigi ni okuremashita.' }],
     },
     {
       type: 'grammar-intro',
@@ -1480,14 +1644,22 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '友達が本を', after: '。', answer: 'くれた', hint: '"My friend gave me a book."' },
-        { before: '健康の', after: '毎日走っています。', answer: 'ために', hint: '"For my health."' },
+        { before: '友達が本を', after: '。', answer: 'くれた', hint: '"My friend gave me a book." Plain past (くれた), not the polite くれました.' },
+        { before: '健康の', after: '毎日走っています。', answer: 'ために', hint: '"For my health." (purpose)' },
+        { before: '渋滞の', after: '会議に遅れました。', answer: 'ため', hint: '"Because of the traffic jam." (cause — same word, no purposeful intent this time)' },
+        { before: '私は妹に人形を', after: '。', answer: 'あげた', hint: '"I gave my little sister a doll" — あげる, giving out.' },
+        { before: '誕生日にプレゼントを', after: '。', answer: 'もらった', hint: '"I received a present for my birthday" — もらう, receiving.' },
+        { before: '田中さんが手伝って', after: '。', answer: 'くれた', hint: '"Tanaka-san helped me out" — a second くれる sentence.' },
+        { before: '試験に合格する', after: '、毎日勉強しています。', answer: 'ために', hint: '"In order to pass the exam, I study every day" — a second purpose-ため sentence.' },
+        { before: '地震の', after: '、電車が止まった。', answer: 'ため', hint: '"Because of the earthquake, the trains stopped" — a second cause-ため sentence.' },
+        { before: '漢字が読める', after: '、練習しています。', answer: 'ように', hint: '"I\'m practicing so that I can read kanji" — ように with a potential verb.' },
+        { before: '遅れない', after: '、早く家を出た。', answer: 'ように', hint: '"So I wouldn\'t be late, I left home early" — a second ように sentence.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (あげる・くれる・もらう／のために／ように)', 'imabi — giving/receiving verbs and purpose expressions'],
+      explain: ['Bunpro — JLPT N4 grammar list (あげる・くれる・もらう／のために・ため／ように)', 'imabi — giving/receiving verbs and purpose/cause expressions'],
     },
   ],
 
@@ -1527,6 +1699,14 @@ const LESSON_CONTENT = {
       questions: [
         { before: '漢字が読める', after: 'なった。', answer: 'ように', hint: '"Became able to read kanji."' },
         { before: '', after: '問題は簡単だ。', answer: 'こんな', hint: '"A problem like this."' },
+        { before: '毎日運動する', after: 'しています。', answer: 'ように', hint: '"I make a point of exercising every day" — ようにする, an ongoing effort.' },
+        { before: '自転車に乗れる', after: 'なった。', answer: 'ように', hint: '"I\'ve become able to ride a bicycle" — a second ようになる sentence.' },
+        { before: '', after: '天気の日は出かけたくない。', answer: 'こんな', hint: '"I don\'t want to go out on a day with weather like this" — a second こんな sentence.' },
+        { before: '', after: '話は知りません。', answer: 'そんな', hint: '"I don\'t know a story like that" (that you just mentioned).' },
+        { before: '', after: '高い車は買えません。', answer: 'あんな', hint: '"I can\'t afford a car that expensive" (over there, both know it).' },
+        { before: '', after: '音楽が好きですか。', answer: 'どんな', hint: '"What kind of music do you like?"' },
+        { before: '', after: '難しいとは思わなかった。', answer: 'こんなに', hint: '"I didn\'t think it would be this difficult" — a second こんなに sentence.' },
+        { before: '', after: '頑張っても、うまくいかない。', answer: 'どんなに', hint: '"No matter how hard I try, it doesn\'t go well" — どんなに + concessive ても.' },
       ],
     },
     {
@@ -1572,6 +1752,9 @@ const LESSON_CONTENT = {
       questions: [
         { before: 'もっと寝た', after: 'ですよ。', answer: 'ほうがいい', hint: "You'd better sleep more." },
         { before: '夜遅く食べない', after: 'です。', answer: 'ほうがいい', hint: "It's better not to eat late." },
+        { before: '', after: '書けば、正しいです。', answer: 'こう', hint: '"If you write it this way, it\'s correct" — manner adverb before a verb.' },
+        { before: '薬を飲んだ', after: 'ですよ。', answer: 'ほうがいい', hint: '"You\'d better take medicine" — a second たほうがいい sentence.' },
+        { before: 'たばこは吸わない', after: 'です。', answer: 'ほうがいい', hint: '"It\'s better not to smoke" — a second ないほうがいい sentence.' },
       ],
     },
 {
@@ -1602,6 +1785,9 @@ const LESSON_CONTENT = {
       questions: [
         { before: '早く', after: '！', answer: '行け', altAnswers: ['いけ'], hint: '"Go quickly!" — imperative.' },
         { before: '危ないから、触る', after: '！', answer: 'な', hint: '"Don\'t touch it!" — prohibitive.' },
+        { before: '静かに', after: '！', answer: 'しろ', hint: '"Be quiet!" — imperative of する.' },
+        { before: 'そこに', after: '！', answer: '座れ', altAnswers: ['すわれ'], hint: '"Sit there!" — imperative of 座る.' },
+        { before: 'ここに', after: '！', answer: '入るな', altAnswers: ['はいるな'], hint: '"Don\'t enter here!" — a second 禁止形 sentence.' },
       ],
     },
     {
@@ -1683,6 +1869,12 @@ const LESSON_CONTENT = {
       questions: [
         { before: '漢字を読む', after: 'できます。', answer: 'ことが', hint: '"Am able to read kanji."' },
         { before: '頑張った', after: '失敗した。', answer: 'のに', hint: '"Even though I tried hard..."' },
+        { before: '田中さんが来る', after: '分かりません。', answer: 'かどうか', hint: '"I don\'t know whether Tanaka-san is coming or not" — a second かどうか sentence.' },
+        { before: '何を食べる', after: '決めていません。', answer: 'か', hint: '"I haven\'t decided what to eat" — question word + か embeds a question.' },
+        { before: '私が読んでいる', after: 'は小説です。', answer: 'の', hint: '"What I\'m reading is a novel" — の nominalizes the clause into a noun.' },
+        { before: 'この機械は日本語も英語も話す', after: 'できます。', answer: 'ことが', hint: '"This machine is able to speak both Japanese and English" — a second ことができる sentence.' },
+        { before: 'この部屋からは海が', after: '。', answer: '見えます', hint: '"You can see the ocean from this room" — 見える, naturally visible.' },
+        { before: '疲れた', after: '、早く寝ます。', answer: 'ので', hint: '"Since I\'m tired, I\'ll sleep early" — objective reason.' },
       ],
     },
     {
@@ -1728,6 +1920,9 @@ const LESSON_CONTENT = {
       questions: [
         { before: '何', after: '食べます。', answer: 'でも', hint: '"I\'ll eat anything."' },
         { before: '手伝って', after: 'ますか。', answer: 'いただけ', hint: '"Could you please help me?"' },
+        { before: 'どこ', after: '行けます。', answer: 'でも', hint: '"I can go anywhere" — question word + でも, a second concessive sentence.' },
+        { before: '早く元気になって', after: 'です。', answer: 'ほしい', hint: '"I want you to get well soon" — てほしい, wanting someone else to act.' },
+        { before: 'ちょっと待って', after: '？', answer: 'くれる', hint: '"Can you wait a sec?" — casual くれる request, the informal end of the politeness ladder.' },
       ],
     },
 {
@@ -1764,6 +1959,9 @@ const LESSON_CONTENT = {
       questions: [
         { before: '病院に行った', after: 'どうですか。', answer: 'ら', hint: '"How about going to the hospital?"' },
         { before: '明日は晴れる', after: '思います。', answer: 'と', hint: '"I think it will be sunny tomorrow."' },
+        { before: '少し休んだら', after: '。', answer: 'いかがですか', hint: '"How about resting a little?" — a more polite version of たらどう.' },
+        { before: '田中さんは明日休む', after: '言っていました。', answer: 'と', hint: '"Tanaka-san said he\'d be off tomorrow" — quoting a statement.' },
+        { before: 'この本は面白い', after: '思います。', answer: 'と', hint: '"I think this book is interesting" — a second と思う sentence.' },
       ],
     },
     {
@@ -1821,9 +2019,16 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '先生になる', after: '。', answer: 'つもりです', hint: '"I intend to become a teacher."' },
+        { before: '先生になる', after: '。', answer: 'つもりです', hint: '"I intend to become a teacher." Polite (つもりです), not the plain つもりだ.' },
         { before: '来年、留学しよう', after: '思っています。', answer: 'と', hint: '"Thinking of studying abroad."' },
         { before: '家に着い', after: '電話します。', answer: 'たら', hint: '"When I get home, I\'ll call."' },
+        { before: 'そろそろ', after: '。', answer: '帰ろう', altAnswers: ['かえろう'], hint: '"Let\'s head home soon" — bare volitional よう, casual speech.' },
+        { before: 'もう遅いから、', after: '。', answer: '寝よう', altAnswers: ['ねよう'], hint: '"It\'s late, let\'s go to sleep" — a second bare volitional sentence.' },
+        { before: '今年は旅行し', after: 'です。', answer: 'ないつもり', hint: '"I don\'t intend to travel this year" — negative つもりだ.' },
+        { before: '来月、車を買う', after: 'です。', answer: 'つもり', hint: '"I intend to buy a car next month" — a second つもりだ sentence.' },
+        { before: '週末に部屋を掃除しよう', after: 'います。', answer: 'と思って', hint: '"I\'m thinking of cleaning my room this weekend" — a second ようと思う sentence.' },
+        { before: '時間があっ', after: '、映画を見ましょう。', answer: 'たら', hint: '"If I have time, let\'s watch a movie" — a second たら sentence.' },
+        { before: '安かっ', after: '、買います。', answer: 'たら', hint: '"If it\'s cheap, I\'ll buy it" — a third たら sentence, on an い-adjective.' },
       ],
     },
     {
@@ -1869,6 +2074,14 @@ const LESSON_CONTENT = {
       questions: [
         { before: '行く', after: '一緒に行きましょう。', answer: 'なら', hint: '"If you\'re going, let\'s go together."' },
         { before: 'ボタンを押す', after: 'ドアが開きます。', answer: 'と', hint: '"If you press the button..."' },
+        { before: '急げ', after: '、間に合います。', answer: 'ば', hint: '"If you hurry, you\'ll make it" — general hypothetical ば.' },
+        { before: '時間があ', after: '、手伝います。', answer: 'れば', hint: '"If I have time, I\'ll help" — a second ば-conditional sentence.' },
+        { before: '日本に行く', after: '、京都がおすすめです。', answer: 'なら', hint: '"If you\'re going to Japan, I recommend Kyoto" — なら, based on the topic just raised.' },
+        { before: '肉が嫌い', after: '、魚はどうですか。', answer: 'なら', hint: '"If you dislike meat, how about fish?" — a second なら sentence, on a な-adjective.' },
+        { before: '春になる', after: '、桜が咲きます。', answer: 'と', hint: '"When spring comes, the cherry blossoms bloom" — a natural, automatic result.' },
+        { before: '右に曲がる', after: '、駅が見えます。', answer: 'と', hint: '"If you turn right, you\'ll see the station" — a second と-conditional sentence.' },
+        { before: 'この料理は辛い', after: '。', answer: 'ようです', hint: '"This dish seems spicy" — inference from evidence.' },
+        { before: '彼は忙しい', after: '。', answer: 'みたいです', hint: '"He seems busy" — みたいだ, the more casual version of ようだ.' },
       ],
     },
     {
@@ -1884,7 +2097,7 @@ const LESSON_CONTENT = {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 6 — Appearance & excess',
       bigIdea: 'Guessing what will probably happen, and saying something is done TOO much.',
-      explain: ['This shelf covers そうだ（様態）, でしょう・だろう, and すぎる.'],
+      explain: ['This shelf covers そうだ（様態 and 伝聞）, でしょう・だろう, and すぎる.'],
     },
     {
       type: 'grammar-intro',
@@ -1893,6 +2106,13 @@ const LESSON_CONTENT = {
       wireDiagram: wireEndingSwapDiagram,
       explain: ['"Looks like it will..." based on visual appearance (降る → 降りそう, "looks like it\'ll rain"). Attaches after the same verb-ending change that builds the polite ます-form (drop/change the final u-sound), then そう instead of ます.'],
       samples: [{ tag: '"It looks like it\'s going to rain."', tiles: [{ text: '雨が', role: 'subject', gloss: 'rain' }, { text: '降りそうです', role: 'predicate', gloss: 'looks like it will fall', smallGloss: true, isNew: true }], translation: 'Ame ga furisou desu.' }],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: 'そうだ（伝聞） — Heard that (hearsay)',
+      pattern: [{ text: 'plain form', role: 'subject' }, { text: 'そうだ', role: 'predicate' }],
+      explain: ['A completely different attachment rule from appearance-そう above, even though it looks similar: hearsay そうだ attaches straight onto the PLAIN form with no change at all (降る → 降るそうだ, not 降りそう) — reporting something you heard or read, not your own visual impression.'],
+      samples: [{ tag: '"I heard the new teacher is very kind."', tiles: [{ text: '新しい先生は', role: 'subject', gloss: 'the new teacher' }, { text: 'とても親切だそうです', role: 'predicate', gloss: 'I heard, very kind', isNew: true }], translation: 'Atarashii sensei wa totemo shinsetsu da sou desu.' }],
     },
     {
       type: 'grammar-intro',
@@ -1914,15 +2134,17 @@ const LESSON_CONTENT = {
       sectionLabel: 'Quick check',
       intro: 'Fill in each blank, then check your answers.',
       questions: [
-        { before: '雨が降り', after: 'です。', answer: 'そう', hint: '"Looks like it will rain."' },
+        { before: '雨が降り', after: 'です。', answer: 'そう', hint: '"Looks like it will rain." Appearance-そう — attaches after the ます-stem ending change.' },
+        { before: '新しい先生はとても親切だ', after: 'です。', answer: 'そう', hint: '"I heard the new teacher is very kind." Hearsay-そう — attaches straight onto the plain form, no ending change.' },
         { before: '食べ', after: 'ました。', answer: 'すぎ', hint: '"Ate too much."' },
+        { before: '彼は忙しい', after: '。', answer: 'でしょう', hint: '"He\'s probably busy" — conjecture, polite でしょう.' },
       ],
     },
 {
       type: 'grammar-intro',
       sectionLabel: 'Grammar Set 6 — Ease, explanation, and tone',
-      bigIdea: 'Saying something is easy or hard to do, giving an explanatory nuance to a statement, and the small particles that color HOW you say something.',
-      explain: ['This shelf covers Vやすい／Vにくい, んです／のです, なあ・ね・よ, and かな（あ）・かしら.'],
+      bigIdea: 'Saying something is easy or hard to do, turning an adjective into a measurable noun, giving an explanatory nuance to a statement, and the small particles that color HOW you say something.',
+      explain: ['This shelf covers Vやすい／Vにくい, 形容詞＋さ, んです／のです, なあ・ね・よ, and かな（あ）・かしら.'],
     },
     {
       type: 'grammar-intro',
@@ -1934,6 +2156,14 @@ const LESSON_CONTENT = {
         { tag: '"This book is easy to read."', tiles: [{ text: 'この本は読み', role: 'subject', gloss: 'this book, to read', smallGloss: true }, { text: 'やすいです', role: 'predicate', gloss: 'easy', isNew: true }], translation: 'Kono hon wa yomiyasui desu.' },
         { tag: '"This kanji is hard to write."', tiles: [{ text: 'この漢字は書き', role: 'subject', gloss: 'this kanji, to write', smallGloss: true }, { text: 'にくいです', role: 'predicate', gloss: 'hard', isNew: true }], translation: 'Kono kanji wa kakinikui desu.' },
       ],
+    },
+    {
+      type: 'grammar-intro',
+      sectionLabel: '形容詞＋さ — Turning an adjective into a noun',
+      pattern: [{ text: 'i-Adj (drop い)／na-Adj', role: 'subject' }, { text: '＋さ', role: 'predicate' }],
+      explain: ['さ turns an adjective into a measurable noun — the quality itself, not a description of something. 大きい (big) → 大きさ ("size", the measurable quality). い-adjectives drop the い first; な-adjectives just add さ straight on (便利 → 便利さ, "convenience"). One irregular: いい → よさ, not いさ.'],
+      samples: [{ tag: '"How deep is this pool?"', tiles: [{ text: 'このプールの', role: 'subject', gloss: "this pool's" }, { text: '深さ', role: 'subject', gloss: 'depth', isNew: true }, { text: 'はどのくらいですか', role: 'predicate', gloss: 'about how much is it' }], translation: 'Kono puuru no fukasa wa dono kurai desu ka.' }],
+      cultureNote: 'More examples: 広い (spacious) → 広さ, 便利 (convenient) → 便利さ, 静か (quiet) → 静かさ.',
     },
     {
       type: 'grammar-intro',
@@ -1955,14 +2185,17 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank, then check your answers.',
       questions: [
         { before: 'この本は読み', after: 'です。', answer: 'やすい', hint: '"Easy to read."' },
-        { before: 'どうした', after: 'か。', answer: 'んです', hint: '"What\'s the matter?"' },
+        { before: 'このプールの深', after: 'はどのくらいですか。', answer: 'さ', hint: '"How deep is this pool?" — 深い drops い, adds さ, becomes the noun "depth".' },
+        { before: 'どうした', after: 'か。', answer: 'んです', hint: '"What\'s the matter?" Polite explanatory (んです), not the plain んだ.' },
         { before: 'いい天気です', after: '', answer: 'ね', hint: '"Nice weather, isn\'t it?"' },
+        { before: 'この漢字は書き', after: 'です。', answer: 'にくい', hint: '"This kanji is hard to write" — a second Vにくい sentence.' },
+        { before: 'きれいな景色です', after: '', answer: 'なあ', hint: '"What a beautiful view!" — なあ, personal exclamation.' },
       ],
     },
     {
       type: 'grammar-intro',
       sectionLabel: 'Sources',
-      explain: ['Bunpro — JLPT N4 grammar list (そうだ／でしょう・だろう／すぎる／やすい・にくい／んです／sentence-final particles)', 'JLPT Sensei — N4 grammar reference'],
+      explain: ['Bunpro — JLPT N4 grammar list (そうだ様態・伝聞／でしょう・だろう／すぎる／やすい・にくい／形容詞＋さ／んです／sentence-final particles)', 'JLPT Sensei — N4 grammar reference'],
     },
   ],
 
@@ -2030,7 +2263,7 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank based on the passage.',
       questions: [
         { before: '田中さんはまだ漢字が', after: 'ので、私が手伝いました。', answer: '読めない', altAnswers: ['よめない'], hint: 'Negative potential — "can\'t read".' },
-        { before: '田中さんは私にお菓子を', after: '。', answer: 'くれました', hint: '"Gave (to me)" — くれる.' },
+        { before: '田中さんは私にお菓子を', after: '。', answer: 'くれました', hint: '"Gave (to me)" — くれる. Polite past (くれました), not the plain くれた.' },
       ],
     },
     {
@@ -2067,7 +2300,7 @@ const LESSON_CONTENT = {
       intro: 'Fill in each blank based on the passage.',
       questions: [
         { before: '日本に着い', after: '、すぐに電話します。', answer: 'たら', hint: '"When I arrive..." — tara conditional.' },
-        { before: '大事な書類を家に忘れて', after: '。', answer: 'しまいました', hint: '"Ended up forgetting" — regret nuance.' },
+        { before: '大事な書類を家に忘れて', after: '。', answer: 'しまいました', hint: '"Ended up forgetting" — regret nuance. Polite past (しまいました), not the plain しまった.' },
       ],
     },
     {

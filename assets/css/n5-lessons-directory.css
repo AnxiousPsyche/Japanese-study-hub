@@ -256,3 +256,110 @@
     .n5dir-row__status { grid-area: status; text-align: left; }
     .n5dir-finale { flex-wrap: wrap; }
 }
+
+/* ===========================================================
+   TERMINAL OVERRIDE — user asked to carry the Study Room's dark
+   CRT terminal look (see study-style.css's --term-* vars, and
+   pages/N4/n4-lessons.html's matching n4-lessons-directory.css)
+   onto this page too. n5-lessons.html now wraps its content in
+   .study-room.is-terminal instead of .is-win95, so every rule
+   above this point (all written for the win95 cream palette) is
+   overridden here rather than rewritten in place — keeps the
+   win95 version intact/diffable while this page actually renders
+   in the terminal palette. Scoped strictly under .is-terminal so
+   nothing here can leak onto any other win95-themed page that
+   also happens to load this stylesheet.
+   =========================================================== */
+.study-room.is-terminal .n5dir-folder {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    box-shadow: none;
+}
+.study-room.is-terminal .n5dir-folder__head {
+    color: var(--term-text);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+}
+.study-room.is-terminal .n5dir-folder__head:hover {
+    background: rgba(29, 158, 117, 0.15);
+}
+.study-room.is-terminal .n5dir-folder__chevron {
+    color: var(--term-amber);
+}
+.study-room.is-terminal .n5dir-folder__name {
+    color: var(--term-heading);
+}
+.study-room.is-terminal .n5dir-folder__meta {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .n5dir-listing {
+    border-top: 1px dashed var(--term-border);
+}
+.study-room.is-terminal .n5dir-row {
+    font-family: "Space Mono", monospace;
+}
+.study-room.is-terminal .n5dir-row:hover {
+    background: rgba(29, 158, 117, 0.12);
+}
+.study-room.is-terminal .n5dir-row--group-head {
+    background: rgba(29, 158, 117, 0.08);
+    border-top: 1px dashed var(--term-border);
+}
+.study-room.is-terminal .n5dir-row--group-head-synthetic:hover {
+    background: rgba(29, 158, 117, 0.08);
+}
+.study-room.is-terminal .n5dir-row--sub::before {
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .n5dir-row__id {
+    color: var(--term-amber);
+}
+.study-room.is-terminal .n5dir-row__name {
+    color: var(--term-text);
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+}
+.study-room.is-terminal .n5dir-row__status {
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .n5dir-row.is-done .n5dir-row__status {
+    color: var(--term-amber);
+}
+.study-room.is-terminal .n5dir-row.is-done {
+    background: rgba(29, 158, 117, 0.08);
+}
+.study-room.is-terminal .n5dir-row--quiz {
+    border-top: 1px dashed var(--term-border);
+    background: rgba(111, 179, 230, 0.1);
+}
+.study-room.is-terminal .n5dir-row--quiz .n5dir-row__id {
+    color: var(--term-new);
+}
+.study-room.is-terminal .n5dir-row--quiz.is-done {
+    background: rgba(29, 158, 117, 0.08);
+}
+.study-room.is-terminal .n5dir-finale {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    box-shadow: none;
+}
+.study-room.is-terminal .n5dir-finale:hover {
+    background: rgba(29, 158, 117, 0.1);
+}
+.study-room.is-terminal .n5dir-finale.is-done {
+    background: rgba(29, 158, 117, 0.12);
+}
+.study-room.is-terminal .n5dir-finale__title {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    color: var(--term-amber);
+}
+.study-room.is-terminal .n5dir-finale.is-done .n5dir-finale__title {
+    color: var(--term-text);
+}
+.study-room.is-terminal .n5dir-finale__sub {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .n5dir-finale__count {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text-dim);
+}

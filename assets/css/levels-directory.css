@@ -187,3 +187,84 @@
     .lvldir-row__desc { grid-area: desc; }
     .lvldir-row__status { grid-area: status; text-align: left; margin-top: 4px; }
 }
+
+/* ===========================================================
+   TERMINAL OVERRIDE — same reasoning as n5-lessons-directory.css's
+   own terminal-override block: levels-dashboard.html now wraps its
+   content in .study-room.is-terminal instead of .is-win95, so the
+   win95-cream rules above are overridden here rather than rewritten
+   in place, carrying the Study Room's dark CRT palette onto the
+   Building Directory too. Scoped under .is-terminal only.
+   =========================================================== */
+.study-room.is-terminal .lvldir-board {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    box-shadow: none;
+}
+.study-room.is-terminal .lvldir-board__header {
+    border-bottom: 1px solid var(--term-border);
+}
+.study-room.is-terminal .lvldir-board__title {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    color: var(--term-heading);
+}
+.study-room.is-terminal .lvldir-board__sub {
+    font-family: "Space Mono", monospace;
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .lvldir-row {
+    background: var(--term-panel);
+    border-color: var(--term-border);
+    box-shadow: none;
+}
+.study-room.is-terminal .lvldir-row__floor {
+    font-family: "VT323", "Space Mono", monospace;
+    color: var(--term-text-dim);
+    background: var(--term-bg);
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, .5);
+}
+.study-room.is-terminal .lvldir-row__level {
+    font-family: "Space Mono", ui-monospace, Consolas, monospace;
+    color: var(--term-heading);
+}
+.study-room.is-terminal .lvldir-row__desc {
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .lvldir-row__status {
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .lvldir-row.is-locked {
+    border-color: var(--term-border);
+    opacity: .6;
+}
+.study-room.is-terminal .lvldir-row.is-locked .lvldir-row__floor {
+    color: var(--term-text-dim);
+    background: var(--term-bg);
+    opacity: .6;
+}
+.study-room.is-terminal .lvldir-row.is-locked .lvldir-row__level,
+.study-room.is-terminal .lvldir-row.is-locked .lvldir-row__desc {
+    color: var(--term-text-dim);
+}
+.study-room.is-terminal .lvldir-row.is-open {
+    background: var(--term-panel);
+    cursor: pointer;
+}
+.study-room.is-terminal .lvldir-row.is-open .lvldir-row__floor {
+    color: var(--term-amber);
+    background: var(--term-bg);
+    box-shadow:
+        inset 0 0 8px rgba(0, 0, 0, .5),
+        0 0 8px rgba(250, 199, 117, .45);
+}
+.study-room.is-terminal .lvldir-row.is-open:hover {
+    background: rgba(29, 158, 117, 0.15);
+    box-shadow: none;
+}
+.study-room.is-terminal .lvldir-row.is-open:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+.study-room.is-terminal .lvldir-row.is-open .lvldir-row__status {
+    color: var(--term-amber);
+}

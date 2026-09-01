@@ -913,6 +913,30 @@
     if (state) state.pulseIntervals = [];
   }
 
+  // Auto-shrinks any word-tile gloss caption that wraps onto a second
+  // line, so its tile's total height still matches its single-line
+  // neighbors in the same row. .lesson-box__sentence-row uses
+  // align-items:flex-end, so a taller tile visibly shifts its kana text
+  // up relative to the rest of the row the moment its gloss wraps (e.g.
+  // a two-word caption like "let's watch" next to one-word captions like
+  // "together"/"movie"). This runs automatically on every render rather
+  // than requiring each gloss to opt into the existing smallGloss/
+  // is-small flag by hand, so any sample sentence — old, current, or
+  // future — self-heals instead of needing per-tile data edits.
+  function fixWordTileAlignment() {
+    const rows = els.content.querySelectorAll('.lesson-box__sentence-row');
+    rows.forEach((row) => {
+      row.querySelectorAll('.lesson-box__word-tile-gloss').forEach((g) => {
+        if (g.classList.contains('is-small')) return; // already explicitly flagged
+        const fontSize = parseFloat(getComputedStyle(g).fontSize) || 20;
+        const singleLineHeight = fontSize * 1.4;
+        if (g.scrollHeight > singleLineHeight * 1.4) {
+          g.classList.add('is-small');
+        }
+      });
+    });
+  }
+
   function startPulseAnimations() {
     const rows = els.content.querySelectorAll('.lesson-box__sentence-row');
     rows.forEach((row) => {
@@ -1303,6 +1327,7 @@
       }
     }
     spriteStyle(els.ambientCat, state.catImagePath, 40);
+    fixWordTileAlignment();
     startPulseAnimations();
   }
 

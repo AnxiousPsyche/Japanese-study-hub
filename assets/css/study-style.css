@@ -363,25 +363,25 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 24px 28px;
-    line-height: 1.7;
+    line-height: 1.55;
     background: var(--term-bg);
 }
 .study-instruction h2 {
     font-family: "VT323", monospace;
-    font-size: 26px;
+    font-size: 25px;
     color: var(--term-heading);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
     font-family: "VT323", monospace;
-    font-size: 19px;
+    font-size: 18px;
     color: var(--term-label);
-    margin: 24px 0 8px;
+    margin: 18px 0 8px;
 }
 .study-instruction p {
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     color: var(--term-text-dim);
-    font-size: 14px;
+    font-size: 13px;
 }
 /* Highlight the actual word/phrase being discussed against the dimmer
    description text around it — the description keeps --term-text-dim,
@@ -395,18 +395,18 @@
     border: 1px solid var(--term-border);
     border-left: 3px solid var(--term-border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    margin: 16px 0;
+    padding: 12px 16px;
+    margin: 10px 0;
 }
 .study-instruction .grammar-box__title {
     font-family: "VT323", monospace;
-    font-size: 23px;
+    font-size: 22px;
     color: var(--term-heading);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 .study-instruction .grammar-box code {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 20px;
+    font-size: 19px;
     color: var(--term-amber);
     background: rgba(250, 199, 117, 0.12);
     padding: 2px 8px;
@@ -433,7 +433,7 @@
 /* Caption under a diagram — small/dim, same "readable font at caption
    size" rule as everywhere else in this file (no VT323 here). */
 .grammar-box__diagram-caption {
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
     color: var(--term-text-dim);
     margin: 4px 0 0;
@@ -937,6 +937,54 @@
 .masu-diagram .masu-row .no-step { min-width: 120px; }
 .masu-diagram .masu-arrow-down { font-size: 16px; color: var(--term-text-dim); font-weight: 700; line-height: 1; }
 
+/* Animated ending-swap diagram -- ported from the N4 Study Room / Adventure
+   Room's own lesson-box.css (.lesson-box__clawform*: a diagonal claw-mark
+   slash cuts through the old ending, then the new ending pops in, replayable
+   via a small button) per explicit request to bring that exact look to N5's
+   own verb-conjugation diagrams instead of the older single-play horizontal
+   .slash-char/.add-char strike above. Re-themed onto this file's --term-*
+   tokens rather than lesson-box.css's --jr-*/--lb-role-* ones so it matches
+   this page's own green terminal skin without a second stylesheet. One verb
+   ending only (s11a/b/c's ます-form, s13's て-form) -- adjective diagrams
+   (s10a/c) keep the older .slash-char effect, since it already suits a
+   same-word ending swap and wasn't the one asked to change. Paired with
+   buildEndingSwapDiagram()/wireClawforms() in study-room.js. */
+.n5-clawform { display: flex; align-items: center; justify-content: center; gap: 4px; font-family: "VT323", "DotGothic16", monospace; font-size: 30px; flex-wrap: wrap; margin: 10px 0 2px; }
+.n5-clawform-stem { color: var(--term-text); }
+.n5-clawform-old { position: relative; display: inline-block; color: #e2685f; }
+.n5-clawform-old.is-slashed { opacity: 0; transform: translateY(8px) rotate(-4deg); transition: opacity 0.25s ease, transform 0.25s ease; }
+.n5-clawform-slash { position: absolute; left: -3px; top: -8px; width: 34px; height: 34px; pointer-events: none; overflow: visible; }
+.n5-clawform-slash line { stroke: #e2413a; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 46; stroke-dashoffset: 46; }
+.n5-clawform-slash.is-drawn line { stroke-dashoffset: 0; transition: stroke-dashoffset 0.16s ease; }
+.n5-clawform-arrow { color: var(--term-text-dim); font-size: 26px; margin: 0 4px; }
+.n5-clawform-new { display: inline-block; color: var(--term-border); opacity: 0; transform: scale(0.4); }
+.n5-clawform-new.is-in { opacity: 1; transform: scale(1); transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.n5-clawform-replay { display: block; margin: 0 auto 10px; font-family: "Space Mono", monospace; font-size: 11px; background: transparent; border: 1px solid var(--term-text-dim); color: var(--term-text-dim); padding: 4px 9px; border-radius: 4px; cursor: pointer; }
+.n5-clawform-replay:hover { color: var(--term-text); border-color: var(--term-border); }
+
+/* Word-tile sample sentence -- ported from the same source's
+   .lesson-box__sentence-row/.lesson-box__word-tile* (underlined role-colored
+   text + gloss caption + romaji line + a NEW badge for first-appearance
+   vocab), reusing the site's existing 4-role color set from .conv-hl above
+   as an underline instead of a filled chip. A small color legend renders
+   once per lesson, above the first sample block, same "explain the colors
+   once" convention as lesson-box.js's own auto-shown legend. */
+.n5-sample-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 10px; border: 1px dashed var(--term-border); border-radius: 4px; margin: 10px 0; font-size: 10px; color: var(--term-text-dim); }
+.n5-sample-legend__item { display: flex; align-items: center; gap: 5px; }
+.n5-sample-legend__swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.n5-sample { border: 1px dashed var(--term-border); border-radius: 4px; padding: 14px 14px 10px; margin: 10px 0; }
+.n5-sample__tag { font-size: 12px; color: var(--term-text-dim); margin-bottom: 12px; }
+.n5-sample__row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 6px; }
+.n5-sample__tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.n5-sample__tile-text { font-family: "VT323", "DotGothic16", monospace; font-size: 25px; padding-bottom: 2px; border-bottom: 3px solid; position: relative; }
+.n5-sample__tile-text.role-subject { color: #6fb3e6; border-color: #6fb3e6; }
+.n5-sample__tile-text.role-particle { color: #f0c674; border-color: #f0c674; }
+.n5-sample__tile-text.role-predicate { color: #e2685f; border-color: #e2685f; }
+.n5-sample__tile-text.role-copula { color: #ffffff; border-color: #ffffff; }
+.n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 9px; color: #201d54; background: #f0c674; padding: 1px 4px; letter-spacing: 0.04em; }
+.n5-sample__tile-gloss { font-size: 10px; color: var(--term-text-dim); text-align: center; max-width: 110px; }
+.n5-sample__romaji { font-size: 11px; color: var(--term-text-dim); font-family: "Space Mono", monospace; margin-top: 4px; }
+
 /* Impostor-verb table (godan verbs shaped like ichidan る-verbs) */
 .impostor-table-wrap { overflow-x: auto; margin: 10px 0; }
 .impostor-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -1359,6 +1407,76 @@
 }
 .stpov-builder__next.show { display: inline-block; }
 
+/* s16's は-vs-が interactive comparison widget, driven by
+   window.NekoWaGa in study-room.js. A single shared example sentence
+   swaps its particle live when either toggle button is clicked, with
+   the highlighted particle and the English meaning updating together
+   -- same word, same rest-of-sentence, only the particle and the
+   meaning change, side by side instead of two static examples the
+   learner has to compare by eye. "Next example" cycles a couple of
+   sentence pairs so the contrast isn't tied to just one word. */
+.waga-compare { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 8px 0; }
+.waga-toggle { display: flex; gap: 10px; }
+.waga-btn {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--term-text);
+    background: rgba(29, 158, 117, 0.1);
+    border: 2px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 8px 22px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.waga-btn:hover { border-color: var(--term-amber); }
+.waga-btn.is-active { background: var(--term-amber); border-color: var(--term-amber); color: var(--term-bg); }
+.waga-sentence {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 24px;
+    color: var(--term-heading);
+    text-align: center;
+}
+.waga-sentence .conv-hl { font-size: 24px; padding: 1px 8px; }
+.waga-readout {
+    text-align: center;
+    font-size: 13px;
+    color: var(--term-text-dim);
+    max-width: 420px;
+}
+.waga-readout strong { color: var(--term-amber); }
+.waga-next {
+    font-family: "Space Mono", monospace;
+    font-size: 11.5px;
+    color: var(--term-text);
+    background: transparent;
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    cursor: pointer;
+}
+.waga-next:hover { border-color: var(--term-amber); color: var(--term-amber); }
+
+/* s16's ordered "every particle at a glance" reference list. */
+.particle-glance { display: flex; flex-direction: column; gap: 10px; margin: 6px 0; counter-reset: particleglance; }
+.particle-glance__row { display: flex; align-items: baseline; gap: 10px; }
+.particle-glance__row::before {
+    counter-increment: particleglance;
+    content: counter(particleglance) ".";
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--term-text-dim);
+    min-width: 16px;
+}
+.particle-glance__chip {
+    font-family: "DotGothic16", "VT323", monospace;
+    font-size: 16px;
+    min-width: 28px;
+    text-align: center;
+}
+.particle-glance__meaning { font-size: 12.5px; color: var(--term-text-dim); }
+.particle-glance__meaning strong { color: var(--term-text); font-weight: 700; }
+
 /* s07b's bread-counting stack (つ counter) — each row ACCUMULATES: row 1
    shows one bread, row 2 shows breads 1+2 together, ... row 10 shows all
    ten — so the count is something you can literally count on screen, not
@@ -1516,7 +1634,7 @@
 }
 .word-bank__chip {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 16px;
+    font-size: 15px;
     padding: 6px 14px;
     border-radius: 20px;
     border: 1px solid;
@@ -1542,7 +1660,7 @@
     color: var(--term-amber);
 }
 .word-bank__hint {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
     margin-top: 4px;
 }
@@ -1550,7 +1668,7 @@
 /* Reference-chip variant — non-clickable word-bank reminder shown above the
    practice input (Study Room Word-Bank Sentence Builder, "hybrid" input). */
 .word-bank__chip--ref {
-    font-size: 13px;
+    font-size: 12px;
     padding: 4px 11px;
     opacity: 0.85;
     cursor: default;
@@ -1570,7 +1688,7 @@
 }
 .word-bank-box__title {
     font-family: "VT323", monospace;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--term-amber);
     margin-bottom: 6px;
 }
@@ -1585,7 +1703,7 @@
     margin-top: 0;
 }
 .word-bank-box__note {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
     margin: 10px 0 0;
     font-style: italic;
@@ -1598,7 +1716,7 @@
     border-top: 1px dashed var(--term-border);
 }
 .word-bank-box__preview-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
     font-style: italic;
     margin-bottom: 6px;
@@ -1632,7 +1750,7 @@
     border-top: 1px dashed var(--term-border);
 }
 .word-bank-box__new-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-new);
     font-style: italic;
     margin-bottom: 6px;
@@ -1656,7 +1774,7 @@
 
 /* Culture-note paragraphs inside a grammar box */
 .grammar-box__culture {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--term-text-dim);
     background: var(--term-bg);
     border-radius: var(--radius);
@@ -1667,7 +1785,7 @@
 
 /* Sources line under a lesson's content */
 .sources-line {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
 }
 
@@ -1676,7 +1794,7 @@
    terminal's green/amber accent colors, so it reads as a hyperlink at
    a glance the way the rest of the page's amber-on-dark text doesn't). */
 .examples-more {
-    font-size: 12.5px;
+    font-size: 11.5px;
     color: var(--term-text-dim, #7fa89c);
     margin: 6px 0 0;
 }
@@ -1696,7 +1814,7 @@
 .vocab-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 12px;
 }
 .vocab-table td {
     padding: 5px 10px 5px 0;
@@ -1706,7 +1824,7 @@
 }
 .vocab-table__jp {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 17px;
+    font-size: 16px;
     color: var(--term-text);
     line-height: 2.6;
 }
@@ -1725,7 +1843,7 @@
 .vocab-table__jp rt,
 .example-sentence rt {
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0;
     color: var(--term-label);
@@ -1742,7 +1860,7 @@
     color: var(--term-amber);
 }
 .vocab-table__romaji {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
 }
 .vocab-table__en {
@@ -1767,10 +1885,10 @@
     background: var(--term-bg);
     border: 1px solid var(--term-border);
     border-radius: var(--radius);
-    padding: 14px 20px;
-    margin: 12px 0;
+    padding: 10px 16px;
+    margin: 8px 0;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 20px;
+    font-size: 19px;
     color: var(--term-text);
     letter-spacing: 1px;
     display: flex;
@@ -1779,7 +1897,7 @@
     flex-wrap: wrap;
 }
 .pattern-box__label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
     font-family: "Space Mono", monospace;
     letter-spacing: 0;
@@ -1802,24 +1920,24 @@
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 4px;
-    margin: 8px 0;
-    padding-top: 20px;
+    gap: 5px;
+    margin: 10px 0;
+    padding-top: 22px;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 18px;
+    font-size: 21px;
     color: var(--term-text);
 }
 .example-sentence__romaji {
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--term-label);
     font-family: "Space Mono", monospace;
-    margin-left: 8px;
+    margin-left: 9px;
 }
 .example-sentence__english {
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--term-text-dim);
     font-family: "Space Mono", monospace;
-    margin-left: 4px;
+    margin-left: 5px;
 }
 
 /* === Practice Column (right — practice) === */
@@ -1844,7 +1962,7 @@
 }
 .study-practice__reminder {
     color: var(--term-label);
-    font-size: 12px;
+    font-size: 11px;
     margin-bottom: 14px;
     padding-bottom: 10px;
     border-bottom: 1px dashed var(--term-border);
@@ -1853,7 +1971,7 @@
     color: var(--term-text);
     margin-bottom: 8px;
     font-family: "VT323", monospace;
-    font-size: 17px;
+    font-size: 16px;
 }
 .study-practice__prompt strong {
     color: var(--term-amber);
@@ -1867,7 +1985,7 @@
 .study-practice__input {
     flex: 1;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 22px;
+    font-size: 21px;
     padding: 12px 18px;
     background: var(--term-panel);
     border: 1px solid var(--term-border);
@@ -1906,7 +2024,7 @@
 }
 .study-match-choice {
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
-    font-size: 15px;
+    font-size: 14px;
     text-align: left;
     padding: 12px 16px;
     border: 1px solid var(--term-border);
@@ -1998,7 +2116,7 @@
     margin-top: 8px;
     padding: 10px 16px;
     border-radius: var(--radius);
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.5;
     display: none;
     border: 1px solid;
@@ -2048,11 +2166,159 @@
     transition: width 0.4s ease;
 }
 .study-progress__text {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--term-label);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
+
+/* Quiz-set heading + interstitial (Quiz 1: Fill in the Blank / Quiz 2:
+   Word Order) — shared by study-room.js and study-room-n4.js, both of
+   which tag every exercise .quizSet and route through the same DOM ids. */
+.study-quiz-heading {
+    font-family: "VT323", monospace;
+    font-size: 14px;
+    color: var(--term-amber);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+}
+.study-quiz-divider {
+    display: none;
+}
+.study-quiz-divider.is-visible {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    text-align: center;
+    background: var(--term-bg);
+}
+.study-quiz-divider__heading {
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    color: var(--term-heading);
+    margin: 0;
+}
+.study-quiz-divider__msg {
+    font-size: 12px;
+    color: var(--term-text-dim);
+    margin: 0 0 10px;
+}
+.study-quiz-divider__btn {
+    font-family: var(--title-font);
+    font-size: 9px;
+    padding: 12px 24px;
+    border: 1px solid var(--term-amber);
+    border-radius: var(--radius);
+    background: var(--term-amber);
+    color: var(--term-bg);
+    cursor: pointer;
+}
+.study-quiz-divider__btn:hover {
+    background: #fdd78e;
+}
+
+/* Quiz Set 2 — word-order / star-slot exercise. Click-to-place tiles: a
+   tray of scrambled chunk chips above, click one to append it to the next
+   empty slot; click a filled slot to send it back to the tray. The slot
+   at .ex.starIndex gets a gold star badge (JLPT-style "which word goes in
+   the starred position" framing). */
+.study-wordorder__slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+    min-height: 44px;
+}
+.study-wordorder__slot {
+    min-width: 60px;
+    padding: 7px 12px;
+    border: 1px dashed var(--term-border);
+    border-radius: var(--radius);
+    background: var(--term-panel);
+    color: var(--term-text);
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+.study-wordorder__slot[disabled] {
+    cursor: default;
+}
+.study-wordorder__slot--star {
+    border-color: var(--term-amber);
+}
+.study-wordorder__slot--star::before {
+    content: "\2605";
+    display: block;
+    font-size: 9px;
+    color: var(--term-amber);
+    margin-bottom: 2px;
+}
+.study-wordorder__slot--filled {
+    border-style: solid;
+    background: rgba(29, 158, 117, 0.14);
+}
+.study-wordorder__slot--empty {
+    color: var(--term-label);
+    font-family: "Space Mono", monospace;
+    font-size: 10px;
+}
+.study-wordorder__slot.is-correct {
+    border-color: var(--term-border);
+    background: rgba(29, 158, 117, 0.22);
+}
+.study-wordorder__slot.is-wrong {
+    border-color: var(--term-bad-border);
+    background: rgba(163, 45, 45, 0.22);
+}
+.study-wordorder__tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--term-border);
+    margin-bottom: 8px;
+}
+.study-wordorder__chip {
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 18px;
+    padding: 7px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--term-border);
+    background: transparent;
+    color: var(--term-text);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+}
+.study-wordorder__chip:hover {
+    background: rgba(29, 158, 117, 0.14);
+    transform: scale(1.03);
+}
+
+/* Font-size -1px pass, N4 half — lesson-box.css is NOT a Study Room-only
+   file, it's the Adventure Room's own LessonBox popup stylesheet, reused
+   verbatim by study-room-n4.js (see that file's header comment). Editing
+   lesson-box.css's rules directly would shrink the Phaser game's dialogue
+   text too, which is out of scope here — so these are scoped overrides
+   under .study-room (the wrapper only Study Room pages have; the
+   Adventure Room's DOM never carries it) instead. */
+.study-room .lesson-box__word-tile-text { font-size: 31px; }
+.study-room .lesson-box__word-tile-gloss { font-size: 19px; }
+.study-room .lesson-box__word-tile-gloss.is-small { font-size: 13px; }
+.study-room .lesson-box__section-label { font-size: 19px; }
+.study-room .lesson-box__big-idea { font-size: 24px; }
+.study-room .lesson-box__pattern-line { font-size: 30px; }
+.study-room .lesson-box__explain-text { font-size: 24px; }
+.study-room .lesson-box__culture-note { font-size: 22px; }
+.study-room .lesson-box__mini-label { font-size: 16px; }
+.study-room .lesson-box__sample-tag { font-size: 20px; }
+.study-room .lesson-box__sample-translation { font-size: 20px; }
 
 /* Completion overlay */
 .study-complete {
@@ -2071,14 +2337,14 @@
 }
 .study-complete__heading {
     font-family: "VT323", monospace;
-    font-size: 22px;
+    font-size: 21px;
     color: var(--term-amber);
     margin: 0;
     max-width: 420px;
 }
 .study-complete__msg {
     color: var(--term-text-dim);
-    font-size: 14px;
+    font-size: 13px;
     max-width: 400px;
     margin: 0;
 }
@@ -2103,14 +2369,14 @@
 }
 .study-complete__tile-value {
     font-family: "VT323", monospace;
-    font-size: 22px;
+    font-size: 21px;
     color: var(--term-text);
     margin: 0;
     font-variant-numeric: tabular-nums;
 }
 .study-complete__note {
     color: var(--term-label);
-    font-size: 12px;
+    font-size: 11px;
     font-style: italic;
     margin: 0;
 }
@@ -2144,12 +2410,12 @@
 }
 .checkpoint-quiz__title {
     font-family: "VT323", monospace;
-    font-size: 24px;
+    font-size: 23px;
     color: var(--term-heading);
     margin-bottom: 4px;
 }
 .checkpoint-quiz__intro {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--term-text-dim);
     margin-bottom: 18px;
 }
@@ -2165,7 +2431,7 @@
     padding: 14px 16px;
 }
 .checkpoint-quiz__prompt {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--term-text);
     margin-bottom: 10px;
     line-height: 1.5;
@@ -2177,7 +2443,7 @@
 }
 .checkpoint-quiz__choice {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 16px;
+    font-size: 15px;
     text-align: left;
     padding: 8px 14px;
     border-radius: var(--radius);
@@ -2201,13 +2467,13 @@
     opacity: 0.85;
 }
 .checkpoint-quiz__fill {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--term-text);
     line-height: 2.2;
 }
 .checkpoint-quiz__input {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 16px;
+    font-size: 15px;
     padding: 4px 8px;
     margin: 0 4px;
     border-radius: 4px;
@@ -2223,7 +2489,7 @@
     align-self: flex-start;
     margin-top: 18px;
     font-family: "VT323", monospace;
-    font-size: 17px;
+    font-size: 16px;
     padding: 10px 24px;
     border-radius: var(--radius);
     border: 1px solid var(--term-border);
@@ -2245,11 +2511,11 @@
 }
 .checkpoint-quiz__score {
     font-family: "VT323", monospace;
-    font-size: 28px;
+    font-size: 27px;
     color: var(--term-amber);
 }
 .checkpoint-quiz__xp {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--term-label);
     margin-bottom: 14px;
 }
@@ -2261,7 +2527,7 @@
     border-bottom: 1px dashed var(--term-border);
 }
 .checkpoint-quiz__result-mark {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     flex-shrink: 0;
     width: 18px;
@@ -2269,12 +2535,162 @@
 .checkpoint-quiz__result-mark.is-correct { color: var(--term-border); }
 .checkpoint-quiz__result-mark.is-wrong { color: var(--term-bad-text); }
 .checkpoint-quiz__result-correct {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--term-text);
 }
 .checkpoint-quiz__result-yours {
+    font-size: 11px;
+    color: var(--term-text-dim);
+}
+
+/* ===== MONDAI QUIZ =====
+   The per-lesson practice section for every regular shelf (not the
+   quizGroup checkpoint reviews, which already use the sheet-style
+   renderCheckpointQuiz() above and keep doing so) — two もんだい
+   (mondai/"problem set") blocks of 5 multiple-choice questions each,
+   both shown at once on one sheet, graded together on Submit. Modeled
+   directly on a real JLPT practice-book page (もんだい1 / もんだい2, each
+   with its own instruction line, numbered questions, four numbered
+   choices) rather than invented from scratch. Result rows reuse
+   .checkpoint-quiz__result-row/-mark/-correct/-yours verbatim (see
+   above) — a graded MC row is the same shape regardless of which sheet
+   it came from, so no need for a second copy of that CSS. Rendered by
+   renderMondaiQuiz() in study-room.js / study-room-n4.js — same
+   #mondaiQuiz container/terminal-only styling convention as
+   #checkpointQuiz above (no extra scoping needed since it only ever
+   renders on the terminal page). */
+#mondaiQuiz {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px;
+    overflow-y: auto;
+}
+.mondai-quiz__title {
+    font-family: "VT323", monospace;
+    font-size: 23px;
+    color: var(--term-heading);
+    margin-bottom: 4px;
+}
+.mondai-quiz__intro {
     font-size: 12px;
     color: var(--term-text-dim);
+    margin-bottom: 20px;
+}
+.mondai-quiz__section + .mondai-quiz__section {
+    margin-top: 28px;
+}
+.mondai-quiz__section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    border-bottom: 2px solid var(--term-border);
+}
+.mondai-quiz__section-label {
+    font-family: "VT323", monospace;
+    font-size: 19px;
+    letter-spacing: 0.03em;
+    color: var(--term-amber);
+    white-space: nowrap;
+}
+.mondai-quiz__section-instruction {
+    font-size: 12px;
+    color: var(--term-text-dim);
+    line-height: 1.5;
+}
+.mondai-quiz__sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.mondai-quiz__block {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+.mondai-quiz__prompt {
+    display: flex;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--term-text);
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+.mondai-quiz__prompt-num {
+    flex-shrink: 0;
+    font-family: "VT323", monospace;
+    font-size: 15px;
+    color: var(--term-amber);
+}
+.mondai-quiz__prompt-text u {
+    text-decoration-color: var(--term-border);
+    text-underline-offset: 3px;
+}
+.mondai-quiz__choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.mondai-quiz__choice {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 15px;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--term-border);
+    background: transparent;
+    color: var(--term-text-dim);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.mondai-quiz__choice-num {
+    color: var(--term-text-dim);
+    font-size: 13px;
+}
+.mondai-quiz__choice:hover:not(:disabled) {
+    border-color: var(--term-text);
+    color: var(--term-text);
+}
+.mondai-quiz__choice.is-selected {
+    background: rgba(29, 158, 117, 0.28);
+    border-color: var(--term-border);
+    color: var(--term-text);
+}
+.mondai-quiz__choice.is-selected .mondai-quiz__choice-num { color: var(--term-text); }
+.mondai-quiz__choice:disabled { cursor: default; opacity: 0.85; }
+.mondai-quiz__submit {
+    align-self: flex-start;
+    margin-top: 22px;
+    font-family: "VT323", monospace;
+    font-size: 16px;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--term-border);
+    background: var(--term-border);
+    color: var(--term-bg);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.mondai-quiz__submit:hover:not(:disabled) {
+    background: var(--term-text-dim);
+    border-color: var(--term-text-dim);
+}
+.mondai-quiz__submit:disabled { opacity: 0.5; cursor: default; }
+.mondai-quiz__result { margin-top: 20px; }
+.mondai-quiz__score {
+    font-family: "VT323", monospace;
+    font-size: 27px;
+    color: var(--term-amber);
+}
+.mondai-quiz__xp {
+    font-size: 11px;
+    color: var(--term-label);
+    margin-bottom: 14px;
 }
 
 /* Responsive */
