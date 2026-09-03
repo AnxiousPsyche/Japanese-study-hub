@@ -61,7 +61,7 @@
 }
 .study-header__back {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     color: #fff;
     text-decoration: none;
     padding: 6px 14px;
@@ -75,14 +75,14 @@
 }
 .study-header__title {
     font-family: "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: #fff;
     margin: 0;
     flex: 1;
 }
 .study-header__adventure-btn {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     color: #fff;
     text-decoration: none;
     padding: 6px 14px;
@@ -110,7 +110,7 @@
 }
 .study-header__toggle-seg {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     color: rgba(255,255,255,0.75);
     text-decoration: none;
     padding: 6px 14px;
@@ -130,7 +130,7 @@
     color: var(--text-main);
 }
 .study-header__level {
-    font-size: 11px;
+    font-size: 12.6px;
     color: rgba(255,255,255,0.7);
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -147,7 +147,7 @@
    only — dashboards/quiz don't render this element) === */
 .study-header__lesson-picker {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     color: #fff;
     background: rgba(0,0,0,0.15);
     border: 2px solid rgba(255,255,255,0.3);
@@ -286,7 +286,7 @@
     background: rgba(29, 158, 117, 0.15);
 }
 .study-room.is-terminal .study-header__title {
-    font-size: 18px;
+    font-size: 20.7px;
     color: var(--term-text);
 }
 .study-room.is-terminal .study-header__adventure-btn {
@@ -368,20 +368,20 @@
 }
 .study-instruction h2 {
     font-family: "VT323", monospace;
-    font-size: 32px;
+    font-size: 36.8px;
     color: var(--term-amber);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
     font-family: "VT323", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     color: var(--term-label);
     margin: 18px 0 8px;
 }
 .study-instruction p {
     margin: 0 0 8px;
     color: var(--term-text-dim);
-    font-size: 13px;
+    font-size: 15px;
 }
 /* Highlight the actual word/phrase being discussed against the dimmer
    description text around it — the description keeps --term-text-dim,
@@ -400,13 +400,13 @@
 }
 .study-instruction .grammar-box__title {
     font-family: "VT323", monospace;
-    font-size: 26px;
+    font-size: 29.9px;
     color: var(--term-amber);
     margin-bottom: 6px;
 }
 .study-instruction .grammar-box code {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 19px;
+    font-size: 21.8px;
     color: var(--term-amber);
     background: rgba(250, 199, 117, 0.12);
     padding: 2px 8px;
@@ -433,10 +433,115 @@
 /* Caption under a diagram — small/dim, same "readable font at caption
    size" rule as everywhere else in this file (no VT323 here). */
 .grammar-box__diagram-caption {
-    font-size: 11px;
+    font-size: 12.6px;
     line-height: 1.4;
     color: var(--term-text-dim);
     margin: 4px 0 0;
+}
+
+/* === s03's "A は B です" diagram — side-by-side comparison, replacing
+   the old arrow-based English/Japanese-split diagram. です shares は's
+   yellow (not the usual white) so は…です reads as one held-together
+   set rather than two separate rules to track; three sample sentences
+   underneath show the am/is/are gap is an English problem, not a
+   Japanese one — design approved in the "Ten Sentence Shapes" mockup
+   session (2026-09-03), idea 6 ("Side by Side"). */
+.wa-desu-compare { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin: 4px 0 6px; }
+.wa-desu-compare__col { display: flex; flex-direction: column; align-items: center; }
+.wa-desu-compare__col + .wa-desu-compare__col { border-left: 1px dashed var(--term-border); padding-left: 30px; }
+.wa-desu-compare__row { display: flex; gap: 7px; align-items: center; }
+.wa-desu-role { padding: 2px 7px; border-radius: 2px; font-size: 13px; }
+.wa-desu-role--jp { font-family: "VT323", "DotGothic16", monospace; font-size: 21px; padding: 1px 8px; }
+.wa-desu-role--subject { background: #6fb3e6; color: #0b2438; }
+.wa-desu-role--particle { background: #f0c674; color: #201d54; }
+.wa-desu-role--predicate { background: #e2685f; color: #fff; }
+.wa-desu-role--copula { background: #f0c674; color: #201d54; }
+.wa-desu-role--particle rt, .wa-desu-role--copula rt { font-family: "Space Mono", monospace; font-size: 9px; color: #4a3211; }
+.wa-desu-samples { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--term-border); }
+.wa-desu-lede { font-size: 12px; color: var(--term-text-dim); text-align: center; margin: 0 0 4px; }
+.wa-desu-sample { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.wa-desu-sample__jp { display: flex; gap: 0; white-space: nowrap; }
+.wa-desu-sample__en { font-size: 12.5px; color: var(--term-text); white-space: nowrap; }
+.wa-desu-sample__en b { color: #f0c674; }
+.wa-desu-note { font-size: 11.5px; color: var(--term-text-dim); text-align: center; max-width: 340px; margin: 8px auto 0; line-height: 1.65; }
+
+/* === s04's jikoshoukai "building blocks" diagram — a train, where the
+   two optional cars (age, hobby) physically uncouple and roll to a
+   siding on click, then can be reattached. Approved in the "Jikoshoukai
+   Express" mockup session (2026-09-03), idea 5 ("Train with Detachable
+   Cars") from the five-idea "Jikoshoukai Stacks" gallery. Interactivity
+   follows the exact same pattern as s08c's window.NekoRoute (see that
+   widget's own comment above): diagramSvg is inert HTML, a global
+   window.NekoTrain handles clicks via inline onclick, and all state
+   lives on the diagram root's own data-attached attribute rather than a
+   JS variable, so a lesson re-render always starts fully coupled. */
+.jiko-train{ display: flex; flex-direction: column; align-items: center; }
+.jiko-train__caption{ font-size: 13px; color: var(--term-text); text-align: center; margin: 0 0 20px; min-height: 18px; }
+.jiko-train__caption b{ color: var(--term-amber); }
+
+.jiko-train__main{ display: flex; align-items: flex-end; justify-content: center; gap: 5px; min-height: 84px; padding-bottom: 14px; width: 100%; }
+
+.jiko-train__track{ width: 100%; max-width: 520px; margin: 0 auto; height: 11px; position: relative; }
+.jiko-train__rail{ position: absolute; left: 0; right: 0; height: 2px; border-radius: 1px; background: linear-gradient(90deg,#77837d,#d8ded9 45%,#77837d); }
+.jiko-train__rail--top{ top: 1px; }
+.jiko-train__rail--bottom{ bottom: 1px; }
+.jiko-train__ties{ position: absolute; top: 2px; bottom: 2px; left: 3px; right: 3px; background-image: repeating-linear-gradient(90deg, #4a3a24 0 4px, transparent 4px 15px); opacity: 0.85; }
+
+.jiko-train__siding{ margin-top: 26px; padding-top: 16px; border-top: 1px dashed var(--term-border); width: 100%; }
+.jiko-train__siding-label{ font-size: 10.5px; color: var(--term-text-dim); opacity: 0.8; text-align: center; margin: 0 0 14px; }
+.jiko-train__slots{ display: flex; justify-content: center; gap: 26px; min-height: 74px; padding-bottom: 12px; }
+.jiko-train__slot{ width: 116px; height: 62px; border: 1px dashed rgba(29,158,117,0.5); border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; }
+.jiko-train__slot::after{ content: ""; position: absolute; left: 6px; right: 6px; bottom: -11px; height: 8px; background-image: repeating-linear-gradient(90deg, #4a3a24 0 3px, transparent 3px 11px); opacity: 0.4; }
+
+.jiko-train__car{
+    font-family: "VT323", "DotGothic16", monospace;
+    font-size: 13px;
+    padding: 10px 13px 11px;
+    border-radius: 7px 7px 3px 3px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.14), inset 0 2px 0 rgba(255,255,255,0.12);
+}
+.jiko-train__car::before, .jiko-train__car::after{
+    content: ""; position: absolute; bottom: -9px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: #191410; border: 2px solid #5c4d3d;
+}
+.jiko-train__car::before{ left: 11px; }
+.jiko-train__car::after{ right: 11px; }
+.jiko-train__car--engine{ background: var(--term-amber); color: #201d54; }
+.jiko-train__stack{ position: absolute; top: -11px; left: 15px; width: 9px; height: 13px; background: #3a3026; border-radius: 2px 2px 0 0; }
+.jiko-train__cab{ position: absolute; top: -6px; right: 11px; width: 20px; height: 7px; background: #c99a4a; border-radius: 2px 2px 0 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25); }
+.jiko-train__car--core{ background: #6fb3e6; color: #0b2438; }
+.jiko-train__car--optional{ background: transparent; border: 2px dashed var(--term-border); color: var(--term-text); }
+.jiko-train__car--optional::before, .jiko-train__car--optional::after{ border-color: rgba(29,158,117,0.6); background: #0c231c; }
+.jiko-train__car--optional.in-siding{ border-style: solid; background: rgba(29,158,117,0.12); }
+.jiko-train__car-tag{ font-family: "Space Mono", monospace; font-size: 8px; opacity: 0.7; }
+
+.jiko-train__toggle{
+    margin-top: 26px;
+    font-family: "VT323", monospace; font-size: 17px;
+    padding: 9px 20px 7px;
+    border: 1px solid var(--term-amber); background: transparent; color: var(--term-amber);
+    border-radius: 2px; cursor: pointer;
+}
+.jiko-train__toggle:hover{ background: rgba(250,199,117,0.14); }
+.jiko-train__toggle:focus-visible{ outline: 2px solid var(--term-amber); outline-offset: 2px; }
+
+.jiko-train-spark{
+    position: fixed; width: 4px; height: 4px; border-radius: 50%;
+    background: var(--term-amber); pointer-events: none; z-index: 40;
+    transform: translate(-50%,-50%);
+    animation: jikoTrainSpark 460ms ease-out forwards;
+}
+@keyframes jikoTrainSpark{
+    0%   { opacity: 1; transform: translate(-50%,-50%) translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-50%) var(--fly) scale(0.4); }
+}
+@media (prefers-reduced-motion: reduce){
+    .jiko-train__car, .jiko-train-spark{ transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }
 
 /* Two-party dialogue thread for buildInstruction()'s optional
@@ -493,14 +598,14 @@
     flex-direction: row-reverse;
 }
 .study-conv-name {
-    font-size: 12px;
+    font-size: 13.8px;
     font-weight: 700;
     color: var(--term-label);
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
 .study-conv-action-tag {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-text-dim);
     font-style: italic;
 }
@@ -510,11 +615,11 @@
     border: 1px solid var(--term-border);
     border-radius: var(--radius, 8px);
     padding: 8px 12px;
-    font-size: 17px;
+    font-size: 19.5px;
     line-height: 1.5;
 }
 .study-conv-meta {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     margin-top: 4px;
 }
@@ -548,7 +653,7 @@
     align-items: center;
 }
 .grammar-box__demo-head {
-    font-size: 12px;
+    font-size: 13.8px;
     text-align: center;
     color: var(--term-text-dim);
     letter-spacing: 0.04em;
@@ -561,7 +666,7 @@
 }
 .grammar-box__demo-row-word {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 30px;
+    font-size: 34.5px;
     text-align: center;
 }
 .grammar-box__demo-cell {
@@ -605,7 +710,7 @@
 }
 .grammar-box__demo-row-note {
     grid-column: 1 / -1;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--term-text-dim);
     padding: 2px 0 6px 64px;
 }
@@ -680,17 +785,17 @@
 .grammar-box__pic-word {
     grid-column: 2;
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     color: var(--term-heading);
 }
 .grammar-box__pic-kana {
     grid-column: 2;
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-text-dim);
 }
 .grammar-box__pic-en {
     grid-column: 2;
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-amber);
     font-weight: 700;
 }
@@ -809,13 +914,13 @@
 }
 .grammar-box__dist2-scene .dist2-label {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 17px;
+    font-size: 19.5px;
     color: var(--term-heading);
     margin-top: 2px;
 }
 .grammar-box__dist2-scene .dist2-label span {
     display: block;
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-amber);
     font-family: "Space Mono", monospace;
     font-weight: 700;
@@ -841,9 +946,9 @@
     position: absolute; left: 50%; bottom: 8px; width: 150px; height: 54px; transform: translateX(-50%);
     border: 2px dashed var(--term-amber); border-radius: 10px;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; padding-bottom: 4px;
-    font-family: "DotGothic16", "VT323", monospace; font-size: 15px; color: var(--term-amber);
+    font-family: "DotGothic16", "VT323", monospace; font-size: 17.3px; color: var(--term-amber);
 }
-.no-diagram-scene .no-zone span { font-size: 10px; color: var(--term-text-dim); font-family: "Space Mono", monospace; }
+.no-diagram-scene .no-zone span { font-size: 11.5px; color: var(--term-text-dim); font-family: "Space Mono", monospace; }
 .no-diagram-scene .no-cat { position: absolute; left: 50%; bottom: 14px; width: 40px; height: 40px; transform: translateX(-50%); image-rendering: pixelated; z-index: 2; }
 
 /* Plain-steps strip above the tree diagram: 木 + の + 下 = 木の下 */
@@ -856,11 +961,11 @@
     border-radius: var(--radius);
     padding: 6px 12px;
 }
-.no-step .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 20px; color: var(--term-heading); }
-.no-step span:last-child { font-size: 10px; color: var(--term-text-dim); }
+.no-step .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 23px; color: var(--term-heading); }
+.no-step span:last-child { font-size: 11.5px; color: var(--term-text-dim); }
 .no-step--result { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.12); }
 .no-step--result .jp { color: var(--term-amber); }
-.no-plus, .no-eq { font-size: 16px; color: var(--term-text-dim); font-weight: 700; }
+.no-plus, .no-eq { font-size: 18.4px; color: var(--term-text-dim); font-weight: 700; }
 
 /* Slash-through effect for adjective/verb conjugation diagrams (drop the
    trailing kana before adding a new ending) -- a diagonal line animates
@@ -935,7 +1040,7 @@
 .masu-diagram { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 8px 0; }
 .masu-diagram .masu-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .masu-diagram .masu-row .no-step { min-width: 120px; }
-.masu-diagram .masu-arrow-down { font-size: 16px; color: var(--term-text-dim); font-weight: 700; line-height: 1; }
+.masu-diagram .masu-arrow-down { font-size: 18.4px; color: var(--term-text-dim); font-weight: 700; line-height: 1; }
 
 /* Animated ending-swap diagram -- ported from the N4 Study Room / Adventure
    Room's own lesson-box.css (.lesson-box__clawform*: a diagonal claw-mark
@@ -949,17 +1054,17 @@
    (s10a/c) keep the older .slash-char effect, since it already suits a
    same-word ending swap and wasn't the one asked to change. Paired with
    buildEndingSwapDiagram()/wireClawforms() in study-room.js. */
-.n5-clawform { display: flex; align-items: center; justify-content: center; gap: 4px; font-family: "VT323", "DotGothic16", monospace; font-size: 30px; flex-wrap: wrap; margin: 10px 0 2px; }
+.n5-clawform { display: flex; align-items: center; justify-content: center; gap: 4px; font-family: "VT323", "DotGothic16", monospace; font-size: 34.5px; flex-wrap: wrap; margin: 10px 0 2px; }
 .n5-clawform-stem { color: var(--term-text); }
 .n5-clawform-old { position: relative; display: inline-block; color: #e2685f; }
 .n5-clawform-old.is-slashed { opacity: 0; transform: translateY(8px) rotate(-4deg); transition: opacity 0.25s ease, transform 0.25s ease; }
 .n5-clawform-slash { position: absolute; left: -3px; top: -8px; width: 34px; height: 34px; pointer-events: none; overflow: visible; }
 .n5-clawform-slash line { stroke: #e2413a; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 46; stroke-dashoffset: 46; }
 .n5-clawform-slash.is-drawn line { stroke-dashoffset: 0; transition: stroke-dashoffset 0.16s ease; }
-.n5-clawform-arrow { color: var(--term-text-dim); font-size: 26px; margin: 0 4px; }
+.n5-clawform-arrow { color: var(--term-text-dim); font-size: 29.9px; margin: 0 4px; }
 .n5-clawform-new { display: inline-block; color: var(--term-border); opacity: 0; transform: scale(0.4); }
 .n5-clawform-new.is-in { opacity: 1; transform: scale(1); transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.n5-clawform-replay { display: block; margin: 0 auto 10px; font-family: "Space Mono", monospace; font-size: 11px; background: transparent; border: 1px solid var(--term-text-dim); color: var(--term-text-dim); padding: 4px 9px; border-radius: 4px; cursor: pointer; }
+.n5-clawform-replay { display: block; margin: 0 auto 10px; font-family: "Space Mono", monospace; font-size: 12.6px; background: transparent; border: 1px solid var(--term-text-dim); color: var(--term-text-dim); padding: 4px 9px; border-radius: 4px; cursor: pointer; }
 .n5-clawform-replay:hover { color: var(--term-text); border-color: var(--term-border); }
 
 /* Word-tile sample sentence -- ported from the same source's
@@ -969,35 +1074,35 @@
    as an underline instead of a filled chip. A small color legend renders
    once per lesson, above the first sample block, same "explain the colors
    once" convention as lesson-box.js's own auto-shown legend. */
-.n5-sample-label { font-family: "VT323", monospace; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--term-amber); opacity: 0.8; margin: 10px 0 4px; }
-.n5-sample-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 10px; border: 1px dashed var(--term-border); border-radius: 4px; margin: 10px 0; font-size: 10px; color: var(--term-text-dim); }
+.n5-sample-label { font-family: "VT323", monospace; font-size: 17.3px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--term-amber); opacity: 0.8; margin: 10px 0 4px; }
+.n5-sample-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 10px; border: 1px dashed var(--term-border); border-radius: 4px; margin: 10px 0; font-size: 11.5px; color: var(--term-text-dim); }
 .n5-sample-legend__item { display: flex; align-items: center; gap: 5px; }
 .n5-sample-legend__swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 .n5-sample { border: 1px dashed var(--term-border); border-radius: 4px; padding: 14px 14px 10px; margin: 10px 0; }
-.n5-sample__tag { font-size: 12px; color: var(--term-text-dim); margin-bottom: 12px; }
+.n5-sample__tag { font-size: 13.8px; color: var(--term-text-dim); margin-bottom: 12px; }
 .n5-sample__row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 6px; }
 .n5-sample__tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.n5-sample__tile-text { font-family: "VT323", "DotGothic16", monospace; font-size: 25px; padding-bottom: 2px; border-bottom: 3px solid; position: relative; }
+.n5-sample__tile-text { font-family: "VT323", "DotGothic16", monospace; font-size: 28.7px; padding-bottom: 2px; border-bottom: 3px solid; position: relative; }
 .n5-sample__tile-text.role-subject { color: #6fb3e6; border-color: #6fb3e6; }
 .n5-sample__tile-text.role-particle { color: #f0c674; border-color: #f0c674; }
 .n5-sample__tile-text.role-predicate { color: #e2685f; border-color: #e2685f; }
 .n5-sample__tile-text.role-copula { color: #ffffff; border-color: #ffffff; }
-.n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 9px; color: #201d54; background: #f0c674; padding: 1px 4px; letter-spacing: 0.04em; }
-.n5-sample__tile-gloss { font-size: 10px; color: var(--term-text-dim); text-align: center; max-width: 110px; }
+.n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 10.4px; color: #201d54; background: #f0c674; padding: 1px 4px; letter-spacing: 0.04em; }
+.n5-sample__tile-gloss { font-size: 11.5px; color: var(--term-text-dim); text-align: center; max-width: 110px; }
 /* Auto-shrink-on-wrap fix (see fixN5SampleAlignment() in study-room.js) —
    same rationale/shape as .lesson-box__word-tile-gloss.is-small in
    lesson-box.css: .n5-sample__row uses align-items:flex-end, so any tile
    whose gloss wraps to 2 lines visibly shifts its kana relative to
    single-line neighbors. */
-.n5-sample__tile-gloss.is-small { font-size: 9px; line-height: 15px; max-width: none; white-space: nowrap; }
-.n5-sample__romaji { font-size: 11px; color: var(--term-text-dim); font-family: "Space Mono", monospace; margin-top: 4px; }
+.n5-sample__tile-gloss.is-small { font-size: 10.4px; line-height: 15px; max-width: none; white-space: nowrap; }
+.n5-sample__romaji { font-size: 12.6px; color: var(--term-text-dim); font-family: "Space Mono", monospace; margin-top: 4px; }
 
 /* Impostor-verb table (godan verbs shaped like ichidan る-verbs) */
 .impostor-table-wrap { overflow-x: auto; margin: 10px 0; }
-.impostor-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.impostor-table th { text-align: left; color: var(--term-label); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-bottom: 1px solid var(--term-border); }
+.impostor-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.impostor-table th { text-align: left; color: var(--term-label); font-weight: 700; font-size: 12.6px; text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-bottom: 1px solid var(--term-border); }
 .impostor-table td { padding: 5px 8px; border-bottom: 1px dashed rgba(157,225,203,0.25); vertical-align: top; }
-.impostor-table__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 16px; color: var(--term-heading); white-space: nowrap; }
+.impostor-table__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 18.4px; color: var(--term-heading); white-space: nowrap; }
 .impostor-table__masu { color: var(--term-amber); white-space: nowrap; }
 .impostor-table__en { color: var(--term-text-dim); }
 
@@ -1006,14 +1111,14 @@
    lesson shows HOW pronoun choice changes the sentence, not just a
    vocab list of pronouns. */
 .pronoun-diagram { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 6px 0; }
-.pronoun-diagram__slot-row { display: flex; align-items: center; gap: 8px; font-family: "DotGothic16","VT323",monospace; font-size: 16px; color: var(--term-heading); flex-wrap: wrap; justify-content: center; }
-.pronoun-diagram__fixed { color: var(--term-text-dim); font-family: "Space Mono", monospace; font-size: 13px; }
+.pronoun-diagram__slot-row { display: flex; align-items: center; gap: 8px; font-family: "DotGothic16","VT323",monospace; font-size: 18.4px; color: var(--term-heading); flex-wrap: wrap; justify-content: center; }
+.pronoun-diagram__fixed { color: var(--term-text-dim); font-family: "Space Mono", monospace; font-size: 15px; }
 .pronoun-diagram__slot { border: 1px dashed var(--term-amber); border-radius: 6px; padding: 2px 8px; }
 .pronoun-diagram__ladder { display: flex; align-items: flex-end; gap: 14px; margin-top: 2px; flex-wrap: wrap; justify-content: center; }
 .pronoun-diagram__pill { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.pronoun-diagram__pill .jp { font-family: "DotGothic16","VT323",monospace; font-size: 16px; color: var(--term-heading); border: 1px solid var(--term-border); border-radius: 8px; padding: 4px 10px; background: rgba(29,158,117,0.12); }
-.pronoun-diagram__pill span:last-child { font-size: 10px; color: var(--term-text-dim); }
-.pronoun-diagram__axis { font-size: 10px; color: var(--term-text-dim); display: flex; justify-content: space-between; width: 100%; max-width: 340px; }
+.pronoun-diagram__pill .jp { font-family: "DotGothic16","VT323",monospace; font-size: 18.4px; color: var(--term-heading); border: 1px solid var(--term-border); border-radius: 8px; padding: 4px 10px; background: rgba(29,158,117,0.12); }
+.pronoun-diagram__pill span:last-child { font-size: 11.5px; color: var(--term-text-dim); }
+.pronoun-diagram__axis { font-size: 11.5px; color: var(--term-text-dim); display: flex; justify-content: space-between; width: 100%; max-width: 340px; }
 
 
 /* s08c's compass — a plain cross (kita/minami/nishi/higashi at the four
@@ -1063,11 +1168,11 @@
 }
 .grammar-box__compass-cross .cross-label .jp {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     color: var(--term-heading);
 }
 .grammar-box__compass-cross .cross-label .romaji {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-text-dim);
     font-family: "Space Mono", monospace;
 }
@@ -1108,16 +1213,16 @@
 }
 .grammar-box__location-text .jp-lg {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 19px;
+    font-size: 21.8px;
     line-height: 1.3;
 }
 .grammar-box__location-text .kana-sm {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-text-dim);
     margin: 2px 0 4px;
 }
 .grammar-box__location-text .en-sm {
-    font-size: 12.5px;
+    font-size: 14.4px;
     color: var(--term-amber);
 }
 .grammar-box__location-examples {
@@ -1126,11 +1231,11 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    font-size: 13.5px;
+    font-size: 15.5px;
 }
 .grammar-box__location-examples span {
     color: var(--term-text-dim);
-    font-size: 12px;
+    font-size: 13.8px;
     margin-left: 6px;
 }
 
@@ -1165,11 +1270,11 @@
 }
 .grammar-box__place-jp {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: var(--term-heading);
 }
 .grammar-box__place-en {
-    font-size: 10.5px;
+    font-size: 12.1px;
     color: var(--term-text-dim);
     text-align: center;
 }
@@ -1190,8 +1295,8 @@
     border-radius: var(--radius);
     padding: 10px 14px;
 }
-.route2-prompt .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 19px; }
-.route2-prompt .romaji { font-size: 11.5px; color: var(--term-text-dim); margin-top: 2px; }
+.route2-prompt .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 21.8px; }
+.route2-prompt .romaji { font-size: 13.2px; color: var(--term-text-dim); margin-top: 2px; }
 .route2-scene {
     position: relative;
     height: 340px;
@@ -1234,7 +1339,7 @@
 .route2-btn {
     font-family: "Space Mono", monospace;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--term-text);
     background: rgba(29, 158, 117, 0.1);
     border: 1.5px solid var(--term-border);
@@ -1246,7 +1351,7 @@
     align-items: flex-start;
     gap: 2px;
 }
-.route2-btn span { font-size: 10.5px; color: var(--term-text-dim); font-weight: 400; }
+.route2-btn span { font-size: 12.1px; color: var(--term-text-dim); font-weight: 400; }
 .route2-btn:hover { background: rgba(29, 158, 117, 0.2); }
 .route2-btn:active { transform: translateY(1px); }
 .route2-btn.is-wrong { animation: gbRouteShake .3s ease; border-color: var(--term-danger, #e2685f); }
@@ -1258,8 +1363,8 @@
     padding: 10px 14px;
 }
 .route2-arrival.show { display: block; }
-.route2-arrival .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 18px; color: #4CC38A; }
-.route2-arrival .romaji { font-size: 11.5px; color: var(--term-text-dim); margin-top: 2px; }
+.route2-arrival .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 20.7px; color: #4CC38A; }
+.route2-arrival .romaji { font-size: 13.2px; color: var(--term-text-dim); margin-top: 2px; }
 
 /* s15's S-T-P-O-V sentence-order diagram + practice, driven by
    window.NekoSTPOV in study-room.js. Two pieces share this block:
@@ -1294,7 +1399,7 @@
     align-items: center;
     justify-content: center;
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     font-weight: 700;
     color: var(--term-text);
     cursor: pointer;
@@ -1308,7 +1413,7 @@
     transform: translateY(-2px);
 }
 .stpov-col__label {
-    font-size: 10.5px;
+    font-size: 12.1px;
     color: var(--term-text-dim);
     text-transform: uppercase;
     letter-spacing: .5px;
@@ -1327,7 +1432,7 @@
 }
 .stpov-chip-static {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--term-heading);
     background: rgba(250, 199, 117, 0.14);
     border: 1px solid var(--term-border);
@@ -1337,13 +1442,13 @@
     text-align: center;
 }
 .stpov-col__none {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-text-dim);
     font-style: italic;
 }
 .stpov-readout {
     text-align: center;
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     min-height: 18px;
     margin-top: 4px;
@@ -1352,13 +1457,13 @@
 /* Slot-builder mini activity */
 .stpov-builder { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 .stpov-builder__head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
-.stpov-builder__round { font-size: 10.5px; color: var(--term-text-dim); text-transform: uppercase; letter-spacing: .5px; }
+.stpov-builder__round { font-size: 12.1px; color: var(--term-text-dim); text-transform: uppercase; letter-spacing: .5px; }
 .stpov-builder__prompt {
     background: rgba(29, 158, 117, 0.1);
     border: 1px solid var(--term-border);
     border-radius: var(--radius);
     padding: 9px 14px;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--term-text);
 }
 .stpov-slots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
@@ -1376,15 +1481,15 @@
     cursor: pointer;
     transition: border-color .15s ease, background .15s ease;
 }
-.stpov-slot__tag { font-size: 9.5px; color: var(--term-text-dim); letter-spacing: .5px; }
-.stpov-slot__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 15px; color: var(--term-text); min-height: 20px; }
+.stpov-slot__tag { font-size: 10.9px; color: var(--term-text-dim); letter-spacing: .5px; }
+.stpov-slot__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 17.3px; color: var(--term-text); min-height: 20px; }
 .stpov-slot:hover { border-color: var(--term-amber); }
 .stpov-slot.is-filled { border-style: solid; background: rgba(76, 195, 138, 0.12); border-color: #4CC38A; cursor: default; }
 .stpov-slot.is-wrong { animation: gbRouteShake .3s ease; border-color: var(--term-bad-border, #A32D2D); background: rgba(163, 45, 45, 0.12); }
 .stpov-chip-tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .stpov-chip {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     color: var(--term-text);
     background: var(--term-panel, rgba(29,158,117,0.08));
     border: 1px solid var(--term-border);
@@ -1396,13 +1501,13 @@
 .stpov-chip:hover { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.12); }
 .stpov-chip.is-selected { border-color: var(--term-amber); background: var(--term-amber); color: var(--term-bg); font-weight: 700; }
 .stpov-chip.is-used { opacity: .25; pointer-events: none; }
-.stpov-builder__feedback { text-align: center; font-size: 12px; min-height: 16px; color: var(--term-text-dim); }
+.stpov-builder__feedback { text-align: center; font-size: 13.8px; min-height: 16px; color: var(--term-text-dim); }
 .stpov-builder__feedback.is-good { color: #4CC38A; }
 .stpov-builder__feedback.is-bad { color: var(--term-bad-text, #F09595); }
 .stpov-builder__next {
     align-self: center;
     font-family: "Space Mono", monospace;
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-bg);
     background: var(--term-amber);
     border: none;
@@ -1426,7 +1531,7 @@
 .waga-toggle { display: flex; gap: 10px; }
 .waga-btn {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 20px;
+    font-size: 23px;
     font-weight: 700;
     color: var(--term-text);
     background: rgba(29, 158, 117, 0.1);
@@ -1440,21 +1545,21 @@
 .waga-btn.is-active { background: var(--term-amber); border-color: var(--term-amber); color: var(--term-bg); }
 .waga-sentence {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 24px;
+    font-size: 27.6px;
     color: var(--term-heading);
     text-align: center;
 }
-.waga-sentence .conv-hl { font-size: 24px; padding: 1px 8px; }
+.waga-sentence .conv-hl { font-size: 27.6px; padding: 1px 8px; }
 .waga-readout {
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--term-text-dim);
     max-width: 420px;
 }
 .waga-readout strong { color: var(--term-amber); }
 .waga-next {
     font-family: "Space Mono", monospace;
-    font-size: 11.5px;
+    font-size: 13.2px;
     color: var(--term-text);
     background: transparent;
     border: 1px solid var(--term-border);
@@ -1471,17 +1576,17 @@
     counter-increment: particleglance;
     content: counter(particleglance) ".";
     font-family: "Space Mono", monospace;
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     min-width: 16px;
 }
 .particle-glance__chip {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     min-width: 28px;
     text-align: center;
 }
-.particle-glance__meaning { font-size: 12.5px; color: var(--term-text-dim); }
+.particle-glance__meaning { font-size: 14.4px; color: var(--term-text-dim); }
 .particle-glance__meaning strong { color: var(--term-text); font-weight: 700; }
 
 /* s07b's bread-counting stack (つ counter) — each row ACCUMULATES: row 1
@@ -1525,11 +1630,11 @@
 }
 .grammar-box__bread-label .jp {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: var(--term-heading);
 }
 .grammar-box__bread-label .romaji {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-text-dim);
 }
 
@@ -1537,7 +1642,7 @@
 .grammar-box__counter-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 15px;
     margin: 4px 0;
 }
 .grammar-box__counter-table td {
@@ -1548,11 +1653,11 @@
 .grammar-box__counter-table tr:last-child td { border-bottom: none; }
 .grammar-box__counter-table td.jp {
     font-family: "DotGothic16", "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: var(--term-heading);
     white-space: nowrap;
 }
-.grammar-box__counter-table td:nth-child(2) { color: var(--term-text-dim); font-size: 12px; }
+.grammar-box__counter-table td:nth-child(2) { color: var(--term-text-dim); font-size: 13.8px; }
 .grammar-box__counter-table td.counter-count { text-align: right; color: var(--term-amber); font-weight: 700; }
 .grammar-box__counter-table td.counter-desc { color: var(--term-text); }
 /* Real photo attached to its OWN row's trailing cell -- see the table-row
@@ -1594,7 +1699,7 @@
     image-rendering: pixelated;
 }
 .counter-example span {
-    font-size: 10.5px;
+    font-size: 12.1px;
     color: var(--term-text-dim);
     text-align: center;
 }
@@ -1610,7 +1715,7 @@
 }
 .practice-steps__title {
     font-family: "VT323", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     color: var(--title-bar-dark);
     margin-bottom: 6px;
     letter-spacing: 1px;
@@ -1620,7 +1725,7 @@
     padding: 0;
 }
 .practice-steps li {
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--text-main);
     line-height: 1.6;
     margin: 6px 0;
@@ -1641,7 +1746,7 @@
 }
 .word-bank__chip {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     padding: 6px 14px;
     border-radius: 20px;
     border: 1px solid;
@@ -1667,7 +1772,7 @@
     color: var(--term-amber);
 }
 .word-bank__hint {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     margin-top: 4px;
 }
@@ -1675,7 +1780,7 @@
 /* Reference-chip variant — non-clickable word-bank reminder shown above the
    practice input (Study Room Word-Bank Sentence Builder, "hybrid" input). */
 .word-bank__chip--ref {
-    font-size: 12px;
+    font-size: 13.8px;
     padding: 4px 11px;
     opacity: 0.85;
     cursor: default;
@@ -1695,12 +1800,12 @@
 }
 .word-bank-box__title {
     font-family: "VT323", monospace;
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--term-amber);
     margin-bottom: 6px;
 }
 .word-bank-box__category {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -1710,7 +1815,7 @@
     margin-top: 0;
 }
 .word-bank-box__note {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     margin: 10px 0 0;
     font-style: italic;
@@ -1723,7 +1828,7 @@
     border-top: 1px dashed var(--term-border);
 }
 .word-bank-box__preview-label {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     font-style: italic;
     margin-bottom: 6px;
@@ -1740,7 +1845,7 @@
 }
 .word-bank__chip-tag {
     font-family: var(--title-font);
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: 0.5px;
     color: var(--term-amber);
 }
@@ -1757,7 +1862,7 @@
     border-top: 1px dashed var(--term-border);
 }
 .word-bank-box__new-label {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-new);
     font-style: italic;
     margin-bottom: 6px;
@@ -1774,14 +1879,14 @@
 }
 .word-bank__chip-tag--new {
     font-family: var(--title-font);
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: 0.5px;
     color: var(--term-new);
 }
 
 /* Culture-note paragraphs inside a grammar box */
 .grammar-box__culture {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     background: var(--term-bg);
     border-radius: var(--radius);
@@ -1792,7 +1897,7 @@
 
 /* Sources line under a lesson's content */
 .sources-line {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
 }
 
@@ -1801,7 +1906,7 @@
    terminal's green/amber accent colors, so it reads as a hyperlink at
    a glance the way the rest of the page's amber-on-dark text doesn't). */
 .examples-more {
-    font-size: 11.5px;
+    font-size: 13.2px;
     color: var(--term-text-dim, #7fa89c);
     margin: 6px 0 0;
 }
@@ -1821,7 +1926,7 @@
 .vocab-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 13.8px;
 }
 .vocab-table td {
     padding: 5px 10px 5px 0;
@@ -1831,7 +1936,7 @@
 }
 .vocab-table__jp {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: var(--term-text);
     line-height: 2.6;
 }
@@ -1850,7 +1955,7 @@
 .vocab-table__jp rt,
 .example-sentence rt {
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
-    font-size: 12px;
+    font-size: 13.8px;
     font-weight: 600;
     letter-spacing: 0;
     color: var(--term-label);
@@ -1867,7 +1972,7 @@
     color: var(--term-amber);
 }
 .vocab-table__romaji {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
 }
 .vocab-table__en {
@@ -1895,7 +2000,7 @@
     padding: 10px 16px;
     margin: 8px 0;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 19px;
+    font-size: 21.8px;
     color: var(--term-text);
     letter-spacing: 1px;
     display: flex;
@@ -1904,7 +2009,7 @@
     flex-wrap: wrap;
 }
 .pattern-box__label {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     font-family: "Space Mono", monospace;
     letter-spacing: 0;
@@ -1931,20 +2036,53 @@
     margin: 10px 0;
     padding-top: 22px;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 21px;
+    font-size: 24.2px;
     color: var(--term-text);
 }
 .example-sentence__romaji {
-    font-size: 13.5px;
+    font-size: 15.5px;
     color: var(--term-label);
     font-family: "Space Mono", monospace;
     margin-left: 9px;
 }
 .example-sentence__english {
-    font-size: 13.5px;
+    font-size: 15.5px;
     color: var(--term-text-dim);
     font-family: "Space Mono", monospace;
     margin-left: 5px;
+}
+
+/* === Resize Handle (between the two panels) — see
+   assets/js/study-panel-resize.js for the drag logic. Dragging sets
+   .study-instruction's flex-basis directly; .study-practice-col keeps its
+   flex:1 1 0 so it auto-fills whatever's left. */
+.study-resize-handle {
+    flex: 0 0 6px;
+    align-self: stretch;
+    cursor: col-resize;
+    background: var(--term-border);
+    opacity: 0.4;
+    position: relative;
+}
+.study-resize-handle::before {
+    /* Widens the actual hit area past the visible 6px sliver without
+       widening the divider itself, so it's easy to grab without eating
+       into either panel's own hover/click targets. */
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: -4px;
+}
+.study-resize-handle:hover,
+body.is-resizing-study-panels .study-resize-handle {
+    opacity: 1;
+    background: var(--term-amber);
+}
+/* Dragging can otherwise select page text as the mouse sweeps across it. */
+body.is-resizing-study-panels {
+    user-select: none;
 }
 
 /* === Practice Column (right — practice) === */
@@ -1969,7 +2107,7 @@
 }
 .study-practice__reminder {
     color: var(--term-label);
-    font-size: 11px;
+    font-size: 12.6px;
     margin-bottom: 14px;
     padding-bottom: 10px;
     border-bottom: 1px dashed var(--term-border);
@@ -1978,7 +2116,7 @@
     color: var(--term-text);
     margin-bottom: 8px;
     font-family: "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
 }
 .study-practice__prompt strong {
     color: var(--term-amber);
@@ -1992,7 +2130,7 @@
 .study-practice__input {
     flex: 1;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 21px;
+    font-size: 24.2px;
     padding: 12px 18px;
     background: var(--term-panel);
     border: 1px solid var(--term-border);
@@ -2031,7 +2169,7 @@
 }
 .study-match-choice {
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
-    font-size: 14px;
+    font-size: 16.1px;
     text-align: left;
     padding: 12px 16px;
     border: 1px solid var(--term-border);
@@ -2065,7 +2203,7 @@
 }
 .study-practice__btn {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     padding: 12px 24px;
     border: 1px solid var(--term-border);
     border-radius: var(--radius);
@@ -2123,7 +2261,7 @@
     margin-top: 8px;
     padding: 10px 16px;
     border-radius: var(--radius);
-    font-size: 12px;
+    font-size: 13.8px;
     line-height: 1.5;
     display: none;
     border: 1px solid;
@@ -2173,7 +2311,7 @@
     transition: width 0.4s ease;
 }
 .study-progress__text {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
@@ -2184,7 +2322,7 @@
    which tag every exercise .quizSet and route through the same DOM ids. */
 .study-quiz-heading {
     font-family: "VT323", monospace;
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--term-amber);
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -2206,18 +2344,18 @@
 }
 .study-quiz-divider__heading {
     font-family: "VT323", monospace;
-    font-size: 20px;
+    font-size: 23px;
     color: var(--term-heading);
     margin: 0;
 }
 .study-quiz-divider__msg {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     margin: 0 0 10px;
 }
 .study-quiz-divider__btn {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     padding: 12px 24px;
     border: 1px solid var(--term-amber);
     border-radius: var(--radius);
@@ -2249,7 +2387,7 @@
     background: var(--term-panel);
     color: var(--term-text);
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
@@ -2263,7 +2401,7 @@
 .study-wordorder__slot--star::before {
     content: "\2605";
     display: block;
-    font-size: 9px;
+    font-size: 10.4px;
     color: var(--term-amber);
     margin-bottom: 2px;
 }
@@ -2274,7 +2412,7 @@
 .study-wordorder__slot--empty {
     color: var(--term-label);
     font-family: "Space Mono", monospace;
-    font-size: 10px;
+    font-size: 11.5px;
 }
 .study-wordorder__slot.is-correct {
     border-color: var(--term-border);
@@ -2294,7 +2432,7 @@
 }
 .study-wordorder__chip {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     padding: 7px 15px;
     border-radius: 20px;
     border: 1px solid var(--term-border);
@@ -2315,17 +2453,17 @@
    text too, which is out of scope here — so these are scoped overrides
    under .study-room (the wrapper only Study Room pages have; the
    Adventure Room's DOM never carries it) instead. */
-.study-room .lesson-box__word-tile-text { font-size: 31px; }
-.study-room .lesson-box__word-tile-gloss { font-size: 19px; }
-.study-room .lesson-box__word-tile-gloss.is-small { font-size: 13px; }
-.study-room .lesson-box__section-label { font-size: 19px; }
-.study-room .lesson-box__big-idea { font-size: 24px; }
-.study-room .lesson-box__pattern-line { font-size: 30px; }
-.study-room .lesson-box__explain-text { font-size: 24px; }
-.study-room .lesson-box__culture-note { font-size: 22px; }
-.study-room .lesson-box__mini-label { font-size: 16px; }
-.study-room .lesson-box__sample-tag { font-size: 20px; }
-.study-room .lesson-box__sample-translation { font-size: 20px; }
+.study-room .lesson-box__word-tile-text { font-size: 35.7px; }
+.study-room .lesson-box__word-tile-gloss { font-size: 21.8px; }
+.study-room .lesson-box__word-tile-gloss.is-small { font-size: 15px; }
+.study-room .lesson-box__section-label { font-size: 21.8px; }
+.study-room .lesson-box__big-idea { font-size: 27.6px; }
+.study-room .lesson-box__pattern-line { font-size: 34.5px; }
+.study-room .lesson-box__explain-text { font-size: 27.6px; }
+.study-room .lesson-box__culture-note { font-size: 25.3px; }
+.study-room .lesson-box__mini-label { font-size: 18.4px; }
+.study-room .lesson-box__sample-tag { font-size: 23px; }
+.study-room .lesson-box__sample-translation { font-size: 23px; }
 
 /* Completion overlay */
 .study-complete {
@@ -2344,14 +2482,14 @@
 }
 .study-complete__heading {
     font-family: "VT323", monospace;
-    font-size: 21px;
+    font-size: 24.2px;
     color: var(--term-amber);
     margin: 0;
     max-width: 420px;
 }
 .study-complete__msg {
     color: var(--term-text-dim);
-    font-size: 13px;
+    font-size: 15px;
     max-width: 400px;
     margin: 0;
 }
@@ -2369,27 +2507,27 @@
     padding: 12px 8px;
 }
 .study-complete__tile-label {
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--term-label);
     letter-spacing: 0.04em;
     margin: 0 0 6px;
 }
 .study-complete__tile-value {
     font-family: "VT323", monospace;
-    font-size: 21px;
+    font-size: 24.2px;
     color: var(--term-text);
     margin: 0;
     font-variant-numeric: tabular-nums;
 }
 .study-complete__note {
     color: var(--term-label);
-    font-size: 11px;
+    font-size: 12.6px;
     font-style: italic;
     margin: 0;
 }
 .study-complete__cta {
     font-family: "Space Mono", monospace;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--term-amber);
     background: transparent;
     border: 1px solid var(--term-amber);
@@ -2417,12 +2555,12 @@
 }
 .checkpoint-quiz__title {
     font-family: "VT323", monospace;
-    font-size: 23px;
+    font-size: 26.5px;
     color: var(--term-heading);
     margin-bottom: 4px;
 }
 .checkpoint-quiz__intro {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     margin-bottom: 18px;
 }
@@ -2438,7 +2576,7 @@
     padding: 14px 16px;
 }
 .checkpoint-quiz__prompt {
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--term-text);
     margin-bottom: 10px;
     line-height: 1.5;
@@ -2450,7 +2588,7 @@
 }
 .checkpoint-quiz__choice {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     text-align: left;
     padding: 8px 14px;
     border-radius: var(--radius);
@@ -2474,13 +2612,13 @@
     opacity: 0.85;
 }
 .checkpoint-quiz__fill {
-    font-size: 15px;
+    font-size: 17.3px;
     color: var(--term-text);
     line-height: 2.2;
 }
 .checkpoint-quiz__input {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     padding: 4px 8px;
     margin: 0 4px;
     border-radius: 4px;
@@ -2496,7 +2634,7 @@
     align-self: flex-start;
     margin-top: 18px;
     font-family: "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     padding: 10px 24px;
     border-radius: var(--radius);
     border: 1px solid var(--term-border);
@@ -2518,11 +2656,11 @@
 }
 .checkpoint-quiz__score {
     font-family: "VT323", monospace;
-    font-size: 27px;
+    font-size: 31.1px;
     color: var(--term-amber);
 }
 .checkpoint-quiz__xp {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-label);
     margin-bottom: 14px;
 }
@@ -2534,7 +2672,7 @@
     border-bottom: 1px dashed var(--term-border);
 }
 .checkpoint-quiz__result-mark {
-    font-size: 15px;
+    font-size: 17.3px;
     font-weight: 700;
     flex-shrink: 0;
     width: 18px;
@@ -2542,11 +2680,11 @@
 .checkpoint-quiz__result-mark.is-correct { color: var(--term-border); }
 .checkpoint-quiz__result-mark.is-wrong { color: var(--term-bad-text); }
 .checkpoint-quiz__result-correct {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text);
 }
 .checkpoint-quiz__result-yours {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-text-dim);
 }
 
@@ -2575,12 +2713,12 @@
 }
 .mondai-quiz__title {
     font-family: "VT323", monospace;
-    font-size: 23px;
+    font-size: 26.5px;
     color: var(--term-heading);
     margin-bottom: 4px;
 }
 .mondai-quiz__intro {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     margin-bottom: 20px;
 }
@@ -2597,13 +2735,13 @@
 }
 .mondai-quiz__section-label {
     font-family: "VT323", monospace;
-    font-size: 19px;
+    font-size: 21.8px;
     letter-spacing: 0.03em;
     color: var(--term-amber);
     white-space: nowrap;
 }
 .mondai-quiz__section-instruction {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--term-text-dim);
     line-height: 1.5;
 }
@@ -2621,7 +2759,7 @@
 .mondai-quiz__prompt {
     display: flex;
     gap: 8px;
-    font-size: 15px;
+    font-size: 17.3px;
     color: var(--term-text);
     margin-bottom: 12px;
     line-height: 1.6;
@@ -2629,7 +2767,7 @@
 .mondai-quiz__prompt-num {
     flex-shrink: 0;
     font-family: "VT323", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     color: var(--term-amber);
 }
 .mondai-quiz__prompt-text u {
@@ -2646,7 +2784,7 @@
     align-items: baseline;
     gap: 6px;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     padding: 7px 14px;
     border-radius: var(--radius);
     border: 1px solid var(--term-border);
@@ -2657,7 +2795,7 @@
 }
 .mondai-quiz__choice-num {
     color: var(--term-text-dim);
-    font-size: 13px;
+    font-size: 15px;
 }
 .mondai-quiz__choice:hover:not(:disabled) {
     border-color: var(--term-text);
@@ -2674,7 +2812,7 @@
     align-self: flex-start;
     margin-top: 22px;
     font-family: "VT323", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     padding: 10px 24px;
     border-radius: var(--radius);
     border: 1px solid var(--term-border);
@@ -2691,13 +2829,41 @@
 .mondai-quiz__result { margin-top: 20px; }
 .mondai-quiz__score {
     font-family: "VT323", monospace;
-    font-size: 27px;
+    font-size: 31.1px;
     color: var(--term-amber);
 }
 .mondai-quiz__xp {
-    font-size: 11px;
+    font-size: 12.6px;
     color: var(--term-label);
     margin-bottom: 14px;
+}
+
+/* "Continue to next lesson" — shown by both renderMondaiQuiz() and
+   renderCheckpointQuiz() (both N5 and N4 study-room.js copies) at the end
+   of a graded results panel. Amber instead of the plain Submit button's
+   --term-border fill so it reads as the actual next step, not another
+   form action. */
+.study-continue-btn {
+    display: block;
+    margin-top: 18px;
+    font-family: "VT323", monospace;
+    font-size: 18.4px;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--term-amber);
+    background: var(--term-amber);
+    color: var(--term-bg);
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+}
+.study-continue-btn:hover {
+    opacity: 0.85;
+}
+.study-continue-complete {
+    margin-top: 18px;
+    font-family: "VT323", monospace;
+    font-size: 17.3px;
+    color: var(--term-amber);
 }
 
 /* Responsive */
@@ -2711,7 +2877,8 @@
     .study-header__lesson-picker { max-width: none; flex: 1 1 100%; order: 3; }
     /* Stack lesson above practice again on small screens */
     .study-main { flex-direction: column; overflow-y: auto; }
-    .study-instruction { padding: 20px; flex-shrink: 0; overflow: visible; }
+    .study-instruction { padding: 20px; flex-shrink: 0; overflow: visible; flex-basis: auto !important; }
+    .study-resize-handle { display: none; }
     .study-practice-col {
         flex: 1 1 auto;
         max-width: none;
@@ -2756,13 +2923,108 @@
 
 .xp-badge {
     font-family: "VT323", monospace;
-    font-size: 15px;
+    font-size: 17.3px;
     color: var(--yellow);
     background: rgba(241,210,122,0.12);
     border: 2px solid var(--yellow);
     border-radius: var(--radius);
     padding: 5px 12px;
     white-space: nowrap;
+    position: relative;
+    transition: transform 180ms ease-out;
+}
+/* XP badge digit reels — study-progress.js's renderReels()/rollReelsTo()
+   build these inside each [data-study-xp] element (the "xp-reels" class
+   is added by JS, not present in any page's own markup). A static render
+   just shows the current total; celebrateXpGain()'s Star Tally Flight is
+   what actually animates a roll. color:inherit so this works unchanged
+   under both the plain --yellow badge (dashboards) and the terminal
+   --term-amber override below. */
+.xp-badge .xp-reels {
+    display: inline-flex;
+    font-variant-numeric: tabular-nums;
+}
+.xp-badge .reel {
+    position: relative;
+    overflow: hidden;
+    height: 1.05em;
+    width: 0.6em;
+}
+.xp-badge .reel__strip {
+    position: absolute;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+}
+.xp-badge .reel__digit {
+    height: 1.05em;
+    line-height: 1.05em;
+    text-align: center;
+}
+.xp-badge.is-xp-bumped {
+    transform: scale(1.12);
+}
+
+/* ===== Star Tally Flight — celebrateXpGain()'s XP-earned moment =====
+   A fixed, centered, pointer-events:none overlay: stars fan out sideways
+   one at a time as they're earned, then fly to the page's .xp-badge one
+   at a time and vanish on arrival. Self-contained — study-progress.js
+   builds and removes this DOM itself, no markup needed on the page. */
+.xp-tally-overlay {
+    position: fixed;
+    left: 50%;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+.xp-tally-stars {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+}
+.xp-mint-star {
+    font-size: 22px;
+    line-height: 1;
+    filter: drop-shadow(0 0 4px rgba(250,199,117,0.65));
+    opacity: 0;
+    animation: xpMintPop 300ms cubic-bezier(.3,1.5,.4,1) forwards;
+}
+.xp-mint-star:not(:first-child) {
+    margin-left: -10px;
+}
+@keyframes xpMintPop {
+    0%   { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+    60%  { opacity: 1; transform: scale(1.2) rotate(6deg); }
+    100% { opacity: 1; transform: scale(1) rotate(var(--tilt, 0deg)); }
+}
+.xp-tally-total {
+    font-family: "VT323", monospace;
+    font-size: 19.5px;
+    color: var(--term-heading, #fff);
+    text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+.xp-tally-total span {
+    color: var(--term-amber, var(--yellow));
+}
+.xp-flyer {
+    position: fixed;
+    font-size: 19px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 10001;
+    filter: drop-shadow(0 0 4px rgba(250,199,117,0.8));
+}
+@media (prefers-reduced-motion: reduce) {
+    .xp-mint-star, .xp-badge, .reel__strip, .xp-flyer {
+        transition-duration: 1ms !important;
+        animation-duration: 1ms !important;
+    }
 }
 /* Terminal-scoped override — only the actual lesson/practice screen
    (.study-room.is-terminal), not the pastel levels/lessons dashboards or
@@ -2855,7 +3117,7 @@
 .study-room.is-win95 .level-card__level {
     font-family: "Nunito", Tahoma, sans-serif;
     font-weight: 800;
-    font-size: 20px;
+    font-size: 23px;
     color: #123a8c;
 }
 .study-room.is-win95 .level-card__desc {
@@ -3002,18 +3264,18 @@
 }
 .level-card__level {
     font-family: "VT323", monospace;
-    font-size: 30px;
+    font-size: 34.5px;
     color: var(--title-bar-dark);
     margin-bottom: 4px;
 }
 .level-card__desc {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-main);
     margin-bottom: 10px;
 }
 .level-card__meta {
     font-family: "VT323", monospace;
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--text-light);
 }
 .level-card.is-locked {
@@ -3037,7 +3299,7 @@
 .lesson-grid__section-title {
     grid-column: 1 / -1;
     font-family: "Press Start 2P", monospace;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-main);
     margin: 10px 0 -4px;
     padding-top: 14px;
@@ -3061,13 +3323,13 @@
 }
 .lesson-card__num {
     font-family: "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     color: var(--mint);
     display: block;
     margin-bottom: 4px;
 }
 .lesson-card__title {
-    font-size: 14px;
+    font-size: 16.1px;
     font-weight: 700;
     display: block;
     margin-bottom: 8px;
@@ -3075,7 +3337,7 @@
 }
 .lesson-card__status {
     font-family: "VT323", monospace;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-light);
 }
 .lesson-card.is-complete {
@@ -3122,12 +3384,12 @@
 }
 .quiz-panel h2 {
     font-family: "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     color: var(--title-bar-dark);
     margin: 0 0 4px;
 }
 .quiz-panel__sub {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-light);
     margin-bottom: 16px;
 }
@@ -3146,7 +3408,7 @@
 }
 .quiz-mc__btn {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     padding: 12px 18px;
     border: 2px solid var(--border);
     border-radius: var(--radius);
@@ -3176,7 +3438,7 @@
 /* Quiz action buttons */
 .quiz-action-btn {
     font-family: var(--title-font);
-    font-size: 9px;
+    font-size: 10.4px;
     padding: 12px 24px;
     border: 2px solid var(--border-dark);
     border-radius: var(--radius);
@@ -3217,27 +3479,27 @@
     text-align: center;
     padding: 20px 0;
 }
-.quiz-result__icon { font-size: 48px; margin-bottom: 8px; }
+.quiz-result__icon { font-size: 55.2px; margin-bottom: 8px; }
 .quiz-result__title {
     font-family: "VT323", monospace;
-    font-size: 28px;
+    font-size: 32.2px;
     color: var(--title-bar-dark);
     margin-bottom: 8px;
 }
 .quiz-result__score {
     font-family: "VT323", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     color: var(--yellow);
     margin-bottom: 12px;
 }
 .quiz-result__verdict {
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--text-main);
     margin-bottom: 8px;
 }
 .quiz-xp-gained {
     font-family: "VT323", monospace;
-    font-size: 20px;
+    font-size: 23px;
     color: var(--mint);
     margin-bottom: 16px;
 }
@@ -3256,7 +3518,7 @@
    these are just the per-kind "extra" blocks shown above the prompt. */
 .quiz-section-label {
     font-family: "Space Mono", "JetBrains Mono", monospace;
-    font-size: 10.5px;
+    font-size: 12.1px;
     text-transform: uppercase;
     letter-spacing: .06em;
     color: var(--text-light);
@@ -3273,12 +3535,12 @@
 .quiz-kanji-display__glyph {
     font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     font-weight: 700;
-    font-size: 64px;
+    font-size: 73.6px;
     line-height: 1;
     color: var(--title-bar-dark);
 }
 .quiz-kanji-display__meaning {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: .04em;
@@ -3286,7 +3548,7 @@
 
 .quiz-star-sentence {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 22px;
+    font-size: 25.3px;
     line-height: 1.6;
     color: var(--text-main);
     background: var(--bg-card);
@@ -3318,18 +3580,18 @@
     border-radius: 50%;
     background: var(--border);
     color: #fff;
-    font-size: 10px;
+    font-size: 11.5px;
     flex-shrink: 0;
 }
 .quiz-star-reveal {
     margin-top: 6px;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 17px;
+    font-size: 19.5px;
     opacity: .85;
 }
 
 .quiz-passage {
-    font-size: 14px;
+    font-size: 16.1px;
     line-height: 1.8;
     color: var(--text-main);
     background: var(--bg-card);
@@ -3353,15 +3615,15 @@
 }
 .quiz-word-prompt__word {
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 26px;
+    font-size: 29.9px;
     color: var(--title-bar-dark);
 }
 .quiz-word-prompt__reading {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-light);
 }
 .quiz-word-prompt__meaning {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: .04em;
@@ -3397,13 +3659,13 @@
 .quiz-exam-item__num {
     flex: 0 0 auto;
     font-family: "VT323", monospace;
-    font-size: 18px;
+    font-size: 20.7px;
     color: var(--text-light);
     min-width: 22px;
 }
 .quiz-exam-item__body { flex: 1; min-width: 0; }
 .quiz-exam-item__prompt {
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--text-main);
     margin: 0 0 4px;
 }
@@ -3427,7 +3689,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg-card);
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-main);
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
@@ -3458,10 +3720,10 @@
 .quiz-exam-item__reveal {
     margin-top: 8px;
     font-family: "VT323", "DotGothic16", monospace;
-    font-size: 16px;
+    font-size: 18.4px;
     color: var(--text-light);
 }
-.quiz-exam-item__reveal::before { content: "Full sentence: "; font-family: var(--body-font, inherit); font-size: 11px; }
+.quiz-exam-item__reveal::before { content: "Full sentence: "; font-family: var(--body-font, inherit); font-size: 12.6px; }
 
 .quiz-exam-submit-bar {
     position: sticky;
@@ -3475,7 +3737,7 @@
     border-top: 1px solid var(--border);
 }
 .quiz-exam-submit-bar__status {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--text-light);
     flex: 1;
 }
@@ -3512,14 +3774,14 @@
     margin: 0 auto 24px;
     text-align: center;
     color: var(--text-light);
-    font-size: 14px;
+    font-size: 16.1px;
 }
 .kana-credit {
     max-width: 420px;
     margin: 12px auto 0;
     text-align: center;
     color: var(--text-light);
-    font-size: 11px;
+    font-size: 12.6px;
 }
 .kana-credit a {
     color: inherit;
@@ -3541,12 +3803,12 @@
 }
 .credits-page__section h2 {
     font-family: "Press Start 2P", monospace;
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--text-main);
     margin-bottom: 10px;
 }
 .credits-page__section p {
-    font-size: 14px;
+    font-size: 16.1px;
     line-height: 1.6;
     color: var(--text-light);
     margin-bottom: 8px;
@@ -3556,7 +3818,7 @@
 }
 .credits-page__outro {
     text-align: center;
-    font-size: 14px;
+    font-size: 16.1px;
     color: var(--text-light);
     margin-top: 28px;
 }
@@ -3622,12 +3884,12 @@
 }
 .kana-grid__char {
     font-family: "DotGothic16", sans-serif;
-    font-size: 26px;
+    font-size: 29.9px;
     color: var(--text-main);
 }
 .kana-grid__romaji {
     font-family: "Nunito", sans-serif;
-    font-size: 10px;
+    font-size: 11.5px;
     color: var(--text-light);
     text-transform: lowercase;
 }
@@ -3690,19 +3952,19 @@
 }
 .kana-writer__dot text {
     font-family: "VT323", monospace;
-    font-size: 6px;
+    font-size: 6.9px;
     fill: var(--text-main);
     text-anchor: middle;
     dominant-baseline: central;
 }
 .kana-viewer__label {
     font-family: "VT323", monospace;
-    font-size: 26px;
+    font-size: 29.9px;
     color: var(--text-main);
     margin-bottom: 2px;
 }
 .kana-viewer__count {
-    font-size: 12px;
+    font-size: 13.8px;
     color: var(--text-light);
     margin-bottom: 14px;
 }
@@ -3713,7 +3975,7 @@
 }
 .kana-viewer__controls button {
     font-family: "Press Start 2P", monospace;
-    font-size: 9px;
+    font-size: 10.4px;
     padding: 10px 14px;
     background: var(--title-bar);
     color: #fff;
@@ -3736,7 +3998,7 @@
 }
 .kana-viewer__stroke-order-title {
     font-family: "Press Start 2P", monospace;
-    font-size: 9px;
+    font-size: 10.4px;
     color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: 0.05em;

@@ -2740,6 +2740,16 @@
         "36301"
       ],
       "port": 36301
+    },
+    {
+      "name": "jp-library-static-round57-greetings-cleanup",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "36412"
+      ],
+      "port": 36412
     }
   ],
   "autoVerify": true

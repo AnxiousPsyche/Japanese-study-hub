@@ -97,6 +97,126 @@ window.NekoRoute = {
     }
 };
 
+/* s04's jikoshoukai "building blocks" diagram — a train where the two
+   optional cars (age, hobby) physically uncouple and roll to a siding on
+   click, then can be reattached. Same pattern as window.NekoRoute above:
+   diagramSvg is inert HTML, buttons carry inline onclick, and all state
+   lives on the diagram root's own data-attached attribute rather than a
+   JS variable, so a lesson re-render always starts fully coupled. Child
+   elements are found by data-role (scoped to the clicked button's own
+   .jiko-train ancestor) rather than id, since id must stay page-unique
+   and this diagram's own markup shouldn't have to guarantee that. */
+window.NekoTrain = {
+    optionalRoles: ["carAge", "carHobby"],
+    toggle: function (btn) {
+        var scene = btn.closest(".jiko-train");
+        if (!scene) return;
+        btn.disabled = true;
+        var attached = scene.dataset.attached !== "false";
+        if (attached) this.detach(scene, btn); else this.reattach(scene, btn);
+    },
+    spawnSparks: function (x, y) {
+        for (var i = 0; i < 5; i++) {
+            var angle = (Math.PI * 2 * i) / 5 + Math.random() * 0.4;
+            var dist = 16 + Math.random() * 8;
+            var spark = document.createElement("div");
+            spark.className = "jiko-train-spark";
+            spark.style.left = x + "px";
+            spark.style.top = y + "px";
+            spark.style.setProperty("--fly", "translate(" + (Math.cos(angle) * dist).toFixed(1) + "px," + (Math.sin(angle) * dist).toFixed(1) + "px)");
+            document.body.appendChild(spark);
+            (function (el) { setTimeout(function () { el.remove(); }, 500); })(spark);
+        }
+    },
+    /* Pulls `el` out of normal flow, pins it at `fromRect` (its current
+       on-screen position, so there's no jump), then transitions to
+       `toRect`. Caller's onDone is responsible for putting it back into
+       normal flow afterward. */
+    moveTo: function (el, fromRect, toRect, duration, onDone) {
+        el.style.position = "fixed";
+        el.style.left = fromRect.left + "px";
+        el.style.top = fromRect.top + "px";
+        el.style.width = fromRect.width + "px";
+        el.style.margin = "0";
+        el.style.zIndex = 40;
+        document.body.appendChild(el);
+        requestAnimationFrame(function () {
+            el.style.transition = "left " + duration + "ms cubic-bezier(.3,.6,.3,1), top " + duration + "ms cubic-bezier(.3,.6,.3,1)";
+            el.style.left = toRect.left + "px";
+            el.style.top = toRect.top + "px";
+        });
+        setTimeout(function () { if (onDone) onDone(); }, duration);
+    },
+    detach: function (scene, btn) {
+        var self = this;
+        var caption = scene.querySelector('[data-role="caption"]');
+        caption.innerHTML = "Detaching&hellip;";
+        this.optionalRoles.forEach(function (role, i) {
+            setTimeout(function () {
+                var car = scene.querySelector('[data-role="' + role + '"]');
+                var slot = scene.querySelector('[data-role="' + car.dataset.slot + '"]');
+                var fromRect = car.getBoundingClientRect();
+                var toRect = slot.getBoundingClientRect();
+                self.spawnSparks(fromRect.left, fromRect.top + fromRect.height / 2); // the coupling point it's leaving
+                var target = {
+                    left: toRect.left + (toRect.width - fromRect.width) / 2,
+                    top: toRect.top + (toRect.height - fromRect.height) / 2,
+                    width: fromRect.width
+                };
+                self.moveTo(car, fromRect, target, 620, function () {
+                    car.classList.add("in-siding");
+                    car.style.position = ""; car.style.left = ""; car.style.top = ""; car.style.width = ""; car.style.zIndex = "";
+                    car.style.transition = "";
+                    slot.appendChild(car);
+                });
+            }, i * 260);
+        });
+        setTimeout(function () {
+            caption.innerHTML = "Still complete &mdash; <b>3</b> cars. Age and hobby are optional, not required.";
+            btn.textContent = "Reattach optional cars";
+            scene.dataset.attached = "false";
+            btn.disabled = false;
+        }, this.optionalRoles.length * 260 + 620 + 150);
+    },
+    reattach: function (scene, btn) {
+        var self = this;
+        var caption = scene.querySelector('[data-role="caption"]');
+        var homeAnchor = scene.querySelector('[data-role="carClosing"]');
+        var main = scene.querySelector('[data-role="main"]');
+        caption.innerHTML = "Reattaching&hellip;";
+        /* Both optional cars re-insert before the SAME anchor (the closing
+           car) rather than before "whatever sat next to it originally" —
+           carAge's original neighbor was carHobby, which is itself out at
+           the siding when carAge comes back, so that reference would be
+           useless right when it's needed. Reattaching in array order
+           (age, then hobby) against one shared anchor still lands them in
+           the correct left-to-right order, since each insertBefore just
+           stacks the next one in front of the anchor. */
+        this.optionalRoles.forEach(function (role, i) {
+            setTimeout(function () {
+                var car = scene.querySelector('[data-role="' + role + '"]');
+                var sidingRect = car.getBoundingClientRect();
+                car.classList.remove("in-siding");
+                car.style.visibility = "hidden";
+                main.insertBefore(car, homeAnchor);
+                var homeRect = car.getBoundingClientRect();
+                car.style.visibility = "";
+                self.moveTo(car, sidingRect, homeRect, 620, function () {
+                    car.style.position = ""; car.style.left = ""; car.style.top = ""; car.style.width = ""; car.style.zIndex = "";
+                    car.style.transition = ""; car.style.margin = "";
+                    self.spawnSparks(homeRect.left, homeRect.top + homeRect.height / 2); // the coupling point it just re-joined
+                });
+            }, i * 260);
+        });
+        setTimeout(function () {
+            caption.innerHTML = "Full introduction &mdash; <b>5</b> cars, all coupled.";
+            btn.textContent = "Detach optional cars";
+            scene.dataset.attached = "true";
+            btn.disabled = false;
+        }, this.optionalRoles.length * 260 + 620 + 150);
+    }
+};
+
 /* s15's S-T-P-O-V sentence-order diagram + 3-round slot-builder practice.
    Two independently-clickable widgets share this namespace: the "signal
    stack" (5 always-visible role lights, each with its actual particle(s)
@@ -335,6 +455,30 @@ window.NekoWaGa = {
         { jp: "ふじい", en: "Fuji" }
     ];
 
+    /* Hobby words for s04's 趣味 (shumi) addition -- picked the same way
+       NAMES is (uPick at wordBank-build time), so "My hobby is ___"
+       varies per lesson load instead of being hardcoded to one word.
+       `koto`/`kotoEn` is the same hobby rephrased as an activity — verb
+       (dictionary form) + こと + です, e.g. 音楽です "[my hobby is] music"
+       vs 音楽を聞くことです "[my hobby is] listening to music" — the second
+       pattern s04's own "Going Further" section teaches alongside the
+       plain-noun one above. */
+    const HOBBIES = [
+        { jp: "おんがく", en: "music", koto: "音楽を聞くこと", kotoEn: "listening to music" },
+        { jp: "どくしょ", en: "reading", koto: "本を読むこと", kotoEn: "reading books" },
+        { jp: "りょうり", en: "cooking", koto: "料理をすること", kotoEn: "cooking" },
+        { jp: "えいが", en: "movies", koto: "映画を見ること", kotoEn: "watching movies" },
+        { jp: "スポーツ", en: "sports", koto: "スポーツをすること", kotoEn: "playing sports" }
+    ];
+
+    /* Ages for s04's roleplay conversation (sensei asks the player's age) —
+       kept small/playful to fit this cat-library setting, and shown as a
+       plain digit + 歳 rather than spelled out in kana, since spelling out
+       most of these readings correctly (はたち for 20 is irregular) isn't
+       covered until the numbers lesson (shelf 07a) — digit+歳 is also just
+       standard written Japanese, not a simplification for beginners' sake. */
+    const AGES = [7, 8, 9, 10, 12];
+
     /* Sprite sheets for 'conversation' turns (see buildInstruction()'s
        optional `conversation` field + renderConversation() below) — the
        same per-color action sheets n5-phaser-game.js's ACTION_SPRITE_PATHS
@@ -415,7 +559,9 @@ window.NekoWaGa = {
         "話します": "はなします", "話しました": "はなしました",
         "勉強します": "べんきょうします", "勉強しません": "べんきょうしません",
         "公園": "こうえん", "学校": "がっこう", "学生": "がくせい", "先生": "せんせい",
-        "図書館": "としょかん", "遊びます": "あそびます", "猫": "ねこ", "友達": "ともだち"
+        "図書館": "としょかん", "遊びます": "あそびます", "猫": "ねこ", "友達": "ともだち",
+        "申します": "もうします", "何歳": "なんさい", "歳": "さい", "趣味": "しゅみ",
+        "音楽": "おんがく", "聞く": "きく", "料理": "りょうり", "映画": "えいが", "見る": "みる"
     };
     const KANJI_READING_KEYS = Object.keys(KANJI_READINGS).sort(function (a, b) { return b.length - a.length; });
     function annotateFurigana(text) {
@@ -563,6 +709,12 @@ window.NekoWaGa = {
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
             },
+            /* もんだい2 dropped: it used to quiz this lesson's `newWords`
+               (ねこ/みず/がっこう/おおきい/ちいさい) -- exposure-only vocab this
+               page never actually taught (no explain text, no example
+               sentence), unlike every phrase in もんだい1, which all come
+               straight from the page above. Per explicit feedback, the
+               quiz now only covers what the lesson actually discussed. */
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
@@ -574,15 +726,7 @@ window.NekoWaGa = {
                             { prompt: "ありがとうございます", choices: ["Excuse me", "Goodbye", "Thank you", "Hello"], correctIndex: 2 }
                         ]
                     },
-                    mondai2: {
-                        questions: [
-                            { prompt: "\"Excuse me / Sorry\"", choices: ["すみません", "こんにちは", "さようなら", "ねこ"], correctIndex: 0 },
-                            { prompt: "\"cat\"", choices: ["みず", "ねこ", "がっこう", "おおきい"], correctIndex: 1 },
-                            { prompt: "\"water\"", choices: ["みず", "ねこ", "がっこう", "ちいさい"], correctIndex: 0 },
-                            { prompt: "\"big\"", choices: ["おおきい", "ちいさい", "みず", "がっこう"], correctIndex: 0 },
-                            { prompt: "\"school\"", choices: ["がっこう", "ねこ", "みず", "ちいさい"], correctIndex: 0 }
-                        ]
-                    }
+                    mondai2: { questions: [] }
                 };
             }
         };
@@ -699,6 +843,9 @@ window.NekoWaGa = {
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
             },
+            /* もんだい2 dropped -- same reasoning as s01: it quizzed this
+               lesson's `newWords` (でんわ/くるま/ほん/たのしい/いそがしい), which
+               the page itself never taught. See s01's own comment above. */
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
@@ -710,15 +857,7 @@ window.NekoWaGa = {
                             { prompt: "どうぞ", choices: ["Please (go ahead)", "Please (asking for something)", "Yes (softer)", "Thanks"], correctIndex: 0 }
                         ]
                     },
-                    mondai2: {
-                        questions: [
-                            { prompt: "\"telephone\"", choices: ["でんわ", "くるま", "ほん", "たのしい"], correctIndex: 0 },
-                            { prompt: "\"car\"", choices: ["でんわ", "くるま", "ほん", "いそがしい"], correctIndex: 1 },
-                            { prompt: "\"book\"", choices: ["でんわ", "くるま", "ほん", "たのしい"], correctIndex: 2 },
-                            { prompt: "\"fun\"", choices: ["たのしい", "いそがしい", "でんわ", "ほん"], correctIndex: 0 },
-                            { prompt: "\"busy\"", choices: ["たのしい", "いそがしい", "くるま", "ほん"], correctIndex: 1 }
-                        ]
-                    }
+                    mondai2: { questions: [] }
                 };
             }
         };
@@ -786,6 +925,9 @@ window.NekoWaGa = {
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
             },
+            /* もんだい2 dropped -- same reasoning as s01: it quizzed this
+               lesson's `newWords` (たべもの/おちゃ/いえ/おいしい/あつい), which
+               the page itself never taught. See s01's own comment above. */
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
@@ -797,15 +939,7 @@ window.NekoWaGa = {
                             { prompt: "お邪魔します", choices: ["Excuse me for intruding (entering)", "Thanks for having me (leaving)", "I'm home", "I'm heading out"], correctIndex: 0 }
                         ]
                     },
-                    mondai2: {
-                        questions: [
-                            { prompt: "\"food\"", choices: ["たべもの", "おちゃ", "いえ", "おいしい"], correctIndex: 0 },
-                            { prompt: "\"tea\"", choices: ["たべもの", "おちゃ", "いえ", "あつい"], correctIndex: 1 },
-                            { prompt: "\"house\"", choices: ["たべもの", "おちゃ", "いえ", "おいしい"], correctIndex: 2 },
-                            { prompt: "\"delicious\"", choices: ["おいしい", "あつい", "いえ", "おちゃ"], correctIndex: 0 },
-                            { prompt: "\"hot\"", choices: ["おいしい", "あつい", "たべもの", "いえ"], correctIndex: 1 }
-                        ]
-                    }
+                    mondai2: { questions: [] }
                 };
             }
         };
@@ -916,6 +1050,9 @@ window.NekoWaGa = {
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
             },
+            /* もんだい2 dropped -- same reasoning as s01: it quizzed this
+               lesson's `newWords` (はなし/きもち/おもしろい/うれしい/へん), which
+               the page itself never taught. See s01's own comment above. */
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
@@ -927,15 +1064,7 @@ window.NekoWaGa = {
                             { prompt: "まず", choices: ["First of all", "From now on", "If / in case", "Well then"], correctIndex: 0 }
                         ]
                     },
-                    mondai2: {
-                        questions: [
-                            { prompt: "\"talk / story\"", choices: ["はなし", "きもち", "おもしろい", "うれしい"], correctIndex: 0 },
-                            { prompt: "\"feeling\"", choices: ["はなし", "きもち", "おもしろい", "へん"], correctIndex: 1 },
-                            { prompt: "\"interesting\"", choices: ["はなし", "きもち", "おもしろい", "うれしい"], correctIndex: 2 },
-                            { prompt: "\"happy\"", choices: ["おもしろい", "うれしい", "へん", "はなし"], correctIndex: 1 },
-                            { prompt: "\"strange / odd\"", choices: ["おもしろい", "うれしい", "へん", "きもち"], correctIndex: 2 }
-                        ]
-                    }
+                    mondai2: { questions: [] }
                 };
             }
         };
@@ -963,103 +1092,50 @@ window.NekoWaGa = {
                         title: "A は B です",
                         explain: "は marks the topic; です makes it polite and carries the tense. Swap です for でした to shift to the past — nothing else changes, and there's no separate future form either.",
                         pattern: '<span class="pattern-box__slot">Topic</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Predicate</span> <span class="pattern-box__fixed">です</span>',
-                        /* Ported verbatim (structure/wording) from n5-phaser-game.js's
-                           LESSON_CONTENT['shelf-03'] grammar-intro diagram page. The
-                           original used var(--lb-role-*)/var(--jr-text-dim), which only
-                           resolve inside .lesson-box-overlay (lesson-box.css) — Study
-                           Room's DOM never has that ancestor, so every var(...) below is
-                           replaced with its literal N5-theme hex value straight from
-                           lesson-box.css's :root block: --lb-role-particle-bg #f0c674,
-                           --lb-role-copula-bg #ffffff, --lb-role-subject-bg/fg #6fb3e6/
-                           #0b2438, --lb-role-predicate-bg/fg #e2685f/#2e0e0b,
-                           --lb-role-copula-fg #201d54, --lb-role-particle-fg #4a3211,
-                           --lb-role-neutral-bg #746fa8, --jr-text-dim #c9a66b. */
+                        /* Side-by-side comparison, replacing the original arrow-based
+                           English/Japanese-split diagram — approved in the "Ten Sentence
+                           Shapes" mockup session (2026-09-03), idea 6. です shares は's
+                           yellow (not the usual white) so は…です reads as one held-
+                           together set rather than two separate rules; three sample
+                           sentences show the am/is/are gap is an English problem, not a
+                           Japanese one. See .wa-desu-* in study-style.css. */
                         diagramSvg: `
-        <svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-          <defs>
-            <marker id="lb-arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#f0c674"></path>
-            </marker>
-            <marker id="lb-arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#ffffff"></path>
-            </marker>
-          </defs>
-          <text x="10" y="24" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
-            <rect x="10" y="36" width="70" height="34" rx="3" fill="#746fa8"></rect>
-            <text x="45" y="58" text-anchor="middle" fill="#efeeff">I</text>
-            <rect x="96" y="36" width="70" height="34" rx="3" fill="#746fa8"></rect>
-            <text x="131" y="58" text-anchor="middle" fill="#efeeff">am</text>
-            <rect x="182" y="36" width="140" height="34" rx="3" fill="#746fa8"></rect>
-            <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
-          </g>
-          <text x="131" y="30" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
-          <circle cx="131" cy="72" r="3" fill="#c9a66b"></circle>
-          <path d="M131,72 C 131,102 131,128 131,155" fill="none" stroke="#f0c674" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
-          <text x="142" y="112" text-anchor="start" font-size="10" fill="#f0c674" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
-          <path d="M131,72 C 190,96 260,122 315,155" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
-          <text x="225" y="102" text-anchor="middle" font-size="10" fill="#ffffff" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
-          <text x="10" y="148" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
-            <rect x="10" y="160" width="90" height="34" rx="3" fill="#6fb3e6"></rect>
-            <text x="55" y="182" text-anchor="middle" fill="#0b2438">わたし</text>
-            <rect x="108" y="160" width="46" height="34" rx="3" fill="#f0c674"></rect>
-            <text x="131" y="182" text-anchor="middle" fill="#4a3211">は</text>
-            <rect x="162" y="160" width="110" height="34" rx="3" fill="#e2685f"></rect>
-            <text x="217" y="182" text-anchor="middle" fill="#2e0e0b">せんせい</text>
-            <rect x="280" y="160" width="70" height="34" rx="3" fill="#ffffff"></rect>
-            <text x="315" y="182" text-anchor="middle" fill="#201d54">です</text>
-          </g>
-          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="#c9a66b">
-            <text x="55" y="208" text-anchor="middle">subject</text>
-            <text x="131" y="203" text-anchor="middle">topic + "is"</text>
-            <text x="217" y="208" text-anchor="middle">predicate</text>
-            <text x="315" y="203" text-anchor="middle">tense +</text>
-            <text x="315" y="215" text-anchor="middle">politeness</text>
-          </g>
-          <text x="10" y="238" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
-        </svg>
+        <div class="wa-desu-compare">
+          <div class="wa-desu-compare__col">
+            <div class="wa-desu-compare__row">
+              <span class="wa-desu-role wa-desu-role--subject">I</span>
+              <span class="wa-desu-role wa-desu-role--copula">am</span>
+              <span class="wa-desu-role wa-desu-role--predicate">a teacher</span>
+            </div>
+          </div>
+          <div class="wa-desu-compare__col">
+            <div class="wa-desu-compare__row">
+              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたし</span>
+              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span>
+              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">せんせい</span>
+              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span>
+            </div>
+          </div>
+        </div>
+        <div class="wa-desu-samples">
+          <p class="wa-desu-lede">Hold onto は…です as one set, for now — it covers am, is, and are:</p>
+          <div class="wa-desu-sample">
+            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたし</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
+            <span class="wa-desu-sample__en">I <b>am</b> a student.</span>
+          </div>
+          <div class="wa-desu-sample">
+            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">たなかさん</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
+            <span class="wa-desu-sample__en">Tanaka <b>is</b> a student.</span>
+          </div>
+          <div class="wa-desu-sample">
+            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたしたち</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
+            <span class="wa-desu-sample__en">We <b>are</b> students.</span>
+          </div>
+          <p class="wa-desu-note">です doesn't change no matter which one English needs. The gap between "am / is / are" is an English problem — です is the same word every time.</p>
+        </div>
       `,
-                        diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',
+                        diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は marks the topic, です carries the "is" and the tense.',
                         culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\""
-                    }, {
-                        title: "Sentence construction — the box breakdown",
-                        explain: "Topic + は + Predicate + です — です never moves. これ slots into the Topic box exactly like わたし; it's just another topic.",
-                        diagramSvg: `
-        <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-          <text x="20" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">A は B です - BOX BY BOX</text>
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
-            <rect x="20" y="38" width="100" height="34" rx="3" fill="#6fb3e6"></rect>
-            <text x="70" y="60" text-anchor="middle" fill="#0b2438">わたし</text>
-            <rect x="126" y="38" width="46" height="34" rx="3" fill="#f0c674"></rect>
-            <text x="149" y="60" text-anchor="middle" fill="#4a3211">は</text>
-            <rect x="178" y="38" width="110" height="34" rx="3" fill="#e2685f"></rect>
-            <text x="233" y="60" text-anchor="middle" fill="#2e0e0b">がくせい</text>
-            <rect x="294" y="38" width="70" height="34" rx="3" fill="#ffffff"></rect>
-            <text x="329" y="60" text-anchor="middle" fill="#201d54">です</text>
-          </g>
-          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="#c9a66b">
-            <text x="70" y="86" text-anchor="middle">topic</text>
-            <text x="149" y="86" text-anchor="middle">は - marks it</text>
-            <text x="233" y="86" text-anchor="middle">predicate</text>
-            <text x="329" y="86" text-anchor="middle">です - copula</text>
-          </g>
-          <text x="20" y="108" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Watashi wa gakusei desu. - "I am a student."</text>
-
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
-            <rect x="20" y="128" width="80" height="34" rx="3" fill="#6fb3e6"></rect>
-            <text x="60" y="150" text-anchor="middle" fill="#0b2438">これ</text>
-            <rect x="106" y="128" width="46" height="34" rx="3" fill="#f0c674"></rect>
-            <text x="129" y="150" text-anchor="middle" fill="#4a3211">は</text>
-            <rect x="158" y="128" width="80" height="34" rx="3" fill="#e2685f"></rect>
-            <text x="198" y="150" text-anchor="middle" fill="#2e0e0b">ほん</text>
-            <rect x="244" y="128" width="70" height="34" rx="3" fill="#ffffff"></rect>
-            <text x="279" y="150" text-anchor="middle" fill="#201d54">です</text>
-          </g>
-          <text x="20" y="180" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">Kore wa hon desu. - "This is a book." (same 4 boxes, different topic + predicate)</text>
-        </svg>
-      `,
-                        diagramCaption: "Same four boxes, every time — only what goes IN the topic and predicate boxes ever changes. は and です never move."
                     }, {
                         title: "Swap the cards — any topic, any predicate",
                         explain: "は and です are fixed; Topic and Predicate are swappable cards — any pair from the word bank works.",
@@ -1213,6 +1289,8 @@ window.NekoWaGa = {
             id: "s04", title: "Self Introduction", subtitle: "Shelf 04",
             wordBank: {
                 names: uPick(NAMES, 2),
+                hobbies: uPick(HOBBIES, 2),
+                ages: uPick(AGES, 2),
                 newWords: [
                     { jp: "いしゃ", en: "doctor" }, { jp: "かいしゃいん", en: "office worker" }, { jp: "しゅふ", en: "homemaker" },
                     { jp: "わかい", en: "young" }, { jp: "やさしい", en: "kind / gentle" }
@@ -1221,6 +1299,8 @@ window.NekoWaGa = {
             },
             buildInstruction: function () {
                 let nm = this.wordBank.names[0];
+                let hb = this.wordBank.hobbies[0];
+                let ag = this.wordBank.ages[0];
                 return {
                     sections: [{
                         title: "自己紹介 (jikoshoukai) — Self-Intro",
@@ -1232,46 +1312,130 @@ window.NekoWaGa = {
                             tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "たなか", role: "predicate", gloss: "Tanaka", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
                             romaji: "Watashi wa Tanaka desu."
                         }
+                    }, {
+                        title: "Going Further — 年齢 (Age)",
+                        explain: "A longer jikoshoukai can tack on your age. There are two ways to ask: <strong>何歳ですか</strong> (nansai desu ka) is the plain, neutral version; <strong>おいくつですか</strong> (o-ikutsu desu ka) is the politer one — いくつ softens \"how many/how old\" the way English softens \"how old\" into \"might I ask your age.\" Either way, you answer the same way: <strong>[number]歳です</strong> ([number] + さい + です, \"I am ___ years old\"). Numbers get their own full lesson later (Shelf 07a) — ages here are just written as a plain digit + 歳, which is normal written Japanese, not a simplification.",
+                        pattern: '<span class="pattern-box__fixed">おいくつですか</span> → <span class="pattern-box__slot">[number]歳です</span>',
+                        culture: "In Japanese culture, asking someone's age directly — especially a woman's — is often considered too personal, similar to how it can be impolite in English too. This section is pure language practice (the question form and the number+歳 pattern), not a real conversation-opener to actually use on someone you've just met.",
+                        sample: {
+                            tag: '"I am ' + ag + ' years old."',
+                            tiles: [{ text: String(ag), role: "predicate", gloss: "age", isNew: true }, { text: "歳", role: "particle", gloss: "years old" }, { text: "です", role: "copula", gloss: "am/is" }],
+                            romaji: ag + "-sai desu."
+                        }
+                    }, {
+                        title: "Going Further — 趣味 (Hobby)",
+                        explain: "趣味 (shumi, \"hobby\") shares what you enjoy, asked with <strong>趣味は何ですか</strong> (shumi wa nan desu ka). There are two ways to answer. The simple way reuses the A-は-B-です pattern from your name: <strong>趣味は" + hb.jp + "です</strong> (shumi wa " + hb.jp + " desu) — a plain noun, \"my hobby is [thing].\" The fuller way names an activity instead of a thing, using a verb in its plain dictionary form + <strong>こと</strong> + です — こと turns the verb into a noun-like word so it can stand in front of です, the same job -ing does in English \"my hobby is [verb]-ing\": <strong>趣味は" + hb.koto + "です</strong> (shumi wa " + hb.koto + " desu, \"my hobby is " + hb.kotoEn + "\"). Both are correct — the noun version is shorter, the verb+こと version says more precisely what you actually do.",
+                        pattern: '<span class="pattern-box__fixed">趣味は</span> <span class="pattern-box__slot">[hobby noun]</span> <span class="pattern-box__fixed">です</span>　・　<span class="pattern-box__fixed">趣味は</span> <span class="pattern-box__slot">[verb (dictionary form)] + こと</span> <span class="pattern-box__fixed">です</span>',
+                        sample: {
+                            tag: '"My hobby is ' + hb.kotoEn + '."',
+                            tiles: [{ text: "趣味", role: "subject", gloss: "hobby" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: hb.koto, role: "predicate", gloss: hb.kotoEn, isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
+                            romaji: "Shumi wa " + hb.koto + " desu."
+                        }
+                    }, {
+                        title: "自己紹介の組み立て — Building It",
+                        explain: "Put it all together and a full jikoshoukai is five parts, greeting to closing. Two of them — age and hobby — are optional add-ons, not required pieces: leave them out and the introduction is still complete. Press the button to see them uncouple.",
+                        /* Interactive train — see window.NekoTrain above buildLessons()
+                           for the click handling and the "Jikoshoukai Express" mockup
+                           session (2026-09-03) this design came out of. Uses this
+                           lesson's own real nm/hb values so the cars match whatever
+                           name/hobby the rest of the page is showing. */
+                        diagramSvg: `
+        <div class="jiko-train" data-attached="true">
+          <p class="jiko-train__caption" data-role="caption">Full introduction &mdash; <b>5</b> cars, all coupled.</p>
+          <div class="jiko-train__main" data-role="main">
+            <div class="jiko-train__car jiko-train__car--engine"><span class="jiko-train__stack"></span><span class="jiko-train__cab"></span><span>はじめまして</span></div>
+            <div class="jiko-train__car jiko-train__car--core"><span>わたしは` + nm.jp + `です</span></div>
+            <div class="jiko-train__car jiko-train__car--optional" data-role="carAge" data-slot="slotAge"><span>おいくつですか</span><span class="jiko-train__car-tag">optional</span></div>
+            <div class="jiko-train__car jiko-train__car--optional" data-role="carHobby" data-slot="slotHobby"><span>趣味は` + hb.jp + `です</span><span class="jiko-train__car-tag">optional</span></div>
+            <div class="jiko-train__car jiko-train__car--core" data-role="carClosing"><span>これから&hellip;お願いします</span></div>
+          </div>
+          <div class="jiko-train__track">
+            <div class="jiko-train__rail jiko-train__rail--top"></div>
+            <div class="jiko-train__ties"></div>
+            <div class="jiko-train__rail jiko-train__rail--bottom"></div>
+          </div>
+          <div class="jiko-train__siding">
+            <p class="jiko-train__siding-label">🛤 left at the station &mdash; not required to introduce yourself</p>
+            <div class="jiko-train__slots">
+              <div class="jiko-train__slot" data-role="slotAge"></div>
+              <div class="jiko-train__slot" data-role="slotHobby"></div>
+            </div>
+          </div>
+          <button class="jiko-train__toggle" type="button" onclick="window.NekoTrain.toggle(this)">Detach optional cars</button>
+        </div>
+      `
                     }],
-                    /* Ported verbatim from the Adventure Room's shelf-04
-                       LESSON_CONTENT (the same self-intro exchange,
-                       'conversation' page type) — text/romaji unchanged,
-                       just with the fixed sensei=black/player=orange
-                       casting per Study Room's own convention (see
-                       CONV_ACTION_SPRITES) instead of the Adventure
-                       Room's dynamic per-player color resolution, and the
-                       hardcoded name "レイヤ" swapped for this lesson's own
-                       randomly-picked `nm` (already used by the examples
-                       below) so the dialogue matches whichever name the
-                       player is seeing everywhere else on this page. */
+                    /* Extended past the Adventure Room's original shelf-04
+                       exchange (which only covered name) to also cover age
+                       and hobby, per explicit request for a fuller, more
+                       natural jikoshoukai. と申します (to moushimasu, "I am
+                       called ~") is introduced here as the more formal/
+                       humble sibling of the です pattern already taught —
+                       sensei models it first, player echoes it back. Age is
+                       asked sensei→player, not the reverse, so the roleplay
+                       itself doesn't demonstrate the exact "asking a
+                       stranger's/woman's age" situation the Age section's
+                       own culture note flags as impolite in real
+                       conversation — this is framed as a teacher checking
+                       in with a new student, which isn't the awkward case. */
                     conversation: {
                         turns: [
                             {
                                 speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
-                                text: "はじめまして。<span class=\"conv-hl conv-hl--subject\">お名前</span><span class=\"conv-hl conv-hl--particle\">は</span><span class=\"conv-hl conv-hl--predicate\">何</span><span class=\"conv-hl conv-hl--copula\">です</span><span class=\"conv-hl conv-hl--particle\">か</span>。",
-                                romaji: "Hajimemashite. O-namae wa nan desu ka. — \"How do you do. What is your name?\""
+                                text: "はじめまして。ねこ先生と<span class=\"conv-hl conv-hl--predicate\">申します</span>。<span class=\"conv-hl conv-hl--subject\">お名前</span><span class=\"conv-hl conv-hl--particle\">は</span><span class=\"conv-hl conv-hl--predicate\">何</span><span class=\"conv-hl conv-hl--copula\">です</span><span class=\"conv-hl conv-hl--particle\">か</span>。",
+                                romaji: "Hajimemashite. Neko-sensei to moushimasu. O-namae wa nan desu ka. — \"How do you do. I'm called Neko-sensei. What is your name?\""
                             },
                             {
                                 speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
-                                text: "わたしは" + nm.jp + "です。",
-                                romaji: "Watashi wa " + nm.jp + " desu. — \"I am " + nm.en + ".\""
+                                text: "はじめまして。" + nm.jp + "と申します。",
+                                romaji: "Hajimemashite. " + nm.jp + " to moushimasu. — \"How do you do. I'm called " + nm.en + ".\""
                             },
                             {
                                 speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
-                                text: nm.jp + "さん、よろしくお願いします！",
-                                romaji: nm.jp + "-san, yoroshiku onegaishimasu! — \"Nice to meet you, " + nm.en + "!\""
+                                text: "おいくつですか。",
+                                romaji: "O-ikutsu desu ka. — \"May I ask your age?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: ag + "歳です。",
+                                romaji: ag + "-sai desu. — \"I am " + ag + " years old.\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "そうですか。趣味は何ですか。",
+                                romaji: "Sou desu ka. Shumi wa nan desu ka. — \"I see. What's your hobby?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "趣味は" + hb.jp + "です。",
+                                romaji: "Shumi wa " + hb.jp + " desu. — \"My hobby is " + hb.en + ".\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: nm.jp + "さん、これからどうぞよろしくお願いします！",
+                                romaji: nm.jp + "-san, korekara douzo yoroshiku onegaishimasu! — \"" + nm.en + ", please treat me well from now on!\""
                             }
                         ]
                     },
                     examples: [
-                        { jp: "はじめまして。お名前は何ですか。", romaji: "Hajimemashite. O-namae wa nan desu ka.", en: "How do you do. What is your name?" },
-                        { jp: "わたしは" + nm.jp + "です。", romaji: "Watashi wa " + nm.jp + " desu.", en: "I am " + nm.en + "." },
-                        { jp: nm.jp + "さん、よろしくお願いします！", romaji: nm.jp + "-san, yoroshiku onegaishimasu!", en: "Nice to meet you, " + nm.en + "!" }
+                        { jp: "はじめまして。ねこ先生と申します。", romaji: "Hajimemashite. Neko-sensei to moushimasu.", en: "How do you do. I'm called Neko-sensei." },
+                        { jp: "はじめまして。" + nm.jp + "と申します。", romaji: "Hajimemashite. " + nm.jp + " to moushimasu.", en: "How do you do. I'm called " + nm.en + "." },
+                        { jp: "おいくつですか。", romaji: "O-ikutsu desu ka.", en: "May I ask your age? (politer than 何歳ですか)" },
+                        { jp: ag + "歳です。", romaji: ag + "-sai desu.", en: "I am " + ag + " years old." },
+                        { jp: "趣味は" + hb.jp + "です。", romaji: "Shumi wa " + hb.jp + " desu.", en: "My hobby is " + hb.en + "." },
+                        { jp: "趣味は" + hb.koto + "です。", romaji: "Shumi wa " + hb.koto + " desu.", en: "My hobby is " + hb.kotoEn + "." },
+                        { jp: nm.jp + "さん、これからどうぞよろしくお願いします！", romaji: nm.jp + "-san, korekara douzo yoroshiku onegaishimasu!", en: nm.en + ", please treat me well from now on!" }
                     ],
                     vocab: [
                         { jp: "お名前", romaji: "o-namae", en: "name (polite)" },
                         { jp: "何", romaji: "nan", en: "what" },
-                        { jp: "か", romaji: "ka", en: "question marker" }
+                        { jp: "か", romaji: "ka", en: "question marker" },
+                        { jp: "何歳", romaji: "nansai", en: "how old (neutral)" },
+                        { jp: "おいくつ", romaji: "o-ikutsu", en: "how old (politer than 何歳)" },
+                        { jp: "歳", romaji: "sai", en: "years old (age counter)" },
+                        { jp: "趣味", romaji: "shumi", en: "hobby" },
+                        { jp: "と申します", romaji: "to moushimasu", en: "\"I am called ~\" — humble/formal, more polite than ~です" },
+                        { jp: "これから", romaji: "korekara", en: "from now on" }
                     ],
                     sources: ["Tofugu — jikoshoukai (self-introduction) etiquette guide", "Tae Kim's Guide to Japanese Grammar"]
                 };
@@ -1342,7 +1506,7 @@ window.NekoWaGa = {
                             { prompt: "わたしは　<u>＿＿＿</u>　。 (\"I am Tanaka.\")", choices: ["たなかです", "たなかでした", "たなかでしたか", "たなかですか"], correctIndex: 0 },
                             { prompt: "たなかさん、　<u>＿＿＿</u>　。 (\"Nice to meet you, Tanaka!\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "さようなら"], correctIndex: 1 },
                             { prompt: "お　<u>＿＿＿</u>　は何ですか。 (\"What is your name?\")", choices: ["名前", "誕生日", "仕事", "住所"], correctIndex: 0 },
-                            { prompt: "あの人は　<u>＿＿＿</u>　です。 (\"That person is a doctor.\")", choices: ["いしゃ", "かいしゃいん", "しゅふ", "わかい"], correctIndex: 0 }
+                            { prompt: "<u>＿＿＿</u>　ですか。 (\"How old are you?\")", choices: ["何歳", "お名前", "何", "趣味"], correctIndex: 0 }
                         ]
                     },
                     mondai2: {
@@ -1350,8 +1514,8 @@ window.NekoWaGa = {
                             { prompt: "はじめまして。お名前は何ですか。", choices: ["How do you do. What is your name?", "Goodbye, see you again.", "Thank you very much.", "What time is it now?"], correctIndex: 0 },
                             { prompt: "わたしはたなかです。", choices: ["I am Tanaka.", "This is Tanaka's.", "Tanaka is here.", "I met Tanaka."], correctIndex: 0 },
                             { prompt: "たなかさん、よろしくお願いします！", choices: ["Goodbye, Tanaka!", "Nice to meet you, Tanaka!", "Thank you, Tanaka!", "Excuse me, Tanaka!"], correctIndex: 1 },
-                            { prompt: "あの人はいしゃです。", choices: ["That person is a doctor.", "That person is a teacher.", "That person is a student.", "That person is young."], correctIndex: 0 },
-                            { prompt: "あの人はやさしいです。", choices: ["That person is young.", "That person is kind.", "That person is a homemaker.", "That person is an office worker."], correctIndex: 1 }
+                            { prompt: "何歳ですか。", choices: ["What is your name?", "How old are you?", "What is your hobby?", "Where are you from?"], correctIndex: 1 },
+                            { prompt: "趣味はどくしょです。", choices: ["My hobby is reading.", "My name is reading.", "I am a reader.", "This book is mine."], correctIndex: 0 }
                         ]
                     }
                 };
@@ -6986,6 +7150,34 @@ window.NekoWaGa = {
     function show(el) { if (el) el.style.display = ""; }
     function hide(el) { if (el) el.style.display = "none"; }
 
+    /* Next lesson after `id` in the same curriculum order buildLessons()
+       already returns them in (shelves, then k01, then cq1-3) — null past
+       the last one (cq3). Used by the "Continue" button the mondai/
+       checkpoint grading screens show after a completed lesson/quiz. */
+    function findNextLesson(id) {
+        let idx = lessons.findIndex(function (l) { return l.id === id; });
+        if (idx < 0 || idx >= lessons.length - 1) return null;
+        return lessons[idx + 1];
+    }
+
+    /* Builds the "Continue to X" button (or a completion message past the
+       last lesson) shared by renderMondaiQuiz()'s and renderCheckpointQuiz()'s
+       gradeAndShow(). Caller passes a unique btnId (both quiz containers
+       can be live in the DOM's history at once) and must call
+       wireContinueNext(btnId, next) after setting the returned HTML into
+       the page, since innerHTML assignment drops any prior listeners. */
+    function buildContinueHtml(next, btnId) {
+        if (!next) {
+            return "<p class='study-continue-complete'>&#127881; That's the whole curriculum &mdash; nice work!</p>";
+        }
+        return "<button type='button' class='study-continue-btn' id='" + btnId + "'>Continue to \"" + next.title + "\" &rarr;</button>";
+    }
+    function wireContinueNext(btnId, next) {
+        if (!next) return;
+        let btn = $(btnId);
+        if (btn) btn.addEventListener("click", function () { openLesson(next.id); });
+    }
+
     /* ===== HEADER LESSON PICKER (dropdown, replaces the old sidebar list) ===== */
     // Same synthetic shelf-group labels as GROUP_LABELS in
     // n5-lessons-dashboard.js -- shown as a disabled header option above a
@@ -7206,31 +7398,48 @@ window.NekoWaGa = {
             html += renderConversation(inst.conversation);
         }
 
-        if (inst.examples && inst.examples.length) {
-            html += "<h3>Examples</h3>";
-            inst.examples.forEach(function (ex) {
-                html += "<div class='example-sentence'>"
-                    + "<span>" + annotateFurigana(ex.jp) + "</span>"
-                    + (ex.romaji ? "<span class='example-sentence__romaji'>" + ex.romaji + "</span>" : "")
-                    + "<span class='example-sentence__english'>&mdash; " + ex.en + "</span>"
-                    + "</div>";
-            });
-            /* Points to a full reference PDF (assets/lesson pdf/) for shelves
-               whose curated example set is a small slice of a much bigger
-               real list -- same PDFs the Adventure Room's printer-icon popup
-               already links per shelf (see PRINT_LINKS_BY_SHELF in
-               n5-phaser-game.js), just surfaced inline here instead of
-               behind an icon click. */
-            if (inst.examplesMore && inst.examplesMore.length) {
-                /* Paraphrased per feedback that "you can view the whole list
-                   of X by downloading this" read as awkward/unclear -- says
-                   plainly what the file is and what's in it instead. */
-                html += "<p class='examples-more'>"
-                    + inst.examplesMore.map(function (l) {
-                        return "Want the full " + l.label + " list, beyond the examples above? "
-                            + "<a class='examples-more__link' href='" + l.href + "' target='_blank' rel='noopener'>Download the " + l.label + " reference sheet (PDF)</a>.";
-                    }).join(" ")
-                    + "</p>";
+        /* Phrase-only lessons (vocabOnly: s01/s02/s02b/s02c) already gloss
+           every single phrase's meaning inline in their section explain
+           text above -- a separate Examples list plus a full Vocabulary
+           table underneath it just repeats the same phrases a second
+           (and third) time. Per explicit feedback that this felt
+           redundant, both are skipped for these lessons; the full list
+           is still one click away via the existing printer-icon PDF
+           export (lesson-pdf.js's exportLessonPdf, which already
+           collects every wordBank phrase + this buildInstruction()'s own
+           vocab array -- kept in the returned data below even though it
+           no longer renders here, since the PDF export still reads it),
+           surfaced as an inline text link instead of just the icon. */
+        if (currentLesson.vocabOnly) {
+            html += "<p class='examples-more'>Every phrase from this lesson is explained above, with its meaning. Want the full list on one page? "
+                + "<a class='examples-more__link' href='#' id='studyVocabPdfLink'>Download this lesson's phrase list (PDF)</a>.</p>";
+        } else {
+            if (inst.examples && inst.examples.length) {
+                html += "<h3>Examples</h3>";
+                inst.examples.forEach(function (ex) {
+                    html += "<div class='example-sentence'>"
+                        + "<span>" + annotateFurigana(ex.jp) + "</span>"
+                        + (ex.romaji ? "<span class='example-sentence__romaji'>" + ex.romaji + "</span>" : "")
+                        + "<span class='example-sentence__english'>&mdash; " + ex.en + "</span>"
+                        + "</div>";
+                });
+                /* Points to a full reference PDF (assets/lesson pdf/) for shelves
+                   whose curated example set is a small slice of a much bigger
+                   real list -- same PDFs the Adventure Room's printer-icon popup
+                   already links per shelf (see PRINT_LINKS_BY_SHELF in
+                   n5-phaser-game.js), just surfaced inline here instead of
+                   behind an icon click. */
+                if (inst.examplesMore && inst.examplesMore.length) {
+                    /* Paraphrased per feedback that "you can view the whole list
+                       of X by downloading this" read as awkward/unclear -- says
+                       plainly what the file is and what's in it instead. */
+                    html += "<p class='examples-more'>"
+                        + inst.examplesMore.map(function (l) {
+                            return "Want the full " + l.label + " list, beyond the examples above? "
+                                + "<a class='examples-more__link' href='" + l.href + "' target='_blank' rel='noopener'>Download the " + l.label + " reference sheet (PDF)</a>.";
+                        }).join(" ")
+                        + "</p>";
+                }
             }
         }
 
@@ -7242,9 +7451,12 @@ window.NekoWaGa = {
            bank box. Checkpoint-quiz lessons (cq1/cq2/cq3) have no
            wordBank/vocab of their own at all — they're a review of 5
            earlier lessons' content, not a new lesson with its own set —
-           so they're excluded the same way. */
+           so they're excluded the same way. vocabOnly lessons skip just
+           the table (see above) but still get the word bank box below,
+           since that shows New/Preview words the explain text doesn't
+           already cover. */
         if (!currentLesson.kanjiGroup && !currentLesson.quizGroup) {
-            if (inst.vocab && inst.vocab.length) {
+            if (inst.vocab && inst.vocab.length && !currentLesson.vocabOnly) {
                 html += "<h3>Vocabulary</h3>" + buildVocabTable(inst.vocab);
             }
             html += buildWordBankBox(currentLesson.wordBank);
@@ -7257,6 +7469,16 @@ window.NekoWaGa = {
         panel.innerHTML = html;
         wireClawforms(panel);
         fixN5SampleAlignment(panel);
+
+        if (currentLesson.vocabOnly) {
+            let vocabPdfLink = panel.querySelector("#studyVocabPdfLink");
+            if (vocabPdfLink) {
+                vocabPdfLink.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    if (window.exportLessonPdf) window.exportLessonPdf(currentLesson);
+                });
+            }
+        }
     }
 
     /* Full vocab list for the lesson (content-fidelity pass) — a compact
@@ -7528,15 +7750,18 @@ window.NekoWaGa = {
                 let result = StudyProgress.completeLesson(lesson.id);
                 xpGained = result.gained || 0;
                 alreadyDone = !(result.gained > 0);
-                StudyProgress.renderXpBadges();
+                StudyProgress.celebrateXpGain(xpGained);
                 refreshLessonPickerLabels();
             }
 
+            let next = findNextLesson(lesson.id);
             let resultWrap = $("checkpointQuizResult");
             if (resultWrap) {
                 resultWrap.innerHTML = "<div class='checkpoint-quiz__score'>" + correctCount + " / " + questions.length + " (" + pct + "%)</div>"
                     + "<div class='checkpoint-quiz__xp'>+" + xpGained + " XP" + (alreadyDone ? " &mdash; already completed before, no bonus XP" : "") + "</div>"
-                    + rowsHtml;
+                    + rowsHtml
+                    + buildContinueHtml(next, "checkpointQuizContinue");
+                wireContinueNext("checkpointQuizContinue", next);
             }
             let submitBtn = $("checkpointQuizSubmit");
             if (submitBtn) submitBtn.disabled = true;
@@ -7566,10 +7791,15 @@ window.NekoWaGa = {
     function renderMondaiQuiz(lesson, container) {
         if (!container) return;
         let data = lesson.buildMondaiExercises ? lesson.buildMondaiExercises() : { mondai1: { questions: [] }, mondai2: { questions: [] } };
+        /* Filtered to sets that actually have questions -- a lesson whose
+           second question set was trimmed to nothing (e.g. the Greetings
+           & Intros vocab-only shelves, which no longer quiz on words
+           their page never actually taught) shouldn't render an empty
+           "もんだい2" header with nothing under it. */
         let sets = [
             { label: (data.mondai1 && data.mondai1.label) || "もんだい1", instruction: (data.mondai1 && data.mondai1.instruction) || "", questions: (data.mondai1 && data.mondai1.questions) || [] },
             { label: (data.mondai2 && data.mondai2.label) || "もんだい2", instruction: (data.mondai2 && data.mondai2.instruction) || "", questions: (data.mondai2 && data.mondai2.questions) || [] }
-        ];
+        ].filter(function (s) { return s.questions.length > 0; });
         let quizAnswers = {}; // key "si-qi" -> chosen choice index
         let submitted = false;
 
@@ -7651,11 +7881,14 @@ window.NekoWaGa = {
                 refreshLessonPickerLabels();
             }
 
+            let next = findNextLesson(lesson.id);
             let resultWrap = $("mondaiQuizResult");
             if (resultWrap) {
                 resultWrap.innerHTML = "<div class='mondai-quiz__score'>" + correctCount + " / " + totalQ + " (" + pct + "%)</div>"
                     + "<div class='mondai-quiz__xp'>+" + xpGained + " XP" + (alreadyDone ? " &mdash; already completed before, no bonus XP" : "") + "</div>"
-                    + rowsHtml;
+                    + rowsHtml
+                    + buildContinueHtml(next, "mondaiQuizContinue");
+                wireContinueNext("mondaiQuizContinue", next);
             }
             let submitBtn = $("mondaiQuizSubmit");
             if (submitBtn) submitBtn.disabled = true;

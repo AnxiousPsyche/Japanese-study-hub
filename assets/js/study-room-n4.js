@@ -970,6 +970,29 @@
     const lessons = buildLessons();
     let currentLesson = null;
 
+    /* Next lesson after `id` in buildLessons()'s own order (n4-shelf-01..16,
+       then n4-reading-01..04) — null past the last one. Same pattern as
+       study-room.js's own findNextLesson()/buildContinueHtml()/
+       wireContinueNext() (kept as separate copies since this file is its
+       own IIFE with no shared scope), used by the "Continue" button
+       renderMondaiQuiz()'s gradeAndShow() shows after a completed lesson. */
+    function findNextLesson(id) {
+        let idx = lessons.findIndex(function (l) { return l.id === id; });
+        if (idx < 0 || idx >= lessons.length - 1) return null;
+        return lessons[idx + 1];
+    }
+    function buildContinueHtml(next, btnId) {
+        if (!next) {
+            return "<p class='study-continue-complete'>&#127881; That's the whole curriculum &mdash; nice work!</p>";
+        }
+        return "<button type='button' class='study-continue-btn' id='" + btnId + "'>Continue to \"" + next.title + "\" &rarr;</button>";
+    }
+    function wireContinueNext(btnId, next) {
+        if (!next) return;
+        let btn = $(btnId);
+        if (btn) btn.addEventListener("click", function () { openLesson(next.id); });
+    }
+
     function lessonOptionLabel(les) {
         let done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
         return (done ? "✓ " : "") + les.title;
@@ -1161,11 +1184,14 @@
                 refreshLessonPickerLabels();
             }
 
+            let next = findNextLesson(lesson.id);
             let resultWrap = $("mondaiQuizResult");
             if (resultWrap) {
                 resultWrap.innerHTML = "<div class='mondai-quiz__score'>" + correctCount + " / " + totalQ + " (" + pct + "%)</div>"
                     + "<div class='mondai-quiz__xp'>+" + xpGained + " XP" + (alreadyDone ? " &mdash; already completed before, no bonus XP" : "") + "</div>"
-                    + rowsHtml;
+                    + rowsHtml
+                    + buildContinueHtml(next, "mondaiQuizContinue");
+                wireContinueNext("mondaiQuizContinue", next);
             }
             let submitBtn = $("mondaiQuizSubmit");
             if (submitBtn) submitBtn.disabled = true;
