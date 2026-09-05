@@ -339,7 +339,7 @@
 .kanji-quiz__input {
     width: 100%;
     box-sizing: border-box;
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 20px;
     padding: 10px 12px;
     background: var(--term-bg);

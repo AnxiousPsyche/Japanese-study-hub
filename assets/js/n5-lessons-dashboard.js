@@ -1,5 +1,8 @@
-/* N5 Lessons Dashboard — renders the 30 shelf lessons + 3 checkpoint
-   quizzes + the N5 Kanji lesson as a collapsible file-drawer of folders,
+/* N5 Lessons Dashboard — renders the 47 shelf lessons (grown from an
+   original 16 via repeated splits/insertions -- see CLAUDE.md for the
+   history; the LESSONS array below is current ground truth, not any
+   older doc's shelf count) + 3 checkpoint quizzes + the N5 Kanji lesson
+   as a collapsible file-drawer of folders,
    each folder's contents shown as a plain directory-listing table
    (id / name / status), instead of one flat card grid. Combines two of
    the "10 lesson display concepts" mockups the user picked ("File
@@ -20,6 +23,18 @@
    Quiz stays a standalone finale bar below every folder rather than
    living inside one, since it isn't scoped to any single folder.
 
+   Shelf 04 split (2026-09-04) into "s04" (greeting+name, required core)
+   and "s04b" (age & hobby, the optional Going-Further pieces) -- only one
+   lettered sibling, so it doesn't trigger groupFolderIds()'s 2+ nesting
+   threshold and just renders as a plain sibling row right after s04,
+   same as any single-lettered split would.
+
+   Shelf 02c split further (2026-09-04, per explicit request) into "s02c"
+   (Reactions & Hedging Words, kept) and "s02d" (Filler Words, pulled out
+   of what used to be one combined "Filler Words & Reactions" lesson) --
+   "Greetings & Intros" already had 02b/02c as a lettered run under s02's
+   own header, so 02d just extends that same group to three children.
+
    Note: unlike the mockup's illustrative "locked" rows, every lesson
    here is ALWAYS actually clickable (Study Room has no lesson-gating
    mechanic) — so real status only ever shows "done" or "not started",
@@ -32,16 +47,23 @@
         { id: "s01", title: "Basic Greetings" },
         { id: "s02", title: "Greetings & Everyday Phrases" },
         { id: "s02b", title: "At Home & At the Table" },
-        { id: "s02c", title: "Filler Words & Reactions" },
+        { id: "s02c", title: "Reactions & Hedging Words" },
+        { id: "s02d", title: "Filler Words" },
         { id: "s03", title: "A は B です" },
+        { id: "s03b", title: "Basic Verbs & Word Order" },
         { id: "s04", title: "Self Introduction" },
+        { id: "s04b", title: "Self Introduction — Age & Hobby" },
         { id: "s05", title: "Demonstratives" },
         { id: "s06", title: "Questions (か)" },
+        { id: "s06d", title: "More Question Words" },
+        { id: "s06b", title: "Existence Verbs" },
+        { id: "s06c", title: "Everyday Action Verbs" },
         { id: "s07a", title: "Basic Numbers" },
         { id: "s07b", title: "つ & 人 Counters" },
         { id: "s07c", title: "Telling Time" },
         { id: "s07d", title: "Counters for Animals" },
         { id: "s07e", title: "Counters for Things" },
+        { id: "s07g", title: "Days, Dates in the Calendar" },
         { id: "s08a", title: "There Is/Are" },
         { id: "s08b", title: "Direction Words" },
         { id: "s08c", title: "Movement & The Compass" },
@@ -51,6 +73,8 @@
         { id: "s10a", title: "い-Adjectives" },
         { id: "s10b", title: "な-Adjectives" },
         { id: "s10c", title: "Adverbs" },
+        { id: "s10e", title: "Frequency Adverbs" },
+        { id: "s10f", title: "Hardly Ever & Never" },
         { id: "s11a", title: "Ichidan Verbs" },
         { id: "s11b", title: "Godan Verbs" },
         { id: "s11c", title: "Kuru & Suru (Irregular Verbs)" },
@@ -102,13 +126,41 @@
        "Verbs & Conjugations", since that's the piece that ends where
        cq3's reviewed span (s09-s13) ends. */
     const FOLDERS = [
-        { title: "Greetings & Intros", ids: ["s01", "s02", "s02b", "s02c", "s03"], quiz: "cq1" },
-        { title: "Identity & Questions", ids: ["s04", "s05", "s06"], quiz: null },
-        { title: "Numbers & Counters", ids: ["s07a", "s07b", "s07c", "s07d", "s07e"], quiz: null, flat: true },
+        { title: "Greetings & Intros", ids: ["s01", "s02", "s02b", "s02c", "s02d", "s03", "s03b"], quiz: "cq1" },
+        /* s06d (2026-09-04) splits s06's old "Six more question words"
+           section into its own lesson (a table + paired-comparison boxes
+           for the two easily-conflated pairs, どうして／なぜ and いくつ／いくら,
+           instead of one dense paragraph). It's a genuine split of s06's
+           own content, so it sits right after s06 here -- unlike s06b/s06c
+           below, which are an unrelated "Verb Basics" module that only
+           shares the "06" number for id-chaining reasons. Only one
+           lettered sibling directly after s06, so same non-nesting case
+           as s04b. */
+        { title: "Identity & Questions", ids: ["s04", "s04b", "s05", "s06", "s06d"], quiz: null },
+        /* New module (2026-09-04, curriculum-review request): several
+           downstream lessons (There Is/Are, Movement & The Compass,
+           Telling Time) already quietly assumed verb knowledge before any
+           verb had been formally taught. This front-loads just enough to
+           unblock those, without touching real conjugation mechanics
+           (that stays in Verbs & Conjugations, later, untouched). Only
+           2 lessons, so `flat: true` the same way the other fully-split,
+           no-bare-lesson modules are. */
+        { title: "Verb Basics", ids: ["s06b", "s06c"], quiz: null, flat: true },
+        { title: "Numbers & Counters", ids: ["s07a", "s07b", "s07c", "s07d", "s07e", "s07g"], quiz: null, flat: true },
         { title: "Places & Directions", ids: ["s08a", "s08b", "s08c", "s08d"], quiz: "cq2", flat: true },
         { title: "Nouns & Pronouns", ids: ["s09a", "s09b"], quiz: null, flat: true },
-        { title: "Adjectives & Adverbs", ids: ["s10a", "s10b", "s10c"], quiz: null, flat: true },
-        { title: "Verbs & Conjugations", ids: ["s11a", "s11b", "s11c", "s12", "s14", "s13"], quiz: "cq3" },
+        /* s10e (2026-09-04) is a genuine new adverb page (たいてい／いつも／
+           ほとんど frequency comparison) inserted right after s10c. s10f
+           (2026-09-05) is a genuine split OUT of s10e -- everything that
+           needs a negative verb (ほとんど／あまり／全然) moved to its own page,
+           slotted right after s10e. `s10d` (Adjective Past & Negative)
+           used to sit last in this folder but was removed outright
+           (2026-09-05) as redundant with the present/negative/past/past-
+           negative conjugation tables s10a/s10b each already carry --
+           its one unique bit, いい's irregular past よかった, was folded
+           into s10a instead of being lost. */
+        { title: "Adjectives & Adverbs", ids: ["s10a", "s10b", "s10c", "s10e", "s10f"], quiz: null, flat: true },
+        { title: "Verbs & Conjugations", ids: ["s11a", "s11b", "s11c", "s13", "s14", "s12"], quiz: "cq3" },
         { title: "Actions & Structure", ids: ["s15", "s16a", "s16b", "s16c", "s16d", "s16e"], quiz: null },
         { title: "Everyday Expression", ids: ["s17", "s18", "s19", "s20"], quiz: null }
     ];

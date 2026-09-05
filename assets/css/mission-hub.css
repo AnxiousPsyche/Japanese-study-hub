@@ -29,7 +29,7 @@ body {
 }
 
 .hub-title {
-  font-family: "Press Start 2P", monospace;
+  font-family: "Courier Prime", monospace;
   font-size: 20px;
   color: #fff;
   margin: 0;
@@ -111,7 +111,7 @@ body {
 }
 
 .hub-room__title {
-  font-family: "Press Start 2P", monospace;
+  font-family: "Courier Prime", monospace;
   font-size: 12px;
   color: #123a8c;
   margin: 0 0 var(--space-sm);

@@ -13,6 +13,55 @@
     font-display: block;
     src: url("../fonts/VT323-Regular.woff2") format("woff2");
 }
+/* Self-hosted Press Start 2P (2026-09-04, same self-hosting rationale as
+   VT323 above) -- VT323 is no longer the active display font anywhere in
+   this file (swapped sitewide per explicit request), so this replaces it
+   as the primary pixel font. Latin-subset only, same as VT323's own file;
+   Japanese glyphs still come from DotGothic16. Kept even though Electrolize
+   (below) has since replaced it as the active display font too -- unused
+   @font-face declarations are never fetched by the browser, so this is
+   harmless, not dead weight. */
+@font-face {
+    font-family: "Press Start 2P";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/PressStart2P-Regular.woff2") format("woff2");
+}
+/* Self-hosted Electrolize (2026-09-04, same self-hosting rationale as
+   VT323/Press Start 2P above) -- replaces Press Start 2P as the primary
+   display font sitewide, per explicit request. Latin-subset only;
+   Japanese glyphs now come from M PLUS U (Google-Fonts-loaded, like
+   DotGothic16 was -- both are far too large to self-host in full). */
+@font-face {
+    font-family: "Electrolize";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/Electrolize-Regular.woff2") format("woff2");
+}
+/* Self-hosted IBM Plex Mono (2026-09-04, same self-hosting rationale as
+   above) -- replaces Electrolize as the primary display font sitewide,
+   per explicit request. Latin-subset only; Japanese glyphs still come
+   from M PLUS U (unchanged). */
+@font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/IBMPlexMono-Regular.woff2") format("woff2");
+}
+/* Self-hosted Courier Prime (2026-09-04, same self-hosting rationale as
+   above) -- replaces IBM Plex Mono as the primary display font sitewide,
+   per explicit request (typewriter feel). Latin-subset only; Japanese
+   glyphs still come from M PLUS U (unchanged). */
+@font-face {
+    font-family: "Courier Prime";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("../fonts/CourierPrime-Regular.woff2") format("woff2");
+}
 @font-face {
     font-family: "Space Mono";
     font-style: normal;
@@ -74,7 +123,7 @@
     background: rgba(0,0,0,0.25);
 }
 .study-header__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 18.4px;
     color: #fff;
     margin: 0;
@@ -367,25 +416,30 @@
     background: var(--term-bg);
 }
 .study-instruction h2 {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 36.8px;
     color: var(--term-amber);
     margin: 0 0 8px;
 }
 .study-instruction h3 {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 20.7px;
     color: var(--term-label);
     margin: 18px 0 8px;
 }
 .study-instruction p {
     margin: 0 0 8px;
-    color: var(--term-text-dim);
-    font-size: 15px;
+    /* Cream, not --term-text-dim — matched to N4's .lesson-box__explain-text
+       (lesson-box.css's --jr-text) for sitewide description-text consistency
+       (2026-09-05). Literal hex since --jr-text is scoped to .lesson-box-
+       overlay and unavailable here, same reasoning as streak-popup.css's
+       fallback fix elsewhere in this file. */
+    color: #f5e9d0;
+    font-size: 20px;
 }
 /* Highlight the actual word/phrase being discussed against the dimmer
-   description text around it — the description keeps --term-text-dim,
-   the word itself jumps to full white so it reads at a glance. */
+   description text around it — the word itself jumps to full white so
+   it still reads at a glance against the (no-longer-dim) description. */
 .study-instruction p strong {
     color: var(--term-heading);
     font-weight: 700;
@@ -399,13 +453,13 @@
     margin: 10px 0;
 }
 .study-instruction .grammar-box__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 29.9px;
     color: var(--term-amber);
     margin-bottom: 6px;
 }
 .study-instruction .grammar-box code {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 21.8px;
     color: var(--term-amber);
     background: rgba(250, 199, 117, 0.12);
@@ -439,31 +493,72 @@
     margin: 4px 0 0;
 }
 
-/* === s03's "A は B です" diagram — side-by-side comparison, replacing
-   the old arrow-based English/Japanese-split diagram. です shares は's
-   yellow (not the usual white) so は…です reads as one held-together
-   set rather than two separate rules to track; three sample sentences
-   underneath show the am/is/are gap is an English problem, not a
-   Japanese one — design approved in the "Ten Sentence Shapes" mockup
-   session (2026-09-03), idea 6 ("Side by Side"). */
-.wa-desu-compare { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin: 4px 0 6px; }
-.wa-desu-compare__col { display: flex; flex-direction: column; align-items: center; }
-.wa-desu-compare__col + .wa-desu-compare__col { border-left: 1px dashed var(--term-border); padding-left: 30px; }
-.wa-desu-compare__row { display: flex; gap: 7px; align-items: center; }
-.wa-desu-role { padding: 2px 7px; border-radius: 2px; font-size: 13px; }
-.wa-desu-role--jp { font-family: "VT323", "DotGothic16", monospace; font-size: 21px; padding: 1px 8px; }
-.wa-desu-role--subject { background: #6fb3e6; color: #0b2438; }
-.wa-desu-role--particle { background: #f0c674; color: #201d54; }
-.wa-desu-role--predicate { background: #e2685f; color: #fff; }
-.wa-desu-role--copula { background: #f0c674; color: #201d54; }
-.wa-desu-role--particle rt, .wa-desu-role--copula rt { font-family: "Space Mono", monospace; font-size: 9px; color: #4a3211; }
-.wa-desu-samples { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--term-border); }
-.wa-desu-lede { font-size: 12px; color: var(--term-text-dim); text-align: center; margin: 0 0 4px; }
-.wa-desu-sample { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.wa-desu-sample__jp { display: flex; gap: 0; white-space: nowrap; }
-.wa-desu-sample__en { font-size: 12.5px; color: var(--term-text); white-space: nowrap; }
-.wa-desu-sample__en b { color: #f0c674; }
-.wa-desu-note { font-size: 11.5px; color: var(--term-text-dim); text-align: center; max-width: 340px; margin: 8px auto 0; line-height: 1.65; }
+/* === Role-color chips — filled background, one color per sentence
+   role. Repainted from the original blue/yellow/red/white set per
+   explicit feedback (dull, and clashed with the green terminal) —
+   several rounds of mockups landed on this palette. Particle and
+   copula intentionally SHARE one color (は/です taught as one
+   held-together set, not two separate rules to track). Renamed from
+   the old .wa-desu-role-* (this was s03-diagram-only) since it's now
+   reused by the interlinear-gloss diagram below and is meant to be
+   grabbed by any future diagram that needs a colored word. The same
+   four colors are mirrored in buildSampleLegendHTML()/.n5-sample__tile-
+   text.role-* (study-room.js), .conv-hl--* below, and — via the
+   --lb-role-* override further down — N4's shared lesson-box.css tiles,
+   so a word reads the same color everywhere it appears. */
+.role-chip { font-family: "Courier Prime", "M PLUS U", monospace; border-radius: 5px; padding: 2px 8px; white-space: nowrap; }
+.role-chip rt { font-family: "Space Mono", monospace; font-size: 9px; color: inherit; opacity: 0.75; }
+.role-chip--subject { background: #A03C78; color: #FFFFFF; }
+.role-chip--particle, .role-chip--copula { background: #F5E79D; color: #4A3211; }
+.role-chip--predicate { background: #ED8E7C; color: #3A0E0A; }
+
+/* === s03's "A は B です" diagram — Interlinear Gloss: one word per
+   column, its English meaning directly underneath, centered in the
+   panel with real gaps between chips (never touching, unlike the old
+   wa-desu-compare's zero-gap sample rows). Replaces the old side-by-
+   side wa-desu-compare layout — design + palette approved across a
+   multi-round mockup session (2026-09-05, Artifact "Wa-Desu Sentence
+   Shapes"). Embeds buildSampleLegendHTML() directly (see study-room.js)
+   rather than a separate legend, so the swatch colors can never drift
+   out of sync with the rest of the site. */
+.n5-gloss { display: flex; flex-direction: column; align-items: center; gap: 18px; margin: 4px 0 6px; }
+.n5-gloss__row { display: flex; gap: 18px; }
+.n5-gloss__col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.n5-gloss__col .role-chip { font-size: 22px; padding: 8px 15px; }
+.n5-gloss__meaning { font-size: 12px; color: var(--term-text-dim); }
+.n5-gloss__en { font-size: 14.5px; color: var(--term-amber); border-top: 1px dashed var(--term-border); padding-top: 14px; margin-top: 2px; text-align: center; }
+.n5-gloss__extra { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 18px; padding-top: 18px; border-top: 1px dashed var(--term-border); }
+.n5-gloss__lede { font-size: 12px; color: var(--term-text-dim); text-align: center; margin: 0 0 4px; }
+.n5-gloss__sample { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.n5-gloss__sample-jp { display: flex; gap: 8px; }
+.n5-gloss__sample-jp .role-chip { font-size: 17px; padding: 4px 10px; }
+.n5-gloss__sample-en { font-size: 12.5px; color: var(--term-text-dim); }
+.n5-gloss__sample-en b { color: var(--term-amber); }
+
+/* === N4 Study Room repaint — overrides the Adventure Room's shared
+   lesson-box.css role-color variables so N4's word tiles/legend match
+   the same new palette, WITHOUT editing lesson-box.css itself (that
+   file is also the live Phaser dialogue popup — see the "Retro OS
+   re-theming" note above for why an override here, not an edit there,
+   is the rule). Scoped to .study-room, which wraps N4's #studyInstruct
+   (see study-room.html) but never reaches the Adventure Room's DOM. */
+.study-room {
+    --lb-role-subject-bg: #A03C78; --lb-role-subject-fg: #FFFFFF;
+    --lb-role-particle-bg: #F5E79D; --lb-role-particle-fg: #4A3211;
+    --lb-role-predicate-bg: #ED8E7C; --lb-role-predicate-fg: #3A0E0A;
+    --lb-role-copula-bg: #F5E79D; --lb-role-copula-fg: #4A3211;
+}
+
+/* N4's description text (.lesson-box__explain-text, lesson-box.css) was
+   25px — noticeably bigger than N5's 20px .study-instruction p, and the
+   two are meant to read as one consistent site (2026-09-05). Same
+   override-not-edit rule as the role-color block above: sizing it here
+   under .study-room rather than in lesson-box.css keeps the Adventure
+   Room's own dialogue popups (which share that exact class) untouched.
+   Color was already cream (--jr-text) on both sides, so only size moves. */
+.study-room .lesson-box__explain-text {
+    font-size: 20px;
+}
 
 /* === s04's jikoshoukai "building blocks" diagram — a train, where the
    two optional cars (age, hobby) physically uncouple and roll to a
@@ -494,7 +589,7 @@
 .jiko-train__slot::after{ content: ""; position: absolute; left: 6px; right: 6px; bottom: -11px; height: 8px; background-image: repeating-linear-gradient(90deg, #4a3a24 0 3px, transparent 3px 11px); opacity: 0.4; }
 
 .jiko-train__car{
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 13px;
     padding: 10px 13px 11px;
     border-radius: 7px 7px 3px 3px;
@@ -522,7 +617,7 @@
 
 .jiko-train__toggle{
     margin-top: 26px;
-    font-family: "VT323", monospace; font-size: 17px;
+    font-family: "Courier Prime", monospace; font-size: 17px;
     padding: 9px 20px 7px;
     border: 1px solid var(--term-amber); background: transparent; color: var(--term-amber);
     border-radius: 2px; cursor: pointer;
@@ -636,10 +731,10 @@
     border-radius: 3px;
     font-weight: 700;
 }
-.conv-hl--subject { background: #6fb3e6; color: #0b2438; }
-.conv-hl--particle { background: #f0c674; color: #201d54; }
-.conv-hl--predicate { background: #e2685f; color: #2e0e0b; }
-.conv-hl--copula { background: #ffffff; color: #201d54; }
+.conv-hl--subject { background: #A03C78; color: #FFFFFF; }
+.conv-hl--particle { background: #F5E79D; color: #4A3211; }
+.conv-hl--predicate { background: #ED8E7C; color: #3A0E0A; }
+.conv-hl--copula { background: #F5E79D; color: #4A3211; }
 
 /* s05's demonstratives diagram (ported from n5-phaser-game.js's
    buildDemonstrativesDiagram) — a plain 4-column grid: word / YOU /
@@ -665,7 +760,7 @@
     border-bottom: none;
 }
 .grammar-box__demo-row-word {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 34.5px;
     text-align: center;
 }
@@ -784,7 +879,7 @@
 .grammar-box__pic-scene.is-hidari .pic-cat { transform: translate(-43px, 0); }
 .grammar-box__pic-word {
     grid-column: 2;
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 25.3px;
     color: var(--term-heading);
 }
@@ -913,7 +1008,7 @@
     image-rendering: pixelated;
 }
 .grammar-box__dist2-scene .dist2-label {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 19.5px;
     color: var(--term-heading);
     margin-top: 2px;
@@ -946,7 +1041,7 @@
     position: absolute; left: 50%; bottom: 8px; width: 150px; height: 54px; transform: translateX(-50%);
     border: 2px dashed var(--term-amber); border-radius: 10px;
     display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; padding-bottom: 4px;
-    font-family: "DotGothic16", "VT323", monospace; font-size: 17.3px; color: var(--term-amber);
+    font-family: "M PLUS U", "Courier Prime", monospace; font-size: 17.3px; color: var(--term-amber);
 }
 .no-diagram-scene .no-zone span { font-size: 11.5px; color: var(--term-text-dim); font-family: "Space Mono", monospace; }
 .no-diagram-scene .no-cat { position: absolute; left: 50%; bottom: 14px; width: 40px; height: 40px; transform: translateX(-50%); image-rendering: pixelated; z-index: 2; }
@@ -961,7 +1056,7 @@
     border-radius: var(--radius);
     padding: 6px 12px;
 }
-.no-step .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 23px; color: var(--term-heading); }
+.no-step .jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 23px; color: var(--term-heading); }
 .no-step span:last-child { font-size: 11.5px; color: var(--term-text-dim); }
 .no-step--result { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.12); }
 .no-step--result .jp { color: var(--term-amber); }
@@ -1054,18 +1149,39 @@
    (s10a/c) keep the older .slash-char effect, since it already suits a
    same-word ending swap and wasn't the one asked to change. Paired with
    buildEndingSwapDiagram()/wireClawforms() in study-room.js. */
-.n5-clawform { display: flex; align-items: center; justify-content: center; gap: 4px; font-family: "VT323", "DotGothic16", monospace; font-size: 34.5px; flex-wrap: wrap; margin: 10px 0 2px; }
+.n5-clawform { display: flex; align-items: center; justify-content: center; gap: 4px; font-family: "Courier Prime", "M PLUS U", monospace; font-size: 34.5px; flex-wrap: wrap; margin: 10px 0 2px; }
 .n5-clawform-stem { color: var(--term-text); }
 .n5-clawform-old { position: relative; display: inline-block; color: #e2685f; }
 .n5-clawform-old.is-slashed { opacity: 0; transform: translateY(8px) rotate(-4deg); transition: opacity 0.25s ease, transform 0.25s ease; }
-.n5-clawform-slash { position: absolute; left: -3px; top: -8px; width: 34px; height: 34px; pointer-events: none; overflow: visible; }
-.n5-clawform-slash line { stroke: #e2413a; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 46; stroke-dashoffset: 46; }
+/* Slash SVG used to be a fixed 34x34px box at a fixed offset -- fine for
+   a single-character ending, but multi-character endings (ります/きます/
+   します) are much wider than that box, so the slash just sat near the
+   top-left corner instead of actually crossing the letters (reported as
+   "on top of it" rather than through it). Now stretches to the old-
+   ending span's own real rendered box (inset, not a fixed size), with
+   preserveAspectRatio="none" on the <svg> itself (see buildEndingSwapDiagram()
+   in study-room.js) so the two diagonal lines scale non-uniformly to
+   reach corner-to-corner of whatever width that turns out to be. */
+.n5-clawform-slash { position: absolute; inset: -4px -5px; width: auto; height: auto; pointer-events: none; overflow: visible; }
+.n5-clawform-slash line { stroke: #e2413a; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 46; stroke-dashoffset: 46; vector-effect: non-scaling-stroke; }
 .n5-clawform-slash.is-drawn line { stroke-dashoffset: 0; transition: stroke-dashoffset 0.16s ease; }
 .n5-clawform-arrow { color: var(--term-text-dim); font-size: 29.9px; margin: 0 4px; }
 .n5-clawform-new { display: inline-block; color: var(--term-border); opacity: 0; transform: scale(0.4); }
 .n5-clawform-new.is-in { opacity: 1; transform: scale(1); transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .n5-clawform-replay { display: block; margin: 0 auto 10px; font-family: "Space Mono", monospace; font-size: 12.6px; background: transparent; border: 1px solid var(--term-text-dim); color: var(--term-text-dim); padding: 4px 9px; border-radius: 4px; cursor: pointer; }
 .n5-clawform-replay:hover { color: var(--term-text); border-color: var(--term-border); }
+
+/* s03b-only: 6 ending-swap diagrams laid out 3-and-3 instead of stacked
+   full-width, at a larger size, per explicit request -- scoped to this
+   wrapper class (not the shared .n5-clawform rules above) so s11a-c/s13's
+   own single-diagram-per-section usage is untouched. */
+.n5-clawform-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; margin: 8px 0 4px; }
+.n5-clawform-grid .n5-clawform-cell { display: flex; flex-direction: column; align-items: center; }
+.n5-clawform-grid .n5-clawform { font-size: 38.5px; margin: 4px 0 2px; }
+.n5-clawform-grid .n5-clawform-arrow { font-size: 33.9px; margin: 0 2px; }
+@media (max-width: 700px) {
+    .n5-clawform-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* Word-tile sample sentence -- ported from the same source's
    .lesson-box__sentence-row/.lesson-box__word-tile* (underlined role-colored
@@ -1074,7 +1190,7 @@
    as an underline instead of a filled chip. A small color legend renders
    once per lesson, above the first sample block, same "explain the colors
    once" convention as lesson-box.js's own auto-shown legend. */
-.n5-sample-label { font-family: "VT323", monospace; font-size: 17.3px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--term-amber); opacity: 0.8; margin: 10px 0 4px; }
+.n5-sample-label { font-family: "Courier Prime", monospace; font-size: 17.3px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--term-amber); opacity: 0.8; margin: 10px 0 4px; }
 .n5-sample-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 7px 10px; border: 1px dashed var(--term-border); border-radius: 4px; margin: 10px 0; font-size: 11.5px; color: var(--term-text-dim); }
 .n5-sample-legend__item { display: flex; align-items: center; gap: 5px; }
 .n5-sample-legend__swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
@@ -1082,12 +1198,12 @@
 .n5-sample__tag { font-size: 13.8px; color: var(--term-text-dim); margin-bottom: 12px; }
 .n5-sample__row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 6px; }
 .n5-sample__tile { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.n5-sample__tile-text { font-family: "VT323", "DotGothic16", monospace; font-size: 28.7px; padding-bottom: 2px; border-bottom: 3px solid; position: relative; }
-.n5-sample__tile-text.role-subject { color: #6fb3e6; border-color: #6fb3e6; }
-.n5-sample__tile-text.role-particle { color: #f0c674; border-color: #f0c674; }
-.n5-sample__tile-text.role-predicate { color: #e2685f; border-color: #e2685f; }
-.n5-sample__tile-text.role-copula { color: #ffffff; border-color: #ffffff; }
-.n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 10.4px; color: #201d54; background: #f0c674; padding: 1px 4px; letter-spacing: 0.04em; }
+.n5-sample__tile-text { font-family: "Courier Prime", "M PLUS U", monospace; font-size: 28.7px; padding-bottom: 2px; border-bottom: 3px solid; position: relative; }
+.n5-sample__tile-text.role-subject { color: #A03C78; border-color: #A03C78; }
+.n5-sample__tile-text.role-particle { color: #F5E79D; border-color: #F5E79D; }
+.n5-sample__tile-text.role-predicate { color: #ED8E7C; border-color: #ED8E7C; }
+.n5-sample__tile-text.role-copula { color: #F5E79D; border-color: #F5E79D; }
+.n5-sample__tile-text.is-new::after { content: "NEW"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-family: "Space Mono", monospace; font-size: 10.4px; color: #4A3211; background: #F5E79D; padding: 1px 4px; letter-spacing: 0.04em; }
 .n5-sample__tile-gloss { font-size: 11.5px; color: var(--term-text-dim); text-align: center; max-width: 110px; }
 /* Auto-shrink-on-wrap fix (see fixN5SampleAlignment() in study-room.js) —
    same rationale/shape as .lesson-box__word-tile-gloss.is-small in
@@ -1097,12 +1213,59 @@
 .n5-sample__tile-gloss.is-small { font-size: 10.4px; line-height: 15px; max-width: none; white-space: nowrap; }
 .n5-sample__romaji { font-size: 12.6px; color: var(--term-text-dim); font-family: "Space Mono", monospace; margin-top: 4px; }
 
+/* Grid wrapper for multiple .n5-sample boxes side by side, when a section
+   needs more than one worked sentence (e.g. s10e's ほとんど affirmative vs.
+   negative pair) — the `sample:` field on a section object only ever
+   renders one box via buildSampleHTML(), so a multi-sample section builds
+   its own .n5-sample markup directly in diagramSvg instead, wrapped in
+   this grid. */
+.n5-sample-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 10px 0; }
+@media (max-width: 640px) { .n5-sample-gallery { grid-template-columns: 1fr; } }
+.n5-sample-gallery .n5-sample { margin: 0; }
+
+/* Frequency-adverb "thermometer" scale, shared by s10e (all 8 N5 words,
+   full 0-100% range) and s10f (just the 3 negative-pairing words, its own
+   0-100% range re-scaled to only that zone). Every piece — bulb, tube,
+   ticks, word labels — is positioned against ONE fixed-height container
+   instead of mixing normal-flow content with absolutely-positioned
+   overlays, which is what caused labels to render invisibly underneath
+   later content the first time this was built (confirmed via a live
+   Artifact mockup before this ever reached real lesson code). */
+.freq-thermo { position: relative; height: 210px; margin: 10px 40px 0 64px; min-width: 560px; }
+.freq-thermo__wrap { overflow-x: auto; }
+.freq-thermo__pct { position: absolute; top: 38px; font-size: 10.5px; color: var(--term-text-dim); opacity: .7; }
+.freq-thermo__pct.p100 { right: 0; }
+.freq-thermo__pct.p0 { left: 0; }
+.freq-thermo__tube {
+    position: absolute; top: 66px; left: 0; right: 0; height: 24px;
+    border-radius: 12px; border: 3px solid var(--term-border);
+    background: var(--term-bg); overflow: hidden;
+}
+.freq-thermo__fill { position: absolute; inset: 0; }
+.freq-thermo__sheen { position: absolute; left: 4px; right: 4px; top: 3px; height: 5px; border-radius: 4px; background: rgba(255,255,255,0.18); }
+.freq-thermo__bulb {
+    position: absolute; top: 57px; left: -58px; width: 42px; height: 42px; border-radius: 50%;
+    background: #ED8E7C; border: 3px solid var(--term-border);
+    box-shadow: inset 0 0 8px rgba(0,0,0,.4);
+}
+.freq-thermo__item {
+    position: absolute; top: 90px; display: flex; flex-direction: column; align-items: center;
+    transform: translateX(-50%); width: 96px;
+}
+.freq-thermo__tick { width: 2px; background: var(--term-amber); }
+.freq-thermo__item .w { font-family: "Courier Prime", "M PLUS U", monospace; font-size: 16px; color: var(--term-heading); margin-top: 4px; white-space: nowrap; }
+.freq-thermo__item.is-neg .w { color: #ED8E7C; }
+.freq-thermo__item .m { font-size: 10.5px; color: var(--term-text-dim); text-align: center; line-height: 1.3; margin-top: 1px; }
+.freq-thermo-legend { display: flex; gap: 18px; font-size: 12px; color: var(--term-text-dim); margin-top: 10px; flex-wrap: wrap; }
+.freq-thermo-legend b { color: #ED8E7C; }
+.freq-thermo-legend b.g { color: var(--term-border); }
+
 /* Impostor-verb table (godan verbs shaped like ichidan る-verbs) */
 .impostor-table-wrap { overflow-x: auto; margin: 10px 0; }
 .impostor-table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .impostor-table th { text-align: left; color: var(--term-label); font-weight: 700; font-size: 12.6px; text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-bottom: 1px solid var(--term-border); }
 .impostor-table td { padding: 5px 8px; border-bottom: 1px dashed rgba(157,225,203,0.25); vertical-align: top; }
-.impostor-table__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 18.4px; color: var(--term-heading); white-space: nowrap; }
+.impostor-table__jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 18.4px; color: var(--term-heading); white-space: nowrap; }
 .impostor-table__masu { color: var(--term-amber); white-space: nowrap; }
 .impostor-table__en { color: var(--term-text-dim); }
 
@@ -1111,14 +1274,95 @@
    lesson shows HOW pronoun choice changes the sentence, not just a
    vocab list of pronouns. */
 .pronoun-diagram { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 6px 0; }
-.pronoun-diagram__slot-row { display: flex; align-items: center; gap: 8px; font-family: "DotGothic16","VT323",monospace; font-size: 18.4px; color: var(--term-heading); flex-wrap: wrap; justify-content: center; }
+.pronoun-diagram__slot-row { display: flex; align-items: center; gap: 8px; font-family: "M PLUS U","Courier Prime",monospace; font-size: 18.4px; color: var(--term-heading); flex-wrap: wrap; justify-content: center; }
 .pronoun-diagram__fixed { color: var(--term-text-dim); font-family: "Space Mono", monospace; font-size: 15px; }
 .pronoun-diagram__slot { border: 1px dashed var(--term-amber); border-radius: 6px; padding: 2px 8px; }
 .pronoun-diagram__ladder { display: flex; align-items: flex-end; gap: 14px; margin-top: 2px; flex-wrap: wrap; justify-content: center; }
 .pronoun-diagram__pill { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.pronoun-diagram__pill .jp { font-family: "DotGothic16","VT323",monospace; font-size: 18.4px; color: var(--term-heading); border: 1px solid var(--term-border); border-radius: 8px; padding: 4px 10px; background: rgba(29,158,117,0.12); }
+.pronoun-diagram__pill .jp { font-family: "M PLUS U","Courier Prime",monospace; font-size: 18.4px; color: var(--term-heading); border: 1px solid var(--term-border); border-radius: 8px; padding: 4px 10px; background: rgba(29,158,117,0.12); }
 .pronoun-diagram__pill span:last-child { font-size: 11.5px; color: var(--term-text-dim); }
 .pronoun-diagram__axis { font-size: 11.5px; color: var(--term-text-dim); display: flex; justify-content: space-between; width: 100%; max-width: 340px; }
+
+/* s09a's noun anchor chart -- the standard person/place/thing 3-box sort
+   every elementary grammar chart uses, rebuilt with real N5 vocab. */
+.noun-chart { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 8px 0; }
+.noun-chart__box {
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(29, 158, 117, 0.06);
+}
+.noun-chart__label { font-family: "Space Mono", monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--term-amber); }
+.noun-chart__ex { display: flex; flex-direction: column; align-items: center; }
+.noun-chart__ex .jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 18.4px; color: var(--term-heading); }
+.noun-chart__ex .en { font-size: 11px; color: var(--term-text-dim); }
+
+/* s09b's "repetitive vs. smooth" pronoun diagram -- the same before/after
+   technique every kid-friendly grammar guide uses, ported to this
+   lesson's own [Noun]は[description]です pattern instead of a generic
+   English example. */
+.pronoun-swap { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin: 8px 0; }
+.pronoun-swap__block {
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    flex: 1;
+    min-width: 200px;
+}
+.pronoun-swap__label { font-family: "Space Mono", monospace; font-size: 11px; letter-spacing: 0.04em; color: var(--term-text-dim); margin-bottom: 6px; }
+.pronoun-swap__line { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 16.5px; color: var(--term-heading); line-height: 1.9; }
+.pronoun-swap__repeat { color: var(--term-text-dim); opacity: 0.7; }
+.pronoun-swap__new { color: var(--term-amber); font-weight: bold; }
+
+/* s10a/s10b's shared "self-contained vs. needs-helper" comparison box --
+   same markup/classes in both lessons, only which side is `.is-active`
+   differs (whichever family that lesson is actually teaching). */
+.adj-compare { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 4px; }
+.adj-compare__box {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.adj-compare__box.is-active { border-color: var(--term-amber); background: rgba(250, 199, 117, 0.08); }
+.adj-compare__label { font-family: "Courier Prime", monospace; font-size: 15px; color: var(--term-amber); margin-bottom: 4px; }
+.adj-compare__body { font-size: 12.5px; line-height: 1.6; color: var(--term-text-dim); }
+.adj-compare__body b { color: var(--term-text); }
+
+/* s10a/s10b's present/negative/past/past-negative reference table. */
+table.adj-conj-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13.5px; }
+table.adj-conj-table th {
+    text-align: left;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--term-border);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--term-border);
+}
+table.adj-conj-table td {
+    padding: 8px 10px;
+    border-bottom: 1px dashed var(--term-border);
+    color: var(--term-text);
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 16px;
+}
+table.adj-conj-table td.label {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--term-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+table.adj-conj-table tr:last-child td { border-bottom: none; }
+table.adj-conj-table .en { display: block; font-family: "Space Mono", monospace; font-size: 10.5px; color: var(--term-text-dim); margin-top: 2px; }
 
 
 /* s08c's compass — a plain cross (kita/minami/nishi/higashi at the four
@@ -1167,7 +1411,7 @@
     gap: 2px;
 }
 .grammar-box__compass-cross .cross-label .jp {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 25.3px;
     color: var(--term-heading);
 }
@@ -1180,6 +1424,87 @@
 .grammar-box__compass-cross .cross-label.s { bottom: 0; left: 50%; transform: translateX(-50%); }
 .grammar-box__compass-cross .cross-label.e { right: 0; top: 50%; transform: translateY(-50%); }
 .grammar-box__compass-cross .cross-label.w { left: 0; top: 50%; transform: translateY(-50%); }
+
+/* === s07g "Calendar Diagram" — replaced the paper wall-calendar (2026-09-05,
+   second pass) with a "$ cal" shell-output look instead, since a cream paper
+   card clashed with the rest of the lesson screen's own green CRT terminal
+   skin. Split across TWO diagrams — one per section — instead of one
+   diagram stacking the month grid above the weekday listing; the calendar
+   grid is its own section, the weekday `ls -la` listing is a separate one.
+   Both diagrams reuse the exact same shell-window chrome (.s07g-term*) so
+   they read as two commands run in the same terminal, not two components.
+
+   Fourth pass, same day (s07f/s07g merge): the 1st-10th readings are back
+   — cut in the 3rd pass for being "unrecognizable" (too small/cramped),
+   but s07f's own content (folded into s07g on this same pass, see the JS
+   comment above the lesson function) actually teaches those readings, so
+   they're real content here now, not decoration. Given more room this
+   time (.s07g-term--cal, wider than the base card) and a distinct plain-
+   green treatment from the amber+star bonus dates, so the two tiers stay
+   visually distinct rather than cluttering back up. The trailing "$ _"
+   cursor prompt was cut from the calendar diagram specifically (the
+   weekday listing keeps its own) — it wasn't adding anything once the
+   diagram already ends on a real row of dates. */
+.s07g-term {
+    background: var(--term-panel);
+    border: 1px solid var(--term-border);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 580px;
+    margin: 0 auto;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+}
+.s07g-term__bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    background: var(--term-bg);
+    border-bottom: 1px solid var(--term-border);
+}
+.s07g-term__dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(225, 245, 238, .18); }
+.s07g-term__dot.is-live { background: var(--term-border); }
+.s07g-term__path { margin-left: auto; font-family: "Courier Prime", monospace; font-size: 11.5px; color: var(--term-text-dim); opacity: .8; }
+.s07g-term__body { padding: 18px 20px 20px; font-family: "Courier Prime", monospace; }
+.s07g-term__prompt { font-size: 14px; color: var(--term-border); margin-bottom: 10px; }
+.s07g-term__prompt b { color: var(--term-text); font-weight: 700; }
+.s07g-term__title { font-size: 17px; color: var(--term-amber); letter-spacing: .04em; margin-bottom: 12px; }
+.s07g-term__cursor { margin-top: 12px; font-size: 14px; color: var(--term-border); }
+.s07g-term__blink { display: inline-block; width: 8px; height: 15px; background: var(--term-border); margin-left: 2px; animation: s07gBlink 1s steps(1) infinite; vertical-align: -3px; }
+@keyframes s07gBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .s07g-term__blink { animation: none; } }
+
+/* Calendar-grid diagram (the "日にち — Dates" section): the month grid,
+   printed like a real `cal` command. .s07g-term--cal widens the base card
+   so the reinstated 1st-10th readings have room to sit on one line. */
+.s07g-term--cal { max-width: 760px; }
+.s07g-term-cal { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.s07g-term-cal th { font-weight: 400; font-size: 15px; color: var(--term-border); padding: 3px 0 8px; text-align: center; border-bottom: 1px solid rgba(225, 245, 238, .12); }
+.s07g-term-cal td { text-align: center; padding: 4px 0; height: 60px; vertical-align: top; position: relative; }
+.s07g-term-cal td .d { display: block; font-size: 23px; color: var(--term-text); }
+.s07g-term-cal td .r { display: block; font-size: 12.5px; margin-top: 3px; white-space: nowrap; }
+.s07g-term-cal td.is-core .r { color: var(--term-border); }
+.s07g-term-cal td.is-bonus { background: rgba(250, 199, 117, .12); border-radius: 4px; }
+.s07g-term-cal td.is-bonus .d, .s07g-term-cal td.is-bonus .r { color: var(--term-amber); }
+.s07g-term-cal td.is-bonus::before { content: "\2605"; position: absolute; top: 2px; right: 3px; font-size: 9px; color: var(--term-amber); }
+
+/* "曜日 — Days of the Week" section's diagram, printed like `ls -la`
+   output — one "file" per weekday, a real image beside each (moon/fire/
+   water/wood/gold/earth/sun; see s07g's own JS comment for why these
+   particular photos). Sized up on its own (.s07g-term--youbi, wider than
+   the base .s07g-term) per explicit request to see the images/kanji more
+   clearly — the calendar diagram doesn't need the same width, so this
+   stays a modifier rather than a change to the shared .s07g-term rule.
+   The `-rw-` permission-flag column was cut (real request), and the
+   image's own background swatch was dropped too (also requested) — the
+   icons now float directly on the terminal panel with no boxed backing. */
+.s07g-term--youbi { max-width: 640px; }
+.s07g-term-ls { display: flex; flex-direction: column; gap: 10px; }
+.s07g-term-ls__row { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 16px; padding: 6px 2px; font-family: "Space Mono", monospace; font-size: 15px; }
+.s07g-term-ls__img { width: 44px; height: 44px; object-fit: contain; }
+.s07g-term-ls__row .name { color: var(--term-text-dim); }
+.s07g-term-ls__row .name b { font-family: "Courier Prime", "M PLUS U", monospace; font-size: 21px; color: var(--term-amber); margin-right: 10px; }
+.s07g-term-ls__row .meta { color: var(--term-text-dim); opacity: .7; text-align: right; font-size: 14px; }
 
 /* s08a's "Location" subsection — cat-in-box (いる) and basket-of-bread (ある)
    as two full worked examples, given room to breathe (unlike a cramped
@@ -1212,7 +1537,7 @@
     image-rendering: pixelated;
 }
 .grammar-box__location-text .jp-lg {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 21.8px;
     line-height: 1.3;
 }
@@ -1269,7 +1594,7 @@
     border-radius: var(--radius);
 }
 .grammar-box__place-jp {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 18.4px;
     color: var(--term-heading);
 }
@@ -1278,6 +1603,27 @@
     color: var(--term-text-dim);
     text-align: center;
 }
+
+/* s06d's "More Question Words" — a quick-reference table for all six
+   words plus two paired-comparison boxes for the pairs that are easy to
+   conflate (どうして／なぜ register, いくつ／いくら scope). New violet accent
+   (#b98cd9/dark tint) rather than reusing an existing grammar role, since
+   these are vocabulary items being compared, not sentence-role tiles. */
+.qword-table { width: 100%; border-collapse: collapse; font-size: 14.4px; margin: 6px 0; }
+.qword-table th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--term-text-dim); opacity: 0.85; padding: 6px 10px; border-bottom: 2px solid var(--term-border); }
+.qword-table td { padding: 10px; border-bottom: 1px solid rgba(29, 158, 117, 0.25); vertical-align: top; }
+.qword-table tr:last-child td { border-bottom: none; }
+.qword-word { font-family: "Courier Prime", "M PLUS U", monospace; font-size: 18.4px; color: #b98cd9; font-weight: 700; display: block; }
+.qword-romaji { font-size: 11.5px; color: var(--term-text-dim); opacity: 0.8; display: block; }
+.qword-usage-jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 15.5px; color: var(--term-heading); }
+.qword-usage-en { font-size: 12.1px; color: var(--term-text-dim); margin-top: 2px; }
+
+.qword-pair { display: flex; border: 1px solid var(--term-border); border-radius: var(--radius); overflow: hidden; margin: 10px 0; }
+.qword-pair > div { flex: 1; padding: 12px 16px; background: rgba(185, 140, 217, 0.06); }
+.qword-pair > div:first-child { border-right: 1px dashed var(--term-border); }
+.qword-pair .qword-word { font-size: 20.7px; }
+.qword-pair .qword-meaning { font-size: 13.8px; color: var(--term-heading); margin: 4px 0; }
+.qword-pair .qword-note { font-size: 12.1px; color: var(--term-text-dim); font-style: italic; }
 
 /* s08c's real, interactive route diagram — a multi-turn map with real
    scenery (assets/images/lesson/transparent/), driven by window.NekoRoute
@@ -1295,7 +1641,7 @@
     border-radius: var(--radius);
     padding: 10px 14px;
 }
-.route2-prompt .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 21.8px; }
+.route2-prompt .jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 21.8px; }
 .route2-prompt .romaji { font-size: 13.2px; color: var(--term-text-dim); margin-top: 2px; }
 .route2-scene {
     position: relative;
@@ -1363,7 +1709,7 @@
     padding: 10px 14px;
 }
 .route2-arrival.show { display: block; }
-.route2-arrival .jp { font-family: "DotGothic16", "VT323", monospace; font-size: 20.7px; color: #4CC38A; }
+.route2-arrival .jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 20.7px; color: #4CC38A; }
 .route2-arrival .romaji { font-size: 13.2px; color: var(--term-text-dim); margin-top: 2px; }
 
 /* s15's S-T-P-O-V sentence-order diagram + practice, driven by
@@ -1398,7 +1744,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 25.3px;
     font-weight: 700;
     color: var(--term-text);
@@ -1431,7 +1777,7 @@
     align-items: center;
 }
 .stpov-chip-static {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 16.1px;
     color: var(--term-heading);
     background: rgba(250, 199, 117, 0.14);
@@ -1482,13 +1828,13 @@
     transition: border-color .15s ease, background .15s ease;
 }
 .stpov-slot__tag { font-size: 10.9px; color: var(--term-text-dim); letter-spacing: .5px; }
-.stpov-slot__jp { font-family: "DotGothic16", "VT323", monospace; font-size: 17.3px; color: var(--term-text); min-height: 20px; }
+.stpov-slot__jp { font-family: "M PLUS U", "Courier Prime", monospace; font-size: 17.3px; color: var(--term-text); min-height: 20px; }
 .stpov-slot:hover { border-color: var(--term-amber); }
 .stpov-slot.is-filled { border-style: solid; background: rgba(76, 195, 138, 0.12); border-color: #4CC38A; cursor: default; }
 .stpov-slot.is-wrong { animation: gbRouteShake .3s ease; border-color: var(--term-bad-border, #A32D2D); background: rgba(163, 45, 45, 0.12); }
 .stpov-chip-tray { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .stpov-chip {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 17.3px;
     color: var(--term-text);
     background: var(--term-panel, rgba(29,158,117,0.08));
@@ -1530,7 +1876,7 @@
 .waga-compare { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 8px 0; }
 .waga-toggle { display: flex; gap: 10px; }
 .waga-btn {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 23px;
     font-weight: 700;
     color: var(--term-text);
@@ -1544,7 +1890,7 @@
 .waga-btn:hover { border-color: var(--term-amber); }
 .waga-btn.is-active { background: var(--term-amber); border-color: var(--term-amber); color: var(--term-bg); }
 .waga-sentence {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 27.6px;
     color: var(--term-heading);
     text-align: center;
@@ -1581,7 +1927,7 @@
     min-width: 16px;
 }
 .particle-glance__chip {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 18.4px;
     min-width: 28px;
     text-align: center;
@@ -1620,6 +1966,11 @@
     image-rendering: pixelated;
     flex: none;
 }
+/* s07b's 人 counter reuses this same accumulating-stack structure (person.png
+   repeated once per row instead of numbered bread1..10 files, since only one
+   person.png source exists) — sized up from the shared 26px since the person
+   artwork read too small/hard to make out at that size, unlike the breads. */
+.grammar-box__bread-stack.is-person .grammar-box__bread-imgs img { width: 42px; height: 42px; }
 .grammar-box__bread-label {
     flex: none;
     display: flex;
@@ -1629,7 +1980,7 @@
     min-width: 76px;
 }
 .grammar-box__bread-label .jp {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 18.4px;
     color: var(--term-heading);
 }
@@ -1652,7 +2003,7 @@
 }
 .grammar-box__counter-table tr:last-child td { border-bottom: none; }
 .grammar-box__counter-table td.jp {
-    font-family: "DotGothic16", "VT323", monospace;
+    font-family: "M PLUS U", "Courier Prime", monospace;
     font-size: 18.4px;
     color: var(--term-heading);
     white-space: nowrap;
@@ -1671,13 +2022,24 @@
     white-space: nowrap;
 }
 .grammar-box__counter-table td.counter-photo img {
-    width: 26px;
-    height: 26px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
     image-rendering: pixelated;
     vertical-align: middle;
     margin-left: 4px;
 }
+
+/* s07c's "annotated dial" clock diagram — 4 small analog clocks side by
+   side (regular さんじ, then the 3 irregular hours よじ／しちじ／くじ), each
+   reading :10 past the hour rather than a bare on-the-hour time so both
+   hands actually need reading together. The irregular hour's own numeral
+   is starred amber on its dial, same "bonus" visual language the s07g
+   calendar diagram already uses for its 3 irregular dates. */
+.s07c-clockquad { display: flex; flex-wrap: wrap; gap: 22px; justify-content: center; }
+.s07c-clockquad__item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 150px; }
+.s07c-clockquad__label { font-family: "Courier Prime", "M PLUS U", monospace; font-size: 15px; color: var(--term-amber); text-align: center; }
+.s07c-clockquad__label .romaji { display: block; font-family: "Space Mono", monospace; font-size: 10.5px; color: var(--term-text-dim); margin-top: 2px; }
 
 /* Real-photo examples shown above a counter table (s07b/s07d/s07e) */
 .grammar-box__counter-examples {
@@ -1714,7 +2076,7 @@
     box-shadow: var(--shadow-window);
 }
 .practice-steps__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 20.7px;
     color: var(--title-bar-dark);
     margin-bottom: 6px;
@@ -1745,7 +2107,7 @@
     margin: 12px 0;
 }
 .word-bank__chip {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 17.3px;
     padding: 6px 14px;
     border-radius: 20px;
@@ -1799,7 +2161,7 @@
     margin: 16px 0;
 }
 .word-bank-box__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 16.1px;
     color: var(--term-amber);
     margin-bottom: 6px;
@@ -1935,7 +2297,7 @@
     white-space: nowrap;
 }
 .vocab-table__jp {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 18.4px;
     color: var(--term-text);
     line-height: 2.6;
@@ -1953,7 +2315,9 @@
    which reads clearer than a permanently bigger caption would (a caption
    sized to read comfortably ALL the time would crowd the kanji line). */
 .vocab-table__jp rt,
-.example-sentence rt {
+.example-sentence rt,
+.grammar-box__title rt,
+.pattern-box__line rt {
     font-family: "Space Mono", ui-monospace, Consolas, monospace;
     font-size: 13.8px;
     font-weight: 600;
@@ -1963,11 +2327,15 @@
     transform-origin: bottom center;
 }
 .vocab-table__jp ruby,
-.example-sentence ruby {
+.example-sentence ruby,
+.grammar-box__title ruby,
+.pattern-box__line ruby {
     cursor: help;
 }
 .vocab-table__jp ruby:hover rt,
-.example-sentence ruby:hover rt {
+.example-sentence ruby:hover rt,
+.grammar-box__title ruby:hover rt,
+.pattern-box__line ruby:hover rt {
     transform: scale(1.55);
     color: var(--term-amber);
 }
@@ -1992,40 +2360,91 @@
     margin-bottom: 0;
 }
 
-/* Pattern box */
+/* Pattern box -- rendered FIRST in a section, ahead of the explain prose
+   (see renderInstruction() in study-room.js), so the sentence pattern is
+   the first thing a learner sees rather than something buried after a
+   paragraph of explanation. Bumped from 21.8px to a solid amber border +
+   tinted background (2026-09-04, per explicit feedback that the old thin
+   1px/dark-bg treatment didn't read as "highlighted"), then re-fonted to
+   Press Start 2P as part of the sitewide VT323 swap (shrunk further to
+   20px since Press Start 2P's blockier glyphs needed more room than
+   VT323 did at the same size), then back up to 30px when Press Start 2P
+   was itself swapped for Electrolize -- a normal-proportioned display
+   font doesn't need that compensation, so this returns close to the
+   original ≥30px "big diagram" sizing the pattern box was built for.
+   .pattern-box__line is a flex row with no flex-wrap
+   -- long patterns (e.g. s04b's two-alternative hobby pattern) stay on
+   one line and scroll horizontally instead of wrapping, per explicit
+   feedback that wrapping onto multiple lines defeats the point of a
+   single highlighted line to follow at a glance. */
 .pattern-box {
-    background: var(--term-bg);
-    border: 1px solid var(--term-border);
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    margin: 8px 0;
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 21.8px;
-    color: var(--term-text);
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    background: linear-gradient(180deg, rgba(250, 199, 117, 0.10), rgba(29, 158, 117, 0.08));
+    border: 2px solid var(--term-amber);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 8px 0 14px;
+    box-shadow: 0 0 0 1px rgba(250, 199, 117, 0.15);
 }
 .pattern-box__label {
-    font-size: 11.5px;
-    color: var(--term-label);
+    display: block;
+    font-size: 11px;
+    color: var(--term-amber);
     font-family: "Space Mono", monospace;
-    letter-spacing: 0;
-    margin-right: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+.pattern-box__line {
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 30px;
+    color: var(--term-text);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    /* Centered within the lesson panel (not the whole page -- the lesson
+       panel is only the left half, next to the practice column), per
+       explicit feedback that the pattern read as stuck on the left edge
+       and needed to sit more toward the middle of the lesson itself. */
+    justify-content: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-color: var(--term-border) transparent;
+    scrollbar-width: thin;
 }
 .pattern-box__slot {
-    padding: 2px 8px;
-    background: rgba(29, 158, 117, 0.14);
+    padding: 2px 10px;
+    background: rgba(29, 158, 117, 0.16);
     border: 1px dashed var(--term-border);
-    border-radius: 4px;
+    border-radius: 5px;
     color: var(--term-text);
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 .pattern-box__fixed {
     color: var(--term-amber);
     font-weight: bold;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
+
+/* s07d's three animal-counter patterns show the actual animal photo right
+   inside the "[category]" slot instead of leaving it pure text, per
+   explicit request to place the animal png somewhere it's actually big
+   enough to see. Same real-size hierarchy as the counter tables below
+   (ぞう biggest, ねこ regular, とり smallest), scoped to this class only
+   so no other lesson's pattern box is affected. */
+.pattern-box__animal {
+    width: 57px;
+    height: 57px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.pattern-box__animal--large { width: 99px; height: 99px; }
+.pattern-box__animal--small { width: 40px; height: 40px; }
 
 /* Example sentence */
 .example-sentence {
@@ -2035,7 +2454,7 @@
     gap: 5px;
     margin: 10px 0;
     padding-top: 22px;
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 24.2px;
     color: var(--term-text);
 }
@@ -2115,7 +2534,7 @@ body.is-resizing-study-panels {
 .study-practice__prompt {
     color: var(--term-text);
     margin-bottom: 8px;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 18.4px;
 }
 .study-practice__prompt strong {
@@ -2129,8 +2548,8 @@ body.is-resizing-study-panels {
 }
 .study-practice__input {
     flex: 1;
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 24.2px;
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 15px;
     padding: 12px 18px;
     background: var(--term-panel);
     border: 1px solid var(--term-border);
@@ -2321,7 +2740,7 @@ body.is-resizing-study-panels {
    Word Order) — shared by study-room.js and study-room-n4.js, both of
    which tag every exercise .quizSet and route through the same DOM ids. */
 .study-quiz-heading {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 16.1px;
     color: var(--term-amber);
     letter-spacing: 0.5px;
@@ -2343,7 +2762,7 @@ body.is-resizing-study-panels {
     background: var(--term-bg);
 }
 .study-quiz-divider__heading {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 23px;
     color: var(--term-heading);
     margin: 0;
@@ -2386,8 +2805,8 @@ body.is-resizing-study-panels {
     border-radius: var(--radius);
     background: var(--term-panel);
     color: var(--term-text);
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 20.7px;
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 15.5px;
     text-align: center;
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
@@ -2431,7 +2850,7 @@ body.is-resizing-study-panels {
     margin-bottom: 8px;
 }
 .study-wordorder__chip {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 20.7px;
     padding: 7px 15px;
     border-radius: 20px;
@@ -2481,7 +2900,7 @@ body.is-resizing-study-panels {
     display: flex;
 }
 .study-complete__heading {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 24.2px;
     color: var(--term-amber);
     margin: 0;
@@ -2513,7 +2932,7 @@ body.is-resizing-study-panels {
     margin: 0 0 6px;
 }
 .study-complete__tile-value {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 24.2px;
     color: var(--term-text);
     margin: 0;
@@ -2554,7 +2973,7 @@ body.is-resizing-study-panels {
     overflow-y: auto;
 }
 .checkpoint-quiz__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 26.5px;
     color: var(--term-heading);
     margin-bottom: 4px;
@@ -2587,8 +3006,8 @@ body.is-resizing-study-panels {
     gap: 8px;
 }
 .checkpoint-quiz__choice {
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 17.3px;
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 13px;
     text-align: left;
     padding: 8px 14px;
     border-radius: var(--radius);
@@ -2617,7 +3036,7 @@ body.is-resizing-study-panels {
     line-height: 2.2;
 }
 .checkpoint-quiz__input {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 17.3px;
     padding: 4px 8px;
     margin: 0 4px;
@@ -2633,7 +3052,7 @@ body.is-resizing-study-panels {
 .checkpoint-quiz__submit {
     align-self: flex-start;
     margin-top: 18px;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 18.4px;
     padding: 10px 24px;
     border-radius: var(--radius);
@@ -2655,7 +3074,7 @@ body.is-resizing-study-panels {
     margin-top: 20px;
 }
 .checkpoint-quiz__score {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 31.1px;
     color: var(--term-amber);
 }
@@ -2712,7 +3131,7 @@ body.is-resizing-study-panels {
     overflow-y: auto;
 }
 .mondai-quiz__title {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 26.5px;
     color: var(--term-heading);
     margin-bottom: 4px;
@@ -2734,7 +3153,7 @@ body.is-resizing-study-panels {
     border-bottom: 2px solid var(--term-border);
 }
 .mondai-quiz__section-label {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 21.8px;
     letter-spacing: 0.03em;
     color: var(--term-amber);
@@ -2766,7 +3185,7 @@ body.is-resizing-study-panels {
 }
 .mondai-quiz__prompt-num {
     flex-shrink: 0;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 17.3px;
     color: var(--term-amber);
 }
@@ -2783,8 +3202,8 @@ body.is-resizing-study-panels {
     display: inline-flex;
     align-items: baseline;
     gap: 6px;
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 17.3px;
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 13px;
     padding: 7px 14px;
     border-radius: var(--radius);
     border: 1px solid var(--term-border);
@@ -2811,7 +3230,7 @@ body.is-resizing-study-panels {
 .mondai-quiz__submit {
     align-self: flex-start;
     margin-top: 22px;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 18.4px;
     padding: 10px 24px;
     border-radius: var(--radius);
@@ -2828,7 +3247,7 @@ body.is-resizing-study-panels {
 .mondai-quiz__submit:disabled { opacity: 0.5; cursor: default; }
 .mondai-quiz__result { margin-top: 20px; }
 .mondai-quiz__score {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 31.1px;
     color: var(--term-amber);
 }
@@ -2846,7 +3265,7 @@ body.is-resizing-study-panels {
 .study-continue-btn {
     display: block;
     margin-top: 18px;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 18.4px;
     padding: 10px 24px;
     border-radius: var(--radius);
@@ -2861,7 +3280,7 @@ body.is-resizing-study-panels {
 }
 .study-continue-complete {
     margin-top: 18px;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 17.3px;
     color: var(--term-amber);
 }
@@ -2922,8 +3341,8 @@ body.is-resizing-study-panels {
 }
 
 .xp-badge {
-    font-family: "VT323", monospace;
-    font-size: 17.3px;
+    font-family: "Courier Prime", monospace;
+    font-size: 13px;
     color: var(--yellow);
     background: rgba(241,210,122,0.12);
     border: 2px solid var(--yellow);
@@ -2943,6 +3362,15 @@ body.is-resizing-study-panels {
 .xp-badge .xp-reels {
     display: inline-flex;
     font-variant-numeric: tabular-nums;
+    /* Every .reel's real content (.reel__strip) is position:absolute, so
+       it contributes nothing in-flow for the browser to compute a
+       baseline from -- the inline-flex container was falling back to its
+       margin-box bottom edge as a synthesized baseline, which sat
+       noticeably off from the plain "XP" text next to it (reported as
+       "the number is above ... not aligned with the XP letter"). Forcing
+       vertical-align explicitly instead of leaving it to the (broken-
+       for-this-case) default baseline calculation. */
+    vertical-align: middle;
 }
 .xp-badge .reel {
     position: relative;
@@ -3004,7 +3432,7 @@ body.is-resizing-study-panels {
     100% { opacity: 1; transform: scale(1) rotate(var(--tilt, 0deg)); }
 }
 .xp-tally-total {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 19.5px;
     color: var(--term-heading, #fff);
     text-shadow: 0 0 6px rgba(0,0,0,0.4);
@@ -3263,8 +3691,8 @@ body.is-resizing-study-panels {
     box-shadow: 4px 6px 0px rgba(0,0,0,0.18);
 }
 .level-card__level {
-    font-family: "VT323", monospace;
-    font-size: 34.5px;
+    font-family: "Courier Prime", monospace;
+    font-size: 23px;
     color: var(--title-bar-dark);
     margin-bottom: 4px;
 }
@@ -3274,8 +3702,8 @@ body.is-resizing-study-panels {
     margin-bottom: 10px;
 }
 .level-card__meta {
-    font-family: "VT323", monospace;
-    font-size: 16.1px;
+    font-family: "Courier Prime", monospace;
+    font-size: 12.1px;
     color: var(--text-light);
 }
 .level-card.is-locked {
@@ -3298,7 +3726,7 @@ body.is-resizing-study-panels {
    another card. */
 .lesson-grid__section-title {
     grid-column: 1 / -1;
-    font-family: "Press Start 2P", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 15px;
     color: var(--text-main);
     margin: 10px 0 -4px;
@@ -3322,8 +3750,8 @@ body.is-resizing-study-panels {
     border-color: var(--title-bar);
 }
 .lesson-card__num {
-    font-family: "VT323", monospace;
-    font-size: 25.3px;
+    font-family: "Courier Prime", monospace;
+    font-size: 15.7px;
     color: var(--mint);
     display: block;
     margin-bottom: 4px;
@@ -3336,8 +3764,8 @@ body.is-resizing-study-panels {
     line-height: 1.35;
 }
 .lesson-card__status {
-    font-family: "VT323", monospace;
-    font-size: 15px;
+    font-family: "Courier Prime", monospace;
+    font-size: 11.3px;
     color: var(--text-light);
 }
 .lesson-card.is-complete {
@@ -3383,8 +3811,8 @@ body.is-resizing-study-panels {
     padding: 28px 28px 24px;
 }
 .quiz-panel h2 {
-    font-family: "VT323", monospace;
-    font-size: 25.3px;
+    font-family: "Courier Prime", monospace;
+    font-size: 15.7px;
     color: var(--title-bar-dark);
     margin: 0 0 4px;
 }
@@ -3407,8 +3835,8 @@ body.is-resizing-study-panels {
     margin: 16px 0;
 }
 .quiz-mc__btn {
-    font-family: "VT323", "DotGothic16", monospace;
-    font-size: 20.7px;
+    font-family: "Courier Prime", "M PLUS U", monospace;
+    font-size: 15.5px;
     padding: 12px 18px;
     border: 2px solid var(--border);
     border-radius: var(--radius);
@@ -3481,14 +3909,14 @@ body.is-resizing-study-panels {
 }
 .quiz-result__icon { font-size: 55.2px; margin-bottom: 8px; }
 .quiz-result__title {
-    font-family: "VT323", monospace;
-    font-size: 32.2px;
+    font-family: "Courier Prime", monospace;
+    font-size: 20px;
     color: var(--title-bar-dark);
     margin-bottom: 8px;
 }
 .quiz-result__score {
-    font-family: "VT323", monospace;
-    font-size: 25.3px;
+    font-family: "Courier Prime", monospace;
+    font-size: 15.7px;
     color: var(--yellow);
     margin-bottom: 12px;
 }
@@ -3498,7 +3926,7 @@ body.is-resizing-study-panels {
     margin-bottom: 8px;
 }
 .quiz-xp-gained {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 23px;
     color: var(--mint);
     margin-bottom: 16px;
@@ -3547,7 +3975,7 @@ body.is-resizing-study-panels {
 }
 
 .quiz-star-sentence {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 25.3px;
     line-height: 1.6;
     color: var(--text-main);
@@ -3585,7 +4013,7 @@ body.is-resizing-study-panels {
 }
 .quiz-star-reveal {
     margin-top: 6px;
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 19.5px;
     opacity: .85;
 }
@@ -3614,7 +4042,7 @@ body.is-resizing-study-panels {
     border-radius: var(--radius);
 }
 .quiz-word-prompt__word {
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 29.9px;
     color: var(--title-bar-dark);
 }
@@ -3658,7 +4086,7 @@ body.is-resizing-study-panels {
 .quiz-exam-item:last-child { border-bottom: none; }
 .quiz-exam-item__num {
     flex: 0 0 auto;
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 20.7px;
     color: var(--text-light);
     min-width: 22px;
@@ -3719,7 +4147,7 @@ body.is-resizing-study-panels {
 }
 .quiz-exam-item__reveal {
     margin-top: 8px;
-    font-family: "VT323", "DotGothic16", monospace;
+    font-family: "Courier Prime", "M PLUS U", monospace;
     font-size: 18.4px;
     color: var(--text-light);
 }
@@ -3802,7 +4230,7 @@ body.is-resizing-study-panels {
     margin-bottom: 22px;
 }
 .credits-page__section h2 {
-    font-family: "Press Start 2P", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 13.8px;
     color: var(--text-main);
     margin-bottom: 10px;
@@ -3883,7 +4311,7 @@ body.is-resizing-study-panels {
     color: #fff;
 }
 .kana-grid__char {
-    font-family: "DotGothic16", sans-serif;
+    font-family: "M PLUS U", sans-serif;
     font-size: 29.9px;
     color: var(--text-main);
 }
@@ -3951,14 +4379,14 @@ body.is-resizing-study-panels {
     stroke-width: 0.6;
 }
 .kana-writer__dot text {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 6.9px;
     fill: var(--text-main);
     text-anchor: middle;
     dominant-baseline: central;
 }
 .kana-viewer__label {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 29.9px;
     color: var(--text-main);
     margin-bottom: 2px;
@@ -3974,7 +4402,7 @@ body.is-resizing-study-panels {
     gap: 10px;
 }
 .kana-viewer__controls button {
-    font-family: "Press Start 2P", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 10.4px;
     padding: 10px 14px;
     background: var(--title-bar);
@@ -3997,7 +4425,7 @@ body.is-resizing-study-panels {
     border-top: 1px dashed var(--border-dark);
 }
 .kana-viewer__stroke-order-title {
-    font-family: "Press Start 2P", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 10.4px;
     color: var(--text-light);
     text-transform: uppercase;

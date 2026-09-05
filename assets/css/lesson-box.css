@@ -17,6 +17,55 @@
   src: url("../fonts/VT323-Regular.woff2") format("woff2");
 }
 
+/* Self-hosted Press Start 2P (2026-09-04, same self-hosting rationale as
+   VT323 above) -- previously reserved for headers/labels only via
+   .lesson-box__display-face; now the primary display font sitewide,
+   replacing VT323's old role too, per explicit request. Latin-subset
+   only, same as VT323's own file; Japanese glyphs still come from
+   DotGothic16. */
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../fonts/PressStart2P-Regular.woff2") format("woff2");
+}
+
+/* Self-hosted Electrolize (2026-09-04, same self-hosting rationale as
+   VT323/Press Start 2P above) -- replaces Press Start 2P as the primary
+   display font sitewide, per explicit request. Latin-subset only;
+   Japanese glyphs now come from M PLUS U (Google-Fonts-loaded, like
+   DotGothic16 was -- both are far too large to self-host in full). */
+@font-face {
+  font-family: "Electrolize";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../fonts/Electrolize-Regular.woff2") format("woff2");
+}
+
+/* Self-hosted Courier Prime (2026-09-04, same self-hosting rationale as
+   above) -- replaces IBM Plex Mono as the primary display font sitewide,
+   per explicit request (typewriter feel). Latin-subset only; Japanese
+   glyphs still come from M PLUS U (unchanged). */
+@font-face {
+  font-family: "Courier Prime";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../fonts/CourierPrime-Regular.woff2") format("woff2");
+}
+
+/* Self-hosted IBM Plex Mono (kept, unused but harmless -- see the
+   Press Start 2P/VT323 declarations above for why). */
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../fonts/IBMPlexMono-Regular.woff2") format("woff2");
+}
+
 /* Self-hosted Space Grotesk (LessonBox's default readable font, replacing
    the old system-monospace default) — a single variable-weight woff2
    (latin subset only, same self-hosting rationale as VT323 above) covers
@@ -230,11 +279,11 @@
      back into VT323 explicitly. Press Start 2P stays reserved for
      headers/labels via .lesson-box__display-face. DotGothic16
      (Google-Fonts-loaded) covers Japanese characters in both stacks. */
-  font-family: "Space Grotesk", ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, "DotGothic16", monospace;
+  font-family: "Space Grotesk", ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, "M PLUS U", monospace;
 }
 
 .lesson-box__display-face {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
 }
 
 .lesson-box-overlay[hidden] {
@@ -274,7 +323,7 @@
 }
 
 .lesson-box rt {
-  font-family: "DotGothic16", sans-serif;
+  font-family: "M PLUS U", sans-serif;
   font-size: 0.5em;
   color: var(--jr-text-dim);
   user-select: none;
@@ -372,7 +421,7 @@
 /* -- Text content ---------------------------------------------------------- */
 
 .lesson-box__speaker {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 18px;
   color: var(--lb-role-particle-bg);
   margin: 0 0 14px;
@@ -548,7 +597,7 @@ span.lesson-box__print-icon {
 /* -- type: greeting -------------------------------------------------------- */
 
 .lesson-box__greeting-kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 58px;
   color: var(--jr-text);
   line-height: 1.4;
@@ -704,7 +753,7 @@ span.lesson-box__print-icon {
    font size than a bordered box. */
 
 .lesson-box__sentence-label {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 17px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 14px;
@@ -714,7 +763,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__new-word-flag {
   display: inline-block;
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 13px;
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
@@ -745,7 +794,7 @@ span.lesson-box__print-icon {
    actually read to check meaning) is sized up instead, see
    .lesson-box__word-tile-gloss below. */
 .lesson-box__word-tile-text {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 32px;
   padding-bottom: 3px;
   border-bottom: 3px solid;
@@ -779,7 +828,7 @@ span.lesson-box__print-icon {
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 10px;
   color: var(--jr-bg-top);
   background: var(--lb-role-particle-bg);
@@ -831,7 +880,7 @@ span.lesson-box__print-icon {
 /* -- type: grammar-intro ----------------------------------------------------- */
 
 .lesson-box__section-label {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 20px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 10px;
@@ -870,7 +919,7 @@ span.lesson-box__print-icon {
    like a "code box" (monospace, dashed border) rather than plain prose,
    since it's meant to be memorized/reused verbatim. */
 .lesson-box__pattern-line {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 31px;
   color: var(--jr-text);
   text-align: center;
@@ -951,7 +1000,7 @@ span.lesson-box__print-icon {
 .lesson-box__clawform-replay {
   display: block;
   margin: 0 auto 12px;
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 12px;
   background: transparent;
   border: 1px solid var(--jr-text-dim);
@@ -1000,7 +1049,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__portaldiagram-particle {
   display: block;
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 18px;
   color: var(--lb-role-particle-bg);
 }
@@ -1011,14 +1060,14 @@ span.lesson-box__print-icon {
 
 .lesson-box__portaldiagram-tag {
   display: block;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 16px;
   color: var(--jr-text-dim);
   margin-top: 2px;
 }
 
 .lesson-box__portaldiagram-word {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 36px;
   color: var(--jr-text);
   position: relative;
@@ -1042,7 +1091,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__portaldiagram-btn {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 12px;
   background: transparent;
   border: 1px solid var(--jr-text-dim);
@@ -1075,7 +1124,7 @@ span.lesson-box__print-icon {
   border: 1px dashed var(--jr-text-dim);
   border-radius: 4px;
   padding: 6px;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 20px;
   color: var(--jr-text);
   margin-bottom: 10px;
@@ -1094,7 +1143,7 @@ span.lesson-box__print-icon {
   border: 1px solid;
   border-radius: 4px;
   padding: 8px 6px;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 18px;
   cursor: pointer;
   filter: brightness(0.75);
@@ -1121,7 +1170,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__branchdiagram-pattern {
   display: block;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 20px;
   color: var(--jr-text);
   margin-bottom: 4px;
@@ -1212,7 +1261,7 @@ span.lesson-box__print-icon {
    own larger size instead of sharing the grid's base size with the
    plain-English description column. */
 .lesson-box__term-name {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 32px;
   white-space: nowrap;
   letter-spacing: 0.02em;
@@ -1282,7 +1331,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__tense-card-kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 29px;
   color: var(--jr-text);
   margin-bottom: 4px;
@@ -1345,7 +1394,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__demo-row-word {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 34px;
   text-align: center;
 }
@@ -1407,7 +1456,7 @@ span.lesson-box__print-icon {
    Fact") — smaller/dimmer than .lesson-box__section-label so it reads as
    a subordinate heading, not a new top-level section. */
 .lesson-box__mini-label {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 17px;
   color: var(--jr-text-dim);
   margin-bottom: 10px;
@@ -1470,7 +1519,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__data-table td:first-child {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   color: var(--jr-text);
   /* Bumped 18px->32px, then 32px->48px per explicit "make the kanji font
      bigger... like 32px" then "even bigger, readers need to properly
@@ -1548,7 +1597,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__conv-name {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 14px;
   color: var(--jr-text-dim);
 }
@@ -1566,7 +1615,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__conv-bubble {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   background: #fbfaff;
   color: #241f42;
   border: 3px solid var(--jr-bg-bottom);
@@ -1635,7 +1684,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__qdiagram-tile {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 42px;
   padding-bottom: 3px;
   border-bottom: 3px solid;
@@ -1657,7 +1706,7 @@ span.lesson-box__print-icon {
   position: absolute;
   top: -30px;
   left: 10px;
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 29px;
   color: var(--lb-role-particle-bg);
   transform: rotate(-8deg);
@@ -1813,7 +1862,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__dirdiagram-btn {
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 18px;
   padding: 4px 10px;
   background: rgba(0, 0, 0, 0.25);
@@ -1904,7 +1953,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__mapdiagram-btn {
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 18px;
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.25);
@@ -2074,7 +2123,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__ikunai-word {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 44px;
   line-height: 1;
 }
@@ -2138,7 +2187,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__voldiagram-add-alt {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 44px;
   color: #201d54;
   background: var(--lb-role-subject-bg);
@@ -2180,7 +2229,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__nacompare-phrase {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 36px;
   line-height: 1.2;
   margin-bottom: 6px;
@@ -2230,7 +2279,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__skeleton-chip {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 29px;
   padding: 6px 10px;
   border-radius: 6px;
@@ -2292,7 +2341,7 @@ span.lesson-box__print-icon {
 .lesson-box__spotlight-card.is-b { border-color: var(--lb-role-particle-bg); }
 
 .lesson-box__spotlight-badge {
-  font-family: "Press Start 2P", monospace;
+  font-family: "Courier Prime", monospace;
   font-size: 13px;
   padding: 4px 8px;
   border-radius: 4px;
@@ -2311,7 +2360,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__spotlight-sentence {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 34px;
   margin-bottom: 8px;
   line-height: 1.2;
@@ -2349,7 +2398,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__particletable th {
-  font-family: "Press Start 2P", monospace;
+  font-family: "Courier Prime", monospace;
   font-size: 12px;
   text-align: left;
   padding: 8px 10px;
@@ -2371,7 +2420,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__particletable-particle {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 36px;
   text-align: center;
 }
@@ -2380,7 +2429,7 @@ span.lesson-box__print-icon {
 .lesson-box__particletable-particle.is-b { color: var(--lb-role-particle-bg); }
 
 .lesson-box__particletable-jp {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 25px;
 }
 
@@ -2412,7 +2461,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__fillercard-kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 34px;
   color: var(--jr-text);
   line-height: 1.1;
@@ -2470,7 +2519,7 @@ span.lesson-box__print-icon {
   align-items: baseline;
   flex-wrap: wrap;
   gap: 8px;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 39px;
   line-height: 1;
 }
@@ -2524,7 +2573,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__adjdiagram-btn {
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 18px;
   padding: 6px 10px;
   background: rgba(0, 0, 0, 0.25);
@@ -2589,7 +2638,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__movediagram-btn {
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 18px;
   padding: 4px 10px;
   background: rgba(0, 0, 0, 0.25);
@@ -2662,7 +2711,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__routediagram-btn {
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 18px;
   padding: 5px 10px;
   background: rgba(0, 0, 0, 0.25);
@@ -2733,7 +2782,7 @@ span.lesson-box__print-icon {
 
 .lesson-box__compass-label {
   position: absolute;
-  font-family: "Datatype", "DotGothic16", monospace;
+  font-family: "Datatype", "M PLUS U", monospace;
   font-size: 25px;
   color: var(--jr-text);
   text-align: center;
@@ -2763,7 +2812,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__try-it-input {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 26px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--lb-role-particle-bg);
@@ -2853,7 +2902,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__tryit-options-label {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 14px;
   color: var(--jr-text-dim);
   letter-spacing: 0.06em;
@@ -2875,7 +2924,7 @@ span.lesson-box__print-icon {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 26px;
   color: var(--lb-role-noun-fg);
   background: var(--lb-role-noun-bg);
@@ -2932,7 +2981,7 @@ span.lesson-box__print-icon {
 /* -- type: sentence-mission (closed-word-bank sentence builder) ---------- */
 
 .lesson-box__sm-goal {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 22px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 6px;
@@ -2991,7 +3040,7 @@ span.lesson-box__print-icon {
 .lesson-box__sm-chip[data-role="neutral"]   { background: var(--lb-role-neutral-bg); color: var(--lb-role-neutral-fg); }
 
 .lesson-box__sm-chip-kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 24px;
   line-height: 1.2;
 }
@@ -3075,7 +3124,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__sm-placed-kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 24px;
   line-height: 1.2;
 }
@@ -3101,7 +3150,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__sm-btn {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 20px;
   padding: 6px 16px;
   border: 2px solid var(--jr-text-dim);
@@ -3160,7 +3209,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quiz-sentence {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 23px;
   color: var(--jr-text);
   display: flex;
@@ -3170,7 +3219,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quiz-blank {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 23px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--jr-text-dim);
@@ -3207,7 +3256,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quiz-check {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 16px;
   background: var(--lb-role-verb-bg);
   color: var(--lb-role-verb-fg);
@@ -3266,7 +3315,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizreview-fill {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 23px;
   color: var(--jr-text);
   display: flex;
@@ -3276,7 +3325,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizreview-input {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 23px;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--jr-text-dim);
@@ -3374,7 +3423,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__quizscore-num {
-  font-family: "Press Start 2P", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 52px;
   color: var(--lb-role-particle-bg);
   margin-bottom: 10px;
@@ -3441,7 +3490,7 @@ span.lesson-box__print-icon {
 }
 
 .lesson-box__strokecard-glyph {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 55px;
   line-height: 1;
   color: var(--jr-text);

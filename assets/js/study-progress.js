@@ -208,11 +208,11 @@
        Self-contained: builds and removes its own DOM, no markup needed
        on the calling page. */
     const TALLY_STAR_COUNT = 5;
-    const TALLY_GAP = 600;
-    const HOLD_AFTER_TALLY = 700;
-    const LAUNCH_GAP = 190;
-    const FLIGHT_MS = 260;
-    const FINAL_HOLD = 500;
+    const TALLY_GAP = 350;
+    const HOLD_AFTER_TALLY = 400;
+    const LAUNCH_GAP = 120;
+    const FLIGHT_MS = 180;
+    const FINAL_HOLD = 300;
 
     function tiltFor(i) { return ((i % 2 === 0) ? -1 : 1) * (5 + (i % 3) * 2); }
 

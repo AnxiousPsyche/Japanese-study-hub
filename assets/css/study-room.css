@@ -234,7 +234,7 @@ body {
 }
 
 .study-vocab-card__kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 28px;
   color: var(--text-main);
   line-height: 1.2;
@@ -264,7 +264,7 @@ body {
 }
 
 .study-grammar-box__pattern {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 26px;
   color: var(--text-main);
   margin-bottom: var(--space-xs);
@@ -287,7 +287,7 @@ body {
 }
 
 .study-example__jp {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 24px;
   color: var(--text-main);
   margin-bottom: 4px;
@@ -390,7 +390,7 @@ body {
 .study-chip[data-role="neutral"]   { background: #d8d4f0; color: #2a2560; border-color: #746fa8; }
 
 .study-chip__kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 24px;
   line-height: 1.2;
 }
@@ -487,7 +487,7 @@ body {
 }
 
 .study-placed__kana {
-  font-family: "VT323", "DotGothic16", monospace;
+  font-family: "Courier Prime", "M PLUS U", monospace;
   font-size: 24px;
   line-height: 1.2;
 }

@@ -1034,8 +1034,8 @@ const LESSON_CONTENT = {
               <path d="M0,0 L10,5 L0,10 z" fill="var(--lb-role-copula-bg)"></path>
             </marker>
           </defs>
-          <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+          <text x="10" y="24" font-size="11" fill="var(--jr-text-dim)" font-family="Courier Prime, M PLUS U, monospace" letter-spacing="1">ENGLISH - "am" does both jobs at once</text>
+          <g font-family="Courier Prime, M PLUS U, monospace" font-size="16">
             <rect x="10" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
             <text x="45" y="58" text-anchor="middle" fill="#efeeff">I</text>
             <rect x="96" y="36" width="70" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
@@ -1043,13 +1043,13 @@ const LESSON_CONTENT = {
             <rect x="182" y="36" width="140" height="34" rx="3" fill="var(--lb-role-neutral-bg, #746fa8)"></rect>
             <text x="252" y="58" text-anchor="middle" fill="#efeeff">a teacher</text>
           </g>
-          <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace">"is" + tense, bundled</text>
+          <text x="131" y="30" text-anchor="middle" font-size="9" fill="var(--jr-text-dim)" font-family="Courier Prime, M PLUS U, monospace">"is" + tense, bundled</text>
           <path d="M121,72 C 118,100 116,140 118,158" fill="none" stroke="var(--lb-role-particle-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-gold)"></path>
-          <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="VT323, DotGothic16, monospace">"is" -&gt; は</text>
+          <text x="70" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-particle-bg)" font-family="Courier Prime, M PLUS U, monospace">"is" -&gt; は</text>
           <path d="M141,72 C 175,112 260,145 313,158" fill="none" stroke="var(--lb-role-copula-bg)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#lb-arrow-green)"></path>
-          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-copula-bg)" font-family="VT323, DotGothic16, monospace">tense -&gt; です (sentence-final)</text>
-          <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
-          <g font-family="VT323, DotGothic16, monospace" font-size="16">
+          <text x="270" y="118" text-anchor="middle" font-size="10" fill="var(--lb-role-copula-bg)" font-family="Courier Prime, M PLUS U, monospace">tense -&gt; です (sentence-final)</text>
+          <text x="10" y="148" font-size="11" fill="var(--jr-text-dim)" font-family="Courier Prime, M PLUS U, monospace" letter-spacing="1">JAPANESE - split into は (is) and です (tense)</text>
+          <g font-family="Courier Prime, M PLUS U, monospace" font-size="16">
             <rect x="10" y="160" width="90" height="34" rx="3" fill="var(--lb-role-subject-bg)"></rect>
             <text x="55" y="182" text-anchor="middle" fill="var(--lb-role-subject-fg)">わたし</text>
             <rect x="108" y="160" width="46" height="34" rx="3" fill="var(--lb-role-particle-bg)"></rect>
@@ -1059,14 +1059,14 @@ const LESSON_CONTENT = {
             <rect x="280" y="160" width="70" height="34" rx="3" fill="var(--lb-role-copula-bg)"></rect>
             <text x="315" y="182" text-anchor="middle" fill="var(--lb-role-copula-fg)">です</text>
           </g>
-          <g font-family="VT323, DotGothic16, monospace" font-size="9" fill="var(--jr-text-dim)">
+          <g font-family="Courier Prime, M PLUS U, monospace" font-size="9" fill="var(--jr-text-dim)">
             <text x="55" y="208" text-anchor="middle">subject</text>
             <text x="131" y="203" text-anchor="middle">topic + "is"</text>
             <text x="217" y="208" text-anchor="middle">predicate</text>
             <text x="315" y="203" text-anchor="middle">tense +</text>
             <text x="315" y="215" text-anchor="middle">politeness</text>
           </g>
-          <text x="10" y="238" font-size="10" fill="var(--jr-text-dim)" font-family="VT323, DotGothic16, monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
+          <text x="10" y="238" font-size="10" fill="var(--jr-text-dim)" font-family="Courier Prime, M PLUS U, monospace">Swap です -&gt; でした and ONLY the tense changes - は's job never moves.</text>
         </svg>
       `,
       diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は carries "is," です carries tense.',

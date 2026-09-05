@@ -1,10 +1,10 @@
-/* STUDY ROOM - Exact 16-shelf sequence from Neko Bunko adventure */
-/* Word banks + word-bank sentence-building exercises per shelf, per the
+/* STUDY ROOM - Exact 16-file sequence from Neko Bunko adventure */
+/* Word banks + word-bank sentence-building exercises per file, per the
    Study Room Word-Bank Sentence Builder PRD: each lesson declares a small
    closed set of words (wordBank) and 1-2 exercises that pick randomly
    *within* that set (never outside it) to build a sentence the learner
    then types in hiragana. */
-/* Interactive route diagram for shelf 08c's "Movement & giving directions"
+/* Interactive route diagram for file 08c's "Movement & giving directions"
    section (see s08c's buildInstruction() below). diagramSvg is just a
    static HTML string dumped via innerHTML, so a <script> tag inside it
    would never execute — instead the buttons carry inline onclick
@@ -475,7 +475,7 @@ window.NekoWaGa = {
        kept small/playful to fit this cat-library setting, and shown as a
        plain digit + 歳 rather than spelled out in kana, since spelling out
        most of these readings correctly (はたち for 20 is irregular) isn't
-       covered until the numbers lesson (shelf 07a) — digit+歳 is also just
+       covered until the numbers lesson (file 07a) — digit+歳 is also just
        standard written Japanese, not a simplification for beginners' sake. */
     const AGES = [7, 8, 9, 10, 12];
 
@@ -561,7 +561,8 @@ window.NekoWaGa = {
         "公園": "こうえん", "学校": "がっこう", "学生": "がくせい", "先生": "せんせい",
         "図書館": "としょかん", "遊びます": "あそびます", "猫": "ねこ", "友達": "ともだち",
         "申します": "もうします", "何歳": "なんさい", "歳": "さい", "趣味": "しゅみ",
-        "音楽": "おんがく", "聞く": "きく", "料理": "りょうり", "映画": "えいが", "見る": "みる"
+        "音楽": "おんがく", "聞く": "きく", "料理": "りょうり", "映画": "えいが", "見る": "みる",
+        "匹": "ひき", "頭": "とう", "羽": "わ"
     };
     const KANJI_READING_KEYS = Object.keys(KANJI_READINGS).sort(function (a, b) { return b.length - a.length; });
     function annotateFurigana(text) {
@@ -616,13 +617,13 @@ window.NekoWaGa = {
     }
 
     function buildLessons() {
-        return [s01(),s02(),s02b(),s02c(),s03(),s04(),s05(),s06(),s07a(),s07b(),s07c(),s07d(),s07e(),s08a(),s08b(),s08c(),s08d(),
-                s09a(),s09b(),s10a(),s10b(),s10c(),s11a(),s11b(),s11c(),s12(),s14(),s13(),s15(),s16a(),s16b(),s16c(),s16d(),s16e(),
+        return [s01(),s02(),s02b(),s02c(),s02d(),s03(),s03b(),s04(),s04b(),s05(),s06(),s06d(),s06b(),s06c(),s07a(),s07b(),s07c(),s07d(),s07e(),s07g(),s08a(),s08b(),s08c(),s08d(),
+                s09a(),s09b(),s10a(),s10b(),s10c(),s10e(),s10f(),s11a(),s11b(),s11c(),s13(),s14(),s12(),s15(),s16a(),s16b(),s16c(),s16d(),s16e(),
                 s17(),s18(),s19(),s20(),
                 k01(), cq1(), cq2(), cq3()];
     }
 
-    /* SHELF 01: Basic Greetings (phrase-only lesson) */
+    /* FILE 01: Basic Greetings (phrase-only lesson) */
     function s01() {
         let ph = [
             { jp: "こんにちは", en: "Hello" },
@@ -633,7 +634,7 @@ window.NekoWaGa = {
             { jp: "すみません", en: "Excuse me" }
         ];
         return {
-            id: "s01", title: "Basic Greetings", subtitle: "Shelf 01",
+            id: "s01", title: "Basic Greetings", subtitle: "File 01",
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
@@ -641,16 +642,11 @@ window.NekoWaGa = {
                     { jp: "ねこ", en: "cat" }, { jp: "みず", en: "water" }, { jp: "がっこう", en: "school" },
                     { jp: "おおきい", en: "big" }, { jp: "ちいさい", en: "small" }
                 ],
-                preview: [{ jp: "お元気ですか", en: "How are you?", note: "Coming up in shelf 02 — everyday expressions" }]
+                preview: [{ jp: "お元気ですか", en: "How are you?", note: "Coming up in file 02 — everyday expressions" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
-                        {
-                            title: "Essential Greetings",
-                            explain: "These 6 phrases are your survival toolkit. Memorize them and you can handle most everyday social situations.",
-                            pattern: "No pattern — just phrases to memorize!"
-                        },
                         {
                             title: "When to use each one",
                             explain: "<strong>こんにちは</strong> (konnichiwa) — used from late morning through early evening; safe with strangers, coworkers, and acquaintances, but not usually with close family or young children."
@@ -661,9 +657,9 @@ window.NekoWaGa = {
                                 + "<br><br><strong>すみません</strong> (sumimasen) — very versatile: apologizing, getting someone's attention, or even saying thanks when someone went out of their way for you."
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-01
+                    /* Ported verbatim from the Adventure Room's file-01
                        LESSON_CONTENT (the closing 'conversation' page, two
-                       NPC cats using only this shelf's own vocab), fixed
+                       NPC cats using only this file's own vocab), fixed
                        sensei=black/player=orange casting per Study Room's
                        own convention. No role-* highlight spans in the
                        original and no name variable in scope for this
@@ -732,12 +728,12 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 02: Everyday Expressions — split into three topic-sectioned
+    /* FILE 02: Everyday Expressions — split into three topic-sectioned
        lessons (was one flat 34-word list with no grouping or nuance
        notes). s02 keeps its id so nothing before it in the sequence
        needs renumbering; s02b/s02c are new ids inserted right after it. */
 
-    /* SHELF 02: Greetings & Everyday Phrases (phrase-only lesson) */
+    /* FILE 02: Greetings & Everyday Phrases (phrase-only lesson) */
     function s02() {
         let ph = [
             { jp: "お元気ですか", en: "How are you?" },
@@ -755,7 +751,7 @@ window.NekoWaGa = {
             { jp: "ええ", en: "Yes (softer)" }
         ];
         return {
-            id: "s02", title: "Greetings & Everyday Phrases", subtitle: "Shelf 02",
+            id: "s02", title: "Greetings & Everyday Phrases", subtitle: "File 02",
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
@@ -787,10 +783,10 @@ window.NekoWaGa = {
                                 + "<br><br><strong>どうぞ</strong> (douzo) runs the other direction — it's what YOU say when offering something or letting someone go ahead."
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-02
+                    /* Ported verbatim from the Adventure Room's file-02
                        LESSON_CONTENT (the closing 'conversation' page, two
-                       NPC cats using this shelf's お元気ですか/元気です/じゃあね
-                       plus one already-known shelf-01 phrase), fixed
+                       NPC cats using this file's お元気ですか/元気です/じゃあね
+                       plus one already-known file-01 phrase), fixed
                        sensei=black/player=orange casting per Study Room's
                        own convention. No role-* spans in the original and
                        no name variable in scope for this vocab-only
@@ -863,7 +859,7 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 02b: At Home & At the Table (phrase-only lesson) */
+    /* FILE 02b: At Home & At the Table (phrase-only lesson) */
     function s02b() {
         let ph = [
             { jp: "いってきます", en: "I'm heading out" },
@@ -875,7 +871,7 @@ window.NekoWaGa = {
             { jp: "ごちそうさまでした", en: "said after eating" }
         ];
         return {
-            id: "s02b", title: "At Home & At the Table", subtitle: "Shelf 02b",
+            id: "s02b", title: "At Home & At the Table", subtitle: "File 02b",
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
@@ -945,16 +941,9 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 02c: Filler Words & Reactions (phrase-only lesson) */
+    /* FILE 02c: Filler Words & Reactions (phrase-only lesson) */
     function s02c() {
         let ph = [
-            { jp: "さあ", en: "Well... (hesitation)" },
-            { jp: "あの", en: "Um... / excuse me (getting attention)" },
-            { jp: "えっと", en: "Um, let's see..." },
-            { jp: "うーん", en: "Hmm... (thinking)" },
-            { jp: "それでは", en: "Well then / in that case" },
-            { jp: "それで", en: "And then / because of that" },
-            { jp: "まず", en: "First of all" },
             { jp: "なるほど", en: "I see / now I understand" },
             { jp: "やっぱり", en: "As I thought / after all" },
             { jp: "あ", en: "Ah!/Oh!" },
@@ -963,36 +952,24 @@ window.NekoWaGa = {
             { jp: "できるだけ", en: "As much as possible" },
             { jp: "それほど", en: "Not that much (+negative)" },
             { jp: "全然", en: "Not at all (+negative)" },
-            { jp: "これから", en: "From now on / after this" },
             { jp: "もし", en: "If / in case" },
             { jp: "ちゃん", en: "familiar name suffix (affectionate)" },
             { jp: "君", en: "familiar name suffix (boys/young men)" },
             { jp: "用", en: "business / errand / use" }
         ];
         return {
-            id: "s02c", title: "Filler Words & Reactions", subtitle: "Shelf 02c",
+            id: "s02c", title: "Reactions & Hedging Words", subtitle: "File 02c",
             vocabOnly: true,
             wordBank: {
                 phrases: ph,
                 newWords: [
-                    { jp: "はなし", en: "talk / story" }, { jp: "きもち", en: "feeling" }, { jp: "おもしろい", en: "interesting" },
-                    { jp: "うれしい", en: "happy" }, { jp: "へん", en: "strange / odd" }
+                    { jp: "きもち", en: "feeling" }, { jp: "おもしろい", en: "interesting" }, { jp: "うれしい", en: "happy" }
                 ],
-                preview: [{ jp: "がくせい", en: "student", note: "Coming up in shelf 03 — the A は B です pattern" }]
+                preview: [{ jp: "あの", en: "um... / excuse me", note: "Coming up next — Filler Words" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
-                        {
-                            title: "Hesitation & Transition Words",
-                            explain: "<strong>さあ</strong> (saa) is what comes out when you're unsure or stalling for a moment (\"well...\")."
-                                + "<br><br><strong>あの</strong> (ano) is how you open your mouth to get someone's attention or ease into a sentence — \"um, excuse me...\" / \"so, um...\""
-                                + "<br><br><strong>えっと</strong> (etto) is the sound of actively searching for the next word — \"um, let's see...\""
-                                + "<br><br><strong>うーん</strong> (uun) is a longer, thinking-it-over hum — \"hmm...\""
-                                + "<br><br><strong>それでは</strong> (soredewa) formally shifts to a new topic or wraps something up (\"well then\");"
-                                + "<br><br><strong>それで</strong> (sorede) is more mid-story — \"and then\" or \"because of that.\""
-                                + "<br><br><strong>まず</strong> (mazu) just means you're starting a list — \"first of all.\""
-                        },
                         {
                             title: "Reacting to What You Hear",
                             explain: "<strong>なるほど</strong> (naruhodo) is one of the most common things you'll say in a conversation — \"I see, that makes sense.\""
@@ -1020,13 +997,6 @@ window.NekoWaGa = {
                         { jp: "全然わかりません。", en: "I don't understand at all." }
                     ],
                     vocab: [
-                        { jp: "さあ", romaji: "Saa", en: "Well... (hesitation)" },
-                        { jp: "あの", romaji: "Ano", en: "Um... / excuse me (getting attention)" },
-                        { jp: "えっと", romaji: "Etto", en: "Um, let's see..." },
-                        { jp: "うーん", romaji: "Uun", en: "Hmm... (thinking)" },
-                        { jp: "それでは", romaji: "Soredewa", en: "Well then / in that case" },
-                        { jp: "それで", romaji: "Sorede", en: "And then / because of that" },
-                        { jp: "まず", romaji: "Mazu", en: "First of all" },
                         { jp: "なるほど", romaji: "Naruhodo", en: "I see / now I understand" },
                         { jp: "やっぱり", romaji: "Yappari", en: "As I thought / after all" },
                         { jp: "あ", romaji: "A", en: "Ah!/Oh!" },
@@ -1035,7 +1005,6 @@ window.NekoWaGa = {
                         { jp: "できるだけ", romaji: "Dekiru dake", en: "As much as possible" },
                         { jp: "それほど", romaji: "Sorehodo", en: "To that extent/not that much" },
                         { jp: "全然", romaji: "Zenzen", en: "Not at all (+negative)" },
-                        { jp: "これから", romaji: "Kore kara", en: "From now on/after this" },
                         { jp: "もし", romaji: "Moshi", en: "If/in case" },
                         { jp: "ちゃん", romaji: "Chan", en: "familiar name suffix (affectionate)" },
                         { jp: "君", romaji: "Kun", en: "familiar name suffix (boys/young men)" },
@@ -1044,24 +1013,24 @@ window.NekoWaGa = {
                     sources: ["Tofugu — Japanese Greetings and everyday-phrase guides", "Tae Kim's Guide to Japanese Grammar", "Jisho.org"]
                 };
             },
-            /* No bonus exercise: shelf 03 introduces a full grammar pattern
+            /* No bonus exercise: file 03 introduces a full grammar pattern
                (A は B です), not a single drop-in word — preview stays
-               exposure-only until shelf 03 itself teaches the pattern. */
+               exposure-only until file 03 itself teaches the pattern. */
             buildMatchExercises: function () {
                 return buildMatchExercisesFromBank(this.wordBank, 6);
             },
             /* もんだい2 dropped -- same reasoning as s01: it quizzed this
-               lesson's `newWords` (はなし/きもち/おもしろい/うれしい/へん), which
-               the page itself never taught. See s01's own comment above. */
+               lesson's `newWords` (きもち/おもしろい/うれしい), which the page
+               itself never taught. See s01's own comment above. */
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
                         questions: [
                             { prompt: "なるほど", choices: ["I see / now I understand", "Probably", "Not at all", "First of all"], correctIndex: 0 },
-                            { prompt: "やっぱり", choices: ["As I thought / after all", "If / in case", "Ah!/Oh!", "From now on"], correctIndex: 0 },
+                            { prompt: "やっぱり", choices: ["As I thought / after all", "If / in case", "Ah!/Oh!", "As much as possible"], correctIndex: 0 },
                             { prompt: "多分", choices: ["Probably / perhaps", "Not that much", "Not at all", "As much as possible"], correctIndex: 0 },
-                            { prompt: "全然", choices: ["Not that much (+negative)", "Not at all (+negative)", "Probably", "First of all"], correctIndex: 1 },
-                            { prompt: "まず", choices: ["First of all", "From now on", "If / in case", "Well then"], correctIndex: 0 }
+                            { prompt: "全然", choices: ["Not that much (+negative)", "Not at all (+negative)", "Probably", "As much as possible"], correctIndex: 1 },
+                            { prompt: "それほど", choices: ["Not that much (+negative)", "Not at all (+negative)", "Probably / perhaps", "As much as possible"], correctIndex: 0 }
                         ]
                     },
                     mondai2: { questions: [] }
@@ -1070,11 +1039,100 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 03: A wa B desu */
+    /* Split off from s02c (2026-09-04, per explicit request) -- s02c used
+       to bundle these hesitation/transition words in with reactions,
+       hedging, and name suffixes under one "Filler Words & Reactions"
+       title; this pulls the actual filler/transition words out into
+       their own lesson, leaving s02c as "Reactions & Hedging Words".
+       Only one lettered sibling next to s02c's existing lettered run, so
+       no dashboard/picker header changes needed -- see the s04b split
+       comment above for why. */
+    function s02d() {
+        let ph = [
+            { jp: "さあ", en: "Well... (hesitation)" },
+            { jp: "あの", en: "Um... / excuse me (getting attention)" },
+            { jp: "えっと", en: "Um, let's see..." },
+            { jp: "うーん", en: "Hmm... (thinking)" },
+            { jp: "それでは", en: "Well then / in that case" },
+            { jp: "それで", en: "And then / because of that" },
+            { jp: "まず", en: "First of all" },
+            { jp: "これから", en: "From now on / after this" }
+        ];
+        return {
+            id: "s02d", title: "Filler Words", subtitle: "File 02d",
+            vocabOnly: true,
+            wordBank: {
+                phrases: ph,
+                newWords: [
+                    { jp: "はなし", en: "talk / story" }, { jp: "へん", en: "strange / odd" }
+                ],
+                preview: [{ jp: "がくせい", en: "student", note: "Coming up in file 03 — the A は B です pattern" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Hesitation & Transition Words",
+                            explain: "<strong>さあ</strong> (saa) is what comes out when you're unsure or stalling for a moment (\"well...\")."
+                                + "<br><br><strong>あの</strong> (ano) is how you open your mouth to get someone's attention or ease into a sentence — \"um, excuse me...\" / \"so, um...\""
+                                + "<br><br><strong>えっと</strong> (etto) is the sound of actively searching for the next word — \"um, let's see...\""
+                                + "<br><br><strong>うーん</strong> (uun) is a longer, thinking-it-over hum — \"hmm...\""
+                                + "<br><br><strong>それでは</strong> (soredewa) formally shifts to a new topic or wraps something up (\"well then\");"
+                                + "<br><br><strong>それで</strong> (sorede) is more mid-story — \"and then\" or \"because of that.\""
+                                + "<br><br><strong>まず</strong> (mazu) just means you're starting a list — \"first of all.\""
+                                + "<br><br><strong>これから</strong> (kore kara) signals a shift toward the future — \"from now on\" or \"from here.\""
+                        }
+                    ],
+                    examples: [
+                        { jp: "あの、すみません。", en: "Um, excuse me." },
+                        { jp: "えっと、わかりません。", en: "Um... I don't know." },
+                        { jp: "まず、なまえを書いてください。", en: "First, please write your name." },
+                        { jp: "これから、がんばります。", en: "From now on, I'll do my best." }
+                    ],
+                    vocab: [
+                        { jp: "さあ", romaji: "Saa", en: "Well... (hesitation)" },
+                        { jp: "あの", romaji: "Ano", en: "Um... / excuse me (getting attention)" },
+                        { jp: "えっと", romaji: "Etto", en: "Um, let's see..." },
+                        { jp: "うーん", romaji: "Uun", en: "Hmm... (thinking)" },
+                        { jp: "それでは", romaji: "Soredewa", en: "Well then / in that case" },
+                        { jp: "それで", romaji: "Sorede", en: "And then / because of that" },
+                        { jp: "まず", romaji: "Mazu", en: "First of all" },
+                        { jp: "これから", romaji: "Kore kara", en: "From now on/after this" }
+                    ],
+                    sources: ["Tofugu — Japanese Greetings and everyday-phrase guides", "Tae Kim's Guide to Japanese Grammar", "Jisho.org"]
+                };
+            },
+            /* No bonus exercise: file 03 introduces a full grammar pattern
+               (A は B です), not a single drop-in word — preview stays
+               exposure-only until file 03 itself teaches the pattern. */
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 6);
+            },
+            /* もんだい2 dropped -- same reasoning as s02c: it would quiz this
+               lesson's own `newWords` (はなし/へん), which the page itself
+               never taught. See s01's own comment for the original case. */
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "さあ", choices: ["Well... (hesitation)", "First of all", "From now on", "And then"], correctIndex: 0 },
+                            { prompt: "あの", choices: ["Um... / excuse me", "Well then", "Hmm... (thinking)", "First of all"], correctIndex: 0 },
+                            { prompt: "えっと", choices: ["Um, let's see...", "Well then", "And then", "From now on"], correctIndex: 0 },
+                            { prompt: "うーん", choices: ["Hmm... (thinking)", "Well... (hesitation)", "And then", "First of all"], correctIndex: 0 },
+                            { prompt: "まず", choices: ["First of all", "From now on", "Well then", "And then"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: { questions: [] }
+                };
+            }
+        };
+    }
+
+    /* FILE 03: A wa B desu */
     function s03() {
         let nm = uPick(NAMES, 2);
         return {
-            id: "s03", title: "A は B です", subtitle: "Shelf 03",
+            id: "s03", title: "A は B です", subtitle: "File 03",
             wordBank: {
                 subjects: [{ jp: "わたし", en: "I" }, nm[0], nm[1]],
                 thingSubjects: [{ jp: "これ", en: "this" }],
@@ -1084,7 +1142,7 @@ window.NekoWaGa = {
                     { jp: "いす", en: "chair" }, { jp: "つくえ", en: "desk" }, { jp: "かさ", en: "umbrella" },
                     { jp: "たかい", en: "expensive" }, { jp: "やすい", en: "cheap" }
                 ],
-                preview: [{ jp: "はじめまして", en: "how do you do (first meeting only)", note: "Coming up in shelf 04 — self-introductions" }]
+                preview: [{ jp: "たべます", en: "eat (polite)", note: "Coming up next — Basic Verbs & Word Order" }]
             },
             buildInstruction: function () {
                 return {
@@ -1092,86 +1150,48 @@ window.NekoWaGa = {
                         title: "A は B です",
                         explain: "は marks the topic; です makes it polite and carries the tense. Swap です for でした to shift to the past — nothing else changes, and there's no separate future form either.",
                         pattern: '<span class="pattern-box__slot">Topic</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Predicate</span> <span class="pattern-box__fixed">です</span>',
-                        /* Side-by-side comparison, replacing the original arrow-based
-                           English/Japanese-split diagram — approved in the "Ten Sentence
-                           Shapes" mockup session (2026-09-03), idea 6. です shares は's
-                           yellow (not the usual white) so は…です reads as one held-
-                           together set rather than two separate rules; three sample
-                           sentences show the am/is/are gap is an English problem, not a
-                           Japanese one. See .wa-desu-* in study-style.css. */
+                        /* Interlinear gloss — replaced the old side-by-side wa-desu-
+                           compare layout (which read as one solid color block, sat
+                           left-anchored, and crammed a zero-gap sample chain under
+                           the explanation) per a multi-round mockup session
+                           (2026-09-05, Artifact "Wa-Desu Sentence Shapes"). One word
+                           per column with its meaning underneath, a real legend
+                           (embedded via buildSampleLegendHTML() so it can't drift out
+                           of sync with the sitewide palette), and the three am/is/are
+                           samples kept but with real gaps between chips instead of
+                           gap:0. See .n5-gloss and .role-chip rules in study-style.css. */
                         diagramSvg: `
-        <div class="wa-desu-compare">
-          <div class="wa-desu-compare__col">
-            <div class="wa-desu-compare__row">
-              <span class="wa-desu-role wa-desu-role--subject">I</span>
-              <span class="wa-desu-role wa-desu-role--copula">am</span>
-              <span class="wa-desu-role wa-desu-role--predicate">a teacher</span>
+        <div class="n5-gloss">
+          ` + buildSampleLegendHTML() + `
+          <div class="n5-gloss__row">
+            <div class="n5-gloss__col"><span class="role-chip role-chip--subject">わたし</span><span class="n5-gloss__meaning">I</span></div>
+            <div class="n5-gloss__col"><span class="role-chip role-chip--particle"><ruby>は<rt>わ</rt></ruby></span><span class="n5-gloss__meaning">—</span></div>
+            <div class="n5-gloss__col"><span class="role-chip role-chip--predicate">せんせい</span><span class="n5-gloss__meaning">teacher</span></div>
+            <div class="n5-gloss__col"><span class="role-chip role-chip--copula">です</span><span class="n5-gloss__meaning">am/is/are</span></div>
+          </div>
+          <p class="n5-gloss__en">"I am a teacher."</p>
+          <div class="n5-gloss__extra">
+            <p class="n5-gloss__lede">Hold onto は…です as one set, for now — it covers am, is, and are:</p>
+            <div class="n5-gloss__sample">
+              <span class="n5-gloss__sample-jp"><span class="role-chip role-chip--subject">わたし</span><span class="role-chip role-chip--particle"><ruby>は<rt>わ</rt></ruby></span><span class="role-chip role-chip--predicate">がくせい</span><span class="role-chip role-chip--copula">です</span></span>
+              <span class="n5-gloss__sample-en">I <b>am</b> a student.</span>
+            </div>
+            <div class="n5-gloss__sample">
+              <span class="n5-gloss__sample-jp"><span class="role-chip role-chip--subject">たなかさん</span><span class="role-chip role-chip--particle"><ruby>は<rt>わ</rt></ruby></span><span class="role-chip role-chip--predicate">がくせい</span><span class="role-chip role-chip--copula">です</span></span>
+              <span class="n5-gloss__sample-en">Tanaka <b>is</b> a student.</span>
+            </div>
+            <div class="n5-gloss__sample">
+              <span class="n5-gloss__sample-jp"><span class="role-chip role-chip--subject">わたしたち</span><span class="role-chip role-chip--particle"><ruby>は<rt>わ</rt></ruby></span><span class="role-chip role-chip--predicate">がくせい</span><span class="role-chip role-chip--copula">です</span></span>
+              <span class="n5-gloss__sample-en">We <b>are</b> students.</span>
             </div>
           </div>
-          <div class="wa-desu-compare__col">
-            <div class="wa-desu-compare__row">
-              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたし</span>
-              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span>
-              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">せんせい</span>
-              <span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span>
-            </div>
-          </div>
-        </div>
-        <div class="wa-desu-samples">
-          <p class="wa-desu-lede">Hold onto は…です as one set, for now — it covers am, is, and are:</p>
-          <div class="wa-desu-sample">
-            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたし</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
-            <span class="wa-desu-sample__en">I <b>am</b> a student.</span>
-          </div>
-          <div class="wa-desu-sample">
-            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">たなかさん</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
-            <span class="wa-desu-sample__en">Tanaka <b>is</b> a student.</span>
-          </div>
-          <div class="wa-desu-sample">
-            <span class="wa-desu-sample__jp"><span class="wa-desu-role wa-desu-role--jp wa-desu-role--subject">わたしたち</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--particle"><ruby>は<rt>わ</rt></ruby></span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--predicate">がくせい</span><span class="wa-desu-role wa-desu-role--jp wa-desu-role--copula">です</span></span>
-            <span class="wa-desu-sample__en">We <b>are</b> students.</span>
-          </div>
-          <p class="wa-desu-note">です doesn't change no matter which one English needs. The gap between "am / is / are" is an English problem — です is the same word every time.</p>
         </div>
       `,
                         diagramCaption: '"Watashi wa sensei desu." — English bundles "is" and tense into one word (am/was). Japanese splits them: は marks the topic, です carries the "is" and the tense.',
-                        culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\""
-                    }, {
-                        title: "Swap the cards — any topic, any predicate",
-                        explain: "は and です are fixed; Topic and Predicate are swappable cards — any pair from the word bank works.",
-                        diagramSvg: `
-        <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block;">
-          <text x="10" y="20" font-size="11" fill="#c9a66b" font-family="VT323, DotGothic16, monospace" letter-spacing="1">SWAP THE CARDS - TOPIC AND PREDICATE ARE INTERCHANGEABLE</text>
-
-          <g font-family="VT323, DotGothic16, monospace" font-size="15">
-            <rect x="34" y="58" width="96" height="38" rx="4" fill="#6fb3e6" opacity=".3"></rect>
-            <rect x="26" y="64" width="96" height="38" rx="4" fill="#6fb3e6" opacity=".6"></rect>
-            <rect x="18" y="70" width="96" height="38" rx="4" fill="#6fb3e6"></rect>
-            <text x="66" y="94" text-anchor="middle" fill="#0b2438">わたし</text>
-          </g>
-          <text x="66" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">any topic card</text>
-
-          <rect x="150" y="70" width="46" height="38" rx="4" fill="#f0c674"></rect>
-          <text x="173" y="94" text-anchor="middle" font-size="15" fill="#4a3211" font-family="VT323, DotGothic16, monospace">は</text>
-          <text x="173" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">always は</text>
-
-          <g font-family="VT323, DotGothic16, monospace" font-size="15">
-            <rect x="230" y="58" width="112" height="38" rx="4" fill="#e2685f" opacity=".3"></rect>
-            <rect x="222" y="64" width="112" height="38" rx="4" fill="#e2685f" opacity=".6"></rect>
-            <rect x="214" y="70" width="112" height="38" rx="4" fill="#e2685f"></rect>
-            <text x="270" y="94" text-anchor="middle" fill="#2e0e0b">がくせい</text>
-          </g>
-          <text x="270" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">any predicate card</text>
-
-          <rect x="360" y="70" width="60" height="38" rx="4" fill="#ffffff"></rect>
-          <text x="390" y="94" text-anchor="middle" font-size="15" fill="#201d54" font-family="VT323, DotGothic16, monospace">です</text>
-          <text x="390" y="126" text-anchor="middle" font-size="9" fill="#c9a66b" font-family="Space Mono, monospace">always です</text>
-
-          <text x="10" y="160" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">わたしはがくせいです ・ これはほんです ・ たなかさんはせんせいです</text>
-          <text x="10" y="178" font-size="10" fill="#c9a66b" font-family="VT323, DotGothic16, monospace">— every one of these is the SAME sentence with different cards in the same two slots.</text>
-        </svg>
-      `,
-                        diagramCaption: "The word bank below is exactly this deck — pick any topic card and any predicate card, and the sentence is correct.",
+                        culture: "です also makes a sentence sound polite — like how Filipino adds \"po\" or \"opo.\" It doesn't change what you're saying, just how respectful it sounds. Filipino even has its own は: the particle \"ay\" sits right after the topic the same way は does — \"Ako ay guro\" works just like \"Watashi wa sensei.\"",
+                        /* Moved here from the removed "Swap the cards" section
+                           (2026-09-04, no longer needed) so this lesson keeps
+                           its sample-tile box on its one remaining section. */
                         sample: {
                             tag: '"I am a student."',
                             tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "がくせい", role: "predicate", gloss: "student", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
@@ -1195,14 +1215,14 @@ window.NekoWaGa = {
                     sources: ["Tae Kim's Guide to Japanese Grammar — です/だ copula chapter", "Genki I — Lesson 1"]
                 };
             },
-            /* No bonus exercise: shelf 04 is a fixed 3-step template
+            /* No bonus exercise: file 04 is a fixed 3-step template
                (greet/name/close), not a word that drops into an A-は-B-です
                sentence — preview stays exposure-only. */
             /* Free word-choice: earlier versions baked in one randomly-picked
                subject/predicate as the ONLY accepted answer, which meant a
                grammatically correct sentence using a different word from the
                same word bank (or a word carried over from an earlier lesson,
-               e.g. a name from this lesson reused in shelf 04+) was marked
+               e.g. a name from this lesson reused in file 04+) was marked
                wrong. A は B です has no grammatical link tying one specific
                subject to one specific predicate, so any non-empty subject +
                predicate is graded via `pattern` instead of one fixed
@@ -1256,7 +1276,7 @@ window.NekoWaGa = {
                (past) sentences so that half of the lesson gets quizzed too.
                Every choice/prompt uses only vocab this lesson itself
                teaches (わたし/がくせい/せんせい/これ/ほん/ペン/は/です/でした) —
-               none of shelf 05's これ/それ/あれ contrast, which isn't taught
+               none of file 05's これ/それ/あれ contrast, which isn't taught
                yet at this point in the sequence. */
             buildMondaiExercises: function () {
                 return {
@@ -1283,28 +1303,177 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 04: Self Introduction */
+    /* NEW LESSON — "Basic Verbs & Word Order" (2026-09-04, per curriculum-
+       review request; rewritten same-day after direct feedback on the
+       first draft — see below), inserted right after A-は-B-です (s03),
+       still inside Greetings & Intros, before Checkpoint Quiz 1.
+
+       First draft of this lesson re-explained は/topic-marking using no
+       new vocabulary — feedback was direct: は is already covered by s03,
+       don't re-teach it; this slot should introduce real verbs (たべる/
+       いく/くる/かえる/のむ) and their ます-form, and use THOSE to teach
+       Subject-Object-Verb order, not an abstract topic/predicate recap.
+       Rewritten accordingly. This necessarily introduces を (the object
+       marker) earlier than the curriculum otherwise would (previously
+       first taught in s11a) — deliberate, since a real S-O-V example
+       needs an object; s11a's own を intro is unaffected/untouched and
+       still works as reinforcement once real verb conjugation begins.
+
+       Kept genuinely minimal per the same feedback: only 2 of these 5
+       verbs (たべる/のむ) actually take an object with を — いく/くる/かえる
+       are motion verbs that take a destination marked with に instead,
+       which isn't taught until later (s08a onward). Rather than
+       forward-reference に here, いく/くる/かえる are introduced as
+       vocabulary and shown standing alone at the end of a bare sentence
+       (still correct Japanese, just without a stated destination) —
+       the real Subject-Object-Verb worked examples use only たべる/のむ,
+       where a plain S-O-V sentence is actually the right shape to teach.
+
+       Overlap note: s06c (Everyday Action Verbs, later in Verb Basics)
+       used to also include 食べます/行きます/来ます/帰ります/飲みます among
+       its 9 verbs — trimmed to just its 4 genuinely new ones (見ます/
+       起きます/寝ます/します) and re-pointed to reference this lesson,
+       since re-teaching the same 5 verbs cold a few lessons later would
+       just be duplication, not reinforcement. */
+    function s03b() {
+        let verbs = [
+            { dict: "たべる", masu: "たべます", en: "eat", takesObject: true },
+            { dict: "のむ", masu: "のみます", en: "drink", takesObject: true },
+            { dict: "いく", masu: "いきます", en: "go", takesObject: false },
+            { dict: "くる", masu: "きます", en: "come", takesObject: false },
+            { dict: "かえる", masu: "かえります", en: "go home / return", takesObject: false },
+            { dict: "する", masu: "します", en: "do", takesObject: false }
+        ];
+        return {
+            id: "s03b", title: "Basic Verbs & Word Order", subtitle: "File 03b",
+            wordBank: {
+                verbs: verbs,
+                objects: [{ jp: "パン", en: "bread" }, { jp: "みず", en: "water" }],
+                newWords: [
+                    { jp: "おちゃ", en: "tea" }, { jp: "さかな", en: "fish" }, { jp: "やさい", en: "vegetable" },
+                    { jp: "まいにち", en: "every day" }, { jp: "いつも", en: "always" }
+                ],
+                preview: [{ jp: "はじめまして", en: "how do you do (first meeting only)", note: "Coming up in file 04 — self-introductions" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Six verbs — watch the ending change",
+                            /* Simplified per explicit feedback ("not much wordy... anyone
+                               can understand") -- short plain sentences, no grammar-term
+                               digression. する/くる are shown as a whole-word swap (no
+                               stem split) since they're irregular, matching how the real
+                               Verbs & Conjugations module (s11c) treats them. */
+                            explain: "Every verb has two forms: a plain form, and a polite ます-form you use when talking to people. Watch each one change below.",
+                            /* Slash-and-fade "ending swap" animation, per explicit
+                               request -- same buildEndingSwapDiagram()/wireClawforms()
+                               technique already used in s11a/s11b/s11c and s13, laid
+                               out 3-and-3 in a grid (.n5-clawform-grid, scoped to just
+                               this lesson) instead of stacked, at a larger size, per a
+                               same-day follow-up request. wireClawforms() (called from
+                               renderInstruction()) auto-plays every one on open. */
+                            diagramSvg: '<div class="n5-clawform-grid">'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("たべ", "る", "ます") + '</div>'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("の", "む", "みます") + '</div>'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("い", "く", "きます") + '</div>'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("かえ", "る", "ります") + '</div>'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("", "くる", "きます") + '</div>'
+                                + '<div class="n5-clawform-cell">' + buildEndingSwapDiagram("", "する", "します") + '</div>'
+                                + '</div>',
+                            diagramCaption: "くる and する don't follow the pattern — just learn きます and します as their own words."
+                        },
+                        {
+                            title: "Word order — Subject, Object, Verb",
+                            explain: "A sentence with a verb goes Subject → Object → Verb. The verb is always last. を marks the object — the thing the action happens to.",
+                            pattern: '<span class="pattern-box__slot">Subject</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Object</span> <span class="pattern-box__fixed">を</span> <span class="pattern-box__fixed">Verb (ます)</span>',
+                            sample: {
+                                tag: '"I eat bread."',
+                                tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "パン", role: "predicate", gloss: "bread" }, { text: "を", role: "particle", gloss: "object marker", isNew: true }, { text: "たべます", role: "predicate", gloss: "eat", isNew: true }],
+                                romaji: "Watashi wa pan o tabemasu."
+                            }
+                        }
+                    ],
+                    examples: [
+                        { jp: "わたしはパンをたべます。", romaji: "Watashi wa pan o tabemasu.", en: "I eat bread." },
+                        { jp: "わたしはみずをのみます。", romaji: "Watashi wa mizu o nomimasu.", en: "I drink water." },
+                        { jp: "わたしはいきます。", romaji: "Watashi wa ikimasu.", en: "I'm going." },
+                        { jp: "わたしはかえります。", romaji: "Watashi wa kaerimasu.", en: "I'm going home." },
+                        { jp: "しゅくだいをします。", romaji: "Shukudai o shimasu.", en: "I do homework." }
+                    ],
+                    vocab: [
+                        { jp: "を", romaji: "o", en: "object marker" },
+                        { jp: "たべる／たべます", romaji: "taberu/tabemasu", en: "eat" },
+                        { jp: "のむ／のみます", romaji: "nomu/nomimasu", en: "drink" },
+                        { jp: "いく／いきます", romaji: "iku/ikimasu", en: "go" },
+                        { jp: "くる／きます", romaji: "kuru/kimasu", en: "come" },
+                        { jp: "かえる／かえります", romaji: "kaeru/kaerimasu", en: "go home / return" },
+                        { jp: "する／します", romaji: "suru/shimasu", en: "do" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar — verbs and word order", "Genki I — Lesson 3"]
+                };
+            },
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank({ phrases: verbs.map(function (v) { return { jp: v.dict + "／" + v.masu, en: v.en }; }) }, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "たべる　→　<u>＿＿＿</u>　(ます-form)", choices: ["たべます", "たべる", "たべた", "たべない"], correctIndex: 0 },
+                            { prompt: "のむ　→　<u>＿＿＿</u>　(ます-form)", choices: ["のむます", "のみます", "のんます", "のいます"], correctIndex: 1 },
+                            { prompt: "する　→　<u>＿＿＿</u>　(ます-form)", choices: ["すります", "しります", "します", "さります"], correctIndex: 2 },
+                            { prompt: "わたしはパン　<u>＿＿＿</u>　たべます。 (\"I eat bread.\")", choices: ["は", "を", "が", "に"], correctIndex: 1 },
+                            { prompt: "In Subject-Object-Verb order, what comes LAST?", choices: ["Subject", "Object", "Verb", "Topic marker"], correctIndex: 2 }
+                        ]
+                    },
+                    /* Last question is a different style, per explicit request: a
+                       real-life situation in plain Japanese, choices also in
+                       Japanese (not English translations) -- picking the verb
+                       that actually FITS the situation, not just matching a
+                       definition. Distractors are all real verbs from this same
+                       lesson, so guessing from vocabulary alone doesn't work. */
+                    mondai2: {
+                        questions: [
+                            { prompt: "わたしはパンをたべます。", choices: ["I eat bread.", "I drink water.", "This is bread.", "I like bread."], correctIndex: 0 },
+                            { prompt: "わたしはみずをのみます。", choices: ["I eat food.", "I drink water.", "This is water.", "I want water."], correctIndex: 1 },
+                            { prompt: "わたしはいきます。", choices: ["I'm coming.", "I'm eating.", "I'm going.", "I'm home."], correctIndex: 2 },
+                            { prompt: "わたしはかえります。", choices: ["I'm going home.", "I'm going out.", "I'm arriving.", "I'm staying."], correctIndex: 0 },
+                            { prompt: "のどが　かわきました。（喉が渇きました — \"I'm thirsty.\"）つぎは？", choices: ["パンを　たべます", "みずを　のみます", "がっこうに　いきます", "うちに　かえります"], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* FILE 04: Self Introduction */
+    /* Split 2026-09-04: the original s04 covered greeting+name (core,
+       required) plus Going-Further age/hobby sections (optional add-ons,
+       per the NekoTrain diagram below). Age & Hobby moved out to their own
+       s04b sub-lesson -- same split shape as s02b/c (no bare "s04" header
+       needed in the picker/directory since s04 itself, immediately before
+       it, already reads as the group). s04 keeps only the required-core
+       teaching; s04b covers the optional pieces plus the "put it all
+       together" capstone, since that diagram only makes sense once age/
+       hobby are actually taught. */
     function s04() {
         return {
-            id: "s04", title: "Self Introduction", subtitle: "Shelf 04",
+            id: "s04", title: "Self Introduction", subtitle: "File 04",
             wordBank: {
                 names: uPick(NAMES, 2),
-                hobbies: uPick(HOBBIES, 2),
-                ages: uPick(AGES, 2),
                 newWords: [
                     { jp: "いしゃ", en: "doctor" }, { jp: "かいしゃいん", en: "office worker" }, { jp: "しゅふ", en: "homemaker" },
                     { jp: "わかい", en: "young" }, { jp: "やさしい", en: "kind / gentle" }
                 ],
-                preview: [{ jp: "それ", en: "that (near you)", note: "Coming up in shelf 05 — demonstratives" }]
+                preview: [{ jp: "趣味", en: "hobby", note: "Coming up next — Age & Hobby" }]
             },
             buildInstruction: function () {
                 let nm = this.wordBank.names[0];
-                let hb = this.wordBank.hobbies[0];
-                let ag = this.wordBank.ages[0];
                 return {
                     sections: [{
                         title: "自己紹介 (jikoshoukai) — Self-Intro",
-                        explain: "A Japanese self-introduction always follows the exact same 3-step shape — like a knock-knock joke: everyone already knows the shape, so you just fill in your own punchline (your name) in the middle. 1) Greet — はじめまして, said only at a first meeting. 2) Name — わたしは [name] です, the pattern from the last shelf, put to work. 3) Close — よろしくお願いします, every time.",
+                        explain: "A Japanese self-introduction always follows the exact same 3-step shape — like a knock-knock joke: everyone already knows the shape, so you just fill in your own punchline (your name) in the middle. 1) Greet — はじめまして, said only at a first meeting. 2) Name — わたしは [name] です, the pattern from the last file, put to work. 3) Close — よろしくお願いします, every time.",
                         pattern: '<span class="pattern-box__fixed">はじめまして</span> → <span class="pattern-box__slot">わたしは [name] です</span> → <span class="pattern-box__fixed">よろしくお願いします</span>',
                         culture: "Jikoshoukai isn't just small talk — it's treated like a small ritual, given standing up (often with a slight bow) on a first day at school/work, or when meeting someone through a mutual connection. よろしくお願いします doesn't really translate into English — it's closer to \"please treat me well going forward,\" and saying it at the end of a self-introduction is basically mandatory, not optional politeness.",
                         sample: {
@@ -1312,9 +1481,155 @@ window.NekoWaGa = {
                             tiles: [{ text: "わたし", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "たなか", role: "predicate", gloss: "Tanaka", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
                             romaji: "Watashi wa Tanaka desu."
                         }
-                    }, {
+                    }],
+                    /* Trimmed to greeting+name+closing only (2026-09-04 split
+                       -- see the comment above s04() and s04b() below). と申します
+                       (to moushimasu, "I am called ~") is introduced here as
+                       the more formal/humble sibling of the です pattern
+                       already taught -- sensei models it first, player
+                       echoes it back. */
+                    conversation: {
+                        turns: [
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: "はじめまして。ねこ先生と<span class=\"conv-hl conv-hl--predicate\">申します</span>。<span class=\"conv-hl conv-hl--subject\">お名前</span><span class=\"conv-hl conv-hl--particle\">は</span><span class=\"conv-hl conv-hl--predicate\">何</span><span class=\"conv-hl conv-hl--copula\">です</span><span class=\"conv-hl conv-hl--particle\">か</span>。",
+                                romaji: "Hajimemashite. Neko-sensei to moushimasu. O-namae wa nan desu ka. — \"How do you do. I'm called Neko-sensei. What is your name?\""
+                            },
+                            {
+                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
+                                text: "はじめまして。" + nm.jp + "と申します。",
+                                romaji: "Hajimemashite. " + nm.jp + " to moushimasu. — \"How do you do. I'm called " + nm.en + ".\""
+                            },
+                            {
+                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
+                                text: nm.jp + "さん、これからどうぞよろしくお願いします！",
+                                romaji: nm.jp + "-san, korekara douzo yoroshiku onegaishimasu! — \"" + nm.en + ", please treat me well from now on!\""
+                            }
+                        ]
+                    },
+                    examples: [
+                        { jp: "はじめまして。ねこ先生と申します。", romaji: "Hajimemashite. Neko-sensei to moushimasu.", en: "How do you do. I'm called Neko-sensei." },
+                        { jp: "はじめまして。" + nm.jp + "と申します。", romaji: "Hajimemashite. " + nm.jp + " to moushimasu.", en: "How do you do. I'm called " + nm.en + "." },
+                        { jp: nm.jp + "さん、これからどうぞよろしくお願いします！", romaji: nm.jp + "-san, korekara douzo yoroshiku onegaishimasu!", en: nm.en + ", please treat me well from now on!" }
+                    ],
+                    vocab: [
+                        { jp: "お名前", romaji: "o-namae", en: "name (polite)" },
+                        { jp: "何", romaji: "nan", en: "what" },
+                        { jp: "か", romaji: "ka", en: "question marker" },
+                        { jp: "と申します", romaji: "to moushimasu", en: "\"I am called ~\" — humble/formal, more polite than ~です" },
+                        { jp: "これから", romaji: "korekara", en: "from now on" }
+                    ],
+                    sources: ["Tofugu — jikoshoukai (self-introduction) etiquette guide", "Tae Kim's Guide to Japanese Grammar"]
+                };
+            },
+            /* No bonus exercise: s04b's age/hobby content doesn't slot into
+               the fixed greeting+name template -- preview stays exposure-only. */
+            buildWordBankExercises: function () {
+                let nm = pick(this.wordBank.names);
+                return [
+                    {
+                        prompt: "Write: <strong>I am " + nm.en + "</strong>",
+                        accepted: [["わたし", "は", nm.jp, "です"]],
+                        hint: "わたしは + " + nm.jp + " + です",
+                        refWords: [
+                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
+                            { jp: nm.jp, role: "name" }, { jp: "です", role: "auxiliary" }
+                        ]
+                    },
+                    {
+                        /* よろしくお願いします's 願 is the one kanji this
+                           very-early lesson would otherwise require —
+                           accepting the all-hiragana spelling too, same as
+                           files 15/16 do for their own kanji. */
+                        prompt: "Write: <strong>Nice to meet you</strong>",
+                        accepted: [["よろしくお願いします"], ["よろしくおねがいします"], ["はじめまして"]],
+                        hint: "よろしくお願いします (よろしくおねがいします)",
+                        refWords: [{ jp: "よろしくお願いします", role: "greeting" }]
+                    },
+                    /* Capstone: a genuinely free-write jiko-shoukai, not a
+                       fixed-answer blank — there's no single "correct"
+                       self-introduction, so this skips accepted/pattern
+                       grading entirely (see checkAnswer()'s openEnded
+                       branch). validate() just checks for a real attempt
+                       (です present, more than a couple characters) rather
+                       than grading content, since anything beyond that
+                       would need real language understanding this engine
+                       doesn't have. */
+                    {
+                        prompt: "Now write your own <strong>自己紹介 (jikoshoukai)</strong> using what you've learned today — greeting, your name, and closing.",
+                        openEnded: true,
+                        validate: function (raw) { return raw.trim().length >= 8 && raw.indexOf("です") !== -1; },
+                        hint: "はじめまして → わたしは [name] です → よろしくお願いします",
+                        refWords: [
+                            { jp: "はじめまして", role: "greeting" }, { jp: "わたし", role: "subject" },
+                            { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" },
+                            { jp: "よろしくお願いします", role: "greeting" }
+                        ]
+                    }
+                ];
+            },
+            buildWordOrderExercises: function () {
+                let nm = this.wordBank.names[0];
+                return [
+                    {
+                        promptEn: "Arrange the words to say: \"I am " + nm.en + ".\"",
+                        chunks: ["です", "わたしは", nm.jp],
+                        correctOrder: [1, 2, 0],
+                        starIndex: 1,
+                        translation: "わたしは" + nm.jp + "です — \"I am " + nm.en + ".\""
+                    }
+                ];
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　。お名前は何ですか。 (\"How do you do. What is your name?\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "すみません"], correctIndex: 0 },
+                            { prompt: "わたしは　<u>＿＿＿</u>　。 (\"I am Tanaka.\")", choices: ["たなかです", "たなかでした", "たなかでしたか", "たなかですか"], correctIndex: 0 },
+                            { prompt: "たなかさん、　<u>＿＿＿</u>　。 (\"Nice to meet you, Tanaka!\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "さようなら"], correctIndex: 1 },
+                            { prompt: "お　<u>＿＿＿</u>　は何ですか。 (\"What is your name?\")", choices: ["名前", "誕生日", "仕事", "住所"], correctIndex: 0 },
+                            { prompt: "わたしはたなかと　<u>＿＿＿</u>　。 (\"I am called Tanaka.\" — polite)", choices: ["申します", "です", "でした", "ですか"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "はじめまして。お名前は何ですか。", choices: ["How do you do. What is your name?", "Goodbye, see you again.", "Thank you very much.", "What time is it now?"], correctIndex: 0 },
+                            { prompt: "わたしはたなかです。", choices: ["I am Tanaka.", "This is Tanaka's.", "Tanaka is here.", "I met Tanaka."], correctIndex: 0 },
+                            { prompt: "たなかさん、よろしくお願いします！", choices: ["Goodbye, Tanaka!", "Nice to meet you, Tanaka!", "Thank you, Tanaka!", "Excuse me, Tanaka!"], correctIndex: 1 },
+                            { prompt: "たなかと申します。", choices: ["I am called Tanaka. (polite)", "Tanaka is not here.", "I met Tanaka.", "This is Tanaka's."], correctIndex: 0 },
+                            { prompt: "これからどうぞよろしくお願いします。", choices: ["Please treat me well from now on.", "Goodbye, see you later.", "Thank you very much.", "Nice weather today."], correctIndex: 0 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* Sub-lesson of s04 (split 2026-09-04) -- the optional Going-Further
+       pieces of a jikoshoukai (age, hobby) plus the "put it all together"
+       capstone diagram, which only makes sense once age/hobby are actually
+       taught. Lettered id right after its bare "s04" parent needs no
+       synthetic group header in the picker/directory (same as s02b/c). */
+    function s04b() {
+        return {
+            id: "s04b", title: "Self Introduction — Age & Hobby", subtitle: "File 04b",
+            wordBank: {
+                names: uPick(NAMES, 2),
+                hobbies: uPick(HOBBIES, 2),
+                ages: uPick(AGES, 2),
+                newWords: [
+                    { jp: "たんじょうび", en: "birthday" }, { jp: "とくい", en: "good at / strong point" }
+                ],
+                preview: [{ jp: "それ", en: "that (near you)", note: "Coming up in file 05 — demonstratives" }]
+            },
+            buildInstruction: function () {
+                let nm = this.wordBank.names[0];
+                let hb = this.wordBank.hobbies[0];
+                let ag = this.wordBank.ages[0];
+                return {
+                    sections: [{
                         title: "Going Further — 年齢 (Age)",
-                        explain: "A longer jikoshoukai can tack on your age. There are two ways to ask: <strong>何歳ですか</strong> (nansai desu ka) is the plain, neutral version; <strong>おいくつですか</strong> (o-ikutsu desu ka) is the politer one — いくつ softens \"how many/how old\" the way English softens \"how old\" into \"might I ask your age.\" Either way, you answer the same way: <strong>[number]歳です</strong> ([number] + さい + です, \"I am ___ years old\"). Numbers get their own full lesson later (Shelf 07a) — ages here are just written as a plain digit + 歳, which is normal written Japanese, not a simplification.",
+                        explain: "A longer jikoshoukai can tack on your age. There are two ways to ask: <strong>何歳ですか</strong> (nansai desu ka) is the plain, neutral version; <strong>おいくつですか</strong> (o-ikutsu desu ka) is the politer one — いくつ softens \"how many/how old\" the way English softens \"how old\" into \"might I ask your age.\" Either way, you answer the same way: <strong>[number]歳です</strong> ([number] + さい + です, \"I am ___ years old\"). Numbers get their own full lesson later (File 07a) — ages here are just written as a plain digit + 歳, which is normal written Japanese, not a simplification.",
                         pattern: '<span class="pattern-box__fixed">おいくつですか</span> → <span class="pattern-box__slot">[number]歳です</span>',
                         culture: "In Japanese culture, asking someone's age directly — especially a woman's — is often considered too personal, similar to how it can be impolite in English too. This section is pure language practice (the question form and the number+歳 pattern), not a real conversation-opener to actually use on someone you've just met.",
                         sample: {
@@ -1365,31 +1680,18 @@ window.NekoWaGa = {
         </div>
       `
                     }],
-                    /* Extended past the Adventure Room's original shelf-04
-                       exchange (which only covered name) to also cover age
-                       and hobby, per explicit request for a fuller, more
-                       natural jikoshoukai. と申します (to moushimasu, "I am
-                       called ~") is introduced here as the more formal/
-                       humble sibling of the です pattern already taught —
-                       sensei models it first, player echoes it back. Age is
-                       asked sensei→player, not the reverse, so the roleplay
-                       itself doesn't demonstrate the exact "asking a
-                       stranger's/woman's age" situation the Age section's
-                       own culture note flags as impolite in real
-                       conversation — this is framed as a teacher checking
-                       in with a new student, which isn't the awkward case. */
+                    /* Trimmed to the age/hobby half of the original combined
+                       file-04 conversation (2026-09-04 split) -- greeting/
+                       name/closing are already practiced in s04's own
+                       conversation, so this continues straight from there
+                       rather than re-introducing the sensei. Age is asked
+                       sensei→player, not the reverse, so the roleplay itself
+                       doesn't demonstrate the exact "asking a stranger's/
+                       woman's age" situation the Age section's own culture
+                       note flags as impolite in real conversation -- framed
+                       as a teacher checking in with a new student instead. */
                     conversation: {
                         turns: [
-                            {
-                                speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
-                                text: "はじめまして。ねこ先生と<span class=\"conv-hl conv-hl--predicate\">申します</span>。<span class=\"conv-hl conv-hl--subject\">お名前</span><span class=\"conv-hl conv-hl--particle\">は</span><span class=\"conv-hl conv-hl--predicate\">何</span><span class=\"conv-hl conv-hl--copula\">です</span><span class=\"conv-hl conv-hl--particle\">か</span>。",
-                                romaji: "Hajimemashite. Neko-sensei to moushimasu. O-namae wa nan desu ka. — \"How do you do. I'm called Neko-sensei. What is your name?\""
-                            },
-                            {
-                                speaker: "player", name: "You", action: "tailwagLeft", actionLabel: "*tail wags*",
-                                text: "はじめまして。" + nm.jp + "と申します。",
-                                romaji: "Hajimemashite. " + nm.jp + " to moushimasu. — \"How do you do. I'm called " + nm.en + ".\""
-                            },
                             {
                                 speaker: "sensei", name: "Neko-sensei", action: "meow", actionLabel: "*meows*",
                                 text: "おいくつですか。",
@@ -1418,8 +1720,6 @@ window.NekoWaGa = {
                         ]
                     },
                     examples: [
-                        { jp: "はじめまして。ねこ先生と申します。", romaji: "Hajimemashite. Neko-sensei to moushimasu.", en: "How do you do. I'm called Neko-sensei." },
-                        { jp: "はじめまして。" + nm.jp + "と申します。", romaji: "Hajimemashite. " + nm.jp + " to moushimasu.", en: "How do you do. I'm called " + nm.en + "." },
                         { jp: "おいくつですか。", romaji: "O-ikutsu desu ka.", en: "May I ask your age? (politer than 何歳ですか)" },
                         { jp: ag + "歳です。", romaji: ag + "-sai desu.", en: "I am " + ag + " years old." },
                         { jp: "趣味は" + hb.jp + "です。", romaji: "Shumi wa " + hb.jp + " desu.", en: "My hobby is " + hb.en + "." },
@@ -1427,95 +1727,33 @@ window.NekoWaGa = {
                         { jp: nm.jp + "さん、これからどうぞよろしくお願いします！", romaji: nm.jp + "-san, korekara douzo yoroshiku onegaishimasu!", en: nm.en + ", please treat me well from now on!" }
                     ],
                     vocab: [
-                        { jp: "お名前", romaji: "o-namae", en: "name (polite)" },
-                        { jp: "何", romaji: "nan", en: "what" },
-                        { jp: "か", romaji: "ka", en: "question marker" },
                         { jp: "何歳", romaji: "nansai", en: "how old (neutral)" },
                         { jp: "おいくつ", romaji: "o-ikutsu", en: "how old (politer than 何歳)" },
                         { jp: "歳", romaji: "sai", en: "years old (age counter)" },
                         { jp: "趣味", romaji: "shumi", en: "hobby" },
-                        { jp: "と申します", romaji: "to moushimasu", en: "\"I am called ~\" — humble/formal, more polite than ~です" },
                         { jp: "これから", romaji: "korekara", en: "from now on" }
                     ],
                     sources: ["Tofugu — jikoshoukai (self-introduction) etiquette guide", "Tae Kim's Guide to Japanese Grammar"]
                 };
             },
-            /* No bonus exercise: shelf 05's demonstratives don't slot into the
-               fixed self-intro template — preview stays exposure-only. */
-            buildWordBankExercises: function () {
-                let nm = pick(this.wordBank.names);
-                return [
-                    {
-                        prompt: "Write: <strong>I am " + nm.en + "</strong>",
-                        accepted: [["わたし", "は", nm.jp, "です"]],
-                        hint: "わたしは + " + nm.jp + " + です",
-                        refWords: [
-                            { jp: "わたし", role: "subject" }, { jp: "は", role: "particle" },
-                            { jp: nm.jp, role: "name" }, { jp: "です", role: "auxiliary" }
-                        ]
-                    },
-                    {
-                        /* よろしくお願いします's 願 is the one kanji this
-                           very-early lesson would otherwise require —
-                           accepting the all-hiragana spelling too, same as
-                           shelves 15/16 do for their own kanji. */
-                        prompt: "Write: <strong>Nice to meet you</strong>",
-                        accepted: [["よろしくお願いします"], ["よろしくおねがいします"], ["はじめまして"]],
-                        hint: "よろしくお願いします (よろしくおねがいします)",
-                        refWords: [{ jp: "よろしくお願いします", role: "greeting" }]
-                    },
-                    /* Capstone: a genuinely free-write jiko-shoukai, not a
-                       fixed-answer blank — there's no single "correct"
-                       self-introduction, so this skips accepted/pattern
-                       grading entirely (see checkAnswer()'s openEnded
-                       branch). validate() just checks for a real attempt
-                       (です present, more than a couple characters) rather
-                       than grading content, since anything beyond that
-                       would need real language understanding this engine
-                       doesn't have. */
-                    {
-                        prompt: "Now write your own <strong>自己紹介 (jikoshoukai)</strong> using what you've learned today — greeting, your name, and closing.",
-                        openEnded: true,
-                        validate: function (raw) { return raw.trim().length >= 8 && raw.indexOf("です") !== -1; },
-                        hint: "はじめまして → わたしは [name] です → よろしくお願いします",
-                        refWords: [
-                            { jp: "はじめまして", role: "greeting" }, { jp: "わたし", role: "subject" },
-                            { jp: "は", role: "particle" }, { jp: "です", role: "auxiliary" },
-                            { jp: "よろしくお願いします", role: "greeting" }
-                        ]
-                    }
-                ];
-            },
-            buildWordOrderExercises: function () {
-                let nm = this.wordBank.names[0];
-                return [
-                    {
-                        promptEn: "Arrange the words to say: \"I am " + nm.en + ".\"",
-                        chunks: ["です", "わたしは", nm.jp],
-                        correctOrder: [1, 2, 0],
-                        starIndex: 1,
-                        translation: "わたしは" + nm.jp + "です — \"I am " + nm.en + ".\""
-                    }
-                ];
-            },
             buildMondaiExercises: function () {
                 return {
                     mondai1: {
                         questions: [
-                            { prompt: "<u>＿＿＿</u>　。お名前は何ですか。 (\"How do you do. What is your name?\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "すみません"], correctIndex: 0 },
-                            { prompt: "わたしは　<u>＿＿＿</u>　。 (\"I am Tanaka.\")", choices: ["たなかです", "たなかでした", "たなかでしたか", "たなかですか"], correctIndex: 0 },
-                            { prompt: "たなかさん、　<u>＿＿＿</u>　。 (\"Nice to meet you, Tanaka!\")", choices: ["はじめまして", "よろしくお願いします", "ありがとう", "さようなら"], correctIndex: 1 },
-                            { prompt: "お　<u>＿＿＿</u>　は何ですか。 (\"What is your name?\")", choices: ["名前", "誕生日", "仕事", "住所"], correctIndex: 0 },
-                            { prompt: "<u>＿＿＿</u>　ですか。 (\"How old are you?\")", choices: ["何歳", "お名前", "何", "趣味"], correctIndex: 0 }
+                            { prompt: "<u>＿＿＿</u>　ですか。 (\"How old are you?\" — politer)", choices: ["おいくつ", "お名前", "何", "趣味"], correctIndex: 0 },
+                            { prompt: "わたしは　20<u>＿＿＿</u>　です。 (\"I am 20 years old.\")", choices: ["歳", "分", "時", "人"], correctIndex: 0 },
+                            { prompt: "趣味は　<u>＿＿＿</u>　ですか。 (\"What is your hobby?\")", choices: ["何", "誰", "どこ", "いつ"], correctIndex: 0 },
+                            { prompt: "趣味は読書　<u>＿＿＿</u>　。 (\"My hobby is reading.\")", choices: ["です", "でした", "ですか", "ください"], correctIndex: 0 },
+                            { prompt: "趣味は本を読む　<u>＿＿＿</u>　です。 (\"My hobby is reading books.\")", choices: ["こと", "もの", "ところ", "とき"], correctIndex: 0 }
                         ]
                     },
                     mondai2: {
                         questions: [
-                            { prompt: "はじめまして。お名前は何ですか。", choices: ["How do you do. What is your name?", "Goodbye, see you again.", "Thank you very much.", "What time is it now?"], correctIndex: 0 },
-                            { prompt: "わたしはたなかです。", choices: ["I am Tanaka.", "This is Tanaka's.", "Tanaka is here.", "I met Tanaka."], correctIndex: 0 },
-                            { prompt: "たなかさん、よろしくお願いします！", choices: ["Goodbye, Tanaka!", "Nice to meet you, Tanaka!", "Thank you, Tanaka!", "Excuse me, Tanaka!"], correctIndex: 1 },
-                            { prompt: "何歳ですか。", choices: ["What is your name?", "How old are you?", "What is your hobby?", "Where are you from?"], correctIndex: 1 },
-                            { prompt: "趣味はどくしょです。", choices: ["My hobby is reading.", "My name is reading.", "I am a reader.", "This book is mine."], correctIndex: 0 }
+                            { prompt: "何歳ですか。", choices: ["How old are you?", "What is your name?", "What is your hobby?", "Where are you from?"], correctIndex: 0 },
+                            { prompt: "おいくつですか。", choices: ["May I ask your age? (polite)", "May I ask your name? (polite)", "What time is it?", "How much is it?"], correctIndex: 0 },
+                            { prompt: "25歳です。", choices: ["I am 25 years old.", "It is 25 minutes.", "There are 25 people.", "I bought 25 things."], correctIndex: 0 },
+                            { prompt: "趣味はどくしょです。", choices: ["My hobby is reading.", "My name is reading.", "I am a reader.", "This book is mine."], correctIndex: 0 },
+                            { prompt: "趣味はおんがくを聞くことです。", choices: ["My hobby is listening to music.", "My hobby is playing music.", "I like to sing.", "I am a musician."], correctIndex: 0 }
                         ]
                     }
                 };
@@ -1523,10 +1761,10 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 05: Demonstratives */
+    /* FILE 05: Demonstratives */
     function s05() {
         return {
-            id: "s05", title: "Demonstratives", subtitle: "Shelf 05",
+            id: "s05", title: "Demonstratives", subtitle: "File 05",
             wordBank: {
                 demonstratives: [{ jp: "これ", en: "this" }, { jp: "それ", en: "that (near you)" }, { jp: "あれ", en: "that (over there)" }],
                 nouns: [{ jp: "ほん", en: "book" }, { jp: "ペン", en: "pen" }],
@@ -1535,7 +1773,7 @@ window.NekoWaGa = {
                     { jp: "とけい", en: "clock / watch" }, { jp: "かばん", en: "bag" }, { jp: "さいふ", en: "wallet" },
                     { jp: "あかい", en: "red" }, { jp: "あおい", en: "blue" }
                 ],
-                preview: [{ jp: "だれ", en: "who", note: "Coming up in shelf 06 — question words + か" }]
+                preview: [{ jp: "だれ", en: "who", note: "Coming up in file 06 — question words + か" }]
             },
             buildInstruction: function () {
                 return {
@@ -1555,7 +1793,7 @@ window.NekoWaGa = {
                                cat portrait shows), not part of the grammar point itself.
                                var(--lb-role-subject-bg) (この row-word color) is hardcoded to
                                its literal N5-theme value #6fb3e6 for the same reason as
-                               shelf-03's diagram above; var(--jr-text-dim) (head/row-note
+                               file-03's diagram above; var(--jr-text-dim) (head/row-note
                                text) is instead pointed at this page's own
                                --term-text-dim token (see study-style.css's .study-room.
                                is-terminal block) so the diagram's captions read in the same
@@ -1601,7 +1839,7 @@ window.NekoWaGa = {
                             }
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-05
+                    /* Ported verbatim from the Adventure Room's file-05
                        LESSON_CONTENT (the それ/これ 'conversation' page),
                        fixed sensei=black/player=orange casting per Study
                        Room's own convention, role-subject spans converted
@@ -1677,12 +1915,12 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 06's だれ (this lesson's own
+                /* Bonus: sneak peek at file 06's だれ (this lesson's own
                    どこですか example above already introduces か itself). */
                 let preview = this.wordBank.preview && this.wordBank.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 06) Write: <strong>Who is the cat?</strong>",
+                        prompt: "(bonus — sneak peek: file 06) Write: <strong>Who is the cat?</strong>",
                         accepted: [[creature.jp, "は", preview.jp, "ですか"]],
                         hint: creature.jp + "は" + preview.jp + "ですか",
                         refWords: [
@@ -1729,10 +1967,10 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 06: Questions */
+    /* FILE 06: Questions */
     function s06() {
         return {
-            id: "s06", title: "Questions (か)", subtitle: "Shelf 06",
+            id: "s06", title: "Questions (か)", subtitle: "File 06",
             wordBank: {
                 topics: [{ jp: "せんせい", en: "the teacher" }, { jp: "これ", en: "this" }, { jp: "たんじょうび", en: "your birthday" }],
                 questionWords: [{ jp: "だれ", en: "who" }, { jp: "いくら", en: "how much" }, { jp: "いつ", en: "when" }],
@@ -1740,7 +1978,7 @@ window.NekoWaGa = {
                     { jp: "なまえ", en: "name" }, { jp: "じゅうしょ", en: "address" }, { jp: "しごと", en: "job" },
                     { jp: "むずかしい", en: "difficult" }, { jp: "かんたん", en: "easy / simple" }
                 ],
-                preview: [{ jp: "ひとつ", en: "one (thing)", note: "Coming up in shelf 07 — numbers & counters" }]
+                preview: [{ jp: "だれ", en: "who", note: "Coming up in file 06d — more question words" }]
             },
             buildInstruction: function () {
                 return {
@@ -1772,19 +2010,15 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Answering yes or no",
-                            explain: "<strong>はい、そうです</strong> (hai, sou desu — 'yes, that's right') and <strong>いいえ、ちがいます</strong> (iie, chigaimasu — 'no, that's wrong') are the standard reply pair to any これ/それ/あれ-style yes/no question. ちがいます doesn't mean the other person lied — it just means the guess was off, so a correction (ほんです, 'it's a book') usually follows right after."
-                        },
-                        {
-                            title: "Six more question words",
-                            explain: "だれ (who) and いつ (when) attach exactly like どこ did in shelf 5 — swap it in, everything else stays put. どうして and なぜ both mean 'why,' but aren't interchangeable registers: どうして is what you'd actually say out loud to a friend, while なぜ leans formal/written — a news report or an essay reaches for なぜ, a conversation reaches for どうして. いくつ and いくら split the same way: いくつ counts small countable things ('how many apples?'), いくら asks a price ('how much is this?') — never mix the two up just because English uses 'how' for both.",
+                            explain: "<strong>はい、そうです</strong> (hai, sou desu — 'yes, that's right') and <strong>いいえ、ちがいます</strong> (iie, chigaimasu — 'no, that's wrong') are the standard reply pair to any これ/それ/あれ-style yes/no question. ちがいます doesn't mean the other person lied — it just means the guess was off, so a correction (ほんです, 'it's a book') usually follows right after.",
                             sample: {
-                                tag: '"Who is the teacher?"',
-                                tiles: [{ text: "せんせい", role: "subject", gloss: "teacher" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "だれ", role: "predicate", gloss: "who", isNew: true }, { text: "ですか", role: "copula", gloss: "is...?" }],
-                                romaji: "Sensei wa dare desu ka?"
+                                tag: '"Is the teacher a student?"',
+                                tiles: [{ text: "せんせい", role: "subject", gloss: "teacher" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "がくせい", role: "predicate", gloss: "student" }, { text: "ですか", role: "copula", gloss: "is...?" }],
+                                romaji: "Sensei wa gakusei desu ka?"
                             }
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-06
+                    /* Ported verbatim from the Adventure Room's file-06
                        LESSON_CONTENT (the closing 'conversation' page),
                        fixed sensei=black/player=orange casting per Study
                        Room's own convention. No role-* spans in the
@@ -1813,25 +2047,20 @@ window.NekoWaGa = {
                         { jp: "これはほんですか", romaji: "Kore wa hon desu ka?", en: "Is this a book?" },
                         { jp: "はい、そうです。", romaji: "Hai, sou desu.", en: "Yes, that's right." },
                         { jp: "いいえ、ちがいます。ほんです。", romaji: "Iie, chigaimasu. Hon desu.", en: "No, that's wrong. It's a book." },
-                        { jp: "せんせいはだれですか", romaji: "Sensei wa dare desu ka?", en: "Who is the teacher?" },
-                        { jp: "たんじょうびはいつですか", romaji: "Tanjoubi wa itsu desu ka?", en: "When is your birthday?" },
-                        { jp: "これはいくらですか", romaji: "Kore wa ikura desu ka?", en: "How much is this?" },
-                        { jp: "どうしてですか", romaji: "Doushite desu ka?", en: "Why? (casual, spoken)" }
+                        { jp: "せんせいはがくせいですか", romaji: "Sensei wa gakusei desu ka?", en: "Is the teacher a student?" },
+                        { jp: "たなかさんはせんせいですか", romaji: "Tanaka-san wa sensei desu ka?", en: "Is Tanaka-san the teacher?" }
                     ],
                     vocab: [
-                        { jp: "か", romaji: "ka", en: "question marker" }, { jp: "だれ", romaji: "dare", en: "who" },
-                        { jp: "いつ", romaji: "itsu", en: "when" }, { jp: "どうして", romaji: "doushite", en: "why (casual)" },
-                        { jp: "なぜ", romaji: "naze", en: "why (formal)" }, { jp: "いくつ", romaji: "ikutsu", en: "how many" },
-                        { jp: "いくら", romaji: "ikura", en: "how much (price)" }, { jp: "はい", romaji: "hai", en: "yes" },
+                        { jp: "か", romaji: "ka", en: "question marker" }, { jp: "はい", romaji: "hai", en: "yes" },
                         { jp: "いいえ", romaji: "iie", en: "no" }, { jp: "そうです", romaji: "sou desu", en: "that's right" },
                         { jp: "ちがいます", romaji: "chigaimasu", en: "that's wrong" }
                     ],
                     sources: ["Tae Kim's Guide to Japanese Grammar (か)", "Bunpro か entry"]
                 };
             },
-            /* No bonus exercise: shelf 07's counters need their own +ひとつ-style
+            /* No bonus exercise: file 07's counters need their own +ひとつ-style
                grammar (which noun takes which counter) — preview stays
-               exposure-only until shelf 07 teaches it.
+               exposure-only until file 07 teaches it.
                Topic/question-word pairs below are curated (not a free
                cross-product) so every generated question stays semantically valid. */
             buildWordBankExercises: function () {
@@ -1870,19 +2099,19 @@ window.NekoWaGa = {
                     mondai1: {
                         questions: [
                             { prompt: "これはほんです　<u>＿＿＿</u>　。 (\"Is this a book?\")", choices: ["か", "ね", "よ", "の"], correctIndex: 0 },
-                            { prompt: "せんせいは　<u>＿＿＿</u>　ですか。 (\"Who is the teacher?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 0 },
-                            { prompt: "たんじょうびは　<u>＿＿＿</u>　ですか。 (\"When is your birthday?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 1 },
-                            { prompt: "これは　<u>＿＿＿</u>　ですか。 (\"How much is this?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 2 },
-                            { prompt: "はい、　<u>＿＿＿</u>　。 (\"Yes, that's right.\")", choices: ["そうです", "ちがいます", "どうしてですか", "なぜですか"], correctIndex: 0 }
+                            { prompt: "せんせいはがくせいです　<u>＿＿＿</u>　。 (\"Is the teacher a student?\")", choices: ["か", "ね", "よ", "と"], correctIndex: 0 },
+                            { prompt: "たなかさんはせんせいです　<u>＿＿＿</u>　。 (\"Is Tanaka-san the teacher?\")", choices: ["か", "ね", "よ", "も"], correctIndex: 0 },
+                            { prompt: "はい、　<u>＿＿＿</u>　。 (\"Yes, that's right.\")", choices: ["そうです", "ちがいます", "すみません", "おねがいします"], correctIndex: 0 },
+                            { prompt: "いいえ、　<u>＿＿＿</u>　。ほんです。 (\"No, that's wrong. It's a book.\")", choices: ["そうです", "ちがいます", "すみません", "はい"], correctIndex: 1 }
                         ]
                     },
                     mondai2: {
                         questions: [
+                            { prompt: "これはほんですか。", choices: ["This is a book.", "Is this a book?", "That is not a book.", "I have a book."], correctIndex: 1 },
+                            { prompt: "はい、そうです。", choices: ["Yes, that's right.", "No, that's wrong.", "Excuse me.", "Thank you."], correctIndex: 0 },
                             { prompt: "いいえ、ちがいます。ほんです。", choices: ["Yes, that's right. It's a book.", "No, that's wrong. It's a book.", "I don't know what it is.", "It's not a book at all."], correctIndex: 1 },
-                            { prompt: "せんせいはだれですか。", choices: ["Who is the teacher?", "Where is the teacher?", "When is the teacher coming?", "Is there a teacher?"], correctIndex: 0 },
-                            { prompt: "これはいくらですか。", choices: ["What is this?", "How much is this?", "Where is this from?", "Do you like this?"], correctIndex: 1 },
-                            { prompt: "どうしてですか。", choices: ["Why?", "When?", "Where?", "Who?"], correctIndex: 0 },
-                            { prompt: "これはほんですか。", choices: ["This is a book.", "Is this a book?", "That is not a book.", "I have a book."], correctIndex: 1 }
+                            { prompt: "せんせいはがくせいですか。", choices: ["Is the teacher a student?", "The teacher is a student.", "Who is the teacher?", "Is the student a teacher?"], correctIndex: 0 },
+                            { prompt: "たなかさんはせんせいですか。", choices: ["Is Tanaka-san the teacher?", "Tanaka-san is the teacher.", "Where is Tanaka-san?", "Is the teacher Tanaka-san's friend?"], correctIndex: 0 }
                         ]
                     }
                 };
@@ -1890,7 +2119,286 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 07 SPLIT — the original single "Numbers & Counters" lesson
+    /* FILE 06d: More Question Words — split out of s06's own "Six more
+       question words" section (2026-09-04, per explicit feedback that the
+       six words deserved real sectioning/highlighting instead of one dense
+       paragraph). Placed right after s06 (not after s06b/s06c) since this
+       is a genuine split of s06's own content, unlike s06b/s06c which are
+       an unrelated new "Verb Basics" module that just happens to share the
+       "06" number for id-chaining reasons — the letter suffix reflects
+       creation order, not display position, so s06d legitimately sits
+       before s06b/s06c in buildLessons()/FOLDERS despite the letter. Uses
+       two presentation styles picked over prose: a single quick-reference
+       table for all six words (.qword-table), and two side-by-side
+       "paired comparison" boxes (.qword-pair) for the two pairs that are
+       genuinely easy to conflate — どうして／なぜ (register) and いくつ／いくら
+       (scope: count vs. price). だれ／いつ have no such conflation risk, so
+       they only need the table, not their own paired box. */
+    function s06d() {
+        return {
+            id: "s06d", title: "More Question Words", subtitle: "File 06d",
+            wordBank: {
+                questionWords: [
+                    { jp: "だれ", en: "who" }, { jp: "いつ", en: "when" },
+                    { jp: "どうして", en: "why (casual)" }, { jp: "なぜ", en: "why (formal)" },
+                    { jp: "いくつ", en: "how many" }, { jp: "いくら", en: "how much" }
+                ],
+                newWords: [{ jp: "りんご", en: "apple" }],
+                preview: [{ jp: "ひとつ", en: "one (thing)", note: "Coming up in file 07a — numbers & counters" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "Six question words — at a glance",
+                            explain: "だれ、いつ、どうして、なぜ、いくつ、いくら all attach to a sentence exactly the way どこ did back in file 5 — swap the word in, everything else stays put. だれ and いつ behave with no extra notes needed; どうして／なぜ and いくつ／いくら are each a pair that's easy to mix up, so they get a closer look below.",
+                            pattern: '<span class="pattern-box__slot">Question word</span> <span class="pattern-box__fixed">ですか</span>',
+                            diagramSvg: '<table class="qword-table">'
+                                + '<thead><tr><th>Question word</th><th>Meaning</th><th>Used in a sentence</th></tr></thead>'
+                                + '<tbody>'
+                                + '<tr><td><span class="qword-word">だれ</span><span class="qword-romaji">dare</span></td><td>who</td><td><div class="qword-usage-jp">せんせいはだれですか。</div><div class="qword-usage-en">Who is the teacher?</div></td></tr>'
+                                + '<tr><td><span class="qword-word">いつ</span><span class="qword-romaji">itsu</span></td><td>when</td><td><div class="qword-usage-jp">たんじょうびはいつですか。</div><div class="qword-usage-en">When is your birthday?</div></td></tr>'
+                                + '<tr><td><span class="qword-word">どうして</span><span class="qword-romaji">doushite</span></td><td>why <em>(casual)</em></td><td><div class="qword-usage-jp">どうしてですか。</div><div class="qword-usage-en">Why? — said out loud to a friend</div></td></tr>'
+                                + '<tr><td><span class="qword-word">なぜ</span><span class="qword-romaji">naze</span></td><td>why <em>(formal)</em></td><td><div class="qword-usage-jp">なぜですか。</div><div class="qword-usage-en">Why? — a news report or essay reaches for this</div></td></tr>'
+                                + '<tr><td><span class="qword-word">いくつ</span><span class="qword-romaji">ikutsu</span></td><td>how many <em>(countable)</em></td><td><div class="qword-usage-jp">りんごはいくつですか。</div><div class="qword-usage-en">How many apples are there?</div></td></tr>'
+                                + '<tr><td><span class="qword-word">いくら</span><span class="qword-romaji">ikura</span></td><td>how much <em>(price)</em></td><td><div class="qword-usage-jp">これはいくらですか。</div><div class="qword-usage-en">How much is this?</div></td></tr>'
+                                + '</tbody></table>'
+                        },
+                        {
+                            title: "\"Why?\" — どうして vs. なぜ",
+                            explain: "Both mean 'why,' but they're not interchangeable registers — どうして is what you'd actually say out loud to a friend; なぜ leans formal and written, the kind of word a news report or an essay reaches for. Neither is 'more correct,' they just belong in different settings.",
+                            diagramSvg: '<div class="qword-pair">'
+                                + '<div><span class="qword-word">どうして</span><span class="qword-romaji">doushite</span><div class="qword-meaning">why</div><div class="qword-note">spoken, to a friend</div></div>'
+                                + '<div><span class="qword-word">なぜ</span><span class="qword-romaji">naze</span><div class="qword-meaning">why</div><div class="qword-note">written, formal</div></div>'
+                                + '</div>'
+                        },
+                        {
+                            title: "\"How ___?\" — いくつ vs. いくら",
+                            explain: "いくつ counts small countable things — how many apples, how many people; いくら asks a price — how much something costs. English uses 'how' for both, which is exactly why these two get mixed up — but they're never interchangeable in Japanese.",
+                            diagramSvg: '<div class="qword-pair">'
+                                + '<div><span class="qword-word">いくつ</span><span class="qword-romaji">ikutsu</span><div class="qword-meaning">how many</div><div class="qword-note">countable things</div></div>'
+                                + '<div><span class="qword-word">いくら</span><span class="qword-romaji">ikura</span><div class="qword-meaning">how much</div><div class="qword-note">a price</div></div>'
+                                + '</div>',
+                            sample: {
+                                tag: '"How much is this?"',
+                                tiles: [{ text: "これ", role: "subject", gloss: "this" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "いくら", role: "predicate", gloss: "how much", isNew: true }, { text: "ですか", role: "copula", gloss: "is...?" }],
+                                romaji: "Kore wa ikura desu ka?"
+                            }
+                        }
+                    ],
+                    examples: [
+                        { jp: "せんせいはだれですか", romaji: "Sensei wa dare desu ka?", en: "Who is the teacher?" },
+                        { jp: "たんじょうびはいつですか", romaji: "Tanjoubi wa itsu desu ka?", en: "When is your birthday?" },
+                        { jp: "どうしてですか", romaji: "Doushite desu ka?", en: "Why? (casual, spoken)" },
+                        { jp: "なぜですか", romaji: "Naze desu ka?", en: "Why? (formal, written)" },
+                        { jp: "りんごはいくつですか", romaji: "Ringo wa ikutsu desu ka?", en: "How many apples are there?" },
+                        { jp: "これはいくらですか", romaji: "Kore wa ikura desu ka?", en: "How much is this?" }
+                    ],
+                    vocab: [
+                        { jp: "だれ", romaji: "dare", en: "who" }, { jp: "いつ", romaji: "itsu", en: "when" },
+                        { jp: "どうして", romaji: "doushite", en: "why (casual)" }, { jp: "なぜ", romaji: "naze", en: "why (formal)" },
+                        { jp: "いくつ", romaji: "ikutsu", en: "how many" }, { jp: "いくら", romaji: "ikura", en: "how much (price)" },
+                        { jp: "りんご", romaji: "ringo", en: "apple" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar (question words)", "Bunpro どうして／なぜ, いくつ／いくら entries"]
+                };
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "せんせいは　<u>＿＿＿</u>　ですか。 (\"Who is the teacher?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 0 },
+                            { prompt: "たんじょうびは　<u>＿＿＿</u>　ですか。 (\"When is your birthday?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 1 },
+                            { prompt: "これは　<u>＿＿＿</u>　ですか。 (\"How much is this?\")", choices: ["だれ", "いつ", "いくら", "どこ"], correctIndex: 2 },
+                            { prompt: "りんごは　<u>＿＿＿</u>　ですか。 (\"How many apples are there?\")", choices: ["いくつ", "いくら", "いつ", "だれ"], correctIndex: 0 },
+                            { prompt: "（友達に）<u>＿＿＿</u>　ですか。 (\"Why?\" — casually, to a friend)", choices: ["どうして", "なぜ", "いつ", "だれ"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "せんせいはだれですか。", choices: ["Who is the teacher?", "Where is the teacher?", "When is the teacher coming?", "Is there a teacher?"], correctIndex: 0 },
+                            { prompt: "どうしてですか。", choices: ["Why? (casual)", "Why? (an essay would use this)", "When?", "Who?"], correctIndex: 0 },
+                            { prompt: "なぜですか。", choices: ["Why? (casual, to a friend)", "Why? (formal, written)", "How much?", "How many?"], correctIndex: 1 },
+                            { prompt: "りんごはいくつですか。", choices: ["How much is the apple?", "How many apples are there?", "Where is the apple?", "Is this an apple?"], correctIndex: 1 },
+                            { prompt: "これはいくらですか。", choices: ["How many of these are there?", "Who does this belong to?", "How much is this?", "What is this?"], correctIndex: 2 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* NEW MODULE — "Verb Basics" (2026-09-04, per curriculum-review request):
+       inserted between Identity & Questions and Numbers & Counters. Several
+       lessons already downstream quietly assume verb knowledge before any
+       verb has been formally taught — "There Is/Are" (s08a) is already a
+       verb lesson in disguise, "Movement & The Compass" (s08c) needs
+       行きます/来ます/帰ります, and "Telling Time" (s07c) wants activity verbs
+       to build example sentences with. This module front-loads just enough
+       verb vocabulary to unblock those, deliberately WITHOUT touching
+       dictionary form, Ichidan/Godan/irregular groupings, or て-form --
+       all of that stays deferred to the real Verbs & Conjugations module
+       (s11a-c/s13/s14/s12) later, exactly where it already lives.
+
+       ID note: s08a already fully teaches います/あります WITH the location
+       pattern ([thing]は[place]にあります/います) -- so s06b below teaches only
+       the bare existence pattern (no place, no に) to avoid re-teaching
+       s08a's own content twice; s08a's own explain text now references
+       back to this lesson instead of introducing います/あります cold.
+
+       Naming: these use the "s06b"/"s06c" id pattern (next free letters
+       after s06, which has none yet) purely because that's where they
+       physically sit in sequence -- they are NOT sub-lessons of s06
+       "Questions (か)" content-wise, they get their own "Verb Basics"
+       folder in n5-lessons-dashboard.js's FOLDERS array (folder
+       membership there is an explicit ids list, independent of what
+       number prefix an id happens to use). One side effect: the Study
+       Room's own lesson-picker dropdown groups by numeric id prefix, so
+       these will render visually indented under "06" there -- harmless
+       (it's genuinely where they sit), just not folder-accurate in that
+       one dropdown. */
+    function s06b() {
+        return {
+            id: "s06b", title: "Existence Verbs", subtitle: "File 06b",
+            wordBank: {
+                animate: [{ jp: "ねこ", en: "cat" }, { jp: "せんせい", en: "teacher" }, { jp: "がくせい", en: "student" }],
+                inanimate: [{ jp: "ほん", en: "book" }, { jp: "かばん", en: "bag" }, { jp: "つくえ", en: "desk" }],
+                newWords: [
+                    { jp: "いぬ", en: "dog" }, { jp: "とり", en: "bird" }, { jp: "かさ", en: "umbrella" },
+                    { jp: "とけい", en: "clock / watch" }, { jp: "じてんしゃ", en: "bicycle" }
+                ],
+                preview: [{ jp: "見ます", en: "watch / see", note: "Coming up next — Everyday Action Verbs" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "います / あります — \"there is/are\"",
+                            explain: "います and あります are your first real verbs — everything before this file (です, question words, これ/それ/あれ) described things, but these two say something EXISTS. The split depends on whether the thing could get up and walk away on its own: <strong>います</strong> is for people and animals (せんせい、ねこ) — genuinely alive and able to move; <strong>あります</strong> is for everything else (ほん、かばん) — objects, plants, anything that can't move itself.",
+                            pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__fixed">います/あります</span>',
+                            culture: "Saying WHERE something is (with に, \"at/in [place]\") is its own full lesson coming up soon (There Is/Are) — this file is just the verb itself, on its own, before adding a location to it.",
+                            sample: {
+                                tag: '"There is a teacher."',
+                                tiles: [{ text: "せんせい", role: "subject", gloss: "teacher" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "います", role: "predicate", gloss: "exists (alive)", isNew: true }],
+                                romaji: "Sensei wa imasu."
+                            }
+                        },
+                        {
+                            title: "Negative — いません / ありません",
+                            explain: "Same split, negative form: <strong>いません</strong> (not います) and <strong>ありません</strong> (not あります). Nothing else about the sentence changes — swap the verb for its negative and you're saying the thing doesn't exist (here, at least).",
+                            pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__fixed">いません/ありません</span>',
+                            sample: {
+                                tag: '"There is no book."',
+                                tiles: [{ text: "ほん", role: "subject", gloss: "book" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "ありません", role: "predicate", gloss: "doesn't exist", isNew: true }],
+                                romaji: "Hon wa arimasen."
+                            }
+                        }
+                    ],
+                    examples: [
+                        { jp: "せんせいはいます。", romaji: "Sensei wa imasu.", en: "There is a teacher. / The teacher is here." },
+                        { jp: "ねこはいません。", romaji: "Neko wa imasen.", en: "There is no cat." },
+                        { jp: "ほんはあります。", romaji: "Hon wa arimasu.", en: "There is a book." },
+                        { jp: "かばんはありません。", romaji: "Kaban wa arimasen.", en: "There is no bag." }
+                    ],
+                    vocab: [
+                        { jp: "います", romaji: "imasu", en: "there is/are (people, animals)" },
+                        { jp: "いません", romaji: "imasen", en: "there isn't/aren't (people, animals)" },
+                        { jp: "あります", romaji: "arimasu", en: "there is/are (things)" },
+                        { jp: "ありません", romaji: "arimasen", en: "there isn't/aren't (things)" }
+                    ],
+                    sources: ["Tae Kim's Guide to Japanese Grammar — existence verbs", "Genki I — Lesson 5"]
+                };
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "ねこは　<u>＿＿＿</u>　。 (\"There is a cat.\")", choices: ["います", "あります", "です", "でした"], correctIndex: 0 },
+                            { prompt: "ほんは　<u>＿＿＿</u>　。 (\"There is a book.\")", choices: ["います", "あります", "です", "でした"], correctIndex: 1 },
+                            { prompt: "せんせいは　<u>＿＿＿</u>　。 (\"There is no teacher.\")", choices: ["いません", "ありません", "ではありません", "じゃないです"], correctIndex: 0 },
+                            { prompt: "かばんは　<u>＿＿＿</u>　。 (\"There is no bag.\")", choices: ["いません", "ありません", "ではありません", "じゃないです"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　はいますか。 (which of these takes います, not あります?)", choices: ["がくせい", "つくえ", "かばん", "とけい"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "せんせいはいます。", choices: ["There is a teacher.", "There is no teacher.", "There is a book.", "Is there a teacher?"], correctIndex: 0 },
+                            { prompt: "ねこはいません。", choices: ["There is a cat.", "There is no cat.", "There is a dog.", "Is there a cat?"], correctIndex: 1 },
+                            { prompt: "ほんはあります。", choices: ["There is a book.", "There is no book.", "There is a bag.", "Is there a book?"], correctIndex: 0 },
+                            { prompt: "かばんはありません。", choices: ["There is a bag.", "There is no bag.", "There is a desk.", "Is there a bag?"], correctIndex: 1 },
+                            { prompt: "つくえはあります。", choices: ["There is a desk.", "There is no desk.", "There is a chair.", "Where is the desk?"], correctIndex: 0 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* Trimmed (2026-09-04): originally 9 verbs, then trimmed again the same
+       day する moved to s03b too -- 行きます/来ます/帰ります/食べます/飲みます/
+       します are all now taught earlier in s03b (Basic Verbs & Word Order)
+       alongside the Subject-Object-Verb pattern; keeping any of them here
+       too would just be cold re-teaching, not reinforcement. Down to its
+       3 genuinely new verbs. */
+    function s06c() {
+        let verbs = [
+            { jp: "見ます", en: "watch / see" }, { jp: "起きます", en: "wake up / get up" },
+            { jp: "寝ます", en: "sleep / go to bed" }
+        ];
+        return {
+            id: "s06c", title: "Everyday Action Verbs", subtitle: "File 06c",
+            vocabOnly: true,
+            wordBank: {
+                phrases: verbs,
+                newWords: [
+                    { jp: "まいにち", en: "every day" }, { jp: "きょう", en: "today" }, { jp: "あさ", en: "morning" },
+                    { jp: "よる", en: "night" }, { jp: "がっこう", en: "school" }
+                ],
+                preview: [{ jp: "いくつ", en: "how many", note: "Coming up in file 06d — more question words" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [{
+                        title: "Three more everyday verbs",
+                        explain: "You already met たべます/のみます/いきます/きます/かえります/します back in Basic Verbs & Word Order. These 3 are the same kind of thing — already in their polite ます-form, learned as vocabulary for now. The real conjugation rules come later, in Verbs & Conjugations."
+                            + "<br><br><strong>見ます</strong> (mimasu) — watch/see　<strong>起きます</strong> (okimasu) — wake up　<strong>寝ます</strong> (nemasu) — sleep"
+                    }],
+                    examples: [
+                        { jp: "テレビを見ます。", romaji: "Terebi o mimasu.", en: "I watch TV." },
+                        { jp: "あさ、起きます。", romaji: "Asa, okimasu.", en: "I wake up in the morning." },
+                        { jp: "よる、寝ます。", romaji: "Yoru, nemasu.", en: "I sleep at night." }
+                    ],
+                    vocab: [
+                        { jp: "見ます", romaji: "mimasu", en: "watch / see" }, { jp: "起きます", romaji: "okimasu", en: "wake up / get up" },
+                        { jp: "寝ます", romaji: "nemasu", en: "sleep / go to bed" }
+                    ],
+                    sources: ["Genki I — Lesson 3 (verb vocabulary)", "Tae Kim's Guide to Japanese Grammar"]
+                };
+            },
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank(this.wordBank, 3);
+            },
+            /* もんだい2 dropped -- same reasoning as s01/s02c: it would quiz
+               this lesson's own `newWords`, which the page itself never
+               taught. See s01's own comment for the original case. */
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "見ます", choices: ["watch / see", "wake up", "sleep", "do"], correctIndex: 0 },
+                            { prompt: "起きます", choices: ["wake up", "sleep", "watch", "do"], correctIndex: 0 },
+                            { prompt: "寝ます", choices: ["wake up", "sleep", "watch", "do"], correctIndex: 1 },
+                            { prompt: "Which of these did THIS lesson teach (not Basic Verbs & Word Order)?", choices: ["たべます", "いきます", "見ます", "します"], correctIndex: 2 },
+                            { prompt: "Which verb pair did THIS lesson build on from Basic Verbs & Word Order?", choices: ["たべます/のみます", "見ます/起きます", "寝ます/します", "None — unrelated"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: { questions: [] }
+                };
+            }
+        };
+    }
+
+    /* FILE 07 SPLIT — the original single "Numbers & Counters" lesson
        covered a lot of genuinely distinct number systems (plain counting,
        the つ series, the 匹 series, hours, minutes) in one page. Per
        explicit feedback ("there are a lot of types of numbers... properly
@@ -1898,12 +2406,12 @@ window.NekoWaGa = {
        instead of one long one, mirroring how s02 already splits into
        s02/s02b/s02c. Each keeps its own wordBank/exercises/XP, chained
        together with the same preview-the-next-lesson pattern every other
-       shelf uses. */
+       file uses. */
 
-    /* SHELF 07a: Basic Numbers (1–100) */
+    /* FILE 07a: Basic Numbers (1–100) */
     function s07a() {
         return {
-            id: "s07a", title: "Basic Numbers", subtitle: "Shelf 07a",
+            id: "s07a", title: "Basic Numbers", subtitle: "File 07a",
             wordBank: {
                 /* Curated rather than formula-generated — a live
                    tens+ones generator would need to pick a reading for
@@ -1915,7 +2423,7 @@ window.NekoWaGa = {
                     { n: "47", jp: "よんじゅうなな" }, { n: "58", jp: "ごじゅうはち" }, { n: "100", jp: "ひゃく" }
                 ],
                 newWords: [{ jp: "おおい", en: "many" }, { jp: "すくない", en: "few" }],
-                preview: [{ jp: "ひとつ", en: "one (general objects)", note: "Coming up in shelf 07b — つ & 匹 counters" }]
+                preview: [{ jp: "ひとつ", en: "one (general objects)", note: "Coming up in file 07b — つ & 匹 counters" }]
             },
             buildInstruction: function () {
                 return {
@@ -1996,22 +2504,22 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 07b: つ & 匹 Counters */
+    /* FILE 07b: つ & 匹 Counters */
     function s07b() {
         return {
-            id: "s07b", title: "つ & 人 Counters", subtitle: "Shelf 07b",
+            id: "s07b", title: "つ & 人 Counters", subtitle: "File 07b",
             wordBank: {
                 nouns: [{ jp: "りんご", en: "apple" }, { jp: "がくせい", en: "student" }],
                 counters: [{ jp: "ひとつ", en: "one" }, { jp: "さんにん", en: "three" }],
                 newWords: [{ jp: "たまご", en: "egg" }, { jp: "さかな", en: "fish" }],
-                preview: [{ jp: "よじ", en: "4 o'clock", note: "Coming up in shelf 07c — telling time" }]
+                preview: [{ jp: "よじ", en: "4 o'clock", note: "Coming up in file 07c — telling time" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "つ counter — everyday objects",
-                            explain: "When you count everyday objects — apples, boxes, cups, anything without its own special counter — Japanese uses an entirely different, older set of number words ending in つ. This 'つ series' only goes up to 10 — for 11 and higher, people just switch back to the plain numbers. ひとつ, ふたつ, みっつ... these don't look like いち, に, さん at all — they're their own set to memorize. パン (bread) is exactly this kind of plain object, so it takes the same つ series as りんご below — never いち, に, さん directly; いち is a pure counting number, not a counter for objects on its own.",
+                            explain: "Everyday objects (apples, bread, boxes) use their own number series ending in つ — ひとつ, ふたつ, みっつ... not いち, に, さん. It only goes up to 10; after that, plain numbers return.",
                             pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + つ</span> <span class="pattern-box__fixed">です</span>',
                             diagramSvg: (function () {
                                 var counts = [
@@ -2036,24 +2544,41 @@ window.NekoWaGa = {
                         },
                         {
                             title: "人 counter — counting people",
-                            explain: "People get their own counter too, and it starts out irregular: 1 and 2 people are their own special words — ひとり, ふたり — that don't even contain a number you'd recognize. From 3 people on, it settles into a normal pattern, [number]+にん: さんにん, よにん (not よんにん!), ごにん... 7 people can be しちにん or ななにん, both fine.",
+                            explain: "1 and 2 people are irregular: ひとり, ふたり. From 3 on, it's just [number]+にん — さんにん, よにん (not よんにん), ごにん... 7 can be しちにん or ななにん.",
                             pattern: '<span class="pattern-box__slot">Group</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 人</span> <span class="pattern-box__fixed">です</span>',
-                            // person.png now sits inside the ひとり row itself instead of a
-                            // separate strip above the table, per feedback to keep every
-                            // counter-example photo attached to its own row.
-                            diagramSvg: '<table class="grammar-box__counter-table"><tbody>'
-                                + '<tr><td class="jp">ひとり</td><td>hitori</td><td class="counter-count">1</td><td class="counter-photo"><img src="../../assets/images/lesson/transparent/person.png" alt="person"></td></tr>'
-                                + '<tr><td class="jp">ふたり</td><td>futari</td><td class="counter-count">2</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">さんにん</td><td>sannin</td><td class="counter-count">3</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">よにん</td><td>yonin</td><td class="counter-count">4</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">ごにん</td><td>gonin</td><td class="counter-count">5</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">ろくにん</td><td>rokunin</td><td class="counter-count">6</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">しちにん・ななにん</td><td>shichinin / nananin</td><td class="counter-count">7</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">はちにん</td><td>hachinin</td><td class="counter-count">8</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">きゅうにん</td><td>kyuunin</td><td class="counter-count">9</td><td class="counter-photo"></td></tr>'
-                                + '<tr><td class="jp">じゅうにん</td><td>juunin</td><td class="counter-count">10</td><td class="counter-photo"></td></tr>'
-                                + '</tbody></table>',
-                            diagramCaption: "がくせいは さんにんです。 (Gakusei wa sannin desu. — \"There are three students.\") Only 1 and 2 people break the pattern — everything from 3 up is just [number]+にん.",
+                            // Rebuilt (2026-09-05) from a static table with one lone
+                            // person.png in the ひとり row to the same accumulating
+                            // bread-stack diagram つ counter uses above — person.png
+                            // was hard to see at the table's small photo-cell size, and
+                            // the request was specifically to match the bread stacking
+                            // (another person added on top of the last, row by row).
+                            // Only one person.png source file exists (no numbered
+                            // per-frame variants like bread1..bread10), so each row
+                            // repeats that same image N times rather than using N
+                            // distinct files — same accumulate-by-row structure either
+                            // way. `.is-person` on the wrapper bumps the image size up
+                            // in study-style.css since this artwork reads smaller than
+                            // the bread icons at the shared 26px size.
+                            diagramSvg: (function () {
+                                var counts = [
+                                    "ひとり|hitori", "ふたり|futari", "さんにん|sannin", "よにん|yonin", "ごにん|gonin",
+                                    "ろくにん|rokunin", "しちにん・ななにん|shichinin / nananin", "はちにん|hachinin", "きゅうにん|kyuunin", "じゅうにん|juunin"
+                                ];
+                                var rows = counts.map(function (entry, i) {
+                                    var n = i + 1;
+                                    var parts = entry.split("|");
+                                    var imgs = "";
+                                    for (var k = 1; k <= n; k++) {
+                                        imgs += '<img src="../../assets/images/lesson/transparent/person.png" alt="person">';
+                                    }
+                                    return '<div class="grammar-box__bread-row">'
+                                        + '<div class="grammar-box__bread-imgs">' + imgs + '</div>'
+                                        + '<div class="grammar-box__bread-label"><span class="jp">' + parts[0] + '</span><span class="romaji">' + parts[1] + ' — ' + n + '</span></div>'
+                                        + '</div>';
+                                }).join('');
+                                return '<div class="grammar-box__bread-stack is-person">' + rows + '</div>';
+                            })(),
+                            diagramCaption: "がくせいは さんにんです。 (Gakusei wa sannin desu. — \"There are three students.\")",
                             sample: {
                                 tag: '"There are three students."',
                                 tiles: [{ text: "がくせい", role: "subject", gloss: "student" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "さんにん", role: "predicate", gloss: "three people", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
@@ -2129,30 +2654,138 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 07c: Telling Time */
+    /* FILE 07c: Telling Time */
     function s07c() {
         return {
-            id: "s07c", title: "Telling Time", subtitle: "Shelf 07c",
+            id: "s07c", title: "Telling Time", subtitle: "File 07c",
             wordBank: {
                 nouns: [{ jp: "いま", en: "it (now)" }],
                 times: [
                     { jp: "よじ", en: "4 o'clock" }, { jp: "くじ", en: "9 o'clock" }, { jp: "さんじじゅっぷん", en: "3:10" }
                 ],
                 newWords: [{ jp: "くるま", en: "car" }, { jp: "あさ", en: "morning" }, { jp: "よる", en: "night" }],
-                preview: [{ jp: "あります", en: "there is (things)", note: "Coming up in shelf 08a — there is/are & places" }]
+                preview: [{ jp: "あります", en: "there is (things)", note: "Coming up in file 08a — there is/are & places" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "時 (hour) — telling time, part 1",
-                            explain: "To say 'o'clock,' attach 時 (じ) directly after the number. Most hours use the plain number readings — but 4, 7, and 9 o'clock swap to special readings: よじ (not よんじ), しちじ (not ななじ), くじ (not きゅうじ). These three exceptions are worth memorizing on their own — they show up constantly.",
-                            pattern: '<span class="pattern-box__slot">Number</span> <span class="pattern-box__fixed">時</span>'
+                            explain: "To say 'o'clock,' attach 時 (じ) directly after the number. Most hours use the plain number readings — but 4, 7, and 9 o'clock swap to special readings: よじ (not よんじ), しちじ (not ななじ), くじ (not きゅうじ).",
+                            pattern: '<span class="pattern-box__slot">Number</span> <span class="pattern-box__fixed">時</span>',
+                            // Four small dials instead of one big clock: the first is a
+                            // REGULAR hour (3 o'clock, さんじ — reuses the exact time the
+                            // lesson's own sample sentence in part 2 already teaches, さん
+                            // じじゅっぷん) with no star; the other three are the irregular
+                            // hours themselves (よじ／しちじ／くじ), each with its own hour
+                            // numeral starred amber on that specific dial. Every dial reads
+                            // :10 past the hour (not a bare on-the-hour time) so the hands
+                            // actually have to be read together rather than the minute hand
+                            // just sitting at 12 — per explicit request to make it a real,
+                            // slightly-work-to-parse clock reading, not a trivial one.
+                            diagramSvg: (function () {
+                                var numeralPos = {
+                                    1: { x: 93, y: 30 }, 2: { x: 110, y: 47 }, 3: { x: 116, y: 70 }, 4: { x: 110, y: 93 },
+                                    5: { x: 93, y: 110 }, 6: { x: 70, y: 116 }, 7: { x: 47, y: 110 }, 8: { x: 30, y: 93 },
+                                    9: { x: 24, y: 70 }, 10: { x: 30, y: 47 }, 11: { x: 47, y: 30 }, 12: { x: 70, y: 24 }
+                                };
+                                // Hour-hand endpoint already offset for :10 past (not
+                                // pointing exactly at the numeral) — precomputed per hour
+                                // since only these four hours are ever shown.
+                                var hourHandEnd = {
+                                    3: { x: 96, y: 72 }, 4: { x: 91, y: 85 }, 7: { x: 55, y: 91 }, 9: { x: 44, y: 68 }
+                                };
+                                var clocks = [
+                                    { hour: 3, irregular: false, jp: "さんじじゅっぷん", romaji: "Sanji juppun", en: "3:10" },
+                                    { hour: 4, irregular: true, jp: "よじじゅっぷん", romaji: "Yoji juppun", en: "4:10" },
+                                    { hour: 7, irregular: true, jp: "しちじじゅっぷん", romaji: "Shichiji juppun", en: "7:10" },
+                                    { hour: 9, irregular: true, jp: "くじじゅっぷん", romaji: "Kuji juppun", en: "9:10" }
+                                ];
+                                var items = clocks.map(function (c) {
+                                    var nums = "";
+                                    for (var h = 1; h <= 12; h++) {
+                                        var p = numeralPos[h];
+                                        var isThis = h === c.hour;
+                                        var label = isThis && c.irregular ? h + "*" : String(h);
+                                        var fill = isThis && c.irregular ? "var(--term-amber)" : "var(--term-text)";
+                                        nums += '<text x="' + p.x + '" y="' + p.y + '" font-family="Courier Prime, monospace" font-size="15" text-anchor="middle" dominant-baseline="middle" fill="' + fill + '">' + label + '</text>';
+                                    }
+                                    var hEnd = hourHandEnd[c.hour];
+                                    return '<div class="s07c-clockquad__item">'
+                                        + '<svg width="140" height="140" viewBox="0 0 140 140">'
+                                        + '<circle cx="70" cy="70" r="60" fill="var(--term-bg)" stroke="var(--term-border)" stroke-width="2"/>'
+                                        + '<circle cx="70" cy="70" r="3" fill="var(--term-amber)"/>'
+                                        + nums
+                                        + '<line x1="70" y1="70" x2="' + hEnd.x + '" y2="' + hEnd.y + '" stroke="var(--term-text)" stroke-width="4" stroke-linecap="round"/>'
+                                        + '<line x1="70" y1="70" x2="103" y2="51" stroke="var(--term-amber)" stroke-width="3" stroke-linecap="round"/>'
+                                        + '</svg>'
+                                        + '<div class="s07c-clockquad__label">' + c.jp + '<span class="romaji">' + c.romaji + ' — ' + c.en + '</span></div>'
+                                        + '</div>';
+                                }).join('');
+                                return '<div class="s07c-clockquad">' + items + '</div>';
+                            })(),
+                            diagramCaption: "★ marks the hour that breaks the pattern on each clock — よじ／しちじ／くじ don't follow [number]+時 the way さんじ (no star) does."
                         },
                         {
                             title: "分 (minute) — telling time, part 2",
                             explain: "Minutes attach the same way as hours — but 分's sound shifts around even more than 匹's did, reading ふん or ぷん depending on the number before it (いっぷん, にふん, さんぷん...). 'What minute?' is 何分 (なんぷん). Put both halves together and you can tell any time: さんじじゅっぷん — '3:10.'",
                             pattern: '<span class="pattern-box__slot">Hour</span> <span class="pattern-box__fixed">時</span> <span class="pattern-box__slot">Minute</span> <span class="pattern-box__fixed">分</span>',
+                            // Same 10-dial idea as part 1's hour clocks, but for 分 — every
+                            // one of 1-10 minutes gets its own reading, alternating ふん/ぷん
+                            // almost unpredictably (unlike hour, which is 3 exceptions out
+                            // of 12 and otherwise regular). Hour hand fixed at 12 on every
+                            // dial (this is teaching "what N minutes looks like," not tied
+                            // to any specific hour) so only the minute hand's position
+                            // changes, 1 through 10. Colored by sound (green=ふん,
+                            // amber=ぷん) rather than "regular vs irregular" the way part 1's
+                            // stars were, since neither reading is the exception here.
+                            diagramSvg: (function () {
+                                var numeralPos = {
+                                    1: { x: 93, y: 30 }, 2: { x: 110, y: 47 }, 3: { x: 116, y: 70 }, 4: { x: 110, y: 93 },
+                                    5: { x: 93, y: 110 }, 6: { x: 70, y: 116 }, 7: { x: 47, y: 110 }, 8: { x: 30, y: 93 },
+                                    9: { x: 24, y: 70 }, 10: { x: 30, y: 47 }, 11: { x: 47, y: 30 }, 12: { x: 70, y: 24 }
+                                };
+                                // Minute-hand endpoint per value (N*6-90 degrees, length 38) --
+                                // precomputed since only these 10 values are ever shown.
+                                var minuteHandEnd = {
+                                    1: { x: 74, y: 32 }, 2: { x: 78, y: 33 }, 3: { x: 82, y: 34 }, 4: { x: 86, y: 35 },
+                                    5: { x: 89, y: 37 }, 6: { x: 92, y: 39 }, 7: { x: 95, y: 42 }, 8: { x: 98, y: 45 },
+                                    9: { x: 101, y: 48 }, 10: { x: 103, y: 51 }
+                                };
+                                var minutes = [
+                                    { n: 1, jp: "いっぷん", romaji: "ippun", sound: "pun" },
+                                    { n: 2, jp: "にふん", romaji: "nifun", sound: "fun" },
+                                    { n: 3, jp: "さんぷん", romaji: "sanpun", sound: "pun" },
+                                    { n: 4, jp: "よんぷん", romaji: "yonpun", sound: "pun" },
+                                    { n: 5, jp: "ごふん", romaji: "gofun", sound: "fun" },
+                                    { n: 6, jp: "ろっぷん", romaji: "roppun", sound: "pun" },
+                                    { n: 7, jp: "ななふん", romaji: "nanafun", sound: "fun" },
+                                    { n: 8, jp: "はっぷん", romaji: "happun", sound: "pun" },
+                                    { n: 9, jp: "きゅうふん", romaji: "kyuufun", sound: "fun" },
+                                    { n: 10, jp: "じゅっぷん", romaji: "juppun", sound: "pun" }
+                                ];
+                                var items = minutes.map(function (m) {
+                                    var nums = "";
+                                    for (var h = 1; h <= 12; h++) {
+                                        var p = numeralPos[h];
+                                        nums += '<text x="' + p.x + '" y="' + p.y + '" font-family="Courier Prime, monospace" font-size="15" text-anchor="middle" dominant-baseline="middle" fill="var(--term-text-dim)">' + h + '</text>';
+                                    }
+                                    var mEnd = minuteHandEnd[m.n];
+                                    var readingColor = m.sound === "fun" ? "var(--term-border)" : "var(--term-amber)";
+                                    return '<div class="s07c-clockquad__item">'
+                                        + '<svg width="140" height="140" viewBox="0 0 140 140">'
+                                        + '<circle cx="70" cy="70" r="60" fill="var(--term-bg)" stroke="var(--term-border)" stroke-width="2"/>'
+                                        + '<circle cx="70" cy="70" r="3" fill="var(--term-amber)"/>'
+                                        + nums
+                                        + '<line x1="70" y1="70" x2="70" y2="44" stroke="var(--term-text)" stroke-width="4" stroke-linecap="round"/>'
+                                        + '<line x1="70" y1="70" x2="' + mEnd.x + '" y2="' + mEnd.y + '" stroke="' + readingColor + '" stroke-width="3" stroke-linecap="round"/>'
+                                        + '</svg>'
+                                        + '<div class="s07c-clockquad__label" style="color:' + readingColor + '">' + m.jp + '<span class="romaji">' + m.romaji + ' — ' + m.n + ' min</span></div>'
+                                        + '</div>';
+                                }).join('');
+                                return '<div class="s07c-clockquad">' + items + '</div>';
+                            })(),
+                            diagramCaption: "Green = ふん, gold = ぷん — 分's own reading changes almost every time, not just for a few exceptions like 時 did.",
                             sample: {
                                 tag: '"It\'s 3:10 now."',
                                 tiles: [{ text: "いま", role: "subject", gloss: "now" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "さんじじゅっぷん", role: "predicate", gloss: "3:10", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
@@ -2160,10 +2793,10 @@ window.NekoWaGa = {
                             }
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-07
+                    /* Ported verbatim from the Adventure Room's file-07
                        LESSON_CONTENT conversation, trimmed to just its
                        time-question half — the original's second half
-                       (なんびき, counting cats) now belongs to shelf 07b
+                       (なんびき, counting cats) now belongs to file 07b
                        instead, so it's not repeated here. */
                     conversation: {
                         turns: [
@@ -2191,7 +2824,7 @@ window.NekoWaGa = {
                     sources: ["Tofugu numbers/counters guide", "Jisho.org"]
                 };
             },
-            /* No bonus exercise: shelf 08a's あります/います needs its own
+            /* No bonus exercise: file 08a's あります/います needs its own
                location grammar — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let wb = this.wordBank;
@@ -2245,61 +2878,60 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 07d: Counters for Animals — split out of 07b per explicit
+    /* FILE 07d: Counters for Animals — split out of 07b per explicit
        feedback ("counter for animals needs to be properly explained and
        sectioned out, put it on a different page") — 匹 alone doesn't tell
        the whole story (it's specifically SMALL animals), so this covers
        all three animal-size counters together instead of just one. */
     function s07d() {
         return {
-            id: "s07d", title: "Counters for Animals", subtitle: "Shelf 07d",
+            id: "s07d", title: "Counters for Animals", subtitle: "File 07d",
             wordBank: {
                 small: [{ jp: "ねこ", en: "cat" }, { jp: "いぬ", en: "dog" }, { jp: "さかな", en: "fish" }],
                 large: [{ jp: "うし", en: "cow" }, { jp: "うま", en: "horse" }, { jp: "ぞう", en: "elephant" }],
                 birds: [{ jp: "とり", en: "bird" }, { jp: "うさぎ", en: "rabbit" }],
                 newWords: [{ jp: "どうぶつ", en: "animal" }, { jp: "どうぶつえん", en: "zoo" }],
-                preview: [{ jp: "冊", en: "counter for books", note: "Coming up in shelf 07e — counters for things" }]
+                preview: [{ jp: "冊", en: "counter for books", note: "Coming up in file 07e — counters for things" }]
             },
             buildInstruction: function () {
-                // r[3], when present, is a transparent/ image name shown inline in that
-                // row's own trailing photo cell -- keeps the example photo attached to
-                // the exact row it illustrates instead of a separate strip above the
-                // table (per feedback: a shared photo strip made it hard to tell which
-                // picture belonged to which row).
+                // Each section's one example photo (cat/elephant/bird) now lives in
+                // that section's own pattern box instead of a table row -- r[3]
+                // used to hold an image name for the table's own trailing photo
+                // cell, but that would just duplicate the pattern-box photo now, so
+                // every row here is plain (kana, romaji, count) with no 4th field.
                 function table(rows) {
                     return '<table class="grammar-box__counter-table"><tbody>' + rows.map(function (r) {
-                        var photo = r[3] ? '<img src="../../assets/images/lesson/transparent/' + r[3] + '.png" alt="' + r[3] + '">' : '';
-                        return '<tr><td class="jp">' + r[0] + '</td><td>' + r[1] + '</td><td class="counter-count">' + r[2] + '</td><td class="counter-photo">' + photo + '</td></tr>';
+                        return '<tr><td class="jp">' + r[0] + '</td><td>' + r[1] + '</td><td class="counter-count">' + r[2] + '</td></tr>';
                     }).join('') + '</tbody></table>';
                 }
                 return {
                     sections: [
                         {
-                            title: "匹 — small animals",
-                            explain: "匹 (hiki) covers small animals: cats, dogs, fish, insects, mice — basically anything that comfortably fits in your arms or smaller. Its sound shifts constantly, the same way 匹 already did back in shelf 07b's brief mention — ひき, びき, or ぴき depending on the number before it.",
-                            pattern: '<span class="pattern-box__slot">Small animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 匹</span> <span class="pattern-box__fixed">です</span>',
+                            title: "<ruby>匹<rt>ひき</rt></ruby> — small animals",
+                            explain: "匹 (hiki) covers small animals: cats, dogs, fish, insects, mice — basically anything that comfortably fits in your arms or smaller. Its sound shifts constantly, the same way 匹 already did back in file 07b's brief mention — ひき, びき, or ぴき depending on the number before it.",
+                            pattern: '<img class="pattern-box__animal" src="../../assets/images/lesson/transparent/cat.png" alt="cat"> <span class="pattern-box__slot">Small animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + <ruby>匹<rt>ひき</rt></ruby></span> <span class="pattern-box__fixed">です</span>',
                             diagramSvg: table([
-                                ["いっぴき", "ippiki", "1", "cat"], ["にひき", "nihiki", "2"], ["さんびき", "sanbiki", "3"], ["よんひき", "yonhiki", "4"], ["ごひき", "gohiki", "5"],
+                                ["いっぴき", "ippiki", "1"], ["にひき", "nihiki", "2"], ["さんびき", "sanbiki", "3"], ["よんひき", "yonhiki", "4"], ["ごひき", "gohiki", "5"],
                                 ["ろっぴき", "roppiki", "6"], ["ななひき", "nanahiki", "7"], ["はっぴき", "happiki", "8"], ["きゅうひき", "kyuuhiki", "9"], ["じゅっぴき", "juppiki", "10"]
                             ]),
                             diagramCaption: "ねこは さんびきです。 (Neko wa sanbiki desu. — \"There are three cats.\")"
                         },
                         {
-                            title: "頭 — large animals",
+                            title: "<ruby>頭<rt>とう</rt></ruby> — large animals",
                             explain: "頭 (tou) takes over once an animal is too big to comfortably pick up: cows, horses, elephants, whales. Its readings are much more regular than 匹's — mostly just [number]+とう, with the usual small-つ doubling on 1, 8, and 10.",
-                            pattern: '<span class="pattern-box__slot">Large animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 頭</span> <span class="pattern-box__fixed">です</span>',
+                            pattern: '<img class="pattern-box__animal pattern-box__animal--large" src="../../assets/images/lesson/transparent/elephant.png" alt="elephant"> <span class="pattern-box__slot">Large animal</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + <ruby>頭<rt>とう</rt></ruby></span> <span class="pattern-box__fixed">です</span>',
                             diagramSvg: table([
-                                ["いっとう", "ittou", "1", "elephant"], ["にとう", "nitou", "2"], ["さんとう", "santou", "3"], ["よんとう", "yontou", "4"], ["ごとう", "gotou", "5"],
+                                ["いっとう", "ittou", "1"], ["にとう", "nitou", "2"], ["さんとう", "santou", "3"], ["よんとう", "yontou", "4"], ["ごとう", "gotou", "5"],
                                 ["ろくとう", "rokutou", "6"], ["ななとう", "nanatou", "7"], ["はっとう", "hattou", "8"], ["きゅうとう", "kyuutou", "9"], ["じゅっとう", "juttou", "10"]
                             ]),
                             diagramCaption: "うしは にとうです。 (Ushi wa nitou desu. — \"There are two cows.\")"
                         },
                         {
-                            title: "羽 — birds (and, oddly, rabbits)",
+                            title: "<ruby>羽<rt>わ</rt></ruby> — birds (and, oddly, rabbits)",
                             explain: "羽 (wa) counts birds — but Japanese has historically counted rabbits with 羽 too, not 匹. Nobody's fully sure why (one common explanation: rabbits were counted this way to sidestep old religious restrictions on eating four-legged animals), but it's a real, current N5-relevant fact: うさぎ takes 羽, not 匹.",
-                            pattern: '<span class="pattern-box__slot">Bird (or rabbit!)</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + 羽</span> <span class="pattern-box__fixed">です</span>',
+                            pattern: '<img class="pattern-box__animal pattern-box__animal--small" src="../../assets/images/lesson/transparent/bird.png" alt="bird"> <span class="pattern-box__slot">Bird (or rabbit!)</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Number + <ruby>羽<rt>わ</rt></ruby></span> <span class="pattern-box__fixed">です</span>',
                             diagramSvg: table([
-                                ["いちわ", "ichiwa", "1", "bird"], ["にわ", "niwa", "2"], ["さんわ", "sanwa", "3"], ["よんわ", "yonwa", "4"], ["ごわ", "gowa", "5"],
+                                ["いちわ", "ichiwa", "1"], ["にわ", "niwa", "2"], ["さんわ", "sanwa", "3"], ["よんわ", "yonwa", "4"], ["ごわ", "gowa", "5"],
                                 ["ろくわ", "rokuwa", "6"], ["ななわ", "nanawa", "7"], ["はちわ", "hachiwa", "8"], ["きゅうわ", "kyuuwa", "9"], ["じゅうわ", "juuwa", "10"]
                             ]),
                             diagramCaption: "うさぎは いちわです。 (Usagi wa ichiwa desu. — \"There is one rabbit.\") Yes — 羽, the bird counter, not 匹.",
@@ -2385,12 +3017,12 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 07e: Counters for Things — split out of 07a/07b per explicit
+    /* FILE 07e: Counters for Things — split out of 07a/07b per explicit
        feedback ("counter for things a different page again"). N5/N4-level
        object counters, one per shape/category. */
     function s07e() {
         return {
-            id: "s07e", title: "Counters for Things", subtitle: "Shelf 07e",
+            id: "s07e", title: "Counters for Things", subtitle: "File 07e",
             wordBank: {
                 items: [
                     { jp: "ほん", en: "book", counter: "冊", reading: "いっさつ" },
@@ -2504,17 +3136,238 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 08 SPLIT — same reasoning as shelf 07's split above: "Places &
+    /* FILE 07g — "Days, Dates in the Calendar," displayed as File 07f
+       (2026-09-05, merge pass). Used to be two lessons: s07f taught 曜日/
+       月/日にち as prose with one sample tile and no diagram; s07g was a
+       pure visual companion (a calendar grid + weekday listing) with no
+       grammar teaching of its own. Per explicit request, s07f is gone —
+       ALL its real content (days-of-week grammar, months, the 1st-10th
+       date readings) now lives here, in s07g, alongside the diagrams. The
+       `id` stays "s07g" (never rename a shipped id — StudyProgress keys
+       saved completion off it) — only the display `subtitle`/position
+       change to occupy the 07f slot, same discipline as the s12/13/14 and
+       s10d/e id-preservation fixes elsewhere in this file. s07f() itself
+       and its slot in buildLessons() are deleted, not left dead.
+
+       Calendar-grid diagram, 3rd pass same day: the 1st-10th readings
+       that got stripped out for being "unrecognizable" (too small, too
+       cramped) are back — turns out the 1st-10th's own irregular readings
+       are real content this merge needs to teach, not just clutter. Sized
+       up again (wider card, bigger digits/readings) specifically so they
+       stay legible this time; core 1st-10th readings render in plain
+       green, the three bonus dates (14th/20th/24th) keep their amber+star
+       treatment so the two tiers still read as visually distinct. The
+       trailing "$ _" cursor prompt was cut from the calendar (not the
+       weekday listing) per request — it wasn't adding anything once the
+       diagram already ends on a real row of dates. */
+    function s07g() {
+        return {
+            id: "s07g", title: "Days, Dates in the Calendar", subtitle: "File 07f",
+            wordBank: {
+                days: [
+                    { jp: "月曜日", en: "Monday" }, { jp: "火曜日", en: "Tuesday" }, { jp: "水曜日", en: "Wednesday" },
+                    { jp: "木曜日", en: "Thursday" }, { jp: "金曜日", en: "Friday" }, { jp: "土曜日", en: "Saturday" }, { jp: "日曜日", en: "Sunday" }
+                ],
+                months: [
+                    { jp: "四月", en: "April", romaji: "shigatsu" }, { jp: "七月", en: "July", romaji: "shichigatsu" }, { jp: "九月", en: "September", romaji: "kugatsu" }
+                ],
+                newWords: [
+                    { jp: "今日", en: "today" }, { jp: "明日", en: "tomorrow" }, { jp: "きのう", en: "yesterday" },
+                    { jp: "毎週", en: "every week" }, { jp: "先月", en: "last month" },
+                    { jp: "じゅうよっか", en: "14th (of the month)" }, { jp: "はつか", en: "20th (of the month)" }, { jp: "にじゅうよっか", en: "24th (of the month)" }
+                ],
+                preview: [{ jp: "あります", en: "there is (things)", note: "Coming up in file 08a — there is/are & places" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "曜日 — Days of the Week",
+                            explain: "Every weekday = an element + 曜日: 月 moon, 火 fire, 水 water, 木 wood, 金 gold, 土 earth, 日 sun. Ask with <ruby>何曜日<rt>なんようび</rt></ruby>ですか.",
+                            pattern: '<span class="pattern-box__fixed"><ruby>何曜日<rt>なんようび</rt></ruby>ですか</span> → <span class="pattern-box__slot">[day]曜日です</span>',
+                            sample: {
+                                tag: '"Today is Monday."',
+                                tiles: [{ text: "今日", role: "subject", gloss: "today" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "月曜日", role: "predicate", gloss: "Monday", isNew: true }, { text: "です", role: "copula", gloss: "am/is" }],
+                                romaji: "Kyou wa getsuyoubi desu."
+                            },
+                            diagramSvg: `
+        <div class="s07g-term s07g-term--youbi">
+          <div class="s07g-term__bar">
+            <span class="s07g-term__dot"></span><span class="s07g-term__dot"></span><span class="s07g-term__dot is-live"></span>
+            <span class="s07g-term__path">neko@bunko:~/calendar</span>
+          </div>
+          <div class="s07g-term__body">
+            <div class="s07g-term__prompt">$ <b>ls -la ./youbi/</b></div>
+            <div class="s07g-term-ls">
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/moon-pixel-1-Original.png" alt="moon">
+                <span class="name"><b>月</b>月曜日 · moon</span>
+                <span class="meta">getsuyoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/fire-icon-Original.png" alt="fire">
+                <span class="name"><b>火</b>火曜日 · fire</span>
+                <span class="meta">kayoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/water-representation-Original.png" alt="water">
+                <span class="name"><b>水</b>水曜日 · water</span>
+                <span class="meta">suiyoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/mahogany-tree-Original.png" alt="wood">
+                <span class="name"><b>木</b>木曜日 · wood</span>
+                <span class="meta">mokuyoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/yen-coins-Original.png" alt="gold">
+                <span class="name"><b>金</b>金曜日 · gold</span>
+                <span class="meta">kinyoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/soil-representation-Original.png" alt="earth">
+                <span class="name"><b>土</b>土曜日 · earth</span>
+                <span class="meta">doyoubi</span>
+              </div>
+              <div class="s07g-term-ls__row">
+                <img class="s07g-term-ls__img" src="../../assets/images/lesson/sun-pixel-2-Original.png" alt="sun">
+                <span class="name"><b>日</b>日曜日 · sun</span>
+                <span class="meta">nichiyoubi</span>
+              </div>
+            </div>
+            <div class="s07g-term__cursor">$ <span class="s07g-term__blink"></span></div>
+          </div>
+        </div>
+      `,
+                            diagramCaption: "金 means gold specifically, not metal in general."
+                        },
+                        {
+                            title: "月 — Months",
+                            explain: "Months are [number] + 月 (gatsu). Three exceptions: <strong>四月</strong> (shigatsu, April), <strong>七月</strong> (shichigatsu, July), <strong>九月</strong> (kugatsu, September).",
+                            pattern: '<span class="pattern-box__fixed"><ruby>何月<rt>なんがつ</rt></ruby>ですか</span> → <span class="pattern-box__slot">[number]月です</span>'
+                        },
+                        {
+                            title: "日にち — Dates",
+                            explain: "1st–10th each have their own reading — ついたち, ふつか, みっか... not just [number]+日. Three more break the pattern further out: <strong>じゅうよっか</strong> (14th), <strong>はつか</strong> (20th), <strong>にじゅうよっか</strong> (24th). Everything else is regular.",
+                            diagramSvg: `
+        <div class="s07g-term s07g-term--cal">
+          <div class="s07g-term__bar">
+            <span class="s07g-term__dot"></span><span class="s07g-term__dot"></span><span class="s07g-term__dot is-live"></span>
+            <span class="s07g-term__path">neko@bunko:~/calendar</span>
+          </div>
+          <div class="s07g-term__body">
+            <div class="s07g-term__prompt">$ <b>cal --lang=jp 2026 4</b></div>
+            <div class="s07g-term__title">4月 — APRIL 2026</div>
+            <table class="s07g-term-cal">
+              <tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr>
+              <tr>
+                <td></td><td></td><td></td>
+                <td class="is-core"><span class="d">1</span><span class="r">ついたち</span></td>
+                <td class="is-core"><span class="d">2</span><span class="r">ふつか</span></td>
+                <td class="is-core"><span class="d">3</span><span class="r">みっか</span></td>
+                <td class="is-core"><span class="d">4</span><span class="r">よっか</span></td>
+              </tr>
+              <tr>
+                <td class="is-core"><span class="d">5</span><span class="r">いつか</span></td>
+                <td class="is-core"><span class="d">6</span><span class="r">むいか</span></td>
+                <td class="is-core"><span class="d">7</span><span class="r">なのか</span></td>
+                <td class="is-core"><span class="d">8</span><span class="r">ようか</span></td>
+                <td class="is-core"><span class="d">9</span><span class="r">ここのか</span></td>
+                <td class="is-core"><span class="d">10</span><span class="r">とおか</span></td>
+                <td><span class="d">11</span></td>
+              </tr>
+              <tr>
+                <td><span class="d">12</span></td>
+                <td><span class="d">13</span></td>
+                <td class="is-bonus"><span class="d">14</span><span class="r">じゅうよっか</span></td>
+                <td><span class="d">15</span></td>
+                <td><span class="d">16</span></td>
+                <td><span class="d">17</span></td>
+                <td><span class="d">18</span></td>
+              </tr>
+              <tr>
+                <td><span class="d">19</span></td>
+                <td class="is-bonus"><span class="d">20</span><span class="r">はつか</span></td>
+                <td><span class="d">21</span></td>
+                <td><span class="d">22</span></td>
+                <td><span class="d">23</span></td>
+                <td class="is-bonus"><span class="d">24</span><span class="r">にじゅうよっか</span></td>
+                <td><span class="d">25</span></td>
+              </tr>
+              <tr>
+                <td><span class="d">26</span></td>
+                <td><span class="d">27</span></td>
+                <td><span class="d">28</span></td>
+                <td><span class="d">29</span></td>
+                <td><span class="d">30</span></td>
+                <td></td><td></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      `,
+                            diagramCaption: "はつか is the odd one out — it doesn't even keep the か ending the other two do."
+                        }
+                    ],
+                    examples: [
+                        { jp: "今日は月曜日です。", romaji: "Kyou wa getsuyoubi desu.", en: "Today is Monday." },
+                        { jp: "たんじょうびは四月です。", romaji: "Tanjoubi wa shigatsu desu.", en: "My birthday is in April." },
+                        { jp: "今日はついたちです。", romaji: "Kyou wa tsuitachi desu.", en: "Today is the 1st." },
+                        { jp: "今日はじゅうよっかです。", romaji: "Kyou wa juuyokka desu.", en: "Today is the 14th." },
+                        { jp: "たんじょうびははつかです。", romaji: "Tanjoubi wa hatsuka desu.", en: "My birthday is the 20th." },
+                        { jp: "金曜日は金（きん）を表します。", romaji: "Kinyoubi wa kin o arawashimasu.", en: "Friday represents gold." }
+                    ],
+                    vocab: [
+                        { jp: "月曜日", romaji: "getsuyoubi", en: "Monday" }, { jp: "火曜日", romaji: "kayoubi", en: "Tuesday" },
+                        { jp: "水曜日", romaji: "suiyoubi", en: "Wednesday" }, { jp: "木曜日", romaji: "mokuyoubi", en: "Thursday" },
+                        { jp: "金曜日", romaji: "kinyoubi", en: "Friday" }, { jp: "土曜日", romaji: "doyoubi", en: "Saturday" },
+                        { jp: "日曜日", romaji: "nichiyoubi", en: "Sunday" }, { jp: "何曜日", romaji: "nan'youbi", en: "what day of the week" },
+                        { jp: "何月", romaji: "nangatsu", en: "what month" }, { jp: "ついたち", romaji: "tsuitachi", en: "1st (of the month)" },
+                        { jp: "じゅうよっか", romaji: "juuyokka", en: "14th (of the month)" }, { jp: "はつか", romaji: "hatsuka", en: "20th (of the month)" },
+                        { jp: "にじゅうよっか", romaji: "nijuuyokka", en: "24th (of the month)" }, { jp: "金（きん）", romaji: "kin", en: "gold" }
+                    ],
+                    sources: ["Tofugu — Japanese calendar/date guide", "Tae Kim's Guide to Japanese Grammar"]
+                };
+            },
+            buildMatchExercises: function () {
+                return buildMatchExercisesFromBank({ phrases: this.wordBank.days }, 6);
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "今日は　<u>＿＿＿</u>　です。 (\"Today is Monday.\")", choices: ["月曜日", "火曜日", "水曜日", "日曜日"], correctIndex: 0 },
+                            { prompt: "たんじょうびは　<u>＿＿＿</u>　です。 (\"My birthday is in April.\" — irregular reading)", choices: ["よんがつ", "しがつ", "よがつ", "しちがつ"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　ですか。 (\"What day of the week is it?\")", choices: ["何曜日", "何月", "何日", "何時"], correctIndex: 0 },
+                            { prompt: "今日は　<u>＿＿＿</u>　です。 (\"Today is the 1st.\")", choices: ["ふつか", "ついたち", "みっか", "いちにち"], correctIndex: 1 },
+                            { prompt: "今日は　<u>＿＿＿</u>　です。 (\"Today is the 24th.\")", choices: ["にじゅうよっか", "にじゅうよんにち", "にじゅうか", "よんか"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "今日は月曜日です。", choices: ["Today is Monday.", "Today is Sunday.", "Tomorrow is Monday.", "What day is today?"], correctIndex: 0 },
+                            { prompt: "たんじょうびは九月です。", choices: ["My birthday is in June.", "My birthday is in September.", "My birthday is in July.", "My birthday is in April."], correctIndex: 1 },
+                            { prompt: "今日はふつかです。", choices: ["Today is the 1st.", "Today is the 2nd.", "Today is the 4th.", "Today is Tuesday."], correctIndex: 1 },
+                            { prompt: "今日ははつかです。", choices: ["Today is the 2nd.", "Today is the 20th.", "Today is the 24th.", "Today is Tuesday."], correctIndex: 1 },
+                            { prompt: "明日は金曜日です。", choices: ["Tomorrow is Thursday.", "Tomorrow is Friday.", "Yesterday was Friday.", "Today is Friday."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* FILE 08 SPLIT — same reasoning as file 07's split above: "Places &
        Directions" bundled a lot of genuinely distinct content (existence,
        place vocab, relative-position words, grammar mechanics, movement,
        the compass) into one long lesson. Per explicit feedback ("same
        with places and directions... place another subsection"), it's now
        three separate lessons — 08a/08b/08c. */
 
-    /* SHELF 08a: There Is/Are & Places */
+    /* FILE 08a: There Is/Are & Places */
     function s08a() {
         return {
-            id: "s08a", title: "There Is/Are", subtitle: "Shelf 08a",
+            id: "s08a", title: "There Is/Are", subtitle: "File 08a",
             wordBank: {
                 subjects: [
                     { jp: "ねこ", en: "the cat", verb: "います" },
@@ -2525,14 +3378,14 @@ window.NekoWaGa = {
                 newWords: [
                     { jp: "ゆうびんきょく", en: "post office" }, { jp: "えいがかん", en: "movie theater" }, { jp: "にぎやか", en: "lively / bustling" }
                 ],
-                preview: [{ jp: "前", en: "in front of", note: "Coming up in shelf 08b — direction words" }]
+                preview: [{ jp: "前", en: "in front of", note: "Coming up in file 08b — direction words" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "There is/are — あります / います",
-                            explain: "います is for things that are truly alive and can move around on their own: people (せんせい、がくせい) and animals (ねこ、いぬ) — if it could get up and walk away, use います. あります is for everything else: objects, places — but also plants! A tree is alive, but it can't move itself, so even a living plant still takes あります, not います. The real test isn't 'is it alive?' — it's 'can it walk away on its own?'",
+                            explain: "You already met います and あります back in Verb Basics, on their own with no location attached. Same split as then — <strong>います</strong> for things that are truly alive and can move around on their own: people (せんせい、がくせい) and animals (ねこ、いぬ); <strong>あります</strong> for everything else: objects, places — but also plants! A tree is alive, but it can't move itself, so even a living plant still takes あります, not います. The real test isn't 'is it alive?' — it's 'can it walk away on its own?' What's new here is adding WHERE: attach a place with に right before the verb, and now you're saying not just that something exists, but where.",
                             pattern: '<span class="pattern-box__slot">Thing</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">Place</span> <span class="pattern-box__fixed">に あります/います</span>'
                         },
                         {
@@ -2633,10 +3486,10 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 08b: Direction Words */
+    /* FILE 08b: Direction Words */
     function s08b() {
         return {
-            id: "s08b", title: "Direction Words", subtitle: "Shelf 08b",
+            id: "s08b", title: "Direction Words", subtitle: "File 08b",
             wordBank: {
                 subjects: [{ jp: "としょかん", en: "the library" }, { jp: "ねこ", en: "the cat" }, { jp: "レストラン", en: "the restaurant" }],
                 places: [{ jp: "がっこう", en: "the school" }, { jp: "テーブル", en: "the table" }, { jp: "こうえん", en: "the park" }],
@@ -2645,7 +3498,7 @@ window.NekoWaGa = {
                 newWords: [
                     { jp: "ひろい", en: "spacious / wide" }, { jp: "せまい", en: "narrow / cramped" }
                 ],
-                preview: [{ jp: "まっすぐ", en: "straight ahead", note: "Coming up in shelf 08c — movement & the compass" }]
+                preview: [{ jp: "まっすぐ", en: "straight ahead", note: "Coming up in file 08c — movement & the compass" }]
             },
             buildInstruction: function () {
                 return {
@@ -2756,10 +3609,10 @@ window.NekoWaGa = {
                             }
                         }
                     ],
-                    /* Ported verbatim from the Adventure Room's shelf-08
+                    /* Ported verbatim from the Adventure Room's file-08
                        LESSON_CONTENT (the closing 'conversation' page,
-                       reusing shelf-05's どこ to ask where something is,
-                       answered with this shelf's own ちかく pattern), fixed
+                       reusing file-05's どこ to ask where something is,
+                       answered with this file's own ちかく pattern), fixed
                        sensei=black/player=orange casting per Study Room's
                        own convention. No role-* spans in the original and
                        no name variable in scope for this lesson, so
@@ -2803,7 +3656,7 @@ window.NekoWaGa = {
             },
             /* Index i ties subject/place/direction/verb into one sensible sentence
                (a library "near" the school, a cat "under" a tree, a restaurant "next to" a park).
-               No bonus exercise: shelf 08c's まっすぐ/曲がります don't fit this
+               No bonus exercise: file 08c's まっすぐ/曲がります don't fit this
                lesson's location-description sentence pattern — preview stays
                exposure-only. */
             buildWordBankExercises: function () {
@@ -2860,21 +3713,21 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 08c: Movement & The Compass */
+    /* FILE 08c: Movement & The Compass */
     function s08c() {
         return {
-            id: "s08c", title: "Movement & The Compass", subtitle: "Shelf 08c",
+            id: "s08c", title: "Movement & The Compass", subtitle: "File 08c",
             wordBank: {
                 places: [{ jp: "としょかん", en: "the library" }, { jp: "がっこう", en: "school" }, { jp: "こうえん", en: "the park" }],
                 newWords: [{ jp: "にぎやか", en: "lively / bustling" }],
-                preview: [{ jp: "あなた", en: "you", note: "Coming up in shelf 09b — pronouns" }]
+                preview: [{ jp: "あなた", en: "you", note: "Coming up in file 09b — pronouns" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "Movement & giving directions",
-                            explain: "Actually walking somewhere needs a different kind of word — not 'where something is,' but 'which way to go.' あっち・こっち・どっち are the everyday, casual versions of shelf 05's こちら・そちら・あちら・どちら — same 'which way' meaning, softer tone. まっすぐ (straight ahead), 曲がります (to turn), and 行きます (to go) round out actually giving someone directions. This is a real map with a real route on it — press the buttons in order and the cat actually walks it, turn by turn.",
+                            explain: "Actually walking somewhere needs a different kind of word — not 'where something is,' but 'which way to go.' あっち・こっち・どっち are the everyday, casual versions of file 05's こちら・そちら・あちら・どちら — same 'which way' meaning, softer tone. まっすぐ (straight ahead), 曲がります (to turn), and 行きます (to go) round out actually giving someone directions. This is a real map with a real route on it — press the buttons in order and the cat actually walks it, turn by turn.",
                             diagramSvg: '<div class="grammar-box__route2" data-step="0">'
                                 + '<div class="route2-prompt"><div class="jp" data-role="promptJp">右に曲がってください。</div><div class="romaji" data-role="promptRomaji">migi ni magatte kudasai — turn right</div></div>'
                                 + '<div class="route2-scene">'
@@ -2997,14 +3850,14 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 09b's あなた, slotted in as the subject
+                /* Bonus: sneak peek at file 09b's あなた, slotted in as the subject
                    of an います (person) sentence — reuses the います pattern
-                   already taught back in shelf 08a. */
+                   already taught back in file 08a. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     let place2 = pick(wb.places);
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 09b) Write: <strong>You are at " + place2.en + "</strong>",
+                        prompt: "(bonus — sneak peek: file 09b) Write: <strong>You are at " + place2.en + "</strong>",
                         accepted: [[preview.jp, "は", place2.jp, "に", "います"]],
                         hint: preview.jp + "は" + place2.jp + "にいます",
                         refWords: [
@@ -3051,13 +3904,13 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 08d: Places — Common Locations. Split out of 08a per explicit
+    /* FILE 08d: Places — Common Locations. Split out of 08a per explicit
        feedback — 08a was covering the あります/います grammar AND a full
        place-vocab reference diagram at once, which made one lesson feel
        like two. 08a keeps the grammar; this is just the place words. */
     function s08d() {
         return {
-            id: "s08d", title: "Places — Common Locations", subtitle: "Shelf 08d",
+            id: "s08d", title: "Places — Common Locations", subtitle: "File 08d",
             wordBank: {
                 places: [
                     { jp: "うち", en: "home" }, { jp: "がっこう", en: "school" }, { jp: "えき", en: "station" },
@@ -3071,7 +3924,7 @@ window.NekoWaGa = {
                     sections: [
                         {
                             title: "Places — common locations",
-                            explain: "A solid set of place nouns to plug into [Place]は…にあります (covered in shelf 08a) without any special handling — every single one now has its own real photo.",
+                            explain: "A solid set of place nouns to plug into [Place]は…にあります (covered in file 08a) without any special handling — every single one now has its own real photo.",
                             diagramSvg: '<div class="grammar-box__place-grid">'
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/house.png" alt="house"><div class="grammar-box__place-jp">うち</div><div class="grammar-box__place-en">uchi &middot; home</div></div>'
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/college.png" alt="school"><div class="grammar-box__place-jp">がっこう</div><div class="grammar-box__place-en">gakkou &middot; school</div></div>'
@@ -3082,7 +3935,7 @@ window.NekoWaGa = {
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/library.png" alt="library"><div class="grammar-box__place-jp">としょかん</div><div class="grammar-box__place-en">toshokan &middot; library</div></div>'
                                 + '<div class="grammar-box__place-cell"><img src="../../assets/images/lesson/transparent/park.png" alt="park"><div class="grammar-box__place-jp">こうえん</div><div class="grammar-box__place-en">kouen &middot; park</div></div>'
                                 + '</div>',
-                            diagramCaption: "Every one of these is a plain noun — no counter, no special grammar. The ONLY thing that changes sentence to sentence is which direction word (shelf 08b) sits between the place and に あります.",
+                            diagramCaption: "Every one of these is a plain noun — no counter, no special grammar. The ONLY thing that changes sentence to sentence is which direction word (file 08b) sits between the place and に あります.",
                             sample: {
                                 tag: '"The book is at the library."',
                                 tiles: [{ text: "ほん", role: "subject", gloss: "book" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "としょかんに", role: "particle", gloss: "at the library", isNew: true }, { text: "あります", role: "predicate", gloss: "is there" }],
@@ -3152,17 +4005,17 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 09a/09b: Nouns & Pronouns, split into their own pages per
+    /* FILE 09a/09b: Nouns & Pronouns, split into their own pages per
        explicit feedback (nouns and pronouns are different word classes
        with different jobs — の-possessive and noun categories belong with
        nouns, casual/plural pronouns and the こんな family belong with
-       pronouns). Same split shape as the 07a-e / 08a-d shelf-groups:
+       pronouns). Same split shape as the 07a-e / 08a-d file-groups:
        lettered ids, no bare "s09" lesson of its own. Content ported
-       originally from LESSON_CONTENT['shelf-09'] in n5-phaser-game.js,
+       originally from LESSON_CONTENT['file-09'] in n5-phaser-game.js,
        then divided and each half given room to stand on its own. */
     function s09a() {
         return {
-            id: "s09a", title: "Nouns", subtitle: "Shelf 09a",
+            id: "s09a", title: "Nouns", subtitle: "File 09a",
             wordBank: {
                 people: uPick(NAMES, 2),
                 things: [{ jp: "ともだち", en: "friend" }, { jp: "ほん", en: "book" }, { jp: "ねこ", en: "cat" }],
@@ -3170,17 +4023,39 @@ window.NekoWaGa = {
                     { jp: "せんぱい", en: "senior (upperclassman)" }, { jp: "こうはい", en: "junior (underclassman)" },
                     { jp: "どうりょう", en: "colleague" }, { jp: "しんせき", en: "relative" }
                 ],
-                /* Next-lesson preview (shelf 09b, pronouns) — shown for exposure
+                /* Next-lesson preview (file 09b, pronouns) — shown for exposure
                    and usable in this lesson's bonus exercise below. */
-                preview: [{ jp: "あなた", en: "you", note: "Coming up in shelf 09b — pronouns" }]
+                preview: [{ jp: "あなた", en: "you", note: "Coming up in file 09b — pronouns" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "Nouns (名詞 / めいし)",
-                            explain: "A noun names a person, place, or thing — 本 (hon, \"book\"), 友達 (tomodachi, \"friend\"), 学校 (gakkou, \"school\"). Japanese nouns don't change form for singular/plural or gender the way English ones sometimes do — 本 can mean \"book\" or \"books\" from context alone, no -s ending to add. Any noun slots straight into the [Noun]は[description]です pattern you've already been using since shelf 03.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">description</span> <span class="pattern-box__fixed">です</span>'
+                            explain: "A noun is just a naming word — the name of a person, a place, or a thing. That's it.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">description</span> <span class="pattern-box__fixed">です</span>',
+                            // Classic "noun anchor chart" — the person/place/thing 3-box
+                            // sort every elementary-school grammar chart uses (confirmed
+                            // via research, not invented here), rebuilt with real N5
+                            // words already taught by this point in the curriculum
+                            // (学校 lands in file 08a, well before this lesson).
+                            diagramSvg: '<div class="noun-chart">'
+                                + '<div class="noun-chart__box">'
+                                + '<div class="noun-chart__label">PERSON</div>'
+                                + '<div class="noun-chart__ex"><span class="jp">友達</span><span class="en">friend</span></div>'
+                                + '<div class="noun-chart__ex"><span class="jp">先生</span><span class="en">teacher</span></div>'
+                                + '</div>'
+                                + '<div class="noun-chart__box">'
+                                + '<div class="noun-chart__label">PLACE</div>'
+                                + '<div class="noun-chart__ex"><span class="jp">学校</span><span class="en">school</span></div>'
+                                + '</div>'
+                                + '<div class="noun-chart__box">'
+                                + '<div class="noun-chart__label">THING</div>'
+                                + '<div class="noun-chart__ex"><span class="jp">本</span><span class="en">book</span></div>'
+                                + '<div class="noun-chart__ex"><span class="jp">かばん</span><span class="en">bag</span></div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Every noun sorts into one of these three boxes. Japanese nouns also skip the extra rules English has — no -s for plural, no \"a/an/the\" to pick — 本 just means \"book\" or \"books,\" context decides which."
                         },
                         {
                             title: "の — connecting two nouns",
@@ -3200,7 +4075,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "People & relationships",
-                            explain: "A cluster of N5 nouns exists just to name the people around you: 友達 (friend), 家族 (family), 先生 (teacher), 学生 (student) — plus a workplace/school-hierarchy set: せんぱい (senior/upperclassman) and こうはい (junior/underclassman) mark relative seniority, not age; どうりょう (colleague) and しんせき (relative) round out the everyday relationship vocabulary you'll reach for constantly once you start describing your own life in Japanese.",
+                            explain: "N5 also has words for the people around you: 友達 (friend), 家族 (family), 先生 (teacher), 学生 (student). せんぱい/こうはい mark seniority (upperclassman/underclassman), not age; どうりょう (colleague) and しんせき (relative) round out the set.",
                             sample: {
                                 tag: '"This is the teacher\'s book."',
                                 tiles: [{ text: "これ", role: "subject", gloss: "this" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "先生の本", role: "predicate", gloss: "teacher's book", isNew: true }, { text: "です", role: "copula", gloss: "is" }],
@@ -3210,7 +4085,7 @@ window.NekoWaGa = {
                     ],
                     examples: [
                         { jp: "あの人は私の友達です", romaji: "Ano hito wa watashi no tomodachi desu.", en: "That person is my friend." },
-                        { jp: "これは先生の本です", romaji: "Kore wa sensei no hon desu.", en: "This is the teacher's book." },
+                        { jp: "これは学生のかばんです", romaji: "Kore wa gakusei no kaban desu.", en: "This is the student's bag." },
                         { jp: "彼は私のせんぱいです", romaji: "Kare wa watashi no senpai desu.", en: "He is my senior/upperclassman." }
                     ],
                     examplesMore: [
@@ -3256,12 +4131,12 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 09b's あなた, dropped into this
+                /* Bonus: sneak peek at file 09b's あなた, dropped into this
                    lesson's own [Noun]は[description]です pattern. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 09b) Write: <strong>You are a teacher</strong>",
+                        prompt: "(bonus — sneak peek: file 09b) Write: <strong>You are a teacher</strong>",
                         accepted: [[preview.jp, "は", "せんせい", "です"]],
                         hint: preview.jp + "はせんせいです",
                         refWords: [
@@ -3288,7 +4163,7 @@ window.NekoWaGa = {
                     mondai1: {
                         questions: [
                             { prompt: "あの人は私の　<u>＿＿＿</u>　です。 (\"That person is my friend.\")", choices: ["友達", "先生", "せんぱい", "こうはい"], correctIndex: 0 },
-                            { prompt: "これは先生　<u>＿＿＿</u>　本です。 (\"This is the teacher's book.\")", choices: ["は", "が", "の", "を"], correctIndex: 2 },
+                            { prompt: "これは私　<u>＿＿＿</u>　時計です。 (\"This is my watch.\")", choices: ["は", "が", "の", "を"], correctIndex: 2 },
                             { prompt: "彼は私の　<u>＿＿＿</u>　です。 (\"He is my senior/upperclassman.\")", choices: ["友達", "せんぱい", "こうはい", "どうりょう"], correctIndex: 1 },
                             { prompt: "会社の　<u>＿＿＿</u>　です。 (\"[He/she is] a colleague at the company.\")", choices: ["せんぱい", "こうはい", "どうりょう", "しんせき"], correctIndex: 2 },
                             { prompt: "私の　<u>＿＿＿</u>　です。 (\"[He/she is] my relative.\")", choices: ["せんぱい", "こうはい", "どうりょう", "しんせき"], correctIndex: 3 }
@@ -3297,7 +4172,7 @@ window.NekoWaGa = {
                     mondai2: {
                         questions: [
                             { prompt: "あの人は私の友達です。", choices: ["That person is my friend.", "That person is my teacher.", "That person is a stranger.", "I don't know that person."], correctIndex: 0 },
-                            { prompt: "これは先生の本です。", choices: ["This is my book.", "This is the teacher's book.", "This is a new book.", "The teacher has no book."], correctIndex: 1 },
+                            { prompt: "これは私の時計です。", choices: ["This is my watch.", "This is his watch.", "This is a new watch.", "I have no watch."], correctIndex: 0 },
                             { prompt: "彼は私のせんぱいです。", choices: ["He is my junior.", "He is my senior/upperclassman.", "He is my colleague.", "He is my relative."], correctIndex: 1 },
                             { prompt: "こうはいはだれですか。", choices: ["Who is the junior/underclassman?", "Who is the senior?", "Where is the junior?", "Is there a junior?"], correctIndex: 0 },
                             { prompt: "どうりょうと会いました。", choices: ["I met my colleague.", "I met my teacher.", "I met a stranger.", "I never met anyone."], correctIndex: 0 }
@@ -3310,22 +4185,44 @@ window.NekoWaGa = {
 
     function s09b() {
         return {
-            id: "s09b", title: "Pronouns", subtitle: "Shelf 09b",
+            id: "s09b", title: "Pronouns", subtitle: "File 09b",
             wordBank: {
                 casual: [{ jp: "僕", en: "I / me (casual, male)" }, { jp: "君", en: "you (casual)" }],
                 demonstratives: [{ jp: "どんな", en: "what kind of" }],
                 nouns: [{ jp: "ひと", en: "person" }, { jp: "ほん", en: "book" }, { jp: "ねこ", en: "cat" }],
                 newWords: [{ jp: "色んな", en: "various" }],
-                /* Next-lesson preview (shelf 10a, い-adjectives) — shown for
+                /* Next-lesson preview (file 10a, い-adjectives) — shown for
                    exposure and usable in this lesson's bonus exercise below. */
-                preview: [{ jp: "おおきい", en: "big", note: "Coming up in shelf 10a — い-adjectives" }]
+                preview: [{ jp: "おおきい", en: "big", note: "Coming up in file 10a — い-adjectives" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "Pronouns (代名詞 / だいめいし)",
-                            explain: "A pronoun stands in for a noun instead of repeating it — 私 (watashi, \"I/me\") instead of saying your own name every time, あなた (anata, \"you\") instead of the listener's name, 彼 (kare, \"he\") / 彼女 (kanojo, \"she\") once it's already clear who you mean. Grammatically, a pronoun is just a noun — it slots into は, の, を, and every other particle exactly the same way 本 or 友達 would."
+                            explain: "A pronoun is a word that takes the place of a noun, so you don't have to repeat the same name over and over.",
+                            // The classic "repetitive vs. smooth" teaching example every
+                            // kid-friendly grammar guide uses (Wikipedia's own Pronoun
+                            // article included) — same name repeated 3 times, then swapped
+                            // for a pronoun once the listener already knows who it is.
+                            // Rebuilt here with real N5 vocab instead of the usual "Tom and
+                            // his dog" so it's the same sentence pattern this lesson
+                            // already teaches ([Noun]は[description]です).
+                            diagramSvg: '<div class="pronoun-swap">'
+                                + '<div class="pronoun-swap__block">'
+                                + '<div class="pronoun-swap__label">Without a pronoun — repetitive</div>'
+                                + '<div class="pronoun-swap__line"><span class="pronoun-swap__repeat">たなかさん</span>は学生です。</div>'
+                                + '<div class="pronoun-swap__line"><span class="pronoun-swap__repeat">たなかさん</span>は日本人です。</div>'
+                                + '<div class="pronoun-swap__line"><span class="pronoun-swap__repeat">たなかさん</span>は１８歳です。</div>'
+                                + '</div>'
+                                + '<div class="pronoun-swap__block">'
+                                + '<div class="pronoun-swap__label">With a pronoun — smooth</div>'
+                                + '<div class="pronoun-swap__line">たなかさんは学生です。</div>'
+                                + '<div class="pronoun-swap__line"><span class="pronoun-swap__new">彼</span>は日本人です。</div>'
+                                + '<div class="pronoun-swap__line"><span class="pronoun-swap__new">彼</span>は１８歳です。</div>'
+                                + '</div>'
+                                + '</div>',
+                            diagramCaption: "Once it's clear who たなかさん is, 彼 (kare, \"he\") takes over — same information, way less repeating. Grammatically 彼 is still just a noun: it slots into は, の, を exactly the way 本 or 友達 would."
                         },
                         {
                             title: "Casual pronouns — 僕 (boku) & 君 (kimi)",
@@ -3353,7 +4250,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Plural pronouns — 私たち, 彼ら, みなさん",
-                            explain: "Add たち or ら to make a pronoun plural: 私たち (watashitachi, \"we/us\"), 彼ら (karera, \"they/them\" — masculine-leaning in origin, but used generically; 彼女たち kanojotachi exists too for an all-female \"they\"). みなさん (mina-san, \"everyone\") is its own word rather than a pluralized pronoun, and it carries a note of politeness — it's what a teacher says to a whole class, not just a flat, neutral \"everyone.\""
+                            explain: "Add たち or ら to make a pronoun plural: 私たち (we/us), 彼ら (they/them). みなさん (everyone) is its own word, not a pluralized pronoun — it's what a teacher says to a whole class."
                         },
                         {
                             title: "“What kind of...?” — こんな / そんな / あんな / どんな",
@@ -3372,7 +4269,7 @@ window.NekoWaGa = {
                     examples: [
                         { jp: "あなたはせんせいですか？", romaji: "Anata wa sensei desu ka?", en: "Are you a teacher?" },
                         { jp: "そのかばんは彼のじゃないです", romaji: "Sono kaban wa kare no ja nai desu.", en: "That bag is not his." },
-                        { jp: "僕はせんせいです", romaji: "Boku wa sensei desu.", en: "I am a teacher. (casual, male speaker)" },
+                        { jp: "君は学生ですか", romaji: "Kimi wa gakusei desu ka.", en: "Are you a student? (casual)" },
                         { jp: "どんな人ですか", romaji: "Donna hito desu ka.", en: "What kind of person is it?" }
                     ],
                     examplesMore: [
@@ -3415,12 +4312,12 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 10a's い-adjective, modifying a
-                   noun directly (grammatically valid without shelf 10a's rules). */
+                /* Bonus: sneak peek at file 10a's い-adjective, modifying a
+                   noun directly (grammatically valid without file 10a's rules). */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 10a) Write: <strong>I am a big person</strong>",
+                        prompt: "(bonus — sneak peek: file 10a) Write: <strong>I am a big person</strong>",
                         accepted: [["わたし", "は", preview.jp, "ひと", "です"]],
                         hint: "わたしは" + preview.jp + "ひとです",
                         refWords: [
@@ -3448,7 +4345,7 @@ window.NekoWaGa = {
                         questions: [
                             { prompt: "<u>＿＿＿</u>　はせんせいですか。 (\"Are you a teacher?\")", choices: ["あなた", "わたし", "かれ", "かのじょ"], correctIndex: 0 },
                             { prompt: "そのかばんは彼　<u>＿＿＿</u>　じゃないです。 (\"That bag is not his.\")", choices: ["は", "が", "の", "を"], correctIndex: 2 },
-                            { prompt: "<u>＿＿＿</u>　はせんせいです。 (\"I am a teacher\" — casual, male)", choices: ["わたし", "ぼく", "あなた", "きみ"], correctIndex: 1 },
+                            { prompt: "<u>＿＿＿</u>　はがくせいですか。 (\"Are you a student?\" — casual)", choices: ["ぼく", "きみ", "かれ", "かのじょ"], correctIndex: 1 },
                             { prompt: "<u>＿＿＿</u>　人ですか。 (\"What kind of person is it?\")", choices: ["こんな", "そんな", "どんな", "あんな"], correctIndex: 2 },
                             { prompt: "わたし　<u>＿＿＿</u>　。 (\"we/us\")", choices: ["たち", "ら", "も", "の"], correctIndex: 0 }
                         ]
@@ -3457,7 +4354,7 @@ window.NekoWaGa = {
                         questions: [
                             { prompt: "あなたはせんせいですか？", choices: ["Are you a teacher?", "Is he a teacher?", "Am I a teacher?", "Was she a teacher?"], correctIndex: 0 },
                             { prompt: "そのかばんは彼のじゃないです。", choices: ["That bag is his.", "That bag is not his.", "That bag is mine.", "Whose bag is that?"], correctIndex: 1 },
-                            { prompt: "僕はせんせいです。", choices: ["You are a teacher.", "I am a teacher.", "He is a teacher.", "We are teachers."], correctIndex: 1 },
+                            { prompt: "君はがくせいですか。", choices: ["Are you a student? (casual)", "Is he a student?", "Am I a student?", "Was she a student?"], correctIndex: 0 },
                             { prompt: "どんな人ですか。", choices: ["Who is that person?", "Where is that person?", "What kind of person is it?", "Is that a person?"], correctIndex: 2 },
                             { prompt: "彼女は私のせんせいです。", choices: ["He is my teacher.", "She is my teacher.", "They are my teachers.", "You are my teacher."], correctIndex: 1 }
                         ]
@@ -3467,15 +4364,15 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 10a/10b/10c: Adjectives, split into their own pages per
+    /* FILE 10a/10b/10c: Adjectives, split into their own pages per
        explicit feedback (い-adjectives, な-adjectives, and adverbs are
        three genuinely different conjugation systems that were previously
-       crammed into one shelf) — each page expanded with real depth rather
+       crammed into one file) — each page expanded with real depth rather
        than just relocated, since cramming them together was exactly what
        kept any one of them from getting room to breathe. */
     function s10a() {
         return {
-            id: "s10a", title: "い-Adjectives", subtitle: "Shelf 10a",
+            id: "s10a", title: "い-Adjectives", subtitle: "File 10a",
             wordBank: {
                 iAdjectives: [
                     { jp: "おおきい", en: "big" }, { jp: "ちいさい", en: "small" },
@@ -3486,15 +4383,35 @@ window.NekoWaGa = {
                     { jp: "さむい", en: "cold" }, { jp: "あつい", en: "hot" },
                     { jp: "おもい", en: "heavy" }, { jp: "かるい", en: "light (weight)" }
                 ],
-                preview: [{ jp: "しずか", en: "quiet", note: "Coming up in shelf 10b — な-adjectives" }]
+                preview: [{ jp: "しずか", en: "quiet", note: "Coming up in file 10b — な-adjectives" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "い-Adjectives — what makes them different",
-                            explain: "An い-adjective always ends in い in its dictionary form — 大きい (big), 新しい (new), 高い (expensive/tall). Unlike English adjectives, い-adjectives conjugate on their own, the same way a verb does — です after one is just politeness, not doing any grammatical work. That's the single biggest thing to internalize about this whole family: the adjective itself carries tense and negation, not です.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">い-Adjective</span> <span class="pattern-box__fixed">です</span>'
+                            explain: "い-adjectives end in い, and they conjugate all by themselves — just like a verb. です is only there for politeness; it never changes the meaning.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">い-Adjective</span> <span class="pattern-box__fixed">です</span>',
+                            // Same self-contained-vs-needs-helper comparison box appears
+                            // identically in s10b's own opening section -- seeing both
+                            // adjective families side by side in both places reinforces
+                            // the one real contrast the whole 10a/10b split is built on.
+                            diagramSvg: '<div class="adj-compare">'
+                                + '<div class="adj-compare__box is-active">'
+                                + '<div class="adj-compare__label">い-adjective</div>'
+                                + '<div class="adj-compare__body">Conjugates <b>itself</b> — like a verb.<br>大き<b>い</b> &rarr; 大き<b>くない</b> &rarr; 大き<b>かった</b></div>'
+                                + '</div>'
+                                + '<div class="adj-compare__box">'
+                                + '<div class="adj-compare__label">な-adjective</div>'
+                                + '<div class="adj-compare__body">Leans on <b>です/だ</b> — like a noun.<br>静か<b>です</b> &rarr; 静か<b>じゃないです</b> &rarr; 静か<b>でした</b></div>'
+                                + '</div>'
+                                + '</div>'
+                                + '<table class="adj-conj-table"><tr><th>Form</th><th>い-adjective (大きい — big)</th></tr>'
+                                + '<tr><td class="label">Present / Future</td><td>大きい<span class="en">ookii — "is/will be big"</span></td></tr>'
+                                + '<tr><td class="label">Negative</td><td>大きくない<span class="en">ookikunai — "is not big"</span></td></tr>'
+                                + '<tr><td class="label">Past</td><td>大きかった<span class="en">ookikatta — "was big"</span></td></tr>'
+                                + '<tr><td class="label">Past Negative</td><td>大きくなかった<span class="en">ookikunakatta — "was not big"</span></td></tr>'
+                                + '</table>'
                         },
                         {
                             title: "Negative — drop い, add くない",
@@ -3510,7 +4427,8 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Past tense — drop い, add かった / くなかった",
-                            explain: "です/でした never attach directly to an い-adjective — the tense always lives INSIDE the adjective. Past affirmative: drop い, add かった → 大きかったです ('it was big'). Past negative: drop い, add くなかった → 大きくなかったです ('it was not big'). Every tense/polarity combination follows this same drop-い pattern — there's no separate rule to learn for past vs. present."
+                            explain: "です/でした never attach directly to an い-adjective — the tense always lives INSIDE the adjective. Past affirmative: drop い, add かった → 大きかったです ('it was big'). Past negative: drop い, add くなかった → 大きくなかったです ('it was not big'). Every tense/polarity combination follows this same drop-い pattern — there's no separate rule to learn for past vs. present.",
+                            culture: "良い (\"good\") is the one true exception — it conjugates from its OLDER reading よい, not from 良い itself: よかった ('was good'), never いかった. Same irregular root as よくない from the section above — memorize 良い as one irregular adjective, not two separate exceptions."
                         },
                         {
                             title: "い-adjectives modifying a noun directly",
@@ -3527,11 +4445,12 @@ window.NekoWaGa = {
                         }
                     ],
                     examples: [
-                        { jp: "本は大きいです", romaji: "Hon wa ookii desu.", en: "The book is big." },
-                        { jp: "これは新しい時計です", romaji: "Kore wa atarashii tokei desu.", en: "This clock is new." },
-                        { jp: "この本は小さくないです", romaji: "Kono hon wa chiisakunai desu.", en: "This book is not small." },
-                        { jp: "この本はとても大きいです", romaji: "Kono hon wa totemo ookii desu.", en: "This book is very big." },
-                        { jp: "大きい本です", romaji: "Ookii hon desu.", en: "It's a big book. (adjective directly modifying the noun)" }
+                        { jp: "この本は古いです", romaji: "Kono hon wa furui desu.", en: "This book is old." },
+                        { jp: "そのかばんは高くないです", romaji: "Sono kaban wa takakunai desu.", en: "That bag is not expensive." },
+                        { jp: "今日はとてもさむいです", romaji: "Kyou wa totemo samui desu.", en: "Today is very cold." },
+                        { jp: "この本はたのしいです", romaji: "Kono hon wa tanoshii desu.", en: "This book is fun/enjoyable." },
+                        { jp: "赤い本です", romaji: "Akai hon desu.", en: "It's a red book. (adjective directly modifying the noun)" },
+                        { jp: "映画はよかったです", romaji: "Eiga wa yokatta desu.", en: "The movie was good. (良い's irregular past)" }
                     ],
                     examplesMore: [
                         { label: "い-adjective", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS I-Adj.pdf") }
@@ -3544,7 +4463,8 @@ window.NekoWaGa = {
                         { jp: "楽しい", romaji: "tanoshii", en: "fun/enjoyable" }, { jp: "良い", romaji: "ii", en: "good" },
                         { jp: "さむい", romaji: "samui", en: "cold" }, { jp: "あつい", romaji: "atsui", en: "hot" },
                         { jp: "おもい", romaji: "omoi", en: "heavy" }, { jp: "かるい", romaji: "karui", en: "light (weight)" },
-                        { jp: "とても", romaji: "totemo", en: "very" }
+                        { jp: "とても", romaji: "totemo", en: "very" },
+                        { jp: "良い→よかった", romaji: "ii → yokatta", en: "good → was good (irregular past)" }
                     ],
                     sources: ["Tae Kim's Guide (い-adjectives)", "Wasabi Japanese adjectives guide"]
                 };
@@ -3576,11 +4496,11 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 10b's な-adjective. */
+                /* Bonus: sneak peek at file 10b's な-adjective. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 10b) Write: <strong>The library is quiet</strong>",
+                        prompt: "(bonus — sneak peek: file 10b) Write: <strong>The library is quiet</strong>",
                         accepted: [["としょかん", "は", preview.jp, "です"]],
                         hint: "としょかんは" + preview.jp + "です",
                         refWords: [
@@ -3606,20 +4526,20 @@ window.NekoWaGa = {
                 return {
                     mondai1: {
                         questions: [
-                            { prompt: "本は　<u>＿＿＿</u>　です。 (\"The book is big.\")", choices: ["大きい", "大きくない", "大きかった", "大きく"], correctIndex: 0 },
+                            { prompt: "このかばんは　<u>＿＿＿</u>　です。 (\"This bag is heavy.\")", choices: ["おもい", "おもくない", "おもかった", "おもく"], correctIndex: 0 },
                             { prompt: "これは　<u>＿＿＿</u>　時計です。 (\"This is a new clock.\")", choices: ["新しい", "新しく", "新しかった", "新しくない"], correctIndex: 0 },
                             { prompt: "この本は　<u>＿＿＿</u>　です。 (\"This book is not small.\")", choices: ["小さい", "小さくない", "小さかった", "小さく"], correctIndex: 1 },
-                            { prompt: "この本はとても　<u>＿＿＿</u>　です。 (\"This book is very big.\")", choices: ["大きい", "大きく", "大きくない", "大きかった"], correctIndex: 0 },
-                            { prompt: "<u>＿＿＿</u>　本です。 (\"It's a big book.\")", choices: ["大きい", "大きく", "大きさ", "大きかった"], correctIndex: 0 }
+                            { prompt: "この映画はとても　<u>＿＿＿</u>　です。 (\"This movie is very fun.\")", choices: ["たのしい", "たのしく", "たのしくない", "たのしかった"], correctIndex: 0 },
+                            { prompt: "旅行は　<u>＿＿＿</u>　です。 (\"The trip was good.\" — 良い's irregular past!)", choices: ["いかった", "よかった", "いくない", "よくない"], correctIndex: 1 }
                         ]
                     },
                     mondai2: {
                         questions: [
-                            { prompt: "本は大きいです。", choices: ["The book is small.", "The book is big.", "The book is new.", "The book is old."], correctIndex: 1 },
+                            { prompt: "このかばんはおもいです。", choices: ["This bag is light.", "This bag is heavy.", "This bag is new.", "This bag is old."], correctIndex: 1 },
                             { prompt: "これは新しい時計です。", choices: ["This clock is old.", "This clock is new.", "This clock is broken.", "This clock is expensive."], correctIndex: 1 },
                             { prompt: "この本は小さくないです。", choices: ["This book is small.", "This book is not small.", "This book is big.", "This book is not big."], correctIndex: 1 },
                             { prompt: "さむいです。", choices: ["It's hot.", "It's cold.", "It's heavy.", "It's light."], correctIndex: 1 },
-                            { prompt: "おもいかばんです。", choices: ["A light bag.", "A heavy bag.", "A new bag.", "An old bag."], correctIndex: 1 }
+                            { prompt: "旅行はよかったです。", choices: ["The trip is good.", "The trip was good.", "The trip is not good.", "The trip was not good."], correctIndex: 1 }
                         ]
                     }
                 };
@@ -3629,21 +4549,39 @@ window.NekoWaGa = {
 
     function s10b() {
         return {
-            id: "s10b", title: "な-Adjectives", subtitle: "Shelf 10b",
+            id: "s10b", title: "な-Adjectives", subtitle: "File 10b",
             wordBank: {
                 naAdjectives: [
                     { jp: "しずか", en: "quiet" }, { jp: "きれい", en: "beautiful" }, { jp: "ゆうめい", en: "famous" }
                 ],
                 newWords: [{ jp: "大変", en: "tough/serious" }],
-                preview: [{ jp: "よく", en: "often/well", note: "Coming up in shelf 10c — adverbs" }]
+                preview: [{ jp: "よく", en: "often/well", note: "Coming up in file 10c — adverbs" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "な-Adjectives — what makes them different",
-                            explain: "A な-adjective does NOT end in い in its dictionary form — 静か (quiet), 好き (like), 有名 (famous). Grammatically, a な-adjective behaves exactly like a noun: it can't conjugate on its own the way an い-adjective can, so it leans entirely on です (and its relatives でした/じゃない/だ) to carry tense and negation. The name \"な-adjective\" comes from the な that appears when one directly modifies a noun (see below) — that な never shows up in the [Noun]は[な-adjective]です sentence shape itself.",
-                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">な-Adjective</span> <span class="pattern-box__fixed">です</span>'
+                            explain: "な-adjectives don't end in い, and they can't conjugate on their own — they lean on です/だ to do the work, exactly like a plain noun does.",
+                            pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">は</span> <span class="pattern-box__slot">な-Adjective</span> <span class="pattern-box__fixed">です</span>',
+                            // Same comparison box as s10a's opening section (see the
+                            // comment there) -- just flips which side is "active".
+                            diagramSvg: '<div class="adj-compare">'
+                                + '<div class="adj-compare__box">'
+                                + '<div class="adj-compare__label">い-adjective</div>'
+                                + '<div class="adj-compare__body">Conjugates <b>itself</b> — like a verb.<br>大き<b>い</b> &rarr; 大き<b>くない</b> &rarr; 大き<b>かった</b></div>'
+                                + '</div>'
+                                + '<div class="adj-compare__box is-active">'
+                                + '<div class="adj-compare__label">な-adjective</div>'
+                                + '<div class="adj-compare__body">Leans on <b>です/だ</b> — like a noun.<br>静か<b>です</b> &rarr; 静か<b>じゃないです</b> &rarr; 静か<b>でした</b></div>'
+                                + '</div>'
+                                + '</div>'
+                                + '<table class="adj-conj-table"><tr><th>Form</th><th>な-adjective (静か — quiet)</th></tr>'
+                                + '<tr><td class="label">Present / Future</td><td>静かです<span class="en">shizuka desu — "is/will be quiet"</span></td></tr>'
+                                + '<tr><td class="label">Negative</td><td>静かじゃないです<span class="en">shizuka ja nai desu — "is not quiet"</span></td></tr>'
+                                + '<tr><td class="label">Past</td><td>静かでした<span class="en">shizuka deshita — "was quiet"</span></td></tr>'
+                                + '<tr><td class="label">Past Negative</td><td>静かじゃなかったです<span class="en">shizuka ja nakatta desu — "was not quiet"</span></td></tr>'
+                                + '</table>'
                         },
                         {
                             title: "Negation — just add じゃないです",
@@ -3680,12 +4618,12 @@ window.NekoWaGa = {
                         }
                     ],
                     examples: [
-                        { jp: "図書館は静かです", romaji: "Toshokan wa shizuka desu.", en: "The library is quiet." },
+                        { jp: "この学生は元気です", romaji: "Kono gakusei wa genki desu.", en: "This student is energetic." },
                         { jp: "これは便利じゃないです", romaji: "Kore wa benri ja nai desu.", en: "This isn't convenient." },
                         { jp: "あの先生は有名じゃないです", romaji: "Ano sensei wa yuumei ja nai desu.", en: "That teacher isn't famous." },
-                        { jp: "図書館は静かでした", romaji: "Toshokan wa shizuka deshita.", en: "The library was quiet. (past)" },
-                        { jp: "静かだ", romaji: "Shizuka da.", en: "It's quiet. (plain/casual register)" },
-                        { jp: "静かな図書館です", romaji: "Shizuka na toshokan desu.", en: "It's a quiet library. (adjective directly modifying the noun)" }
+                        { jp: "それは大変でした", romaji: "Sore wa taihen deshita.", en: "That was tough. (past)" },
+                        { jp: "きれいだ", romaji: "Kirei da.", en: "It's pretty/clean. (plain/casual register)" },
+                        { jp: "元気な学生です", romaji: "Genki na gakusei desu.", en: "It's an energetic student. (adjective directly modifying the noun)" }
                     ],
                     examplesMore: [
                         { label: "な-adjective", href: encodeURI("../../assets/lesson pdf/NIHONGO VOCABS Na-Adj.pdf") }
@@ -3728,12 +4666,12 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 10c's よく, paired with this
+                /* Bonus: sneak peek at file 10c's よく, paired with this
                    lesson's own な-adjective predicate sentence shape. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 10c) Write: <strong>The library is often quiet</strong>",
+                        prompt: "(bonus — sneak peek: file 10c) Write: <strong>The library is often quiet</strong>",
                         accepted: [["としょかん", "は", preview.jp, "しずか", "です"]],
                         hint: "としょかんは" + preview.jp + "しずかです",
                         refWords: [
@@ -3759,19 +4697,19 @@ window.NekoWaGa = {
                 return {
                     mondai1: {
                         questions: [
-                            { prompt: "図書館は　<u>＿＿＿</u>　です。 (\"The library is quiet.\")", choices: ["静か", "静かい", "静かの", "静かく"], correctIndex: 0 },
+                            { prompt: "先生は　<u>＿＿＿</u>　です。 (\"The teacher is energetic/well.\")", choices: ["元気", "元気い", "元気の", "元気く"], correctIndex: 0 },
                             { prompt: "これは便利　<u>＿＿＿</u>　です。 (\"This isn't convenient.\")", choices: ["じゃない", "くない", "ない", "では"], correctIndex: 0 },
                             { prompt: "あの先生は有名　<u>＿＿＿</u>　です。 (\"That teacher isn't famous.\")", choices: ["じゃない", "くない", "ない", "も"], correctIndex: 0 },
-                            { prompt: "図書館は静か　<u>＿＿＿</u>。 (\"The library was quiet.\")", choices: ["です", "でした", "だ", "な"], correctIndex: 1 },
-                            { prompt: "静か　<u>＿＿＿</u>　図書館です。 (\"It's a quiet library.\")", choices: ["だ", "な", "の", "に"], correctIndex: 1 }
+                            { prompt: "あの先生は有名　<u>＿＿＿</u>。 (\"That teacher was famous.\")", choices: ["です", "でした", "だ", "な"], correctIndex: 1 },
+                            { prompt: "きれい　<u>＿＿＿</u>　ねこです。 (\"It's a pretty cat.\")", choices: ["だ", "な", "の", "に"], correctIndex: 1 }
                         ]
                     },
                     mondai2: {
                         questions: [
-                            { prompt: "図書館は静かです。", choices: ["The library is noisy.", "The library is quiet.", "The library is closed.", "The library is big."], correctIndex: 1 },
+                            { prompt: "先生は元気です。", choices: ["The teacher is energetic/well.", "The teacher is tired.", "The teacher is famous.", "The teacher is quiet."], correctIndex: 0 },
                             { prompt: "これは便利じゃないです。", choices: ["This is convenient.", "This isn't convenient.", "This is expensive.", "This isn't expensive."], correctIndex: 1 },
                             { prompt: "あの先生は有名じゃないです。", choices: ["That teacher is famous.", "That teacher isn't famous.", "That teacher is strict.", "That teacher isn't strict."], correctIndex: 1 },
-                            { prompt: "図書館は静かでした。", choices: ["The library is quiet.", "The library was quiet.", "The library will be quiet.", "The library is never quiet."], correctIndex: 1 },
+                            { prompt: "あの先生は有名でした。", choices: ["That teacher is famous.", "That teacher was famous.", "That teacher will be famous.", "That teacher is never famous."], correctIndex: 1 },
                             { prompt: "きれいな部屋です。", choices: ["It's an ugly room.", "It's a pretty room.", "It's a big room.", "It's a small room."], correctIndex: 1 }
                         ]
                     }
@@ -3782,18 +4720,18 @@ window.NekoWaGa = {
 
     function s10c() {
         return {
-            id: "s10c", title: "Adverbs", subtitle: "Shelf 10c",
+            id: "s10c", title: "Adverbs", subtitle: "File 10c",
             wordBank: {
                 iAdjectives: [{ jp: "はやい", en: "fast" }, { jp: "おそい", en: "slow" }],
                 newWords: [{ jp: "はやい", en: "fast/early" }, { jp: "おそい", en: "slow/late" }, { jp: "じょうず", en: "skillful" }],
-                preview: [{ jp: "おきます", en: "wake up", note: "Coming up in shelf 11a — ichidan verbs" }]
+                preview: [{ jp: "たいてい", en: "usually", note: "Coming up in file 10e — more frequency adverbs" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "What an adverb does",
-                            explain: "An adverb sits right before the word it describes — usually a verb, sometimes another adjective — and answers \"how?\" or \"how much?\": 大きく笑う ('laugh loudly'), とても大きい ('very big'). Unlike English, Japanese doesn't have one universal ending like \"-ly\" — how you form an adverb depends on what kind of word you're starting from."
+                            explain: "An adverb describes HOW something happens, and sits right before the verb or adjective it's describing: 大きく笑う ('laugh loudly'), とても大きい ('very big'). Japanese has no single \"-ly\" ending — the two sections below show the two ways to build one."
                         },
                         {
                             title: "い-adjective → adverb: drop い, add く",
@@ -3821,7 +4759,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Frequency adverbs — a closed set to just memorize",
-                            explain: "A handful of very common adverbs don't derive from an adjective at all — they're their own words, and N5 expects you to just know them: いつも (always), よく (often), ときどき (sometimes), あまり (not much — always paired with a negative verb/adjective), まだ (still/not yet), もう (already), とても (very), すぐに (right away).",
+                            explain: "A handful of common adverbs are just their own words to memorize — they don't come from an adjective at all. (Full list in the vocabulary table below.)",
                             sample: {
                                 tag: '"The cat often plays."',
                                 tiles: [{ text: "猫", role: "subject", gloss: "cat" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "よく", role: "particle", gloss: "often", isNew: true }, { text: "遊びます", role: "predicate", gloss: "plays" }],
@@ -3839,7 +4777,7 @@ window.NekoWaGa = {
                        and adjectives already introduced elsewhere in the
                        N5 curriculum rather than new vocabulary. */
                     examples: [
-                        { jp: "猫はよく遊びます", romaji: "Neko wa yoku asobimasu.", en: "The cat often plays." },
+                        { jp: "学生はよく勉強します", romaji: "Gakusei wa yoku benkyoushimasu.", en: "Students often study." },
                         { jp: "図書館はいつも静かです", romaji: "Toshokan wa itsumo shizuka desu.", en: "The library is always quiet." },
                         { jp: "これはあまり大きくないです", romaji: "Kore wa amari ookikunai desu.", en: "This isn't very big." },
                         { jp: "早く行きます", romaji: "Hayaku ikimasu.", en: "I'll go quickly." },
@@ -3883,12 +4821,12 @@ window.NekoWaGa = {
                         refWords: [{ jp: advForm, role: "neutral" }, { jp: "いきます", role: "predicate" }]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 11a's ichidan ます-form, paired
+                /* Bonus: sneak peek at file 11a's ichidan ます-form, paired
                    with this lesson's own い-adjective-to-adverb rule. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 11a) Write: <strong>I always wake up early</strong>",
+                        prompt: "(bonus — sneak peek: file 11a) Write: <strong>I always wake up early</strong>",
                         accepted: [["いつも", "はやく", preview.jp]],
                         hint: "いつもはやく" + preview.jp,
                         refWords: [{ jp: "いつも", role: "neutral" }, { jp: "はやく", role: "neutral" }, { jp: preview.jp, role: "predicate" }]
@@ -3911,7 +4849,7 @@ window.NekoWaGa = {
                 return {
                     mondai1: {
                         questions: [
-                            { prompt: "猫は　<u>＿＿＿</u>　遊びます。 (\"The cat often plays.\")", choices: ["よく", "いつも", "あまり", "とても"], correctIndex: 0 },
+                            { prompt: "私は　<u>＿＿＿</u>　勉強します。 (\"I often study.\")", choices: ["よく", "いつも", "あまり", "とても"], correctIndex: 0 },
                             { prompt: "図書館は　<u>＿＿＿</u>　静かです。 (\"The library is always quiet.\")", choices: ["よく", "いつも", "あまり", "すぐに"], correctIndex: 1 },
                             { prompt: "これは　<u>＿＿＿</u>　大きくないです。 (\"This isn't very big.\")", choices: ["よく", "いつも", "あまり", "とても"], correctIndex: 2 },
                             { prompt: "早　<u>＿＿＿</u>　行きます。 (\"I'll go quickly.\")", choices: ["い", "く", "かった", "くない"], correctIndex: 1 },
@@ -3920,7 +4858,7 @@ window.NekoWaGa = {
                     },
                     mondai2: {
                         questions: [
-                            { prompt: "猫はよく遊びます。", choices: ["The cat never plays.", "The cat often plays.", "The cat always sleeps.", "The cat rarely plays."], correctIndex: 1 },
+                            { prompt: "私はよく勉強します。", choices: ["I never study.", "I often study.", "I always sleep.", "I rarely study."], correctIndex: 1 },
                             { prompt: "彼は上手に歌います。", choices: ["He sings poorly.", "He sings skillfully.", "He never sings.", "He listens to songs."], correctIndex: 1 },
                             { prompt: "たのしく遊びます。", choices: ["I play sadly.", "I play happily.", "I don't play.", "I play quietly."], correctIndex: 1 },
                             { prompt: "おそく起きます。", choices: ["I wake up early.", "I wake up late.", "I sleep early.", "I never wake up."], correctIndex: 1 },
@@ -3932,21 +4870,260 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 11a/11b/11c: Verbs, split into their own pages per explicit
+    /* Adjective Past & Negative (`s10d`) used to be here, appended to
+       Adjectives & Adverbs after 10c -- removed outright 2026-09-05 as
+       redundant with the present/negative/past/past-negative conjugation
+       tables `s10a`/`s10b` each now carry (see those two functions' own
+       "Past tense" section). Its one genuinely irregular bit, いい's
+       irregular past よかった (not いかった), was folded into `s10a`'s
+       "Past tense" section instead of being lost. */
+    /* NEW LESSON — "More Frequency Adverbs" (2026-09-04, per explicit
+       request to teach "the difference between たいてい, いつも, ほとんど"
+       as its own page). Originally inserted between s10c and s10d — id
+       was `s10e`, NOT `s10d` as first suggested, so the then-shipped
+       `s10d` (Adjective Past & Negative) kept its id and didn't orphan
+       anyone's saved progress (StudyProgress keys completion off the
+       literal id string). Same fix shape as `s06d` earlier this session.
+       `s10d` was removed outright on 2026-09-05 (its one unique bit,
+       いい's irregular past よかった, folded into `s10a`'s own "Past
+       tense" section above), so this reasoning is now historical —
+       s10e/s10f simply sit after s10c in display order.
+
+       Retitled + split (2026-09-05): renamed "More Frequency Adverbs" ->
+       plain "Frequency Adverbs" and split off everything that needs a
+       negative verb (ほとんど／あまり／全然) into its own new page, `s10f`
+       — same id-preservation discipline as everywhere else in this file,
+       new content gets the next free letter rather than touching s10d's
+       id. Also filled a real gap found while researching this: たまに
+       ("occasionally") is a genuine N5 frequency adverb that wasn't
+       taught anywhere in this curriculum before now. The frequency-scale
+       diagram was rebuilt as a horizontal "thermometer" (bulb + tube,
+       mercury-style fill) per explicit request, after an Artifact mockup
+       round-trip caught and fixed a real bug (labels rendering outside
+       the diagram's own flow-computed height, invisible underneath
+       later content) before this ever reached real lesson code. */
+    function s10e() {
+        return {
+            id: "s10e", title: "Frequency Adverbs", subtitle: "File 10e",
+            wordBank: {
+                frequency: [{ jp: "いつも", en: "always" }, { jp: "たいてい", en: "usually" }, { jp: "たまに", en: "occasionally" }],
+                preview: [{ jp: "ほとんど", en: "hardly ever / most", note: "Coming up in file 10f — needs a negative verb" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "The frequency scale — all 8 N5 words, one picture",
+                            explain: "Frequency adverbs answer \"how often?\" — from いつも (100% of the time) down to 全然〜ない (0% of the time).",
+                            // Full 8-word scale, for orientation -- the 3 red-zone words
+                            // (全然/ほとんど/あまり) get their own full page next (s10f),
+                            // this diagram just shows where they sit relative to everything
+                            // else. Tick heights alternate (14px/52px) purely to stagger
+                            // labels that sit close together on the scale; every item
+                            // shares the same `top` so only the tick length differs.
+                            diagramSvg: '<div class="freq-thermo__wrap"><div class="freq-thermo">'
+                                + '<span class="freq-thermo__pct p0">0%</span><span class="freq-thermo__pct p100">100%</span>'
+                                + '<div class="freq-thermo__bulb"></div>'
+                                + '<div class="freq-thermo__tube"><div class="freq-thermo__fill" style="background:linear-gradient(90deg, #ED8E7C 0%, #ED8E7C 30%, var(--term-border) 55%, var(--term-border) 100%);"></div><div class="freq-thermo__sheen"></div></div>'
+                                + '<div class="freq-thermo__item" style="left:100%;"><div class="freq-thermo__tick" style="height:14px;"></div><span class="w">いつも</span><span class="m">always</span></div>'
+                                + '<div class="freq-thermo__item" style="left:85%;"><div class="freq-thermo__tick" style="height:52px;"></div><span class="w">たいてい</span><span class="m">usually</span></div>'
+                                + '<div class="freq-thermo__item" style="left:70%;"><div class="freq-thermo__tick" style="height:14px;"></div><span class="w">よく</span><span class="m">often</span></div>'
+                                + '<div class="freq-thermo__item" style="left:45%;"><div class="freq-thermo__tick" style="height:14px;"></div><span class="w">ときどき</span><span class="m">sometimes</span></div>'
+                                + '<div class="freq-thermo__item" style="left:25%;"><div class="freq-thermo__tick" style="height:52px;"></div><span class="w">たまに</span><span class="m">occasionally</span></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:15%;"><div class="freq-thermo__tick" style="height:14px; background:#ED8E7C;"></div><span class="w">あまり</span><span class="m">not much</span></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:8%;"><div class="freq-thermo__tick" style="height:52px; background:#ED8E7C;"></div><span class="w">ほとんど</span><span class="m">hardly</span></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:0%;"><div class="freq-thermo__tick" style="height:14px; background:#ED8E7C;"></div><span class="w">全然</span><span class="m">never</span></div>'
+                                + '</div></div>',
+                            diagramCaption: "Red = needs a negative verb — its own full page next (file 10f). Green = pairs with a plain, positive verb, which is everything taught on this page."
+                        },
+                        {
+                            title: "たまに — between ときどき and あまり",
+                            explain: "たまに sits just under ときどき — less often than \"sometimes,\" but still a real, positive occurrence. No negative verb needed, unlike its red-zone neighbor あまり.",
+                            sample: {
+                                tag: '"I occasionally watch a movie on weekends."',
+                                tiles: [{ text: "週末", role: "subject", gloss: "weekend" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "たまに", role: "particle", gloss: "occasionally", isNew: true }, { text: "映画を見ます", role: "predicate", gloss: "watch a movie" }],
+                                romaji: "Shuumatsu wa tamani eiga o mimasu."
+                            }
+                        },
+                        {
+                            title: "たいてい vs. いつも — \"usually\" isn't \"always\"",
+                            explain: "Same sentence shape, same politeness level — only the degree of certainty changes. いつも朝ごはんを食べます promises every single day, no exceptions; たいてい朝ごはんを食べます leaves room for the occasional day it doesn't happen.",
+                            /* Reuses .qword-pair (built for s06d's どうして／なぜ comparison) — a
+                               generic two-column comparison box, not semantically tied to
+                               question words despite the class name. */
+                            diagramSvg: '<div class="qword-pair">'
+                                + '<div><span class="qword-word">いつも</span><span class="qword-romaji">itsumo</span><div class="qword-meaning">always</div><div class="qword-note">every single time, no exceptions</div></div>'
+                                + '<div><span class="qword-word">たいてい</span><span class="qword-romaji">taitei</span><div class="qword-meaning">usually</div><div class="qword-note">most of the time, but not guaranteed</div></div>'
+                                + '</div>',
+                            sample: {
+                                tag: '"I usually eat breakfast."',
+                                tiles: [{ text: "私", role: "subject", gloss: "I" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "たいてい", role: "particle", gloss: "usually", isNew: true }, { text: "朝ごはんを食べます", role: "predicate", gloss: "eat breakfast" }],
+                                romaji: "Watashi wa taitei asagohan o tabemasu."
+                            }
+                        }
+                    ],
+                    examples: [
+                        { jp: "猫はいつも遊びます", romaji: "Neko wa itsumo asobimasu.", en: "The cat always plays." },
+                        { jp: "学生はたいてい勉強します", romaji: "Gakusei wa taitei benkyoushimasu.", en: "Students usually study." },
+                        { jp: "彼はたまに公園に行きます", romaji: "Kare wa tamani kouen ni ikimasu.", en: "He occasionally goes to the park." }
+                    ],
+                    vocab: [
+                        { jp: "たいてい", romaji: "taitei", en: "usually" },
+                        { jp: "たまに", romaji: "tamani", en: "occasionally" },
+                        { jp: "朝ごはん", romaji: "asagohan", en: "breakfast" },
+                        { jp: "週末", romaji: "shuumatsu", en: "weekend" }
+                    ],
+                    sources: ["Tae Kim's Guide (frequency adverbs)", "Preply — Japanese frequency-adverb scale", "MLC Japanese — JLPT N5 frequency adverbs"]
+                };
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "学生は　<u>＿＿＿</u>　図書館に行きます。 (\"Students always go to the library.\")", choices: ["いつも", "たいてい", "たまに", "ときどき"], correctIndex: 0 },
+                            { prompt: "先生は　<u>＿＿＿</u>　早く来ます。 (\"The teacher usually comes early.\")", choices: ["いつも", "たいてい", "たまに", "ときどき"], correctIndex: 1 },
+                            { prompt: "猫は　<u>＿＿＿</u>　遊びます。 (\"The cat sometimes plays.\")", choices: ["いつも", "ときどき", "たまに", "たいてい"], correctIndex: 1 },
+                            { prompt: "彼女は　<u>＿＿＿</u>　図書館で勉強します。 (\"She occasionally studies at the library.\")", choices: ["いつも", "ときどき", "たまに", "たいてい"], correctIndex: 2 },
+                            { prompt: "図書館は　<u>＿＿＿</u>　静かです。 (\"The library is always quiet.\")", choices: ["いつも", "たいてい", "たまに", "ときどき"], correctIndex: 0 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "学生はいつも図書館に行きます。", choices: ["Students always go to the library.", "Students usually go to the library.", "Students never go to the library.", "Students sometimes go to the library."], correctIndex: 0 },
+                            { prompt: "先生はたいてい早く来ます。", choices: ["The teacher always comes early.", "The teacher usually comes early.", "The teacher never comes early.", "The teacher hardly ever comes early."], correctIndex: 1 },
+                            { prompt: "猫はときどき遊びます。", choices: ["The cat always plays.", "The cat sometimes plays.", "The cat never plays.", "The cat usually plays."], correctIndex: 1 },
+                            { prompt: "彼女はたまに図書館で勉強します。", choices: ["She always studies at the library.", "She occasionally studies at the library.", "She never studies at the library.", "She usually studies at the library."], correctIndex: 1 },
+                            { prompt: "図書館はいつも静かです。", choices: ["The library is sometimes quiet.", "The library is always quiet.", "The library is rarely quiet.", "The library is never quiet."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* NEW LESSON — "Hardly Ever & Never," id `s10f` (2026-09-05) — split off
+       from s10e (see the comment on that function): ほとんど／あまり／全然 all
+       share one real grammatical fact none of s10e's words do — they MUST
+       pair with a negative verb. That's a genuine boundary, not just "the
+       low end of the frequency scale," so it earns its own page rather
+       than being one section among several. あまり (file 10c) and 全然
+       (file 02c) are both already-taught words getting a proper recap
+       here, tied together under the rule they actually share; ほとんど's
+       own "two faces" content (affirmative "most" vs. negative "hardly")
+       is carried over verbatim from the old s10e. */
+    function s10f() {
+        return {
+            id: "s10f", title: "Hardly Ever & Never", subtitle: "File 10f",
+            wordBank: {
+                frequency: [{ jp: "ほとんど", en: "hardly / most" }, { jp: "あまり", en: "not much" }, { jp: "全然", en: "never / not at all" }],
+                preview: [{ jp: "食べます", en: "will eat", note: "Coming up next — Ichidan Verbs" }]
+            },
+            buildInstruction: function () {
+                return {
+                    sections: [
+                        {
+                            title: "The rule that ties these three together",
+                            explain: "ほとんど, あまり, and 全然 all sit at the low end of the frequency scale — and all three MUST attach to a negative verb. Drop the negative and the sentence is simply ungrammatical, no matter how the English translation reads.",
+                            // Zoomed-in version of s10e's own thermometer, rescaled to
+                            // just this page's 3 words -- same visual language (bulb,
+                            // tube, ticks) so the two pages read as one continuous scale
+                            // split across two pages, not two different diagram styles.
+                            diagramSvg: '<div class="freq-thermo__wrap"><div class="freq-thermo">'
+                                + '<span class="freq-thermo__pct p0">never</span><span class="freq-thermo__pct p100">not much</span>'
+                                + '<div class="freq-thermo__bulb"></div>'
+                                + '<div class="freq-thermo__tube"><div class="freq-thermo__fill" style="background:linear-gradient(90deg, #ED8E7C 0%, rgba(237,142,124,0.45) 100%);"></div><div class="freq-thermo__sheen"></div></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:100%;"><div class="freq-thermo__tick" style="height:14px; background:#ED8E7C;"></div><span class="w">あまり</span><span class="m">not much</span></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:50%;"><div class="freq-thermo__tick" style="height:52px; background:#ED8E7C;"></div><span class="w">ほとんど</span><span class="m">hardly ever</span></div>'
+                                + '<div class="freq-thermo__item is-neg" style="left:0%;"><div class="freq-thermo__tick" style="height:14px; background:#ED8E7C;"></div><span class="w">全然</span><span class="m">never</span></div>'
+                                + '</div></div>',
+                            diagramCaption: "全然 is the strongest (\"not at all\"), あまり the mildest (\"not very\") — but the negative-verb rule applies equally to all three."
+                        },
+                        {
+                            title: "ほとんど's two faces — \"most\" vs. \"hardly ever\"",
+                            explain: "Unlike the other two, ほとんど actually changes meaning depending on the sentence's polarity. Paired with an <strong>affirmative</strong> verb, ほとんどの[noun] means 'most/almost all': ほとんどの学生は元気です. Paired with a <strong>negative</strong> verb, it flips to 'hardly ever': 猫はほとんどいません. Same word, opposite polarity, different meaning.",
+                            diagramSvg: '<div class="n5-sample-gallery">'
+                                + '<div class="n5-sample"><div class="n5-sample__tag">"Most students are energetic." (affirmative)</div>'
+                                + '<div class="n5-sample__row">'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-particle is-new">ほとんど</span><span class="n5-sample__tile-gloss">most</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-particle">の</span><span class="n5-sample__tile-gloss">of</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-subject">学生</span><span class="n5-sample__tile-gloss">students</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-particle">は</span><span class="n5-sample__tile-gloss">topic marker</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-predicate">元気</span><span class="n5-sample__tile-gloss">energetic</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-copula">です</span><span class="n5-sample__tile-gloss">is</span></div>'
+                                + '</div><div class="n5-sample__romaji">Hotondo no gakusei wa genki desu.</div></div>'
+                                + '<div class="n5-sample"><div class="n5-sample__tag">"The cat is hardly ever around." (negative)</div>'
+                                + '<div class="n5-sample__row">'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-subject">猫</span><span class="n5-sample__tile-gloss">cat</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-particle">は</span><span class="n5-sample__tile-gloss">topic marker</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-particle is-new">ほとんど</span><span class="n5-sample__tile-gloss">hardly</span></div>'
+                                + '<div class="n5-sample__tile"><span class="n5-sample__tile-text role-predicate">いません</span><span class="n5-sample__tile-gloss">isn\'t around</span></div>'
+                                + '</div><div class="n5-sample__romaji">Neko wa hotondo imasen.</div></div>'
+                                + '</div>'
+                        },
+                        {
+                            title: "あまり & 全然 — same rule, already met",
+                            explain: "You've already met both: あまり〜ない (\"not very,\" file 10c) and 全然〜ない (\"never/not at all,\" file 02c). Same rule as ほとんど — always attached to a negative verb or adjective.",
+                            sample: {
+                                tag: '"This isn\'t very expensive."',
+                                tiles: [{ text: "これ", role: "subject", gloss: "this" }, { text: "は", role: "particle", gloss: "topic marker" }, { text: "あまり", role: "particle", gloss: "not very", isNew: true }, { text: "高くないです", role: "predicate", gloss: "isn't expensive" }],
+                                romaji: "Kore wa amari takakunai desu."
+                            }
+                        }
+                    ],
+                    examples: [
+                        { jp: "ほとんどのねこは元気です", romaji: "Hotondo no neko wa genki desu.", en: "Most cats are energetic." },
+                        { jp: "彼はほとんど勉強しません", romaji: "Kare wa hotondo benkyoushimasen.", en: "He hardly studies." },
+                        { jp: "このかばんはあまり大きくないです", romaji: "Kono kaban wa amari ookikunai desu.", en: "This bag isn't very big." },
+                        { jp: "全然わかりません", romaji: "Zenzen wakarimasen.", en: "I don't understand at all." }
+                    ],
+                    vocab: [
+                        { jp: "ほとんど", romaji: "hotondo", en: "hardly (+negative) / most (+affirmative)" },
+                        { jp: "あまり", romaji: "amari", en: "not very (+negative)" },
+                        { jp: "全然", romaji: "zenzen", en: "never / not at all (+negative)" }
+                    ],
+                    sources: ["Tae Kim's Guide (frequency/degree adverbs)", "Preply — positive/negative adverb pairing"]
+                };
+            },
+            buildMondaiExercises: function () {
+                return {
+                    mondai1: {
+                        questions: [
+                            { prompt: "<u>＿＿＿</u>　の先生は元気です。 (\"Most teachers are energetic.\")", choices: ["いつも", "たいてい", "ほとんど", "ぜんぜん"], correctIndex: 2 },
+                            { prompt: "彼女は　<u>＿＿＿</u>　いません。 (\"She is hardly ever around.\")", choices: ["いつも", "たいてい", "ほとんど", "よく"], correctIndex: 2 },
+                            { prompt: "この本は　<u>＿＿＿</u>　たのしくないです。 (\"This book isn't very fun.\")", choices: ["いつも", "たいてい", "あまり", "ときどき"], correctIndex: 2 },
+                            { prompt: "<u>＿＿＿</u>　分かりません。 (\"I don't understand at all.\")", choices: ["あまり", "ほとんど", "全然", "たまに"], correctIndex: 2 },
+                            { prompt: "猫は　<u>＿＿＿</u>　遊びません。 (\"The cat hardly ever plays.\")", choices: ["いつも", "たいてい", "ほとんど", "たまに"], correctIndex: 2 }
+                        ]
+                    },
+                    mondai2: {
+                        questions: [
+                            { prompt: "ほとんどの先生は元気です。", choices: ["No teachers are energetic.", "A few teachers are energetic.", "Most teachers are energetic.", "All teachers, without exception, are energetic."], correctIndex: 2 },
+                            { prompt: "彼女はほとんどいません。", choices: ["She is always here.", "She is usually here.", "She is hardly ever here.", "She is never mentioned."], correctIndex: 2 },
+                            { prompt: "この本はあまりたのしくないです。", choices: ["This book isn't very fun.", "This book is fun.", "This book is boring.", "This book is very fun."], correctIndex: 0 },
+                            { prompt: "全然わかりません。", choices: ["I understand completely.", "I don't understand at all.", "I sort of understand.", "I understand a little."], correctIndex: 1 },
+                            { prompt: "猫はほとんど遊びません。", choices: ["The cat always plays.", "The cat hardly ever plays.", "The cat never plays.", "The cat sometimes plays."], correctIndex: 1 }
+                        ]
+                    }
+                };
+            }
+        };
+    }
+
+    /* FILE 11a/11b/11c: Verbs, split into their own pages per explicit
        feedback (ichidan / godan / kuru & suru are three genuinely
-       different conjugation systems, previously crammed into one shelf).
+       different conjugation systems, previously crammed into one file).
        Each page: the shared verb-basics recap (11a only, so it exists
        exactly once), then that group's own N5 verb list, THEN that
        group's ます-form conjugation pattern — in that order, per
        explicit request. */
     function s11a() {
         return {
-            id: "s11a", title: "Ichidan Verbs", subtitle: "Shelf 11a",
+            id: "s11a", title: "Ichidan Verbs", subtitle: "File 11a",
             wordBank: {
                 objects: [{ jp: "パン", en: "bread" }, { jp: "テレビ", en: "TV" }],
                 verbs: [{ jp: "たべます", en: "will eat" }, { jp: "みます", en: "will watch" }],
                 newWords: [{ jp: "でます", en: "will exit/leave" }, { jp: "かります", en: "will borrow" }, { jp: "おしえます", en: "will teach" }],
-                preview: [{ jp: "よみます", en: "will read", note: "Coming up in shelf 11b — godan verbs" }]
+                preview: [{ jp: "よみます", en: "will read", note: "Coming up in file 11b — godan verbs" }]
             },
             buildInstruction: function () {
                 return {
@@ -4028,11 +5205,11 @@ window.NekoWaGa = {
                         { jp: obj.jp, role: "object" }, { jp: "を", role: "particle" }, { jp: verb.jp, role: "predicate" }
                     ]
                 }];
-                /* Bonus: sneak peek at shelf 11b's godan 読みます. */
+                /* Bonus: sneak peek at file 11b's godan 読みます. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 11b) Write: <strong>I will read a book</strong>",
+                        prompt: "(bonus — sneak peek: file 11b) Write: <strong>I will read a book</strong>",
                         accepted: [["わたし", "は", "ほん", "を", preview.jp]],
                         hint: "わたしはほんを" + preview.jp,
                         refWords: [
@@ -4081,10 +5258,10 @@ window.NekoWaGa = {
 
     function s11b() {
         return {
-            id: "s11b", title: "Godan Verbs", subtitle: "Shelf 11b",
+            id: "s11b", title: "Godan Verbs", subtitle: "File 11b",
             wordBank: {
                 /* Kana-only, per the site's "graded accepted answers stay in
-                   kana" convention — the original combined shelf 11 had
+                   kana" convention — the original combined file 11 had
                    kanji here (本, 学校, 読みます, 買います), which silently made
                    those two exercises ungradeable via plain hiragana typing;
                    fixed while splitting this content out. */
@@ -4094,7 +5271,7 @@ window.NekoWaGa = {
                 newWords: [
                     { jp: "しんぶん", en: "newspaper" }, { jp: "ざっし", en: "magazine" }, { jp: "てがみ", en: "letter" }
                 ],
-                preview: [{ jp: "します", en: "will do", note: "Coming up in shelf 11c — kuru & suru" }]
+                preview: [{ jp: "します", en: "will do", note: "Coming up in file 11c — kuru & suru" }]
             },
             buildInstruction: function () {
                 return {
@@ -4189,11 +5366,11 @@ window.NekoWaGa = {
                         ]
                     }];
                 }
-                /* Bonus: sneak peek at shelf 11c's します. */
+                /* Bonus: sneak peek at file 11c's します. */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 11c) Write: <strong>I will study</strong>",
+                        prompt: "(bonus — sneak peek: file 11c) Write: <strong>I will study</strong>",
                         accepted: [["わたし", "は", "べんきょう", preview.jp]],
                         hint: "わたしはべんきょう" + preview.jp,
                         refWords: [
@@ -4242,11 +5419,11 @@ window.NekoWaGa = {
 
     function s11c() {
         return {
-            id: "s11c", title: "Kuru & Suru (Irregular Verbs)", subtitle: "Shelf 11c",
+            id: "s11c", title: "Kuru & Suru (Irregular Verbs)", subtitle: "File 11c",
             wordBank: {
                 suruWords: [{ jp: "べんきょう", en: "will study" }, { jp: "でんわ", en: "will phone/call" }],
                 newWords: [{ jp: "れんしゅうします", en: "will practice" }],
-                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in shelf 12 — invitations" }]
+                preview: [{ jp: "ましょう", en: "let's...", note: "Coming up in file 12 — invitations" }]
             },
             buildInstruction: function () {
                 return {
@@ -4313,12 +5490,12 @@ window.NekoWaGa = {
                         ]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 12's ましょう, built off this
+                /* Bonus: sneak peek at file 12's ましょう, built off this
                    lesson's own する-verb ます-stem (drop ます, add ましょう). */
                 let preview = wb.preview && wb.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 12) Write: <strong>Let's study</strong>",
+                        prompt: "(bonus — sneak peek: file 12) Write: <strong>Let's study</strong>",
                         accepted: [["べんきょう", "し" + preview.jp]],
                         hint: "べんきょうし" + preview.jp,
                         refWords: [{ jp: "べんきょう", role: "object" }, { jp: "し" + preview.jp, role: "predicate" }]
@@ -4362,10 +5539,10 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 12: Volitional & Invitations */
+    /* FILE 12: Volitional & Invitations */
     function s12() {
         return {
-            id: "s12", title: "Invitations", subtitle: "Shelf 12",
+            id: "s12", title: "Invitations", subtitle: "File 14",
             wordBank: {
                 places: [{ jp: "図書館", en: "the library", particle: "に" }, { jp: "公園", en: "the park", particle: "で" }],
                 verbs: [{ jp: "行きましょう", en: "let's go to" }, { jp: "遊びませんか", en: "won't you play at" }],
@@ -4373,7 +5550,7 @@ window.NekoWaGa = {
                     { jp: "カフェ", en: "café" }, { jp: "どうぶつえん", en: "zoo" }, { jp: "うみ", en: "sea / beach" },
                     { jp: "たのしい", en: "fun" }, { jp: "きれい", en: "pretty / beautiful" }
                 ],
-                preview: [{ jp: "ません", en: "don't (present negative)", note: "Coming up in shelf 13 — past & negative" }]
+                preview: [{ jp: "ません", en: "don't (present negative)", note: "Coming up in file 13 — past & negative" }]
             },
             buildInstruction: function () {
                 return {
@@ -4433,7 +5610,7 @@ window.NekoWaGa = {
                     sources: ["Bunpro — ましょう／ませんか grammar entries", "Tae Kim's Guide — invitations and suggestions"]
                 };
             },
-            /* No bonus exercise: shelf 13's ません pattern is a different, competing
+            /* No bonus exercise: file 13's ません pattern is a different, competing
                polite ending (not something that stacks onto ましょう/ませんか) — preview
                stays exposure-only.
                Index-paired: library goes with "let's go" (destination に), park with "won't you play" (location-of-action で). */
@@ -4487,10 +5664,19 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 14: Conjugations (te-form + ください) */
+    /* FILE 12: Conjugations (te-form + ください)
+       Ordering fix (2026-09-04): this lesson's id/content were already
+       s13, but its subtitle and array position both said/sat at "14" --
+       a genuine bug, not intentional (て-form is a building block used
+       again later — ている, てください, connecting clauses — so it needs
+       to come BEFORE Past & Negative and Invitations, not after). Fixed
+       by moving this to display FIRST of the three and relabeling all
+       three subtitles to match their new display order; none of their
+       `id`s changed, since StudyProgress keys saved progress off the id
+       string and an id rename would orphan existing learners' progress. */
     function s13() {
         return {
-            id: "s13", title: "Conjugations", subtitle: "Shelf 14",
+            id: "s13", title: "Conjugations", subtitle: "File 12",
             wordBank: {
                 verbs: [
                     { te: "食べて", en: "eat" }, { te: "話して", en: "speak" },
@@ -4501,7 +5687,7 @@ window.NekoWaGa = {
                     { jp: "まど", en: "window" }, { jp: "ドア", en: "door" }, { jp: "かぎ", en: "key" },
                     { jp: "あかるい", en: "bright" }, { jp: "くらい", en: "dark" }
                 ],
-                preview: [{ jp: "から", en: "because", note: "Coming up in shelf 15 — sentence construction" }]
+                preview: [{ jp: "から", en: "because", note: "Coming up in file 15 — sentence construction" }]
             },
             buildInstruction: function () {
                 return {
@@ -4528,7 +5714,7 @@ window.NekoWaGa = {
                             title: "Ichidan — drop る, add て",
                             explain: "Same shape as the ます-stem already known — just add て instead of ます. Watch out: a handful of verbs LOOK ichidan (~える／~いる) but are secretly godan — see the Impostors table on the Ichidan Verbs page (帰る, 入る, 走る, 知る, 要る, 切る) — so they follow the godan う・つ・る rule above instead: 帰る &rarr; 帰って, not 帰て.",
                             diagramSvg: buildEndingSwapDiagram("食べ", "る", "て"),
-                            diagramCaption: "Identical shape to the ます-form formula from shelf 11a — just swap in て instead of ます at the end.",
+                            diagramCaption: "Identical shape to the ます-form formula from file 11a — just swap in て instead of ます at the end.",
                             sample: {
                                 tag: '"Please write it."',
                                 tiles: [
@@ -4540,7 +5726,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Irregular verbs — fixed forms, no formula",
-                            explain: "する and 来る (くる, 'to come', shelf 11c) don't follow any group's rule at all — irregular verbs always have their own fixed conjugation, memorized individually rather than derived from an ending. する &rarr; して (so 勉強する &rarr; 勉強して, the same swap it makes for ます). 来る &rarr; 来て (きて). て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'",
+                            explain: "する and 来る (くる, 'to come', file 11c) don't follow any group's rule at all — irregular verbs always have their own fixed conjugation, memorized individually rather than derived from an ending. する &rarr; して (so 勉強する &rarr; 勉強して, the same swap it makes for ます). 来る &rarr; 来て (きて). て-form also chains actions together in order, without needing a separate word for 'and' — 起きて食べます, 'I wake up and eat.'",
                             diagramSvg: '<div class="impostor-table-wrap"><table class="impostor-table">'
                                 + '<tr><th>Dictionary form</th><th>て-form</th><th>Rule</th></tr>'
                                 + '<tr><td class="impostor-table__jp">する (suru)</td><td class="impostor-table__masu">して (shite)</td><td class="impostor-table__en">memorized — no group</td></tr>'
@@ -4568,7 +5754,7 @@ window.NekoWaGa = {
                     sources: ["Tae Kim's Guide — the て-form chapter", "Bunpro — て-form conjugation reference"]
                 };
             },
-            /* No bonus exercise: shelf 15's から needs an adjective/reason
+            /* No bonus exercise: file 15's から needs an adjective/reason
                clause this lesson doesn't have vocab for yet — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let v = pick(this.wordBank.verbs);
@@ -4615,10 +5801,12 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 13: Past & Negative Tense */
+    /* FILE 13: Past & Negative Tense */
     function s14() {
         return {
-            id: "s14", title: "Past & Negative", subtitle: "Shelf 13",
+            id: "s14", title: "Past & Negative", subtitle: "File 13",
+            /* Now displays SECOND of the three (after て-form/s13, before
+               Invitations/s12) -- see the ordering-fix comment on s13(). */
             wordBank: {
                 verbs: [
                     { neg: "読みません", past: "読みました", en: "read" },
@@ -4630,7 +5818,7 @@ window.NekoWaGa = {
                     { jp: "きのう", en: "yesterday" }, { jp: "きょう", en: "today" }, { jp: "あした", en: "tomorrow" },
                     { jp: "さびしい", en: "lonely" }, { jp: "うれしい", en: "happy" }
                 ],
-                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in shelf 14 — the て-form" }]
+                preview: [{ jp: "買って", en: "buy (て-form)", note: "Coming up in file 14 — the て-form" }]
             },
             buildInstruction: function () {
                 return {
@@ -4660,7 +5848,7 @@ window.NekoWaGa = {
                     sources: ["Tae Kim's Guide — past and negative verb forms", "Genki I — Lesson 3"]
                 };
             },
-            /* No bonus exercise: shelf 14's て-form needs its own conjugation
+            /* No bonus exercise: file 14's て-form needs its own conjugation
                rules taught first — preview stays exposure-only. */
             buildWordBankExercises: function () {
                 let v1 = pick(this.wordBank.verbs);
@@ -4716,10 +5904,10 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 15: Sentence Construction */
+    /* FILE 15: Sentence Construction */
     function s15() {
         return {
-            id: "s15", title: "Sentence Construction", subtitle: "Shelf 15",
+            id: "s15", title: "Sentence Construction", subtitle: "File 15",
             wordBank: {
                 adjectives: [{ jp: "静か", en: "quiet" }, { jp: "古い", en: "old" }],
                 connectors: [{ jp: "から", en: "because" }, { jp: "けど", en: "but" }, { jp: "と", en: "and (nouns only)" }],
@@ -4734,7 +5922,7 @@ window.NekoWaGa = {
                     { jp: "大きい", en: "big" }, { jp: "新しい", en: "new" }, { jp: "高い", en: "expensive / tall" },
                     { jp: "友達", en: "friend" }, { jp: "好き", en: "like / favorite" }
                 ],
-                preview: [{ jp: "が", en: "but (formal) / singles something out", note: "Coming up in shelf 16 — every particle, one place" }]
+                preview: [{ jp: "が", en: "but (formal) / singles something out", note: "Coming up in file 16 — every particle, one place" }]
             },
             buildInstruction: function () {
                 return {
@@ -4752,7 +5940,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Putting it all together — joining two sentences",
-                            explain: "Every S-T-P-O-V sentence above stands on its own. This shelf shows how to stick TWO whole sentences together into one longer one, using a small set of joining words: て-form (already known — glues two ACTIONS in a row, one full sentence's worth of action after another), から ('because' — glues a REASON sentence to a RESULT sentence), けど ('but' — glues two sentences that contrast), と ('and' — different from the other three: it glues two single NOUNS together, not two whole sentences, so the pair still only fills ONE slot in S-T-P-O-V)."
+                            explain: "Every S-T-P-O-V sentence above stands on its own. This file shows how to stick TWO whole sentences together into one longer one, using a small set of joining words: て-form (already known — glues two ACTIONS in a row, one full sentence's worth of action after another), から ('because' — glues a REASON sentence to a RESULT sentence), けど ('but' — glues two sentences that contrast), と ('and' — different from the other three: it glues two single NOUNS together, not two whole sentences, so the pair still only fills ONE slot in S-T-P-O-V)."
                         },
                         {
                             title: "から — \"because...\"",
@@ -4761,12 +5949,12 @@ window.NekoWaGa = {
                         },
                         {
                             title: "けど — \"but...\"",
-                            explain: "けど works the same way as から structurally — it sits at the end of the FIRST full sentence, then a comma, then a SECOND complete sentence that contrasts with it. Think of it as 'but' bridging two whole English sentences, not sitting inside just one of them. が can do this same job in more formal writing (a different job from the subject-marker が you'll meet on shelf 16), but けど is the everyday version.",
+                            explain: "けど works the same way as から structurally — it sits at the end of the FIRST full sentence, then a comma, then a SECOND complete sentence that contrasts with it. Think of it as 'but' bridging two whole English sentences, not sitting inside just one of them. が can do this same job in more formal writing (a different job from the subject-marker が you'll meet on file 16), but けど is the everyday version.",
                             pattern: '<span class="pattern-box__slot">Sentence 1 (a full S-T-P-O-V sentence)</span> <span class="pattern-box__fixed">けど、</span> <span class="pattern-box__slot">Sentence 2 (another full sentence)</span>'
                         },
                         {
                             title: "と — \"and\" (for listing nouns)",
-                            explain: "と is the odd one out: it never joins two WHOLE sentences the way から and けど do. Instead it sits directly BETWEEN two nouns, gluing them into a single combined item — 本とかばん ('a book and a bag') is still just ONE Object, filling ONE O slot in S-T-P-O-V, not two separate sentences. Only works on nouns, never on verbs or full sentences (て-form handles those, up on shelf 13).",
+                            explain: "と is the odd one out: it never joins two WHOLE sentences the way から and けど do. Instead it sits directly BETWEEN two nouns, gluing them into a single combined item — 本とかばん ('a book and a bag') is still just ONE Object, filling ONE O slot in S-T-P-O-V, not two separate sentences. Only works on nouns, never on verbs or full sentences (て-form handles those, up on file 13).",
                             pattern: '<span class="pattern-box__slot">Noun A</span> <span class="pattern-box__fixed">と</span> <span class="pattern-box__slot">Noun B</span> <span class="pattern-box__fixed">&larr; still just one O slot</span>',
                             sample: {
                                 tag: '"Because it\'s quiet, I like it."',
@@ -4791,8 +5979,8 @@ window.NekoWaGa = {
             },
             /* 静か pairs with から (な-adjective + だ + から), 古い pairs with けど (い-adjective, no だ).
                Kana-equivalent `accepted` entries alongside the kanji ones below:
-               this is one of only two lessons (with shelf 16) that put real
-               kanji into a graded answer at all — every other shelf's
+               this is one of only two lessons (with file 16) that put real
+               kanji into a graded answer at all — every other file's
                accepted answers are already pure kana — so a learner who
                hasn't memorized 静か/古い/本 yet can still answer correctly
                by writing しずか/ふるい/ほん instead. */
@@ -4820,12 +6008,12 @@ window.NekoWaGa = {
                         refWords: [{ jp: "本", role: "object" }, { jp: "と", role: "particle" }, { jp: "かばん", role: "object" }]
                     }
                 ];
-                /* Bonus: sneak peek at shelf 16's formal-writing が, substituted
+                /* Bonus: sneak peek at file 16's formal-writing が, substituted
                    for けど in the exact same real sentence (source-noted swap). */
                 let preview = this.wordBank.preview && this.wordBank.preview[0];
                 if (preview) {
                     exercises.push({
-                        prompt: "(bonus — sneak peek: shelf 16) Write: <strong>It's old, but I like it (formal — swap けど for " + preview.jp + ")</strong>",
+                        prompt: "(bonus — sneak peek: file 16) Write: <strong>It's old, but I like it (formal — swap けど for " + preview.jp + ")</strong>",
                         accepted: [["古い", preview.jp, "好き", "です"], ["ふるい", preview.jp, "すき", "です"]],
                         hint: "古い" + preview.jp + "好きです (ふるい" + preview.jp + "すきです)",
                         refWords: [{ jp: "古い", role: "adjective" }, { jp: preview.jp, role: "particle" }, { jp: "好き", role: "adjective" }, { jp: "です", role: "auxiliary" }]
@@ -4869,14 +6057,14 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 16: Particle Mastery */
-    /* SHELF 16a: Subject Particles (は / が / も) — split out of the old
-       single "Particle Mastery" shelf per explicit feedback that it felt
-       too crowded; same lettered-sub-lesson pattern as shelves 07/08/09/
+    /* FILE 16: Particle Mastery */
+    /* FILE 16a: Subject Particles (は / が / も) — split out of the old
+       single "Particle Mastery" file per explicit feedback that it felt
+       too crowded; same lettered-sub-lesson pattern as files 07/08/09/
        10/11 (see n5-lessons-dashboard.js's FOLDERS comment). */
     function s16a() {
         return {
-            id: "s16a", title: "Subject Particles", subtitle: "Shelf 16a",
+            id: "s16a", title: "Subject Particles", subtitle: "File 16a",
             wordBank: {
                 predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
                 newWords: [{ jp: "猫", kana: "ねこ", en: "cat" }, { jp: "友達", kana: "ともだち", en: "friend" }]
@@ -4886,7 +6074,7 @@ window.NekoWaGa = {
                     sections: [
                         {
                             title: "は — the topic marker",
-                            explain: "は introduces what the sentence is ABOUT, then says something general about it — it doesn't single anything out, it just sets the topic and moves on. 猫はかわいいです literally reads \"as for the cat, (it's) cute\" — a plain, general statement. は fills the Subject slot in S-T-P-O-V (shelf 15), almost always right at the front of the sentence.",
+                            explain: "は introduces what the sentence is ABOUT, then says something general about it — it doesn't single anything out, it just sets the topic and moves on. 猫はかわいいです literally reads \"as for the cat, (it's) cute\" — a plain, general statement. は fills the Subject slot in S-T-P-O-V (file 15), almost always right at the front of the sentence.",
                             diagramSvg: '<div class="waga-sentence" style="font-size:20px;">猫<span class="conv-hl conv-hl--particle">は</span>かわいいです。</div>',
                             diagramCaption: "Neko wa kawaii desu — \"As for the cat, it's cute\" (a general statement about cats)."
                         },
@@ -4977,15 +6165,15 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 16b: Time Particles (に for a specific point in time, and the
+    /* FILE 16b: Time Particles (に for a specific point in time, and the
        relative-time-words-skip-に exception) — new dedicated content;
-       the old merged shelf only mentioned に's time job in passing inside
+       the old merged file only mentioned に's time job in passing inside
        a vocab gloss, it never got its own explanation. Reuses the same
-       あした/朝 examples shelf 15's STPOV slot-builder already taught,
+       あした/朝 examples file 15's STPOV slot-builder already taught,
        so the exception isn't landing on the learner cold. */
     function s16b() {
         return {
-            id: "s16b", title: "Time Particles", subtitle: "Shelf 16b",
+            id: "s16b", title: "Time Particles", subtitle: "File 16b",
             wordBank: {
                 verbs: [{ jp: "おきます", en: "wake up" }, { jp: "ねます", en: "sleep" }],
                 times: [{ jp: "三時に", en: "at 3 o'clock" }, { jp: "七時に", en: "at 7 o'clock" }],
@@ -4996,7 +6184,7 @@ window.NekoWaGa = {
                     sections: [
                         {
                             title: "に — marking a specific point in time",
-                            explain: "に attaches to a specific, countable point in time — a clock time, a day of the week, a date — and fills the Time slot in S-T-P-O-V (shelf 15). 三時に起きます, 'I wake up AT 3 o'clock.' Without に, the sentence wouldn't be wrong exactly, but it would lose the sense that this is a fixed, specific time rather than a loose description of when.",
+                            explain: "に attaches to a specific, countable point in time — a clock time, a day of the week, a date — and fills the Time slot in S-T-P-O-V (file 15). 三時に起きます, 'I wake up AT 3 o'clock.' Without に, the sentence wouldn't be wrong exactly, but it would lose the sense that this is a fixed, specific time rather than a loose description of when.",
                             pattern: '<span class="pattern-box__slot">Specific time</span> <span class="pattern-box__fixed">に</span> <span class="pattern-box__slot">Verb</span>'
                         },
                         {
@@ -5070,12 +6258,12 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 16c: Place Particles (で vs に) — split out of the old
-       merged shelf's "で vs に" section, given its own room and a fuller
+    /* FILE 16c: Place Particles (で vs に) — split out of the old
+       merged file's "で vs に" section, given its own room and a fuller
        explanation. */
     function s16c() {
         return {
-            id: "s16c", title: "Place Particles", subtitle: "Shelf 16c",
+            id: "s16c", title: "Place Particles", subtitle: "File 16c",
             wordBank: {
                 places: [{ jp: "図書館", kana: "としょかん", en: "the library" }, { jp: "公園", kana: "こうえん", en: "the park" }],
                 actions: [{ jp: "勉強します", kana: "べんきょうします", en: "study" }, { jp: "遊びます", kana: "あそびます", en: "play" }]
@@ -5085,7 +6273,7 @@ window.NekoWaGa = {
                     sections: [
                         {
                             title: "で — the place an ACTION happens",
-                            explain: "で marks where something is DONE — reading, working, playing, eating, studying. It fills the Place slot in S-T-P-O-V (shelf 15) whenever the verb describes an activity. 図書館で勉強します, 'I study AT the library' — the library is where the studying happens.",
+                            explain: "で marks where something is DONE — reading, working, playing, eating, studying. It fills the Place slot in S-T-P-O-V (file 15) whenever the verb describes an activity. 図書館で勉強します, 'I study AT the library' — the library is where the studying happens.",
                             pattern: '<span class="pattern-box__slot">Place</span> <span class="pattern-box__fixed">で</span> <span class="pattern-box__slot">Action verb</span>'
                         },
                         {
@@ -5098,8 +6286,8 @@ window.NekoWaGa = {
                             explain: "図書館にいます ('I am AT the library' — existence) vs. 図書館で勉強します ('I study AT the library' — action). Same building, same real-world location — the particle changes based entirely on whether the verb is an ACTION (で) or plain EXISTENCE (に)."
                         },
                         {
-                            title: "に / へ — heading TOWARD a place (full detail on shelf 08c)",
-                            explain: "A third job, easy to lose track of next to the two above: に also marks the destination after a movement verb (行きます／来ます／帰ります), and へ can swap in for that exact job with no change in meaning. 図書館に行きます and 図書館へ行きます both just mean 'I go to the library' — this course accepts either wherever a 'going to [place]' sentence is asked for. へ ONLY does this one job; it can't replace に's existence or action-adjacent uses above. See shelf 08c for the full explanation and diagram.",
+                            title: "に / へ — heading TOWARD a place (full detail on file 08c)",
+                            explain: "A third job, easy to lose track of next to the two above: に also marks the destination after a movement verb (行きます／来ます／帰ります), and へ can swap in for that exact job with no change in meaning. 図書館に行きます and 図書館へ行きます both just mean 'I go to the library' — this course accepts either wherever a 'going to [place]' sentence is asked for. へ ONLY does this one job; it can't replace に's existence or action-adjacent uses above. See file 08c for the full explanation and diagram.",
                             sample: {
                                 tag: '"I study at the library."',
                                 tiles: [{ text: "図書館で", role: "particle", gloss: "at the library", isNew: true }, { text: "勉強します", role: "predicate", gloss: "study" }],
@@ -5169,12 +6357,12 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 16d: Object Particles (を / と) — new dedicated section for
-       を, which the old merged shelf only showed inside the sentence-
+    /* FILE 16d: Object Particles (を / と) — new dedicated section for
+       を, which the old merged file only showed inside the sentence-
        skeleton diagram, never explained on its own. */
     function s16d() {
         return {
-            id: "s16d", title: "Object Particles", subtitle: "Shelf 16d",
+            id: "s16d", title: "Object Particles", subtitle: "File 16d",
             wordBank: {
                 nouns: [{ jp: "本", en: "book" }, { jp: "パン", en: "bread" }],
                 verbs: [{ jp: "読みます", en: "read" }, { jp: "食べます", en: "eat" }]
@@ -5184,12 +6372,12 @@ window.NekoWaGa = {
                     sections: [
                         {
                             title: "を — marking the direct object",
-                            explain: "を marks the thing a verb directly acts on — the thing being read, eaten, watched, bought. It fills the Object slot in S-T-P-O-V (shelf 15), always right before the verb. 本を読みます, 'I read A BOOK' — 本 is what gets read.",
+                            explain: "を marks the thing a verb directly acts on — the thing being read, eaten, watched, bought. It fills the Object slot in S-T-P-O-V (file 15), always right before the verb. 本を読みます, 'I read A BOOK' — 本 is what gets read.",
                             pattern: '<span class="pattern-box__slot">Object</span> <span class="pattern-box__fixed">を</span> <span class="pattern-box__slot">Verb</span>'
                         },
                         {
                             title: "と — combining two nouns into one object",
-                            explain: "と glues two nouns into a single combined item — 本とかばん, 'a book AND a bag.' That combined pair still only fills ONE Object slot, not two. と is covered in full on shelf 15, since it's really a joining word rather than a normal object-marking particle.",
+                            explain: "と glues two nouns into a single combined item — 本とかばん, 'a book AND a bag.' That combined pair still only fills ONE Object slot, not two. と is covered in full on file 15, since it's really a joining word rather than a normal object-marking particle.",
                             sample: {
                                 tag: '"I read a book."',
                                 tiles: [{ text: "本を", role: "particle", gloss: "a book", isNew: true }, { text: "読みます", role: "predicate", gloss: "read" }],
@@ -5256,7 +6444,7 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 16e: Other Particles (の / か) + the full particle reference
+    /* FILE 16e: Other Particles (の / か) + the full particle reference
        — closes out the split with the leftover particles that don't fit
        Subject/Time/Place/Object, plus the sentence-skeleton diagram and
        the master "all particles at a glance" list moved here so they
@@ -5264,7 +6452,7 @@ window.NekoWaGa = {
        partway through. */
     function s16e() {
         return {
-            id: "s16e", title: "Other Particles & Full Reference", subtitle: "Shelf 16e",
+            id: "s16e", title: "Other Particles & Full Reference", subtitle: "File 16e",
             wordBank: {
                 predicates: [{ jp: "学生", kana: "がくせい", en: "a student" }, { jp: "先生", kana: "せんせい", en: "a teacher" }],
                 newWords: [{ jp: "本", kana: "ほん", en: "book" }]
@@ -5283,14 +6471,14 @@ window.NekoWaGa = {
                             pattern: '<span class="pattern-box__slot">Statement</span> <span class="pattern-box__fixed">か</span>'
                         },
                         {
-                            title: "から / けど / と — sentence-joining words (full detail on shelf 15)",
-                            explain: "These three aren't slot-filling particles like the others on this page — they JOIN two complete S-T-P-O-V sentences together instead. Quick recap: から puts the reason first, then the result; けど joins two contrasting sentences; と (also covered on shelf 16d) glues two nouns into one object. See shelf 15 for the full explanation of all three."
+                            title: "から / けど / と — sentence-joining words (full detail on file 15)",
+                            explain: "These three aren't slot-filling particles like the others on this page — they JOIN two complete S-T-P-O-V sentences together instead. Quick recap: から puts the reason first, then the result; けど joins two contrasting sentences; と (also covered on file 16d) glues two nouns into one object. See file 15 for the full explanation of all three."
                         },
                         {
                             title: "Sentence skeleton — where every particle goes",
                             explain: "One last look at the big picture: when several particles show up together in one sentence, this is the fixed order. Not every sentence uses every slot.",
                             pattern: '<span class="pattern-box__slot">Noun</span> <span class="pattern-box__fixed">が/も</span> <span class="pattern-box__slot">Predicate</span>',
-                            /* Ported from n5-phaser-game.js's shelf-16 "Where each
+                            /* Ported from n5-phaser-game.js's file-16 "Where each
                                particle goes" sentence-skeleton diagram — reuses the
                                already-existing .conv-hl role spans (see study-style.css)
                                instead of the original's lesson-box-only
@@ -5309,7 +6497,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "All particles at a glance",
-                            explain: "Every particle from shelves 16a-16e, in one ordered list, with its meaning shown IN a real sentence rather than as a bare definition.",
+                            explain: "Every particle from files 16a-16e, in one ordered list, with its meaning shown IN a real sentence rather than as a bare definition.",
                             diagramSvg: '<div class="particle-glance">'
                                 + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">は</span><span class="particle-glance__meaning"><strong>topic marker</strong> — 猫は… "as for the cat…" (general statement)</span></div>'
                                 + '<div class="particle-glance__row"><span class="conv-hl conv-hl--particle particle-glance__chip">が</span><span class="particle-glance__meaning"><strong>subject marker</strong> — 猫が… "IT\'S the cat…" (singles one out)</span></div>'
@@ -5387,8 +6575,8 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 17: Wants & Preferences — たい／ほしい／のが好き・きらい.
-       New shelf (not a split of an existing one) — added after cross-checking
+    /* FILE 17: Wants & Preferences — たい／ほしい／のが好き・きらい.
+       New file (not a split of an existing one) — added after cross-checking
        N5 Speedmaster 3 (a real N5 reference book) against this file and
        finding these three totally absent, despite being some of the most
        basic things a beginner needs to say. Grouped together because all
@@ -5396,13 +6584,13 @@ window.NekoWaGa = {
        a thing, as opposed to a plain statement of fact. */
     function s17() {
         return {
-            id: "s17", title: "Wants & Preferences", subtitle: "Shelf 17",
+            id: "s17", title: "Wants & Preferences", subtitle: "File 17",
             wordBank: {
                 verbs: [{ jp: "たべます", stem: "たべ", en: "eat" }, { jp: "のみます", stem: "のみ", en: "drink" }],
                 nouns: [{ jp: "みず", en: "water" }, { jp: "あたらしいかばん", en: "a new bag" }],
                 actions: [{ jp: "およぐ", en: "swim" }, { jp: "うたう", en: "sing" }],
                 newWords: [{ jp: "ケーキ", en: "cake" }, { jp: "じかん", en: "time" }, { jp: "りょこう", en: "travel / trip" }],
-                preview: [{ jp: "ている", en: "is doing (ongoing)", note: "Coming up in shelf 18 — ongoing actions & restrictions" }]
+                preview: [{ jp: "ている", en: "is doing (ongoing)", note: "Coming up in file 18 — ongoing actions & restrictions" }]
             },
             buildInstruction: function () {
                 return {
@@ -5419,7 +6607,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "Vるのが好き・きらい — liking or disliking an ACTION",
-                            explain: "好き and きらい (shelf 09) already describe liking/disliking a thing — but a verb can't sit directly in front of です the way a noun can. の turns the whole verb phrase into a noun first (\"the act of swimming\"), which 好き／きらい can then describe like any other noun. およぐのが好きです, 'I like swimming' (literally 'swimming is a liked thing').",
+                            explain: "好き and きらい (file 09) already describe liking/disliking a thing — but a verb can't sit directly in front of です the way a noun can. の turns the whole verb phrase into a noun first (\"the act of swimming\"), which 好き／きらい can then describe like any other noun. およぐのが好きです, 'I like swimming' (literally 'swimming is a liked thing').",
                             pattern: '<span class="pattern-box__slot">Vる</span> <span class="pattern-box__fixed">の</span> <span class="pattern-box__fixed">が 好き／きらい</span>',
                             sample: {
                                 tag: '"I want to eat bread."',
@@ -5505,28 +6693,28 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 18: Ongoing Actions & Restrictions — ている／てもいい／てはいけません／ないでください.
-       New shelf. All four build directly on the て-form already taught in
-       shelf 13, extending it from a bare connector into real, usable
+    /* FILE 18: Ongoing Actions & Restrictions — ている／てもいい／てはいけません／ないでください.
+       New file. All four build directly on the て-form already taught in
+       file 13, extending it from a bare connector into real, usable
        sentences: describing what's happening right now, and telling
        someone what they may or may not do. */
     function s18() {
         return {
-            id: "s18", title: "Ongoing Actions & Restrictions", subtitle: "Shelf 18",
+            id: "s18", title: "Ongoing Actions & Restrictions", subtitle: "File 18",
             wordBank: {
                 teVerbs: [{ jp: "テレビをみて", en: "watching TV" }, { jp: "ほんをよんで", en: "reading a book" }],
                 permission: [{ jp: "すわって", en: "sit" }, { jp: "はいって", en: "enter" }],
                 prohibition: [{ jp: "はしって", en: "run" }, { jp: "たべて", en: "eat" }],
                 requests: [{ jp: "しんぱいしないで", en: "don't worry" }, { jp: "なかないで", en: "don't cry" }],
                 newWords: [{ jp: "きんえん", en: "no smoking" }, { jp: "ろうか", en: "hallway" }, { jp: "むりします", en: "overdo it / push too hard" }],
-                preview: [{ jp: "んです", en: "explanatory nuance", note: "Coming up in shelf 20 — explaining yourself" }]
+                preview: [{ jp: "んです", en: "explanatory nuance", note: "Coming up in file 20 — explaining yourself" }]
             },
             buildInstruction: function () {
                 return {
                     sections: [
                         {
                             title: "ている — an action in progress",
-                            explain: "て-form (shelf 13) + いる describes an action actually happening right now, not just a fact — いま、テレビをみています, 'I am watching TV right now.' This is the single most common thing て-form is used for in real conversation.",
+                            explain: "て-form (file 13) + いる describes an action actually happening right now, not just a fact — いま、テレビをみています, 'I am watching TV right now.' This is the single most common thing て-form is used for in real conversation.",
                             pattern: '<span class="pattern-box__slot">Vて</span> <span class="pattern-box__fixed">いる／います</span>'
                         },
                         {
@@ -5541,7 +6729,7 @@ window.NekoWaGa = {
                         },
                         {
                             title: "ないでください — a direct request not to do something",
-                            explain: "Built on the ない-form (shelf 14), not て-form — attach でください straight onto the plain negative stem. しんぱいしないでください, 'please don't worry.' Reads as a personal request rather than てはいけません's blanket rule.",
+                            explain: "Built on the ない-form (file 14), not て-form — attach でください straight onto the plain negative stem. しんぱいしないでください, 'please don't worry.' Reads as a personal request rather than てはいけません's blanket rule.",
                             pattern: '<span class="pattern-box__slot">Vない</span> <span class="pattern-box__fixed">でください</span>',
                             sample: {
                                 tag: '"May I sit here?"',
@@ -5627,15 +6815,15 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 19: Comparing & Changing — どちらが／のほうが／いちばん／ぐらい・くらい／くなる・になる.
-       New shelf. どちらが・のほうが (two things), いちばん (many things), and
+    /* FILE 19: Comparing & Changing — どちらが／のほうが／いちばん／ぐらい・くらい／くなる・になる.
+       New file. どちらが・のほうが (two things), いちばん (many things), and
        ぐらい・くらい (a rough amount) are grouped as "measuring against
        something else"; くなる・になる closes it out since it's the same
        idea turned into a sentence about time — a quality changing from
        one degree to another. */
     function s19() {
         return {
-            id: "s19", title: "Comparing & Changing", subtitle: "Shelf 19",
+            id: "s19", title: "Comparing & Changing", subtitle: "File 19",
             wordBank: {
                 pairsA: [{ jp: "いぬ", en: "dogs" }, { jp: "なつ", en: "summer" }],
                 pairsB: [{ jp: "ねこ", en: "cats" }, { jp: "ふゆ", en: "winter" }],
@@ -5643,7 +6831,7 @@ window.NekoWaGa = {
                 superlatives: [{ jp: "父が", en: "my father", adj: "せがたかい" }, { jp: "かんじが", en: "kanji", adj: "むずかしい" }],
                 iAdjChange: [{ jp: "さむい", stem: "さむ", en: "cold" }, { jp: "あつい", stem: "あつ", en: "hot" }],
                 newWords: [{ jp: "きせつ", en: "season" }, { jp: "せかい", en: "world" }, { jp: "きょねん", en: "last year" }],
-                preview: [{ jp: "たことがある", en: "have done (experience)", note: "Coming up in shelf 20 — explaining yourself" }]
+                preview: [{ jp: "たことがある", en: "have done (experience)", note: "Coming up in file 20 — explaining yourself" }]
             },
             buildInstruction: function () {
                 return {
@@ -5755,14 +6943,14 @@ window.NekoWaGa = {
         };
     }
 
-    /* SHELF 20: Explaining Yourself — んです／ほうがいい／たことがある／もう・まだ.
-       New shelf. All four are about elaborating on a plain statement:
+    /* FILE 20: Explaining Yourself — んです／ほうがいい／たことがある／もう・まだ.
+       New file. All four are about elaborating on a plain statement:
        giving the reason behind it (んです), recommending an action (ほうがいい),
        citing past experience to back it up (たことがある), or reporting how
        far along it is (もう／まだ). */
     function s20() {
         return {
-            id: "s20", title: "Explaining Yourself", subtitle: "Shelf 20",
+            id: "s20", title: "Explaining Yourself", subtitle: "File 20",
             wordBank: {
                 explain: [{ jp: "あたまがいたい", en: "my head hurts" }, { jp: "じかんがない", en: "I don't have time" }],
                 advice: [{ jp: "はやくねた", en: "went to bed early" }, { jp: "びょういんにいった", en: "went to the hospital" }],
@@ -5894,7 +7082,7 @@ window.NekoWaGa = {
        (assets/lesson pdf/N5_Kanji_Trace.pdf). Readings/meanings are
        transcribed directly from that sheet; onyomi is converted from
        the sheet's hiragana to katakana to match this site's existing
-       convention elsewhere (e.g. Shelf 07's kanji tags). Sample words
+       convention elsewhere (e.g. File 07's kanji tags). Sample words
        and stroke-order paths (real KanjiVG data, same source/technique
        as Kana Dojo) were compiled separately — see kanji-cards.js for
        how this wordBank.kanji shape (on/kun/words/strokes) is consumed;
@@ -6988,12 +8176,12 @@ window.NekoWaGa = {
        as the Adventure Room's review piles (REVIEW_1/2/3_QUIZ_QUESTIONS in
        n5-phaser-game.js) but built fresh for the Study Room's own document-
        mode engine rather than porting lesson-box.js's DOM. Segregated from
-       the s01..s16 shelves and the k01 kanji track the same way k01 is
-       segregated from the shelves — its own `quizGroup` flag (parallel to
+       the s01..s16 files and the k01 kanji track the same way k01 is
+       segregated from the files — its own `quizGroup` flag (parallel to
        `kanjiGroup`), its own <optgroup> in renderLessonPicker(), and its
        own branch in openLesson() that hands off to renderCheckpointQuiz()
        (see "===== CHECKPOINT QUIZ RENDERING =====" below openLesson()) —
-       the same "full sheet, grade on submit" shape the regular shelves'
+       the same "full sheet, grade on submit" shape the regular files'
        renderMondaiQuiz() now also uses, just kept as its own function
        since a checkpoint review's questions aren't grouped into もんだい1/2.
        Question shape is copied exactly from REVIEW_1_QUIZ_QUESTIONS:
@@ -7019,7 +8207,7 @@ window.NekoWaGa = {
           before: '', after: '', answer: 'ただいま', altAnswers: ['tadaima'] },
         { kind: 'fill', prompt: '"Excuse me for intruding" (said entering someone’s home):',
           before: '', after: '', answer: 'お邪魔します', altAnswers: ['ojama shimasu', 'おじゃまします'] },
-        // s02c — Filler Words & Reactions
+        // s02c — Reactions & Hedging Words
         { kind: 'mc', prompt: 'What does なるほど mean?',
           choices: ['I see / that makes sense', 'Probably', 'Not at all', 'First of all'], correctIndex: 0 },
         { kind: 'mc', prompt: 'Which word means "not at all" (paired with a negative)?',
@@ -7033,14 +8221,14 @@ window.NekoWaGa = {
 
     function cq1() {
         return {
-            id: "cq1", title: "Checkpoint Quiz 1 (Shelves 1–5)", subtitle: "10-question checkpoint",
+            id: "cq1", title: "Checkpoint Quiz 1 (Files 1–5)", subtitle: "10-question checkpoint",
             quizGroup: true,
             questions: CQ1_QUESTIONS,
             buildInstruction: function () {
                 return {
                     sections: [{
-                        title: "Checkpoint Quiz 1 — Shelves 1–5",
-                        explain: "A 10-question review covering everything so far: Basic Greetings (s01), Greetings & Everyday Phrases (s02), At Home & At the Table (s02b), Filler Words & Reactions (s02c), and A は B です (s03). Answer all 10 questions on the right, then submit to see your score and the correct answers."
+                        title: "Checkpoint Quiz 1 — Files 1–5",
+                        explain: "A 10-question review covering everything so far: Basic Greetings (s01), Greetings & Everyday Phrases (s02), At Home & At the Table (s02b), Reactions & Hedging Words (s02c), Filler Words (s02d), and A は B です (s03). Answer all 10 questions on the right, then submit to see your score and the correct answers."
                     }]
                 };
             }
@@ -7059,10 +8247,11 @@ window.NekoWaGa = {
         { kind: 'fill', prompt: '"Where" (asking about a place):',
           before: '', after: '', answer: 'どこ', altAnswers: ['doko'] },
         // s06 — Questions (か)
-        { kind: 'mc', prompt: 'What does だれ mean?',
-          choices: ['What', 'Who', 'When', 'Where'], correctIndex: 1 },
         { kind: 'fill', prompt: 'Turn a statement into a question by adding this to the end: これはほんです___',
           before: 'これはほんです', after: '', answer: 'か', altAnswers: ['ka'] },
+        // s06d — More Question Words
+        { kind: 'mc', prompt: 'What does だれ mean?',
+          choices: ['What', 'Who', 'When', 'Where'], correctIndex: 1 },
         // s07b — つ & 匹 Counters
         { kind: 'mc', prompt: 'Which counter is used for small animals like cats?',
           choices: ['つ', '匹', '時', '分'], correctIndex: 1 },
@@ -7079,13 +8268,13 @@ window.NekoWaGa = {
 
     function cq2() {
         return {
-            id: "cq2", title: "Checkpoint Quiz 2 (Shelves 6–10)", subtitle: "10-question checkpoint",
+            id: "cq2", title: "Checkpoint Quiz 2 (Files 6–10)", subtitle: "10-question checkpoint",
             quizGroup: true,
             questions: CQ2_QUESTIONS,
             buildInstruction: function () {
                 return {
                     sections: [{
-                        title: "Checkpoint Quiz 2 — Shelves 6–10",
+                        title: "Checkpoint Quiz 2 — Files 6–10",
                         explain: "A 10-question review covering Self Introduction (s04), Demonstratives (s05), Questions か (s06), Numbers (s07a–e), and Places & Directions (s08a–d). Answer all 10 questions on the right, then submit to see your score and the correct answers."
                     }]
                 };
@@ -7125,14 +8314,14 @@ window.NekoWaGa = {
 
     function cq3() {
         return {
-            id: "cq3", title: "Checkpoint Quiz 3 (Shelves 11–15)", subtitle: "10-question checkpoint",
+            id: "cq3", title: "Checkpoint Quiz 3 (Files 11–15)", subtitle: "10-question checkpoint",
             quizGroup: true,
             questions: CQ3_QUESTIONS,
             buildInstruction: function () {
                 return {
                     sections: [{
-                        title: "Checkpoint Quiz 3 — Shelves 11–15",
-                        explain: "A 10-question review covering Nouns & Pronouns (s09a/s09b), Adjectives & Adverbs (s10a/s10b/s10c), Verbs (s11a/s11b/s11c), Invitations (s12), and Conjugations — the て-form (s13). Answer all 10 questions on the right, then submit to see your score and the correct answers."
+                        title: "Checkpoint Quiz 3 — Files 11–15",
+                        explain: "A 10-question review covering Nouns & Pronouns (s09a/s09b), Adjectives & Adverbs (s10a/s10b/s10c), Verbs (s11a/s11b/s11c), Conjugations — the て-form (s13), Past & Negative (s14), and Invitations (s12). Answer all 10 questions on the right, then submit to see your score and the correct answers."
                     }]
                 };
             }
@@ -7151,7 +8340,7 @@ window.NekoWaGa = {
     function hide(el) { if (el) el.style.display = "none"; }
 
     /* Next lesson after `id` in the same curriculum order buildLessons()
-       already returns them in (shelves, then k01, then cq1-3) — null past
+       already returns them in (files, then k01, then cq1-3) — null past
        the last one (cq3). Used by the "Continue" button the mondai/
        checkpoint grading screens show after a completed lesson/quiz. */
     function findNextLesson(id) {
@@ -7179,10 +8368,10 @@ window.NekoWaGa = {
     }
 
     /* ===== HEADER LESSON PICKER (dropdown, replaces the old sidebar list) ===== */
-    // Same synthetic shelf-group labels as GROUP_LABELS in
+    // Same synthetic file-group labels as GROUP_LABELS in
     // n5-lessons-dashboard.js -- shown as a disabled header option above a
     // lettered run that has no bare lesson of its own (07a-e, 08a-d).
-    var SHELF_GROUP_LABELS = {
+    var FILE_GROUP_LABELS = {
         "07": "Numbers & Counters",
         "08": "Places & Directions",
         "09": "Nouns & Pronouns",
@@ -7193,16 +8382,16 @@ window.NekoWaGa = {
     function lessonOptionLabel(les) {
         let done = window.StudyProgress && StudyProgress.isLessonDone(les.id);
         /* Kanji-track lessons carry their name in the title already
-           ("N5 Kanji") — numbering it like a shelf ("19. N5 Kanji")
+           ("N5 Kanji") — numbering it like a file ("19. N5 Kanji")
            would just restate the segregation the optgroup below
            already provides. */
         if (les.kanjiGroup) return (done ? "✓ " : "") + les.title;
-        /* Checkpoint quizzes carry their own "Checkpoint Quiz N (Shelves
+        /* Checkpoint quizzes carry their own "Checkpoint Quiz N (Files
            X–Y)" name already — same reasoning as the kanji-group branch
-           above, no shelf-number prefix needed on top of that. */
+           above, no file-number prefix needed on top of that. */
         if (les.quizGroup) return (done ? "✓ " : "") + les.title;
         /* Lettered ids (s07a, s08b...) are sub-lessons of a shared numbered
-           shelf — indent them so the dropdown reads as "shelf 7, then its
+           file — indent them so the dropdown reads as "file 7, then its
            four sub-lessons" instead of a flat, unrelated list. */
         let isSubLesson = /^s\d+[a-z]$/.test(les.id);
         let prefix = isSubLesson ? "   ↳ " : "";
@@ -7214,11 +8403,11 @@ window.NekoWaGa = {
         if (!select) return;
         select.innerHTML = "";
         /* Kanji lessons and checkpoint quizzes are both segregated tracks,
-           not more numbered shelves — their own <optgroup>s keep that
+           not more numbered files — their own <optgroup>s keep that
            visually true in the dropdown instead of just interleaving them
-           into the shelf sequence. */
-        let shelvesGroup = document.createElement("optgroup");
-        shelvesGroup.label = "Shelves — Grammar & Vocab";
+           into the file sequence. */
+        let filesGroup = document.createElement("optgroup");
+        filesGroup.label = "Files — Grammar & Vocab";
         let kanjiGroupEl = document.createElement("optgroup");
         kanjiGroupEl.label = "N5 Kanji";
         let quizGroupEl = document.createElement("optgroup");
@@ -7226,7 +8415,7 @@ window.NekoWaGa = {
         // Curriculum order lets a single pass detect "entering a lettered
         // run with no bare lesson before it" (07a right after s06, 08a
         // right after s07e) and insert a disabled header option there --
-        // matches the folder > shelf-group > lettered-lesson hierarchy
+        // matches the folder > file-group > lettered-lesson hierarchy
         // used on the lessons directory page. 02b/02c need no such header
         // since s02 itself, immediately before them, already reads as one.
         let lastNumPrefix = null;
@@ -7244,16 +8433,16 @@ window.NekoWaGa = {
             if (letter && numPrefix !== lastNumPrefix) {
                 let header = document.createElement("option");
                 header.disabled = true;
-                header.textContent = "── " + numPrefix + " " + (SHELF_GROUP_LABELS[numPrefix] || "") + " ──";
-                shelvesGroup.appendChild(header);
+                header.textContent = "── " + numPrefix + " " + (FILE_GROUP_LABELS[numPrefix] || "") + " ──";
+                filesGroup.appendChild(header);
             }
             lastNumPrefix = numPrefix;
             let opt = document.createElement("option");
             opt.value = les.id;
             opt.textContent = lessonOptionLabel(les);
-            shelvesGroup.appendChild(opt);
+            filesGroup.appendChild(opt);
         });
-        select.appendChild(shelvesGroup);
+        select.appendChild(filesGroup);
         select.appendChild(kanjiGroupEl);
         select.appendChild(quizGroupEl);
         select.addEventListener("change", function () { openLesson(this.value); });
@@ -7305,7 +8494,7 @@ window.NekoWaGa = {
         if (currentLesson.quizGroup) {
             /* All 10 questions rendered at once as one sheet, graded on
                Submit — the checkpoint reviews already used this same
-               "full sheet, grade on submit" shape the regular shelves'
+               "full sheet, grade on submit" shape the regular files'
                mondai worksheet now also uses, so they keep their own
                renderCheckpointQuiz() rather than sharing renderMondaiQuiz(). */
             hide($("kanjiCards"));
@@ -7316,7 +8505,7 @@ window.NekoWaGa = {
             return;
         }
 
-        /* Every regular shelf gets the mondai-worksheet practice section
+        /* Every regular file gets the mondai-worksheet practice section
            (see renderMondaiQuiz() above) — two もんだい blocks of 5
            multiple-choice questions each, shown together on one sheet,
            graded on Submit. */
@@ -7385,8 +8574,12 @@ window.NekoWaGa = {
             }
             html += "<div class='grammar-box'>"
                 + "<div class='grammar-box__title'>" + sec.title + "</div>"
+                /* Pattern box comes FIRST, ahead of the explain prose --
+                   the sentence pattern is the thing to see immediately,
+                   with the explanation read alongside/after it, not the
+                   other way around (per explicit feedback). */
+                + (sec.pattern ? "<div class='pattern-box'><span class='pattern-box__label'>Pattern</span><div class='pattern-box__line'>" + sec.pattern + "</div></div>" : "")
                 + "<p>" + sec.explain + "</p>"
-                + (sec.pattern ? "<div class='pattern-box'><span class='pattern-box__label'>Pattern:</span> " + sec.pattern + "</div>" : "")
                 + (sec.diagramSvg ? "<div class='grammar-box__diagram'>" + sec.diagramSvg + "</div>" : "")
                 + (sec.diagramCaption ? "<p class='grammar-box__diagram-caption'>" + sec.diagramCaption + "</p>" : "")
                 + sampleHtml
@@ -7423,10 +8616,10 @@ window.NekoWaGa = {
                         + "<span class='example-sentence__english'>&mdash; " + ex.en + "</span>"
                         + "</div>";
                 });
-                /* Points to a full reference PDF (assets/lesson pdf/) for shelves
+                /* Points to a full reference PDF (assets/lesson pdf/) for files
                    whose curated example set is a small slice of a much bigger
                    real list -- same PDFs the Adventure Room's printer-icon popup
-                   already links per shelf (see PRINT_LINKS_BY_SHELF in
+                   already links per file (see PRINT_LINKS_BY_FILE in
                    n5-phaser-game.js), just surfaced inline here instead of
                    behind an icon click. */
                 if (inst.examplesMore && inst.examplesMore.length) {
@@ -7447,7 +8640,7 @@ window.NekoWaGa = {
            list and its wordBank.kanji is that same list again — both
            just duplicate the card gallery next to it (see kanji-cards.js)
            and, at 103 rows, dominate the panel for no reason. Skip both
-           here; the shelf lessons still get the full vocab table + word
+           here; the file lessons still get the full vocab table + word
            bank box. Checkpoint-quiz lessons (cq1/cq2/cq3) have no
            wordBank/vocab of their own at all — they're a review of 5
            earlier lessons' content, not a new lesson with its own set —
@@ -7482,8 +8675,8 @@ window.NekoWaGa = {
     }
 
     /* Full vocab list for the lesson (content-fidelity pass) — a compact
-       scrollable table rather than inline prose, since some shelves teach
-       50+ words (e.g. shelf-07's numbers/counters). */
+       scrollable table rather than inline prose, since some files teach
+       50+ words (e.g. file-07's numbers/counters). */
     function buildVocabTable(vocab) {
         let rows = vocab.map(function (w) {
             return "<tr><td class='vocab-table__jp'>" + annotateFurigana(w.jp) + "</td>"
@@ -7503,7 +8696,7 @@ window.NekoWaGa = {
         return "<div class='n5-clawform'>"
             + "<span class='n5-clawform-stem'>" + stem + "</span>"
             + "<span class='n5-clawform-old' data-claw-old>" + oldEnding
-            + "<svg class='n5-clawform-slash' data-claw-slash viewBox='0 0 40 40'><line x1='4' y1='34' x2='34' y2='4'></line><line x1='10' y1='38' x2='38' y2='10'></line></svg>"
+            + "<svg class='n5-clawform-slash' data-claw-slash viewBox='0 0 40 40' preserveAspectRatio='none'><line x1='4' y1='34' x2='34' y2='4'></line><line x1='10' y1='38' x2='38' y2='10'></line></svg>"
             + "</span>"
             + "<span class='n5-clawform-arrow'>&#8594;</span>"
             + "<span class='n5-clawform-stem'>" + stem + "</span>"
@@ -7583,11 +8776,15 @@ window.NekoWaGa = {
     }
 
     function buildSampleLegendHTML() {
+        /* Colors repainted 2026-09-05 (was blue/yellow/red/white — dull,
+           clashed with the green terminal). Particle and copula now
+           intentionally share one color, matching .role-chip--* in
+           study-style.css and the --lb-role-* override for N4. */
         return "<div class='n5-sample-legend'>"
-            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#6fb3e6'></span>Subject</span>"
-            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#f0c674'></span>Particle</span>"
-            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#e2685f'></span>Predicate</span>"
-            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#ffffff'></span>です / でした</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#A03C78'></span>Subject</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#F5E79D'></span>Particle</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#ED8E7C'></span>Predicate</span>"
+            + "<span class='n5-sample-legend__item'><span class='n5-sample-legend__swatch' style='background:#F5E79D'></span>です / でした</span>"
             + "</div>";
     }
 
@@ -7793,7 +8990,7 @@ window.NekoWaGa = {
         let data = lesson.buildMondaiExercises ? lesson.buildMondaiExercises() : { mondai1: { questions: [] }, mondai2: { questions: [] } };
         /* Filtered to sets that actually have questions -- a lesson whose
            second question set was trimmed to nothing (e.g. the Greetings
-           & Intros vocab-only shelves, which no longer quiz on words
+           & Intros vocab-only files, which no longer quiz on words
            their page never actually taught) shouldn't render an empty
            "もんだい2" header with nothing under it. */
         let sets = [
@@ -7877,7 +9074,13 @@ window.NekoWaGa = {
                 let result = StudyProgress.completeLesson(lesson.id);
                 xpGained = result.gained || 0;
                 alreadyDone = !(result.gained > 0);
-                StudyProgress.renderXpBadges();
+                /* Star Tally Flight extended to regular lesson completion too
+                   (2026-09-04, per explicit request) -- previously only
+                   checkpoint quizzes called celebrateXpGain(); this mirrors
+                   that exact call. celebrateXpGain() itself already degrades
+                   to a plain renderXpBadges() when xpGained is 0 (lesson
+                   already completed before), so no extra guard needed here. */
+                StudyProgress.celebrateXpGain(xpGained);
                 refreshLessonPickerLabels();
             }
 
@@ -7916,7 +9119,7 @@ window.NekoWaGa = {
 
             /* Auto-open a lesson from ?lesson=sXX URL param when present
                (deep link from the dashboard) -- otherwise fall back to
-               the first shelf so a bare study-room.html load (or a
+               the first file so a bare study-room.html load (or a
                refresh that drops the query string) doesn't leave the
                dropdown showing "01. Basic Greetings" as selected while
                the instruction/practice panels stay empty and hidden.

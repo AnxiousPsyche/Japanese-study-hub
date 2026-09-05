@@ -11,33 +11,55 @@
     "use strict";
 
     const LESSONS = [
-        { id: "n4-shelf-01", title: "Verb Stacks I — Potential, Volitional, Ba-form" },
-        { id: "n4-shelf-02", title: "Verb Stacks II — Passive, Causative, Transitive/Intransitive" },
+        { id: "n4-shelf-01", title: "Potential Form" },
+        { id: "n4-shelf-01b", title: "Volitional Form — ikou, tagaru" },
+        { id: "n4-shelf-02", title: "Passive & Causative" },
+        { id: "n4-shelf-02b", title: "Transitivity & Resultant State" },
         { id: "n4-shelf-03", title: "Particle Reference Desk — de, ni, kara, mo" },
         { id: "n4-shelf-04", title: "Special Collections — zutsu, hodo-nai, dewa" },
-        { id: "n4-shelf-05", title: "Everyday Speech Shelf — demo, de, mo" },
-        { id: "n4-shelf-06", title: "Timing & Sequence Shelf — toka, tari, shi, tokoro, aida, toki" },
-        { id: "n4-shelf-07", title: "Change & Decision Shelf — cause, mama, experience, deciding, becoming" },
-        { id: "n4-shelf-08", title: "Obligation & Permission Shelf — nakereba, temoii, teoku, teshimau" },
-        { id: "n4-shelf-09", title: "Giving & Purpose Shelf — ageru/kureru/morau, tame, youni" },
-        { id: "n4-shelf-10", title: "Effort Shelf" },
-        { id: "n4-shelf-11", title: "Advice & Commands Shelf — manner, imperative, prohibitive" },
-        { id: "n4-shelf-12", title: "Question Shelf — kadouka, nominalizing, ability, senses" },
-        { id: "n4-shelf-13", title: "Requests Shelf — concession, requests, suggesting, quoting" },
-        { id: "n4-shelf-14", title: "Intentions & Plans Shelf — tsumori, to omou, tara" },
-        { id: "n4-shelf-15", title: "If & When Almanac — ba, nara, to conditionals" },
-        { id: "n4-shelf-16", title: "Degree & Tone Shelf — appearance, sugiru, ndesu, tone particles" },
+        { id: "n4-shelf-05", title: "Everyday Speech — demo, de, mo" },
+        { id: "n4-shelf-06", title: "Casual Listing — toka, tari, shi" },
+        { id: "n4-shelf-06b", title: "Timing Words — tokoro, aida, toki, nagara" },
+        { id: "n4-shelf-17", title: "Reason & Cause — genin, node, tame" },
+        { id: "n4-shelf-07", title: "State & Experience — mama, kotogaaru" },
+        { id: "n4-shelf-18", title: "Becoming & Deciding — ni suru, ni naru, you ni suru" },
+        { id: "n4-shelf-08", title: "Obligation & Permission — nakereba, temoii" },
+        { id: "n4-shelf-08b", title: "Preparing & Completing — teoku, teshimau" },
+        { id: "n4-shelf-09", title: "Giving & Receiving — ageru, kureru, morau" },
+        { id: "n4-shelf-09b", title: "Purpose — tame, youni" },
+        { id: "n4-shelf-10", title: "Demonstratives — konna, sonna, anna, donna" },
+        { id: "n4-shelf-11", title: "Manner Adverbs — kou, sou, aa, dou" },
+        { id: "n4-shelf-11b", title: "Advice — hougaii, beki" },
+        { id: "n4-shelf-11c", title: "Commands — imperative, prohibitive" },
+        { id: "n4-shelf-12", title: "Embedded Questions & Nominalizing — kadouka, no" },
+        { id: "n4-shelf-12b", title: "Ability & Senses — kotogadekiru, kikoeru/mieru" },
+        { id: "n4-shelf-13", title: "Concession & Requests — demo/temo, kudasai, hoshii" },
+        { id: "n4-shelf-13b", title: "Suggesting & Quoting — tara dou, to iu, to omou" },
+        { id: "n4-shelf-14", title: "Intentions — tsumori, you to omou" },
+        { id: "n4-shelf-19", title: "Conditionals — ba, nara, to, tara" },
+        { id: "n4-shelf-16", title: "Certainty & Appearance — sou, rashii, you da, deshou, hazu, kamoshirenai" },
+        { id: "n4-shelf-16b", title: "Ease & Excess Endings — yasui, nikui, sugiru" },
+        { id: "n4-shelf-16c", title: "Explanatory Tone — sa, ndesu, tone particles" },
         { id: "n4-reading-01", title: "Reading Room I — A Day Off" },
         { id: "n4-reading-02", title: "Reading Room II — The New Student" },
         { id: "n4-reading-03", title: "Reading Room III — A Letter Home" },
         { id: "n4-reading-04", title: "Reading Room IV — Lost in Kyoto" }
     ];
 
+    /* Regrouped 2026-09-05 alongside the shelf split/consolidation pass in
+       study-room-n4.js (16 shelves -> 29) — folder boundaries now follow
+       the new shelf families instead of a flat "4 old ids per folder"
+       count, since the old grouping no longer lines up with anything
+       once shelves split and content moved across old shelf lines. */
     const FOLDERS = [
-        { title: "Foundations", ids: ["n4-shelf-01", "n4-shelf-02", "n4-shelf-03", "n4-shelf-04"] },
-        { title: "Everyday Grammar", ids: ["n4-shelf-05", "n4-shelf-06", "n4-shelf-07", "n4-shelf-08"] },
-        { title: "Nuance & Giving", ids: ["n4-shelf-09", "n4-shelf-10", "n4-shelf-11", "n4-shelf-12"] },
-        { title: "Requests & Conditionals", ids: ["n4-shelf-13", "n4-shelf-14", "n4-shelf-15", "n4-shelf-16"] },
+        { title: "Verb Conjugations", ids: ["n4-shelf-01", "n4-shelf-01b", "n4-shelf-02", "n4-shelf-02b"] },
+        { title: "Particles Reference", ids: ["n4-shelf-03", "n4-shelf-04", "n4-shelf-05"] },
+        { title: "Listing & Timing", ids: ["n4-shelf-06", "n4-shelf-06b", "n4-shelf-17", "n4-shelf-07"] },
+        { title: "Decisions & Obligations", ids: ["n4-shelf-18", "n4-shelf-08", "n4-shelf-08b"] },
+        { title: "Giving, Purpose & Description", ids: ["n4-shelf-09", "n4-shelf-09b", "n4-shelf-10"] },
+        { title: "Advice & Commands", ids: ["n4-shelf-11", "n4-shelf-11b", "n4-shelf-11c"] },
+        { title: "Questions & Requests", ids: ["n4-shelf-12", "n4-shelf-12b", "n4-shelf-13", "n4-shelf-13b"] },
+        { title: "Intentions, Conditionals & Certainty", ids: ["n4-shelf-14", "n4-shelf-19", "n4-shelf-16", "n4-shelf-16b", "n4-shelf-16c"] },
         { title: "Reading Room", ids: ["n4-reading-01", "n4-reading-02", "n4-reading-03", "n4-reading-04"] }
     ];
 
@@ -50,7 +72,7 @@
     }
 
     function shortLabel(id) {
-        const m = id.match(/^n4-shelf-(\d+)$/);
+        const m = id.match(/^n4-shelf-(\d+[a-z]?)$/);
         if (m) return "sh" + m[1];
         const r = id.match(/^n4-reading-(\d+)$/);
         if (r) return "rd" + r[1];

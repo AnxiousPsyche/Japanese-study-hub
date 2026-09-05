@@ -378,6 +378,18 @@ PLAYER WINDOW
 
 }
 
+/* #playerXpText ("N / N XP") must never wrap -- it did on a narrower
+   player-card width, and with this parent's 1.7 line-height the wrapped
+   second half landed visibly far below the first (reported as "the
+   number is above the XP"). The clamp() above already shrinks this
+   text as the container narrows; nowrap just stops it breaking mid-line
+   instead of shrinking further. */
+#playerXpText{
+
+    white-space:nowrap;
+
+}
+
 .player-stats{
 
     display:grid;
@@ -1509,7 +1521,7 @@ already self-hosted via study-style.css's @font-face
 .desktop-container.is-forest-terminal .disc-slide h2,
 .desktop-container.is-forest-terminal .quest-card h2{
 
-    font-family:"VT323", monospace;
+    font-family:"Courier Prime", monospace;
     letter-spacing:.5px;
 
 }

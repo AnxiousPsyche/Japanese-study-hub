@@ -47,7 +47,7 @@
     margin-bottom: 4px;
 }
 .streak-popup__count {
-    font-family: "VT323", monospace;
+    font-family: "Courier Prime", monospace;
     font-size: 56px;
     line-height: 1;
     color: var(--term-amber, #FAC775);
@@ -107,7 +107,7 @@
     margin: 0 0 20px;
 }
 .streak-popup__btn {
-    font-family: var(--title-font, "Press Start 2P", monospace);
+    font-family: var(--title-font, "Courier Prime", monospace);
     font-size: 10px;
     padding: 12px 22px;
     border: 1px solid var(--term-border, #1D9E75);
